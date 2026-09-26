@@ -1,0 +1,218 @@
+/* Apple Spotlight Custom CSS (Tailwind replacement) */
+
+.as-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: -40px; /* ruang ekstra untuk ikon shortcut */
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.as-main-wrapper {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  z-index: 20;
+  max-width: 48rem;
+  padding: 0;
+}
+
+/* Base styles for children of the wrapper */
+.as-main-wrapper > div {
+  color: var(--color-text-primary);
+  border-radius: 9999px;
+}
+
+.as-main-wrapper svg {
+  width: 1.2rem;
+  height: 1.2rem;
+  stroke-width: 1.5px;
+  color: var(--color-text-secondary);
+}
+
+.as-search-box {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  z-index: 10;
+  position: relative;
+  background-color: var(--color-bg);
+  border: 1px solid transparent;
+  border-radius: 20px !important;
+  transition: all 0.2s ease;
+}
+
+.as-search-box:focus-within {
+  background-color: var(--color-surface);
+  border-color: var(--color-border);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* Inputs and Placeholders */
+.as-input-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  padding: 0 1rem;
+  height: 40px;
+}
+
+.as-input-wrapper {
+  flex: 1;
+  position: relative;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.as-input {
+  width: 100%;
+  background: transparent;
+  outline: none;
+  box-shadow: none;
+  border: none;
+  color: var(--color-text-primary);
+  font-family: inherit;
+  padding: 0;
+  margin: 0;
+}
+
+.as-placeholder {
+  position: absolute;
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  z-index: 10;
+}
+.as-placeholder-active {
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+  padding: 0 4px;
+  border-radius: 4px;
+}
+
+/* Results */
+.as-results-container {
+  padding: 0.5rem;
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-surface);
+  max-height: 24rem;
+  overflow-y: auto;
+  width: 100%;
+}
+
+.as-result-link {
+  overflow: hidden;
+  width: 100%;
+  display: block;
+  text-decoration: none;
+}
+
+.as-result-card {
+  display: flex;
+  align-items: center;
+  color: var(--color-text-primary);
+  justify-content: flex-start;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  border-radius: 0.75rem;
+  width: 100%;
+  transition: background-color 200ms;
+}
+
+.as-result-card:hover {
+  background-color: var(--color-bg);
+}
+
+.as-result-card.is-last {
+  border-bottom-left-radius: 1.5rem;
+  border-bottom-right-radius: 1.5rem;
+}
+
+.as-result-icon-container {
+  width: 1.75rem;
+  height: 1.75rem;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.as-result-icon-container svg {
+  stroke-width: 1.5px !important;
+  width: 1.25rem !important;
+  height: 1.25rem !important;
+}
+
+.as-result-text-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.as-result-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin: 0;
+  color: var(--color-text-primary);
+  line-height: 1.2;
+}
+
+.as-result-desc {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+  margin-top: 2px;
+  line-height: 1.2;
+}
+
+.as-result-chevron {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  opacity: 0;
+  transition: opacity 200ms;
+}
+
+.as-result-link:hover .as-result-chevron {
+  opacity: 1;
+}
+
+/* Shortcuts */
+.as-shortcut-btn {
+  border-radius: 9999px;
+  cursor: pointer;
+  opacity: 0.3;
+  transition: opacity 200ms;
+  text-decoration: none;
+  display: block;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg);
+}
+
+.as-shortcut-btn:hover {
+  opacity: 1;
+  background-color: var(--color-surface);
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+}
+
+.as-shortcut-icon {
+  width: 40px;
+  height: 40px;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
