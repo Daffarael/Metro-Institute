@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useUIStore } from '@/stores/ui.store';
 import { ROUTES } from '@/lib/utils';
 import {
   Home,
@@ -245,6 +246,7 @@ const AppleSpotlight = ({
   const [hoveredSearchResult, setHoveredSearchResult] = useState<number | null>(null);
   const [hoveredShortcut, setHoveredShortcut] = useState<number | null>(null);
   const [searchValue, setSearchValue] = useState('');
+  const { searchPlaceholder } = useUIStore();
   const pathname = usePathname();
   const wrapperRef = useRef<HTMLDivElement>(null);
 
@@ -303,6 +305,7 @@ const AppleSpotlight = ({
               <div className="as-search-box">
                 <SpotlightInput
                   placeholder={
+                    searchPlaceholder ? searchPlaceholder :
                     hoveredShortcut !== null
                       ? shortcuts[hoveredShortcut].label
                       : hoveredSearchResult !== null

@@ -74,7 +74,7 @@ export default function CleanCombobox({
       >
         <span style={{
           fontSize: 'var(--text-sm)',
-          color: selectedOption ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)',
+          color: (selectedOption && selectedOption.value !== '') ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',

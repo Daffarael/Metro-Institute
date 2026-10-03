@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+@theme {
+  --animate-float: float 6s ease-in-out infinite;
+  
+  @keyframes float {
+    0% { transform: translateY(0px) perspective(1200px) rotateX(2deg); }
+    50% { transform: translateY(-12px) perspective(1200px) rotateX(3.5deg); }
+    100% { transform: translateY(0px) perspective(1200px) rotateX(2deg); }
+  }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+}
