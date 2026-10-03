@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -10,7 +10,10 @@ import { toast } from 'sonner'
 import { authService } from '@/services/auth.service'
 import { useAuthStore } from '@/stores/auth.store'
 import { ROUTES } from '@/lib/utils'
+import api from '@/lib/axios'
 import './Login10.css'
+
+const DEFAULT_LOGIN_IMAGE = ''
 
 const loginSchema = z.object({
   email: z.string().email('Format email tidak valid'),
@@ -31,6 +34,17 @@ export default function LoginPage() {
   const [isRegister, setIsRegister] = useState(false)
   const [showPass, setShowPass] = useState(false)
   const [showRegPass, setShowRegPass] = useState(false)
+  const [loginImageUrl, setLoginImageUrl] = useState(DEFAULT_LOGIN_IMAGE)
+
+  useEffect(() => {
+    api.get('/homepage-config')
+      .then(r => {
+        const configs: { key: string; value: string }[] = r.data.data ?? []
+        const found = configs.find(c => c.key === 'login_image_url')
+        if (found?.value) setLoginImageUrl(found.value)
+      })
+      .catch(() => {/* pakai default image */})
+  }, [])
 
   const {
     register: regLogin,
@@ -72,9 +86,13 @@ export default function LoginPage() {
   return (
     <section className="page login-10">
       <div className={`card ${isRegister ? "register" : ""}`}>
-        <div className="card-bg"></div>
+        <div
+          className="card-bg"
+          style={loginImageUrl ? { backgroundImage: `url(${loginImageUrl})` } : {}}
+        />
 
         <div className="hero register">
+          <img src="/logo-metro-clean.png" alt="Metro Institute" className="hero-logo" />
           <h2>Mulai Karir</h2>
           <p>Bergabung dengan Metro Institute hari ini dan bangun karir impianmu.</p>
           <button type="button" className="switch" onClick={() => setIsRegister(false)}>
@@ -127,6 +145,7 @@ export default function LoginPage() {
         </div>
 
         <div className="hero login">
+          <img src="/logo-metro-clean.png" alt="Metro Institute" className="hero-logo" />
           <h2>Selamat Datang</h2>
           <p>Masuk untuk melanjutkan pembelajaran Anda hari ini.</p>
           <button type="button" className="switch" onClick={() => setIsRegister(true)}>

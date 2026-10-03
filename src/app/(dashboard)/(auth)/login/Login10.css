@@ -38,18 +38,31 @@
   left: 0;
   bottom: 0;
   width: 50%;
-  background: url("https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80") center/cover no-repeat;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   border-radius: 18px;
   transform: translateX(100%);
-  transition: 0.65s ease-in-out;
+  transition: transform 0.75s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .login-10 .card-bg::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(1, 133, 86, 0.95) 0%, rgba(1, 107, 69, 0.6) 100%);
   border-radius: 18px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.login-10 .card-bg[style*="url"]::after {
+  background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.5) 100%);
+  opacity: 1;
+}
+
+/* Default: latar hijau Metro Institute */
+.login-10 .card-bg:not([style*="url"]) {
+  background: linear-gradient(160deg, #018556 0%, #014d32 100%) !important;
 }
 
 .login-10 .card.register .card-bg {
@@ -63,23 +76,41 @@
   height: 100%;
   opacity: 0;
   visibility: hidden;
-  transition: 0.65s ease-in-out;
+  /* fade out: cepat */
+  transition:
+    opacity 0.15s ease,
+    visibility 0s linear 0.15s,
+    transform 0.75s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Elemen yang SEDANG AKTIF / muncul: fade in setelah panel selesai slide */
 .login-10 .hero.login,
 .login-10 .form.login {
   opacity: 1;
   visibility: visible;
+  transition:
+    opacity 0.35s ease 0.45s,
+    visibility 0s linear 0.45s,
+    transform 0.75s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .login-10 .card.register :is(.hero, .form).login {
   opacity: 0;
   visibility: hidden;
+  /* override: fade out cepat saat switching ke register */
+  transition:
+    opacity 0.15s ease,
+    visibility 0s linear 0.15s,
+    transform 0.75s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .login-10 .card.register :is(.hero, .form).register {
   opacity: 1;
   visibility: visible;
+  transition:
+    opacity 0.35s ease 0.45s,
+    visibility 0s linear 0.45s,
+    transform 0.75s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .login-10 .hero.login {
@@ -122,16 +153,26 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: 12px;
   color: #ffffff !important;
   text-align: center;
-  padding: 0 24px;
+  padding: 0 28px;
+}
+
+.login-10 .hero-logo {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+  opacity: 0.95;
+  margin-bottom: 8px;
 }
 
 .login-10 .card h2 {
   margin: 0;
-  font-weight: 600;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  font-size: 22px;
+  font-weight: 700;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.25);
 }
 
 .login-10 .hero h2 {
