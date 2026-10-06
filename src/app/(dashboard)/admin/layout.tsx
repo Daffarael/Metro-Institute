@@ -11,7 +11,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <RoleGuard allowedRoles={['SUPER_ADMIN', 'ADMIN']} fallbackRoute="/mentee/basecamp">
-      <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--color-bg)' }}>
+      <div className="admin-panel-container" style={{ display: 'flex', minHeight: '100vh', background: 'var(--color-bg)' }}>
         {/* Sidebar dinamis seperti mentee */}
         <AdminSidebar isCollapsed={isCollapsed} toggleCollapse={() => setIsCollapsed(!isCollapsed)} />
 

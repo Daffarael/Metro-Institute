@@ -102,3 +102,19 @@
 .stagger-children > *:nth-child(4) { animation-delay: 180ms; }
 .stagger-children > *:nth-child(5) { animation-delay: 240ms; }
 .stagger-children > *:nth-child(6) { animation-delay: 300ms; }
+
+/* Global animation for buttons in admin panel (matching Mentee Framer Motion buttons) */
+.admin-panel-container button,
+.admin-panel-container .btn {
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease;
+}
+
+.admin-panel-container button:not(:disabled):not(.no-anim):hover,
+.admin-panel-container .btn:not(:disabled):not(.no-anim):hover {
+  transform: scale(1.02);
+}
+
+.admin-panel-container button:not(:disabled):not(.no-anim):active,
+.admin-panel-container .btn:not(:disabled):not(.no-anim):active {
+  transform: scale(0.98);
+}

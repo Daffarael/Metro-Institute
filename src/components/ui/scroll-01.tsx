@@ -91,18 +91,18 @@ export function Scroll01({ items, title, subtitle }: Readonly<Scroll01Props>) {
     <div className="relative w-full">
       {/* Mobile view */}
       <div className="space-y-10 md:hidden">
-        {title && (
-          <div className="text-center px-4 pb-4">
-            <h2 className="text-3xl font-black text-gray-900 tracking-tight leading-[1.15]">
-              {title}
-            </h2>
+        <div className="text-center px-4 pb-4">
+            {title && (
+              <h2 className="text-3xl font-black text-gray-900 tracking-tight leading-[1.15]">
+                {title}
+              </h2>
+            )}
             {subtitle && (
               <p className="text-gray-500 mt-3 text-sm max-w-2xl mx-auto leading-relaxed">
                 {subtitle}
               </p>
             )}
           </div>
-        )}
         {items.map((item, index) => (
           <article
             key={`${item.title}-${index}`}
@@ -129,11 +129,12 @@ export function Scroll01({ items, title, subtitle }: Readonly<Scroll01Props>) {
           <div ref={stickyRef} className="sticky top-[96px] pointer-events-auto flex flex-col w-full">
             
             {/* Header */}
-            {title && (
-              <div className="bg-[#f7f7f9] text-center px-4 pb-8 relative w-full">
-                <h2 className="text-[44px] font-black text-gray-900 tracking-tight leading-[1.15]">
-                  {title}
-                </h2>
+            <div className="bg-[#f7f7f9] text-center px-4 pb-8 relative w-full min-h-[130px] flex flex-col justify-center">
+                {title && (
+                  <h2 className="text-[44px] font-black text-gray-900 tracking-tight leading-[1.15]">
+                    {title}
+                  </h2>
+                )}
                 {subtitle && (
                   <p className="text-gray-500 mt-3 text-lg max-w-2xl mx-auto leading-relaxed">
                     {subtitle}
@@ -141,7 +142,6 @@ export function Scroll01({ items, title, subtitle }: Readonly<Scroll01Props>) {
                 )}
                 <div className="absolute top-full inset-x-0 h-10 bg-gradient-to-b from-[#f7f7f9] to-transparent pointer-events-none" />
               </div>
-            )}
 
             {/* Image Grid */}
             <div className="grid grid-cols-[3fr_2fr] gap-6 items-start w-full">

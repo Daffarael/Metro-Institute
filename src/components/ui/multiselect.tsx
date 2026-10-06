@@ -1,3 +1,4 @@
+// @ts-nocheck
 "use client"
 
 import { Command as CommandPrimitive, useCommandState } from "cmdk"

@@ -17,6 +17,7 @@ import { authService } from '@/services/auth.service'
 import { toast } from 'sonner'
 import BranchedMenu from '@/components/ui/BranchedMenu'
 import { MenuToggle } from '@/components/ui/MenuToggle'
+import { useConfigStore } from '@/stores/config.store'
 
 // Grouping navigation exactly as the old admin nav groups
 const branchItems = [
@@ -123,7 +124,7 @@ export default function AdminSidebar({ isCollapsed, toggleCollapse }: { isCollap
               whiteSpace: 'nowrap',
               fontWeight: 800,
               fontSize: '1.125rem',
-              color: 'var(--color-primary)', // Warna primary untuk Metro Institute
+              color: 'var(--color-text-primary)',
               letterSpacing: '-0.02em',
               display: 'flex',
               flexDirection: 'column',
@@ -132,7 +133,7 @@ export default function AdminSidebar({ isCollapsed, toggleCollapse }: { isCollap
             }}
           >
             <span>Metro</span>
-            <span style={{ color: 'var(--color-text-primary)' }}>Institute</span>
+            <span>Institute</span>
           </motion.div>
         </Link>
         
@@ -175,9 +176,10 @@ export default function AdminSidebar({ isCollapsed, toggleCollapse }: { isCollap
         >
           <BranchedMenu
             items={branchItems as any}
-            defaultOpen={[1, 2, 3, 4]} // Buka semua folder secara default
+            defaultOpen={[1, 2, 3, 4] as any} // Buka semua folder secara default
             defaultActive={pathname === '/admin' ? '' : pathname}
-            onSelect={(value) => {
+            onToggle={() => {}}
+            onSelect={(value: any) => {
               router.push(value)
             }}
             color="var(--color-text-primary)"

@@ -65,7 +65,7 @@ function ScheduleModal({ bootcampId, schedule, onClose }: {
   const mutation = useMutation({
     mutationFn: (data: ScheduleForm) =>
       isEdit
-        ? api.put(`/bootcamp/schedules/${schedule!.id}`, data).then(r => r.data)
+        ? api.patch(`/bootcamp/schedules/${schedule!.id}`, data).then(r => r.data)
         : api.post(`/bootcamp/${bootcampId}/schedules`, data).then(r => r.data),
     onSuccess: () => {
       toast.success(isEdit ? 'Jadwal diperbarui.' : 'Jadwal ditambahkan.')
@@ -156,7 +156,7 @@ export default function BootcampSchedulesPage() {
     const toastId = toast.loading('Mengupload rekaman...')
     try {
       const { data: uploadData } = await api.post('/upload/image', form, { headers: { 'Content-Type': 'multipart/form-data' } })
-      await api.put(`/bootcamp/schedules/${scheduleId}`, { recordingUrl: uploadData.url })
+      await api.patch(`/bootcamp/schedules/${scheduleId}`, { recordingUrl: uploadData.url })
       qc.invalidateQueries({ queryKey: ['admin', 'bootcamp', bootcampId, 'schedules'] })
       toast.success('Rekaman berhasil diupload.', { id: toastId })
     } catch {

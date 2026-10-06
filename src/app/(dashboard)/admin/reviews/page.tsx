@@ -76,7 +76,7 @@ export default function AdminReviewsPage() {
       api.patch(`/admin/reviews/${id}/visibility`, { isVisible }),
     onSuccess: (_, vars) => {
       toast.success(vars.isVisible ? 'Ulasan ditampilkan.' : 'Ulasan disembunyikan.')
-      qc.invalidateQueries({ queryKey: ['admin', 'reviews'], placeholderData: keepPreviousData, })
+      qc.invalidateQueries({ queryKey: ['admin', 'reviews']})
     },
     onError: () => toast.error('Gagal mengubah status.'),
   })

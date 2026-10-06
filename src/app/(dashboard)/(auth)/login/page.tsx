@@ -24,6 +24,10 @@ type LoginForm = z.infer<typeof loginSchema>
 const registerSchema = z.object({
   name: z.string().min(2, 'Nama minimal 2 karakter'),
   email: z.string().email('Format email tidak valid'),
+  phone: z.string()
+    .min(9, 'Nomor WhatsApp minimal 9 digit')
+    .max(15, 'Nomor WhatsApp terlalu panjang')
+    .regex(/^[0-9+]+$/, 'Hanya boleh angka dan tanda +'),
   password: z.string().min(6, 'Password min 6 karakter'),
 })
 type RegisterForm = z.infer<typeof registerSchema>
@@ -75,7 +79,7 @@ export default function LoginPage() {
 
   const onSignup = async (data: RegisterForm) => {
     try {
-      await authService.register({ ...data, phone: '080000000000' })
+      await authService.register({ ...data })
       toast.success('Pendaftaran berhasil! Silakan masuk.')
       setIsRegister(false)
     } catch (err: any) {
@@ -114,6 +118,12 @@ export default function LoginPage() {
               <label>Email</label>
               <input type="email" placeholder="hello@example.com" {...regSignup('email')} />
               <div className="error-text">{signupErrors.email?.message || ' '}</div>
+            </div>
+
+            <div className="input-group">
+              <label>Nomor WhatsApp</label>
+              <input type="tel" placeholder="08123456789" {...regSignup('phone')} />
+              <div className="error-text">{signupErrors.phone?.message || ' '}</div>
             </div>
 
             <div className="input-group">

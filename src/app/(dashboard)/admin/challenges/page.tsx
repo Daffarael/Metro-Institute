@@ -35,8 +35,8 @@ interface Filters { type?: string; field?: string; search?: string; page: number
 const challengeSchema = z.object({
   title:       z.string().min(5, 'Minimal 5 karakter'),
   description: z.string().min(10, 'Minimal 10 karakter'),
-  type:        z.enum(['QUIZ', 'PROJECT'], { errorMap: () => ({ message: 'Pilih tipe challenge' }) }),
-  field:       z.enum(['UI_UX', 'FRONTEND', 'BACKEND', 'MOBILE'], { errorMap: () => ({ message: 'Pilih bidang' }) }),
+  type:        z.enum(['QUIZ', 'PROJECT'], { error: () => ({ message: 'Pilih tipe challenge' }) }),
+  field:       z.enum(['UI_UX', 'FRONTEND', 'BACKEND', 'MOBILE'], { error: () => ({ message: 'Pilih bidang' }) }),
   maxScore:    z.number().min(1).max(1000),
   options:     z.array(z.object({
     id: z.string(),
@@ -107,11 +107,11 @@ function ChallengeModal({ challenge, onClose }: { challenge?: Challenge; onClose
   const mutation = useMutation({
     mutationFn: (data: ChallengeForm) =>
       isEdit
-        ? api.put(`/challenge/${challenge!.id}`, data).then(r => r.data)
+        ? api.patch(`/challenge/${challenge!.id}`, data).then(r => r.data)
         : api.post('/challenge', data).then(r => r.data),
     onSuccess: () => {
       toast.success(isEdit ? 'Challenge diperbarui.' : 'Challenge dibuat.')
-      qc.invalidateQueries({ queryKey: ['admin', 'challenges'], placeholderData: keepPreviousData, })
+      qc.invalidateQueries({ queryKey: ['admin', 'challenges']})
       onClose()
     },
     onError: (err: any) => toast.error(err.response?.data?.message ?? 'Gagal menyimpan.'),
@@ -400,7 +400,7 @@ export default function AdminChallengesPage() {
     mutationFn: (id: string) => api.delete(`/challenge/${id}`),
     onSuccess: () => {
       toast.success('Challenge dihapus.')
-      qc.invalidateQueries({ queryKey: ['admin', 'challenges'], placeholderData: keepPreviousData, })
+      qc.invalidateQueries({ queryKey: ['admin', 'challenges']})
       setDeleteTarget(null)
     },
     onError: () => toast.error('Gagal menghapus.'),

@@ -171,10 +171,11 @@ export function Sidebar({ isCollapsed, toggleCollapse }: { isCollapsed?: boolean
           }}
         >
           <BranchedMenu
-            items={branchItems}
-            defaultOpen={[1, 2, 3, 4]} // Buka semua folder secara default
+            items={branchItems as any}
+            defaultOpen={[1, 2, 3, 4] as any} // Buka semua folder secara default
             defaultActive={getActivePath()}
-            onSelect={(value) => {
+            onToggle={() => {}}
+            onSelect={(value: any) => {
               if (value === '#discord') {
                 window.open('https://discord.com', '_blank')
               } else {

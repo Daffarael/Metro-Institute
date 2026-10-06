@@ -167,7 +167,7 @@
 }
 
 .branched-menu__item[data-active] {
-  color: var(--bm-accent);
+  color: #ffffff;
   font-weight: 500;
 }
 

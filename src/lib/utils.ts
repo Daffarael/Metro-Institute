@@ -1,4 +1,3 @@
-// routes.ts — All route constants. Never hardcode paths in components.
 
 export const ROUTES = {
   // Public
@@ -73,7 +72,7 @@ export const ROUTES = {
   ADMIN_HOMEPAGE: '/admin/homepage-manager',
 } as const
 
-// ── Field Labels ───────────────────────────────────────────
+// ── Field Labels & Colors (hardcode fallback — nanti bisa di-extend dari DB) ──
 export const FIELD_LABELS: Record<string, string> = {
   UI_UX: 'UI/UX Design',
   FRONTEND: 'Frontend Development',
@@ -88,7 +87,6 @@ export const FIELD_COLORS: Record<string, string> = {
   MOBILE: '#F59E0B',
 }
 
-// ── Level Labels ───────────────────────────────────────────
 export const LEVEL_LABELS: Record<string, string> = {
   BEGINNER: 'Beginner',
   ELEMENTARY: 'Elementary',
@@ -96,7 +94,6 @@ export const LEVEL_LABELS: Record<string, string> = {
   ADVANCED: 'Advanced',
 }
 
-// ── Badge Labels ───────────────────────────────────────────
 export const BADGE_LABELS: Record<string, string> = {
   METRO_ROOKIE: 'Metro Rookie',
   METRO_EXPLORER: 'Metro Explorer',

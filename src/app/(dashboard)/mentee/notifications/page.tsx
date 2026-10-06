@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Bell, CheckCheck, Trash2, BookOpen, Award, Zap, CreditCard, Info } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
@@ -41,8 +42,10 @@ export default function NotificationsPage() {
   const { data, isLoading } = useQuery<{ data: Notification[]; meta: { unreadCount: number } }>({
     queryKey: ['notifications'],
     queryFn: () => api.get('/notifications').then((r) => r.data),
-    onSuccess: () => resetUnread(),
   })
+
+  // Reset unread count when notifications are loaded
+  useEffect(() => { if (data) resetUnread() }, [data])
 
   const readAllMutation = useMutation({
     mutationFn: () => api.patch('/notifications/read-all'),

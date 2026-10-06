@@ -179,20 +179,23 @@ export default function CourseLearningPlayerPage() {
         {/* Video / Content Area */}
         <div style={{ flex: 1, overflow: 'auto' }}>
           {/* Video Player */}
-          {currentSession.type === 'VIDEO' && currentSession.videoUrl && (
-            <div style={{ background: '#000', aspectRatio: '16/9', maxHeight: '60vh', width: '100%' }}>
-              <ReactPlayer
-                ref={playerRef as any}
-                url={currentSession.videoUrl}
+          {currentSession.type === 'VIDEO' && currentSession.videoUrl && (() => {
+            const Player = ReactPlayer as any;
+            return (
+              <div style={{ background: '#000', aspectRatio: '16/9', maxHeight: '60vh', width: '100%' }}>
+                <Player
+                  ref={playerRef as any}
+                  url={currentSession.videoUrl}
                 width="100%"
                 height="100%"
                 controls
-                onProgress={handleProgress}
+                onProgress={handleProgress as any}
                 onEnded={() => { if (!completeTriggerRef.current) { completeTriggerRef.current = true; completeMutation.mutate() } }}
-                config={{ file: { attributes: { controlsList: 'nodownload' } } }}
+                config={{ file: { attributes: { controlsList: 'nodownload' } } } as any}
               />
             </div>
-          )}
+            );
+          })()}
 
           {/* Content Panel */}
           <div style={{ background: 'var(--color-bg)', minHeight: 'calc(100% - 60vh)' }}>

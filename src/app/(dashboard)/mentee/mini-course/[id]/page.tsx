@@ -62,8 +62,9 @@ export default function CourseDetailPage() {
   const { data: course, isLoading, refetch } = useQuery<CourseDetail>({
     queryKey: ['course-detail', id],
     queryFn: () => api.get(`/courses/${id}`).then((r) => r.data.data),
-    onSuccess: (data) => setIsWishlisted(data.isWishlisted),
   })
+
+  useEffect(() => { if (course) setIsWishlisted(course.isWishlisted) }, [course])
 
   const wishlistMutation = useMutation({
     mutationFn: () =>

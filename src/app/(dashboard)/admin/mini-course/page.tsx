@@ -27,11 +27,11 @@ const miniCourseSchema = z.object({
   title:       z.string().min(5, 'Minimal 5 karakter'),
   descShort:   z.string().max(160, 'Maks 160 karakter'),
   descLong:    z.string().min(20, 'Minimal 20 karakter'),
-  field:       z.enum(['UI_UX', 'FRONTEND', 'BACKEND', 'MOBILE'], { errorMap: () => ({ message: 'Pilih bidang' }) }),
+  field:       z.enum(['UI_UX', 'FRONTEND', 'BACKEND', 'MOBILE'], { error: () => ({ message: 'Pilih bidang' }) }),
   price:       z.number().min(0),
   accessDays:  z.number().min(1).max(3650),
   totalDuration: z.number().min(1),
-  status:      z.enum(['DRAFT', 'PUBLISHED'], { errorMap: () => ({ message: 'Pilih status' }) }),
+  status:      z.enum(['DRAFT', 'PUBLISHED'], { error: () => ({ message: 'Pilih status' }) }),
   certificateTemplateId: z.string().optional().nullable(),
 })
 type CourseForm = z.infer<typeof miniCourseSchema>
@@ -87,11 +87,11 @@ function CourseModal({ course, onClose }: { course?: MiniCourse; onClose: () => 
   const mutation = useMutation({
     mutationFn: (data: CourseForm) =>
       isEdit
-        ? api.put(`/mini-course/${course!.id}`, data).then(r => r.data)
+        ? api.patch(`/mini-course/${course!.id}`, data).then(r => r.data)
         : api.post('/mini-course', data).then(r => r.data),
     onSuccess: () => {
       toast.success(isEdit ? 'Mini course diperbarui.' : 'Mini course dibuat.')
-      qc.invalidateQueries({ queryKey: ['admin', 'courses'], placeholderData: keepPreviousData, })
+      qc.invalidateQueries({ queryKey: ['admin', 'courses']})
       onClose()
     },
     onError: (err: any) => toast.error(err.response?.data?.message ?? 'Gagal menyimpan.'),
@@ -345,7 +345,7 @@ export default function AdminMiniCoursePage() {
     mutationFn: (id: string) => api.delete(`/mini-course/${id}`),
     onSuccess: () => {
       toast.success('Mini course dihapus.')
-      qc.invalidateQueries({ queryKey: ['admin', 'courses'], placeholderData: keepPreviousData, })
+      qc.invalidateQueries({ queryKey: ['admin', 'courses']})
       setDeleteTarget(null)
     },
     onError: () => toast.error('Gagal menghapus.'),

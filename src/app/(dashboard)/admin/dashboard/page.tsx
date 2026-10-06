@@ -94,7 +94,7 @@ function BarChart({ data }: { data: { date: string; count: number }[] }) {
               color: 'var(--color-text-primary)'
             }} 
             itemStyle={{ color: 'var(--color-primary)' }}
-            formatter={(value: number) => [`${value} Mentee`, 'Total']}
+            formatter={(value) => [`${value ?? 0} Mentee`, 'Total']}
             labelStyle={{ display: 'none' }}
           />
           <Bar dataKey="count" fill="var(--color-primary)" radius={[6, 6, 0, 0]} maxBarSize={48} />

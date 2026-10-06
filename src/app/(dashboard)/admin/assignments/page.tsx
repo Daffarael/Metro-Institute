@@ -42,7 +42,7 @@ function GradeModal({ attempt, onClose }: { attempt: Assignment; onClose: () => 
       api.patch(`/admin/assignments/${attempt.id}/grade`, { score, feedback }).then(r => r.data),
     onSuccess: () => {
       toast.success('Penilaian berhasil disimpan. XP diberikan otomatis.')
-      qc.invalidateQueries({ queryKey: ['admin', 'assignments'], placeholderData: keepPreviousData, })
+      qc.invalidateQueries({ queryKey: ['admin', 'assignments']})
       onClose()
     },
     onError: (err: any) => toast.error(err.response?.data?.message ?? 'Gagal menyimpan.'),

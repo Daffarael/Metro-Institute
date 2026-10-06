@@ -245,7 +245,7 @@ export default function BasecampPage() {
                   return (
                     <div key={live.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--space-4)' }}>
                       <div style={{ minWidth: 0 }}>
-                        <div style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginBottom: 2 }}>{formatDate(live.scheduledAt, true)}</div>
+                        <div style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginBottom: 2 }}>{formatDate(live.scheduledAt)}</div>
                         <div style={{ fontSize: '13px', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{live.title}</div>
                       </div>
                       <a href={live.liveUrl} target="_blank" rel="noopener noreferrer"

@@ -40,7 +40,7 @@ function AddSessionModal({ courseId, onClose }: { courseId: string; onClose: () 
     mutationFn: () => api.post(`/mini-course/${courseId}/sessions`, { ...form, order: 0 }),
     onSuccess: () => {
       toast.success('Sesi ditambahkan.')
-      qc.invalidateQueries({ queryKey: ['admin', 'course', courseId, 'curriculum'], placeholderData: keepPreviousData, })
+      qc.invalidateQueries({ queryKey: ['admin', 'course', courseId, 'curriculum']})
       onClose()
     },
     onError: () => toast.error('Gagal menambah sesi.'),
@@ -137,7 +137,7 @@ export default function MiniCourseCurriculumPage() {
     mutationFn: (id: string) => api.delete(`/mini-course/sessions/${id}`),
     onSuccess: () => {
       toast.success('Sesi dihapus.')
-      qc.invalidateQueries({ queryKey: ['admin', 'course', courseId, 'curriculum'], placeholderData: keepPreviousData, })
+      qc.invalidateQueries({ queryKey: ['admin', 'course', courseId, 'curriculum']})
       setDeleteId(null)
     },
     onError: () => toast.error('Gagal menghapus.'),

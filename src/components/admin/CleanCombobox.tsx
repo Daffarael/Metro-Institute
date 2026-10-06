@@ -17,6 +17,7 @@ interface CleanComboboxProps {
   width?: number | string
   direction?: 'up' | 'down'
   style?: React.CSSProperties
+  allowClear?: boolean
 }
 
 export default function CleanCombobox({
@@ -26,7 +27,8 @@ export default function CleanCombobox({
   placeholder = 'Pilih...',
   width = '100%',
   direction = 'down',
-  style
+  style,
+  allowClear = true
 }: CleanComboboxProps) {
   const [isOpen, setIsOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -51,7 +53,7 @@ export default function CleanCombobox({
   return (
     <div ref={containerRef} style={{ position: 'relative', width, minWidth: 160 }}>
 
-      {/* Trigger — button biasa, bukan div+input */}
+      {/* Trigger â€” button biasa, bukan div+input */}
       <button
         type="button"
         onClick={() => setIsOpen(o => !o)}
@@ -96,7 +98,7 @@ export default function CleanCombobox({
         </div>
       </button>
 
-      {/* Dropdown — AnimatePresence to prevent prop jumping (flicker) on close */}
+      {/* Dropdown â€” AnimatePresence to prevent prop jumping (flicker) on close */}
       <AnimatePresence>
         {isOpen && (
           <div style={{
@@ -123,7 +125,7 @@ export default function CleanCombobox({
             >
               <div style={{ padding: '4px', maxHeight: '320px', overflowY: 'auto' }}>
                 {/* Hapus pilihan */}
-                {value && (
+                {allowClear && value && (
                   <button
                     type="button"
                     className="clean-combobox-clear"
@@ -158,3 +160,4 @@ export default function CleanCombobox({
     </div>
   )
 }
+

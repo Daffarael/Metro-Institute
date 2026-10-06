@@ -23,9 +23,9 @@ function CheckoutSuccessContent() {
     queryKey: ['transaction', orderId],
     queryFn: () => api.get(`/transactions/${orderId}`).then((r) => r.data.data),
     enabled:  !!orderId,
-    refetchInterval: (d) => {
+    refetchInterval: (query) => {
       // Keep polling until SUCCESS
-      if (d?.status === 'SUCCESS') return false
+      if (query.state.data?.status === 'SUCCESS') return false
       return 2000
     },
   })

@@ -93,7 +93,7 @@ function BootcampModal({
   const mutation = useMutation({
     mutationFn: (data: BootcampForm) =>
       isEdit
-        ? api.put(`/bootcamp/${bootcamp!.id}`, data).then(r => r.data)
+        ? api.patch(`/bootcamp/${bootcamp!.id}`, data).then(r => r.data)
         : api.post('/bootcamp', data).then(r => r.data),
     onSuccess: () => {
       toast.success(isEdit ? 'Bootcamp diperbarui.' : 'Bootcamp dibuat.')

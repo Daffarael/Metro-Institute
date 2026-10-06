@@ -9,19 +9,19 @@ export const INTERACTIVE_LINKS = [
     heading: "Bootcamp",
     subheading: "Program intensif siap kerja dengan jaminan karir.",
     imgSrc: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=800",
-    href: "#",
+    href: "/login",
   },
   {
     heading: "Mini Course",
     subheading: "Pelatihan singkat untuk kuasai skill spesifik.",
     imgSrc: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&q=80&w=800",
-    href: "#",
+    href: "/login",
   },
   {
     heading: "Webinar",
     subheading: "Wawasan industri eksklusif dari praktisi ahli.",
     imgSrc: "https://images.unsplash.com/photo-1540317580384-e5d43616b9aa?auto=format&fit=crop&q=80&w=800",
-    href: "#",
+    href: "/login",
   },
 ];
 
@@ -134,22 +134,24 @@ function HoverLink({ heading, imgSrc, subheading, href }: LinkProps) {
         </span>
       </div>
 
-      <motion.img
-        style={{
-          top,
-          left,
-          translateX: "-10%",
-          translateY: "-50%",
-        }}
-        variants={{
-          initial: { scale: 0, rotate: "-12.5deg" },
-          whileHover: { scale: 1, rotate: "12.5deg" },
-        }}
-        transition={{ type: "spring" }}
-        src={imgSrc}
-        className="absolute z-0 h-24 w-32 rounded-lg object-cover shadow-2xl md:h-48 md:w-64 pointer-events-none"
-        alt={`Image representing ${heading}`}
-      />
+      {imgSrc ? (
+        <motion.img
+          style={{
+            top,
+            left,
+            translateX: "-10%",
+            translateY: "-50%",
+          }}
+          variants={{
+            initial: { scale: 0, rotate: "-12.5deg" },
+            whileHover: { scale: 1, rotate: "12.5deg" },
+          }}
+          transition={{ type: "spring" }}
+          src={imgSrc}
+          className="absolute z-0 h-24 w-32 rounded-lg object-cover shadow-2xl md:h-48 md:w-64 pointer-events-none"
+          alt={`Image representing ${heading}`}
+        />
+      ) : null}
       
       <div className="overflow-hidden">
         <motion.div

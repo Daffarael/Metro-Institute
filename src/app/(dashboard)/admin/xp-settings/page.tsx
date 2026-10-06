@@ -7,7 +7,7 @@
 // REFERRAL_BONUS, BADGE_UPGRADE
 // XP disimpan di tabel XpConfig { reason, amount, isActive }
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query'
 import { Save, Info } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
@@ -43,16 +43,19 @@ export default function AdminXpSettingsPage() {
   const [isDirty, setIsDirty] = useState(false)
 
   const { data: configs, isLoading } = useQuery<XpConfig[]>({
-    queryKey: ['admin', 'xp-config'], placeholderData: keepPreviousData,
+    queryKey: ['admin', 'xp-config'],
     queryFn: () => api.get('/admin/xp-config').then(r => r.data.data ?? []),
-    onSuccess: (data) => {
+  })
+
+  useEffect(() => {
+    if (configs) {
       const vals: Record<string, number> = {}
       const actives: Record<string, boolean> = {}
-      data.forEach(c => { vals[c.reason] = c.amount; actives[c.reason] = c.isActive })
+      configs.forEach(c => { vals[c.reason] = c.amount; actives[c.reason] = c.isActive })
       setLocalValues(vals)
       setLocalActive(actives)
-    },
-  } as any)
+    }
+  }, [configs])
 
   if (configs !== undefined) {
     _cachedConfigs = configs
@@ -60,7 +63,7 @@ export default function AdminXpSettingsPage() {
   }
 
   const saveMutation = useMutation({
-    mutationFn: () => api.put('/admin/xp-config', {
+    mutationFn: () => api.patch('/admin/xp-config', {
       configs: (_cachedConfigs ?? []).map(c => ({
         reason: c.reason,
         amount: localValues[c.reason] ?? c.amount,
@@ -69,7 +72,7 @@ export default function AdminXpSettingsPage() {
     }),
     onSuccess: () => {
       toast.success('Konfigurasi XP berhasil disimpan.')
-      qc.invalidateQueries({ queryKey: ['admin', 'xp-config'], placeholderData: keepPreviousData, })
+      qc.invalidateQueries({ queryKey: ['admin', 'xp-config']})
       setIsDirty(false)
     },
     onError: () => toast.error('Gagal menyimpan konfigurasi.'),

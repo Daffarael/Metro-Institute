@@ -82,11 +82,11 @@ function VoucherModal({ voucher, onClose }: { voucher?: Voucher; onClose: () => 
   const mutation = useMutation({
     mutationFn: (data: VoucherForm) =>
       isEdit
-        ? api.put(`/voucher/${voucher!.id}`, data).then(r => r.data)
+        ? api.patch(`/voucher/${voucher!.id}`, data).then(r => r.data)
         : api.post('/voucher', data).then(r => r.data),
     onSuccess: () => {
       toast.success(isEdit ? 'Voucher diperbarui.' : 'Voucher dibuat.')
-      qc.invalidateQueries({ queryKey: ['admin', 'vouchers'], placeholderData: keepPreviousData, })
+      qc.invalidateQueries({ queryKey: ['admin', 'vouchers']})
       onClose()
     },
     onError: (err: any) => toast.error(err.response?.data?.message ?? 'Gagal menyimpan.'),
@@ -352,7 +352,7 @@ export default function AdminVouchersPage() {
     mutationFn: (id: string) => api.delete(`/voucher/${id}`),
     onSuccess: () => {
       toast.success('Voucher dihapus.')
-      qc.invalidateQueries({ queryKey: ['admin', 'vouchers'], placeholderData: keepPreviousData, })
+      qc.invalidateQueries({ queryKey: ['admin', 'vouchers']})
       setDeleteTarget(null)
     },
     onError: () => toast.error('Gagal menghapus.'),

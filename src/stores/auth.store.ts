@@ -9,7 +9,7 @@ export type BadgeLevel =
   | 'METRO_MASTER'
 
 export type Field = 'UI_UX' | 'FRONTEND' | 'BACKEND' | 'MOBILE'
-export type Role = 'MENTEE' | 'SUPER_ADMIN'
+export type Role = 'MENTEE' | 'SUPER_ADMIN' | 'ADMIN'
 
 export interface AuthUser {
   id: string
@@ -24,6 +24,11 @@ export interface AuthUser {
   totalXp: number
   currentStreak: number
   badgeLevel: BadgeLevel
+  bio?: string
+  status?: string
+  institution?: string
+  googleId?: string
+  passwordHash?: string
 }
 
 interface AuthState {

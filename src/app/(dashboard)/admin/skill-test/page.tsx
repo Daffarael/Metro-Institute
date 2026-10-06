@@ -21,6 +21,7 @@ import { toast } from 'sonner'
 interface SkillTestOption {
   id: string
   text: string
+  field?: string
 }
 
 interface SkillTestQuestion {
@@ -266,7 +267,7 @@ function QuestionModal({
     mutationFn: (data: any) => {
       const payload = { ...data, weights: {}, orderIndex: Number(data.orderIndex) }
       return isEdit
-        ? api.put(`/admin/skill-test/questions/${question!.id}`, payload).then(r => r.data)
+        ? api.patch(`/admin/skill-test/questions/${question!.id}`, payload).then(r => r.data)
         : api.post('/admin/skill-test/questions', payload).then(r => r.data)
     },
     onSuccess: () => {

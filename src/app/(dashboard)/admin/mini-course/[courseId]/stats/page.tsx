@@ -70,7 +70,7 @@ export default function MiniCourseStatsPage() {
       api.patch(`/admin/courses/enrollments/${enrollmentId}/extend`, { days }),
     onSuccess: () => {
       toast.success('Akses berhasil diperpanjang.')
-      qc.invalidateQueries({ queryKey: ['admin', 'course', courseId, 'stats'], placeholderData: keepPreviousData, })
+      qc.invalidateQueries({ queryKey: ['admin', 'course', courseId, 'stats']})
       setExtendModal(null)
     },
     onError: () => toast.error('Gagal memperpanjang akses.'),

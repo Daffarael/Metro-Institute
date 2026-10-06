@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter, Reggae_One, Geist } from 'next/font/google'
 import '../globals.css'
 import { Providers } from '@/components/providers'
+import { GlobalConfigInitializer } from '@/components/GlobalConfigInitializer'
 import { Toaster } from 'sonner'
 import { cn } from "@/lib/utils";
 
@@ -36,10 +37,24 @@ export const metadata: Metadata = {
   robots: 'index, follow',
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+async function getHomepageData() {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/homepage`, { next: { revalidate: 60 } })
+    if (!res.ok) return { config: {} }
+    const json = await res.json()
+    return json.data ?? { config: {} }
+  } catch {
+    return { config: {} }
+  }
+}
+
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const data = await getHomepageData()
+
   return (
     <html lang="id" className={cn(inter.variable, reggaeOne.variable, "font-sans", geist.variable)} data-scroll-behavior="smooth" suppressHydrationWarning>
       <body suppressHydrationWarning>
+        <GlobalConfigInitializer config={data.config} />
         <Providers>
           {children}
           <Toaster

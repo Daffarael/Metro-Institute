@@ -1,5 +1,5 @@
 .login-10 {
-  background: #f3f3f1;
+  background: radial-gradient(circle at 50% 0%, #ffffff 0%, #f3f4f6 60%, #e5e7eb 100%);
   color: #212625;
   overflow: hidden;
   font-family: inherit;
@@ -25,10 +25,10 @@
   overflow: hidden;
   width: 720px;
   height: 640px;
-  border-radius: 24px;
+  border-radius: 32px;
   background: #ffffff;
-  border: 8px solid #ffffff;
-  box-shadow: 0 12px 80px rgba(41, 30, 113, 0.12);
+  border: 6px solid #ffffff;
+  box-shadow: 0 24px 80px -12px rgba(34, 34, 46, 0.15), 0 0 40px rgba(34, 34, 46, 0.05);
 }
 
 .login-10 .card-bg {
@@ -41,7 +41,7 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  border-radius: 18px;
+  border-radius: 26px;
   transform: translateX(100%);
   transition: transform 0.75s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -50,7 +50,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  border-radius: 18px;
+  border-radius: 26px;
   opacity: 0;
   transition: opacity 0.3s;
 }
@@ -60,9 +60,9 @@
   opacity: 1;
 }
 
-/* Default: latar hijau Metro Institute */
+/* Default: latar navy Metro Institute */
 .login-10 .card-bg:not([style*="url"]) {
-  background: linear-gradient(160deg, #018556 0%, #014d32 100%) !important;
+  background: radial-gradient(circle at top right, #303046 0%, #22222E 40%, #16161F 100%) !important;
 }
 
 .login-10 .card.register .card-bg {
@@ -189,16 +189,17 @@
 
 .login-10 .hero .switch {
   padding: 12px 46px;
-  border-radius: 12px;
+  border-radius: 99px;
   font-family: inherit;
   font-size: 16px;
   font-weight: 600;
   color: inherit;
-  border: 0;
-  background: rgb(255 255 255 / 20%);
-  backdrop-filter: blur(4px);
-  transition: 0.3s;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgb(255 255 255 / 10%);
+  backdrop-filter: blur(8px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .login-10 .hero .switch:hover {
@@ -215,23 +216,23 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 14px;
-  padding: 32px;
+  gap: 8px;
+  padding: 20px 32px;
   height: 100%;
 }
 
 .login-10 .form h2 {
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 700;
   text-align: center;
-  margin-bottom: 8px;
+  margin-bottom: 2px;
   text-shadow: none;
 }
 
 .login-10 .form form {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 6px;
   width: 100%;
   margin: 0;
   padding: 0;
@@ -252,7 +253,7 @@
 
 .login-10 .form input:not([type="checkbox"]) {
   width: 100%;
-  height: 48px;
+  height: 44px;
   border: 0;
   border-radius: 12px;
   background: #eef0f5;
@@ -265,7 +266,7 @@
 }
 
 .login-10 .form input:not([type="checkbox"]):focus {
-  box-shadow: 0 0 0 2px #018556;
+  box-shadow: 0 0 0 2px #22222E;
 }
 
 .login-10 .form input::placeholder {
@@ -322,13 +323,13 @@
 .login-10 .remember input {
   width: 16px;
   height: 16px;
-  accent-color: #018556;
+  accent-color: #22222E;
   cursor: pointer;
   margin: 0;
 }
 
 .login-10 .forgot {
-  color: #018556;
+  color: #22222E;
   font-weight: 600;
   font-size: 13px;
   cursor: pointer;
@@ -339,11 +340,11 @@
 }
 
 .login-10 .form button[type="submit"] {
-  height: 48px;
+  height: 44px;
   width: 100%;
-  margin-top: 4px;
+  margin-top: 0;
   border: 0;
-  background: #018556;
+  background: #22222E;
   border-radius: 12px;
   color: #ffffff;
   font-family: inherit;
@@ -355,7 +356,7 @@
 }
 
 .login-10 .form button[type="submit"]:hover {
-  background: #016B45;
+  background: #16161F;
 }
 
 .login-10 .form button[type="submit"]:disabled {
@@ -401,7 +402,8 @@
 .login-10 .error-text {
   color: #ef4444;
   font-size: 11px;
-  min-height: 16px;
+  min-height: 12px;
+  line-height: 12px;
   white-space: pre-wrap;
-  margin-top: 2px;
+  margin-top: 0;
 }

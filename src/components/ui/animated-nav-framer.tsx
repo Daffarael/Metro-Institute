@@ -1,3 +1,4 @@
+// @ts-nocheck
 "use client";
 
 import * as React from "react";
@@ -121,7 +122,12 @@ export function AnimatedNavFramer({ items = DEFAULT_NAV_ITEMS }: { items?: NavIt
           variants={logoVariants}
           className="flex-shrink-0 flex items-center pl-6 pr-4"
         >
-          <img src="/logo-metro-clean.png" alt="Metro Institute" className="h-8 md:h-10 w-auto" />
+          <img 
+            src="/logo-metro-clean.png" 
+            alt="Metro Institute" 
+            className="h-8 md:h-10 w-auto" 
+            style={{ filter: "brightness(0) saturate(100%) invert(14%) sepia(12%) saturate(2135%) hue-rotate(192deg) brightness(95%) contrast(90%)" }}
+          />
         </motion.div>
         
         <motion.div
@@ -139,7 +145,7 @@ export function AnimatedNavFramer({ items = DEFAULT_NAV_ITEMS }: { items?: NavIt
               className={cn(
                 "text-[11px] font-bold tracking-[0.2em] uppercase transition-colors px-2 py-1",
                 item.isHighlighted
-                  ? "text-[#018556] hover:text-[#016B45] ml-4"
+                  ? "text-[#22222E] hover:text-[#16161F] ml-4"
                   : "text-gray-600 hover:text-gray-900"
               )}
             >

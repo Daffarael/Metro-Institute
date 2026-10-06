@@ -88,7 +88,7 @@ export default function TrendInteractiveChart({ data, title = 'Tren Pendaftaran'
                 tickMargin={12}
                 minTickGap={32}
                 tickFormatter={(value) => {
-                  const d = new Date(value)
+                  const d = new Date(value as string)
                   return d.toLocaleDateString('id-ID', { month: 'short', day: 'numeric' })
                 }}
                 style={{ fontSize: '11px', fill: 'var(--color-text-tertiary)' }}
@@ -100,7 +100,7 @@ export default function TrendInteractiveChart({ data, title = 'Tren Pendaftaran'
                     return (
                       <div style={{ background: '#fff', border: '1px solid var(--color-border-subtle)', padding: '8px 12px', borderRadius: 8, boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}>
                         <div style={{ fontSize: '12px', color: 'var(--color-text-tertiary)', marginBottom: 4 }}>
-                          {new Date(label).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}
+                          {new Date(label as string).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                           <div style={{ width: 8, height: 8, borderRadius: '50%', background: payload[0].fill }} />

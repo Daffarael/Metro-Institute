@@ -76,7 +76,7 @@ export default function CertificateTemplateEditor() {
   const saveMutation = useMutation({
     mutationFn: (data: any) => isNew 
       ? api.post('/admin/certificate-templates', data)
-      : api.put(`/admin/certificate-templates/${id}`, data),
+      : api.patch(`/admin/certificate-templates/${id}`, data),
     onSuccess: () => {
       toast.success(isNew ? 'Template dibuat' : 'Template diperbarui')
       router.push('/admin/certificates/templates')
@@ -305,7 +305,7 @@ export default function CertificateTemplateEditor() {
                         const currentX = Math.round(item.x + info.offset.x)
                         const currentY = Math.round(item.y + info.offset.y)
                         const SNAP = 6
-                        let v = null, h = null
+                        let v: number | null = null, h: number | null = null
 
                         if (Math.abs(currentX - 400) < SNAP) v = 400
                         if (Math.abs(currentY - 300) < SNAP) h = 300
