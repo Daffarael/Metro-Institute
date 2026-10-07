@@ -307,10 +307,10 @@ export default function AdminHomepageManagerPage() {
   }
 
   // â”€â”€ Portfolio helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-  type PortfolioItem = { media: string; title: string; description: string }
+  type PortfolioItem = { media: string; title: string; description: string; summary?: string }
   const getPortfolioItems = (): PortfolioItem[] => { try { return JSON.parse(localValues[PORTFOLIO_KEY] || '[]') } catch { return [] } }
   const setPortfolioItems = (items: PortfolioItem[]) => set(PORTFOLIO_KEY, JSON.stringify(items))
-  const addPortfolioItem = () => setPortfolioItems([...getPortfolioItems(), { media: '', title: '', description: '' }])
+  const addPortfolioItem = () => setPortfolioItems([...getPortfolioItems(), { media: '', title: '', description: '', summary: '' }])
   const removePortfolioItem = (idx: number) => setPortfolioItems(getPortfolioItems().filter((_, i) => i !== idx))
   const updatePortfolioItem = (idx: number, field: keyof PortfolioItem, val: string) => {
     const items = [...getPortfolioItems()]; items[idx] = { ...items[idx], [field]: val }; setPortfolioItems(items)
@@ -611,6 +611,10 @@ export default function AdminHomepageManagerPage() {
                           <FieldLabel label="Nama Alumni" />
                           <TextInput value={item.description} onChange={v => updatePortfolioItem(idx, 'description', v)} placeholder="Contoh: Oleh Budi (Alumni Batch 4)" />
                         </div>
+                      </div>
+                      <div>
+                        <FieldLabel label="Deskripsi Karya" />
+                        <TextInput value={item.summary ?? ''} onChange={v => updatePortfolioItem(idx, 'summary', v)} placeholder="Contoh: Aplikasi ini membantu pengguna dalam..." />
                       </div>
                     </div>
                   </div>

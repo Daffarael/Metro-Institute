@@ -12,6 +12,7 @@ type Scroll01Item = {
   title: string;
   description: string;
   media: string;
+  summary?: string;
 };
 
 export interface Scroll01Props {
@@ -61,7 +62,8 @@ function ScrollItem({
     >
       <div className="text-center">
         <h3 className="mb-2 text-2xl font-semibold text-gray-900">{item.title}</h3>
-        <p className="text-gray-500">{item.description}</p>
+        <p className="text-sm font-semibold tracking-wider text-primary uppercase mb-3">{item.description}</p>
+        {item.summary && <p className="text-gray-600 max-w-lg mx-auto">{item.summary}</p>}
       </div>
     </motion.article>
   );
@@ -103,7 +105,8 @@ function MobileScrollItem({
     >
       <div className="text-center">
         <h3 className="mb-2 text-2xl font-semibold text-gray-900">{item.title}</h3>
-        <p className="text-gray-500 text-sm">{item.description}</p>
+        <p className="text-xs font-semibold tracking-wider text-primary uppercase mb-2">{item.description}</p>
+        {item.summary && <p className="text-gray-600 text-sm max-w-md mx-auto">{item.summary}</p>}
       </div>
     </motion.article>
   );
