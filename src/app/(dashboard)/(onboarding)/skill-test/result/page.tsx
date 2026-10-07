@@ -93,7 +93,7 @@ export default function SkillTestResultPage() {
               Potensimu Seimbang
             </h1>
             <p style={{ fontSize: 15, color: '#555', lineHeight: 1.6, margin: '0 auto', maxWidth: 380 }}>
-              Skor analisismu menunjukkan kecocokan pada beberapa bidang sekaligus. Lanjutkan untuk menemukan minat utamamu.
+              Skor analisismu menunjukkan kecocokan pada beberapa bidang sekaligus. Eksplorasi sekarang untuk menemukan minat utamamu.
             </p>
           </div>
         )}
@@ -114,7 +114,7 @@ export default function SkillTestResultPage() {
               opacity: selectFieldMutation.isPending ? 0.6 : 1,
             }}
           >
-            {selectFieldMutation.isPending ? 'Menyimpan...' : 'Lanjutkan Perjalanan'}
+            {selectFieldMutation.isPending ? 'Menyimpan...' : 'Eksplorasi Sekarang'}
           </motion.button>
           <p style={{ textAlign: 'center', fontSize: 13, color: '#888', marginTop: 16 }}>
             +{result.xpEarned} XP diperoleh dari test ini
