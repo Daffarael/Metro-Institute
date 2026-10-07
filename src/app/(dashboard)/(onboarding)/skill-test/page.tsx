@@ -267,7 +267,7 @@ export default function SkillTestPage() {
           }}
         >
           {/* Question text */}
-          <div style={{ marginBottom: 40, textAlign: 'left' }}>
+          <div style={{ marginBottom: 40, textAlign: 'center' }}>
             <h2 style={{
               fontSize: 26, fontWeight: 700,
               color: '#111', lineHeight: 1.4, letterSpacing: '-0.02em',
