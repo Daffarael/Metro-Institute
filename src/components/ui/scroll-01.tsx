@@ -1,5 +1,5 @@
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
-import { motion, useScroll, useTransform, useMotionValueEvent, MotionValue } from "framer-motion";
+import { useRef, useState } from "react";
+import { motion, useScroll, useMotionValueEvent, MotionValue } from "framer-motion";
 
 type Scroll01Item = {
   title: string;
@@ -12,6 +12,24 @@ export interface Scroll01Props {
   items: Scroll01Item[];
   title?: string;
   subtitle?: string;
+}
+
+// Calculate opacity value for a given scroll progress — pure JS, no WAAPI
+function calcOpacity(v: number, index: number, total: number): number {
+  if (total <= 1) return 1;
+  const peak = index / (total - 1);
+  const distance = 1 / (total - 1);
+  const crossfadeHalf = distance * 0.25;
+  const fadeInStart  = peak - distance + crossfadeHalf;
+  const fadeInEnd    = peak - crossfadeHalf;
+  const fadeOutStart = peak + crossfadeHalf;
+  const fadeOutEnd   = peak + distance - crossfadeHalf;
+
+  if (v <= fadeInStart)  return 0;
+  if (v <= fadeInEnd)    return (v - fadeInStart) / (fadeInEnd - fadeInStart || 1);
+  if (v <= fadeOutStart) return 1;
+  if (v <= fadeOutEnd)   return 1 - (v - fadeOutStart) / (fadeOutEnd - fadeOutStart || 1);
+  return 0;
 }
 
 function ScrubbedItem({
@@ -27,43 +45,34 @@ function ScrubbedItem({
   progress: MotionValue<number>;
   isImage?: boolean;
 }) {
-  const peak = total > 1 ? index / (total - 1) : 0.5;
-  const distance = total > 1 ? 1 / (total - 1) : 1;
-  const crossfadeHalf = distance * 0.25;
+  // Use plain React state — avoids Framer Motion WAAPI ScrollTimeline binding
+  // which crashes when useTransform domain extends outside [0, 1]
+  const [opacity, setOpacity] = useState(() => calcOpacity(0, index, total));
 
-  const fadeInStart = peak - distance + crossfadeHalf;
-  const fadeInEnd = peak - crossfadeHalf;
-  const fadeOutStart = peak + crossfadeHalf;
-  const fadeOutEnd = peak + distance - crossfadeHalf;
+  useMotionValueEvent(progress, "change", (v) => {
+    setOpacity(calcOpacity(v, index, total));
+  });
 
-  const opacity = useTransform(
-    progress,
-    total > 1 ? [fadeInStart, fadeInEnd, fadeOutStart, fadeOutEnd] : [0, 1],
-    total > 1 ? [0, 1, 1, 0] : [1, 1]
-  );
-  
   if (isImage) {
     return (
-      <motion.img
+      <img
         src={item.media}
         alt={item.title}
-        style={{ opacity }}
-        className="absolute inset-0 h-full w-full object-cover"
+        style={{ opacity, position: 'absolute', inset: 0, height: '100%', width: '100%', objectFit: 'cover' }}
       />
     );
   }
 
   return (
-    <motion.article
-      style={{ opacity }}
-      className="absolute inset-0 flex flex-col justify-center px-8"
+    <article
+      style={{ opacity, position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 2rem' }}
     >
       <div className="text-center w-full bg-[#f7f7f9] bg-opacity-80 py-8 rounded-2xl backdrop-blur-sm">
         <h3 className="mb-2 text-2xl font-semibold text-gray-900">{item.title}</h3>
         <p className="text-sm font-semibold tracking-wider text-primary uppercase mb-3">{item.description}</p>
         {item.summary && <p className="text-gray-600 max-w-lg mx-auto leading-relaxed">{item.summary}</p>}
       </div>
-    </motion.article>
+    </article>
   );
 }
 
