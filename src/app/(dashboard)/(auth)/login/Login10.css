@@ -266,7 +266,7 @@
 }
 
 .login-10 .form input:not([type="checkbox"]):focus {
-  box-shadow: 0 0 0 2px #22222E;
+  box-shadow: 0 0 0 2px var(--color-primary);
 }
 
 .login-10 .form input::placeholder {
@@ -323,13 +323,13 @@
 .login-10 .remember input {
   width: 16px;
   height: 16px;
-  accent-color: #22222E;
+  accent-color: var(--color-primary);
   cursor: pointer;
   margin: 0;
 }
 
 .login-10 .forgot {
-  color: #22222E;
+  color: var(--color-primary);
   font-weight: 600;
   font-size: 13px;
   cursor: pointer;
@@ -344,7 +344,7 @@
   width: 100%;
   margin-top: 0;
   border: 0;
-  background: #22222E;
+  background: var(--color-primary);
   border-radius: 12px;
   color: #ffffff;
   font-family: inherit;
@@ -356,7 +356,7 @@
 }
 
 .login-10 .form button[type="submit"]:hover {
-  background: #16161F;
+  background: var(--color-primary-dark);
 }
 
 .login-10 .form button[type="submit"]:disabled {

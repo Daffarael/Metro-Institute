@@ -186,7 +186,7 @@ export default function SkillTestPage() {
           <button
             onClick={() => setShowIntro(false)}
             style={{
-              width: '100%', height: 50, background: '#111',
+              width: '100%', height: 50, background: 'var(--color-primary)',
               color: '#ffffff', border: 'none', borderRadius: 14,
               fontSize: 15, fontWeight: 700, cursor: 'pointer',
               letterSpacing: '-0.01em', transition: 'opacity 0.2s',
