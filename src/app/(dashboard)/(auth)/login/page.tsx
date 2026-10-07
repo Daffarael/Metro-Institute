@@ -159,6 +159,7 @@ export default function LoginPage() {
           </div>
         </div>
 
+        <div className="hero login">
           <img src="/logo-metro-clean.png" alt="Metro Institute" className="hero-logo" />
           <h2>Selamat Datang</h2>
           <p>Masuk untuk melanjutkan pembelajaran Anda hari ini.</p>
