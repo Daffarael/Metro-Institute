@@ -1,12 +1,5 @@
-"use client";
-
-import {
-  motion,
-  useScroll,
-  useTransform,
-  useMotionValueEvent,
-} from "motion/react";
-import { useRef, useState, useEffect, Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
+import { motion, useScroll, useTransform, useMotionValueEvent, MotionValue } from "framer-motion";
 
 type Scroll01Item = {
   title: string;
@@ -21,148 +14,79 @@ export interface Scroll01Props {
   subtitle?: string;
 }
 
-function ScrollItem({
+function ScrubbedItem({
   item,
   index,
-  setActive,
-  isLast,
+  total,
+  progress,
+  isImage = false,
 }: {
   item: Scroll01Item;
   index: number;
-  setActive: Dispatch<SetStateAction<number>>;
-  isLast: boolean;
+  total: number;
+  progress: MotionValue<number>;
+  isImage?: boolean;
 }) {
-  const ref = useRef<HTMLDivElement | null>(null);
+  const peak = index / (total - 1);
+  const distance = 1 / (total - 1);
+  const crossfadeHalf = distance * 0.25;
 
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start 65%", "start 35%"],
-  });
+  const fadeInStart = peak - distance + crossfadeHalf;
+  const fadeInEnd = peak - crossfadeHalf;
+  const fadeOutStart = peak + crossfadeHalf;
+  const fadeOutEnd = peak + distance - crossfadeHalf;
 
-  const opacityValues = index === 0 ? [1, 1, 1, 0] : isLast ? [0, 0, 1, 1] : [0, 1, 1, 0];
   const opacity = useTransform(
-    scrollYProgress,
-    [0, 0.1, 0.6, 1],
-    opacityValues,
+    progress,
+    [fadeInStart, fadeInEnd, fadeOutStart, fadeOutEnd],
+    [0, 1, 1, 0]
   );
-
-  const isActive = useTransform(scrollYProgress, (v) => v > 0.3 && v < 0.75);
-
-  useMotionValueEvent(isActive, "change", (v) => {
-    if (v) {
-      setActive((prev) => (prev === index ? prev : index));
-    }
-  });
+  
+  if (isImage) {
+    return (
+      <motion.img
+        src={item.media}
+        alt={item.title}
+        style={{ opacity }}
+        className="absolute inset-0 h-full w-full object-cover"
+      />
+    );
+  }
 
   return (
     <motion.article
-      ref={ref}
       style={{ opacity }}
-      className="flex flex-col items-center"
+      className="absolute inset-0 flex flex-col justify-center px-8"
     >
-      <div className="text-center">
+      <div className="text-center w-full bg-[#f7f7f9] bg-opacity-80 py-8 rounded-2xl backdrop-blur-sm">
         <h3 className="mb-2 text-2xl font-semibold text-gray-900">{item.title}</h3>
         <p className="text-sm font-semibold tracking-wider text-primary uppercase mb-3">{item.description}</p>
-        {item.summary && <p className="text-gray-600 max-w-lg mx-auto">{item.summary}</p>}
+        {item.summary && <p className="text-gray-600 max-w-lg mx-auto leading-relaxed">{item.summary}</p>}
       </div>
     </motion.article>
   );
 }
-
-// Mobile version — offsets tuned for sticky image at top (~84px nav + ~260px image = ~344px)
-function MobileScrollItem({
-  item,
-  index,
-  setActive,
-  isLast,
-}: {
-  item: Scroll01Item;
-  index: number;
-  setActive: Dispatch<SetStateAction<number>>;
-  isLast: boolean;
-}) {
-  const ref = useRef<HTMLDivElement | null>(null);
-
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start 0.85", "start 0.45"],
-  });
-
-  const opacityValues = index === 0 ? [1, 1, 1, 0] : isLast ? [0, 0, 1, 1] : [0, 1, 1, 0];
-  const opacity = useTransform(scrollYProgress, [0, 0.1, 0.6, 1], opacityValues);
-
-  const isActive = useTransform(scrollYProgress, (v) => v > 0.3 && v < 0.75);
-
-  useMotionValueEvent(isActive, "change", (v) => {
-    if (v) setActive((prev) => (prev === index ? prev : index));
-  });
-
-  return (
-    <motion.article
-      ref={ref}
-      style={{ opacity }}
-      className="flex flex-col items-center px-4"
-    >
-      <div className="text-center">
-        <h3 className="mb-2 text-2xl font-semibold text-gray-900">{item.title}</h3>
-        <p className="text-xs font-semibold tracking-wider text-primary uppercase mb-2">{item.description}</p>
-        {item.summary && <p className="text-gray-600 text-sm max-w-md mx-auto">{item.summary}</p>}
-      </div>
-    </motion.article>
-  );
-}
-
 
 export function Scroll01({ items, title, subtitle }: Readonly<Scroll01Props>) {
   const [activeIndex, setActiveIndex] = useState<number>(0);
-  const stickyRef = useRef<HTMLDivElement>(null);
-  const [dynamicPt, setDynamicPt] = useState(290); const [dynamicPb, setDynamicPb] = useState(155); const headerRef = useRef<HTMLDivElement>(null); const imageRef = useRef<HTMLDivElement>(null);
-  const mobileWrapperRef = useRef<HTMLDivElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
-  // Mobile: track scroll progress within the tall wrapper to drive activeIndex
-  const { scrollYProgress: mobileProgress } = useScroll({
-    target: mobileWrapperRef,
+  const { scrollYProgress } = useScroll({
+    target: wrapperRef,
     offset: ["start start", "end end"],
   });
 
-  useMotionValueEvent(mobileProgress, "change", (v) => {
+  useMotionValueEvent(scrollYProgress, "change", (v) => {
     const idx = Math.min(Math.floor(v * items.length), items.length - 1);
     setActiveIndex(idx);
   });
 
-  useEffect(() => {
-    const calculatePaddings = () => {
-      if (headerRef.current && imageRef.current) {
-        const headerH = headerRef.current.offsetHeight;
-        const imageH = imageRef.current.offsetHeight;
-        const textH = 150; // Estimated height of text block
-
-        // Find the center of the image relative to the sticky container
-        const centerOffset = headerH + (imageH / 2);
-
-        // For the first item, we need its center to be at centerOffset
-        const pt = centerOffset - (textH / 2);
-        setDynamicPt(pt > 0 ? pt : 0);
-
-        // For the last item, we need its center to be at centerOffset when container is fully scrolled
-        // The distance from the bottom of sticky container to the image center is imageH / 2
-        const pb = (imageH / 2) - (textH / 2);
-        setDynamicPb(pb > 0 ? pb : 0);
-      }
-    };
-    // Add a slight delay to ensure DOM is fully rendered before calculation
-    setTimeout(calculatePaddings, 100);
-    window.addEventListener('resize', calculatePaddings);
-    return () => window.removeEventListener('resize', calculatePaddings);
-  }, [items]);
-
   return (
-    <div className="relative w-full">
-      {/* Mobile: scroll-locked section — full viewport width, N×100svh tall */}
+    <div ref={wrapperRef} className="relative w-full" style={{ height: `${items.length * 100}vh` }}>
+      {/* Mobile: scroll-locked section — full viewport width, N*100svh tall */}
       <div
-        ref={mobileWrapperRef}
         className="block md:hidden relative z-30 -mt-[80px]"
-        style={{ height: `${items.length * 100}vh` }}
+        style={{ height: '100%' }}
       >
         <div
           className="sticky top-0 overflow-hidden bg-[#f7f7f9]"
@@ -194,23 +118,16 @@ export function Scroll01({ items, title, subtitle }: Readonly<Scroll01Props>) {
             {/* Crossfading image — fixed height */}
             <div className="relative w-full overflow-hidden rounded-2xl shadow-xl bg-gray-100 flex-shrink-0" style={{ aspectRatio: '16/10' }}>
               {items.map((item, index) => (
-                <motion.img
-                  key={`mob-img-${index}`}
-                  src={item.media}
-                  alt={item.title}
-                  className="absolute inset-0 h-full w-full object-cover"
-                  animate={{ opacity: activeIndex === index ? 1 : 0 }}
-                  transition={{ duration: 0.5, ease: 'easeInOut' }}
-                />
+                <ScrubbedItem key={`mob-img-${index}`} item={item} index={index} total={items.length} progress={scrollYProgress} isImage />
               ))}
             </div>
 
             {/* Crossfading text — fills remaining space */}
-            <div className="relative flex-1 min-h-0">
+            <div className="relative flex-1 min-h-0 mt-4">
               {items.map((item, index) => (
                 <motion.div
                   key={`mob-txt-${index}`}
-                  className="absolute inset-0 flex flex-col items-center justify-start pt-6 px-2"
+                  className="absolute inset-0 flex flex-col items-center justify-start px-2"
                   animate={{ opacity: activeIndex === index ? 1 : 0 }}
                   transition={{ duration: 0.5, ease: 'easeInOut' }}
                 >
@@ -221,7 +138,7 @@ export function Scroll01({ items, title, subtitle }: Readonly<Scroll01Props>) {
             </div>
 
             {/* Progress dots */}
-            <div className="flex items-center justify-center gap-2 flex-shrink-0 pb-2">
+            <div className="flex items-center justify-center gap-2 flex-shrink-0 pb-2 mt-4">
               {items.map((_, index) => (
                 <motion.div
                   key={index}
@@ -240,75 +157,43 @@ export function Scroll01({ items, title, subtitle }: Readonly<Scroll01Props>) {
         </div>
       </div>
 
-
       {/* Desktop view */}
-      <div className="hidden md:block relative w-full">
-        
-        {/* STICKY LAYER: Contains both Header and Image so they scroll together */}
-        <div className="absolute inset-0 pointer-events-none z-10">
-          <div ref={stickyRef} className="sticky top-[96px] pointer-events-auto flex flex-col w-full">
-            
-            {/* Header */}
-            <div ref={headerRef} className="bg-[#f7f7f9] text-center px-4 pb-8 relative w-full min-h-[130px] flex flex-col justify-center">
-                {title && (
-                  <h2 className="text-[44px] font-black text-gray-900 tracking-tight leading-[1.15]">
-                    {title}
-                  </h2>
-                )}
-                {subtitle && (
-                  <p className="text-gray-500 mt-3 text-lg max-w-2xl mx-auto leading-relaxed">
-                    {subtitle}
-                  </p>
-                )}
-                <div className="absolute top-full inset-x-0 h-10 bg-gradient-to-b from-[#f7f7f9] to-transparent pointer-events-none" />
-              </div>
-
-            {/* Image Grid */}
-            <div className="grid grid-cols-[3fr_2fr] gap-6 items-start w-full">
-              <div ref={imageRef} className="relative w-full overflow-hidden rounded-[24px] shadow-xl bg-gray-100" style={{ aspectRatio: '16/10' }}>
-                {items.map((item, index) => (
-                  <motion.img
-                    key={`${item.title}-${index}`}
-                    src={item.media}
-                    alt={item.title}
-                    className="absolute inset-0 h-full w-full object-cover"
-                    initial={{ opacity: index === 0 ? 1 : 0 }}
-                    animate={{
-                      opacity: activeIndex === index ? 1 : 0,
-                      willChange: "opacity",
-                    }}
-                    transition={{
-                      duration: 0.6,
-                      ease: "easeInOut",
-                    }}
-                  />
-                ))}
-              </div>
-              <div /> {/* Empty right column */}
-            </div>
-
-          </div>
-        </div>
-
-        {/* SCROLLING LAYER: Contains only the text */}
-        <div className="grid grid-cols-[3fr_2fr] gap-6 items-start relative z-20 pointer-events-none w-full">
-          <div /> {/* Empty left column */}
+      <div className="hidden md:block relative w-full h-full">
+        {/* STICKY LAYER */}
+        <div className="sticky top-[96px] w-full min-h-[calc(100vh-96px)] flex flex-col justify-center pointer-events-auto pb-16">
           
-          <div className="pointer-events-auto" style={{ paddingTop: `${dynamicPt}px`, paddingBottom: `${dynamicPb}px` }}>
-            <div className="space-y-[220px]">
+          {/* Header */}
+          <div className="bg-[#f7f7f9] text-center px-4 pb-12 pt-8 w-full flex flex-col justify-center">
+            {title && (
+              <h2 className="text-[44px] font-black text-gray-900 tracking-tight leading-[1.15]">
+                {title}
+              </h2>
+            )}
+            {subtitle && (
+              <p className="text-gray-500 mt-3 text-lg max-w-2xl mx-auto leading-relaxed">
+                {subtitle}
+              </p>
+            )}
+          </div>
+
+          {/* Content Grid */}
+          <div className="grid grid-cols-[3fr_2fr] gap-8 items-stretch w-full px-8 max-w-[1400px] mx-auto">
+            {/* Left: Images */}
+            <div className="relative w-full overflow-hidden rounded-[24px] shadow-xl bg-gray-100" style={{ aspectRatio: '16/10' }}>
               {items.map((item, index) => (
-                <ScrollItem
-                  key={`${item.title}-${index}`}
-                  item={item}
-                  index={index}
-                  setActive={setActiveIndex}
-                  isLast={index === items.length - 1}
-                />
+                <ScrubbedItem key={`img-${index}`} item={item} index={index} total={items.length} progress={scrollYProgress} isImage />
+              ))}
+            </div>
+            
+            {/* Right: Text */}
+            <div className="relative w-full h-full">
+              {items.map((item, index) => (
+                <ScrubbedItem key={`txt-${index}`} item={item} index={index} total={items.length} progress={scrollYProgress} />
               ))}
             </div>
           </div>
+          
         </div>
-
       </div>
     </div>
   );
