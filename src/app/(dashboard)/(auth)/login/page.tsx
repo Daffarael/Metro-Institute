@@ -133,7 +133,7 @@ export default function LoginPage() {
         />
 
         <div className="hero register">
-          <img src="/images/logo.jpg" alt="Metro Institute" className="hero-logo" />
+          <img src="/logo-metro-clean.png" alt="Metro Institute" className="hero-logo" />
           <h2>Mulai Karir</h2>
           <p>Bergabung dengan Metro Institute hari ini dan bangun karir impianmu.</p>
           <button type="button" className="switch" onClick={() => setIsRegister(false)}>
@@ -197,7 +197,7 @@ export default function LoginPage() {
         </div>
 
         <div className="hero login">
-          <img src="/images/logo.jpg" alt="Metro Institute" className="hero-logo" />
+          <img src="/logo-metro-clean.png" alt="Metro Institute" className="hero-logo" />
           <h2>Selamat Datang</h2>
           <p>Masuk untuk melanjutkan pembelajaran Anda hari ini.</p>
           <button type="button" className="switch" onClick={() => setIsRegister(true)}>
