@@ -536,10 +536,10 @@ export default function AdminHomepageManagerPage() {
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 12 }}>
                         <div>
                           <FieldLabel label="Tipe Program" />
-                          <CleanCombobox width={240} allowClear={false} value={item.type || (serviceItems.length > 0 ? (serviceItems[0]?.heading?.toUpperCase() ?? "BOOTCAMP") : "")}
+                          <CleanCombobox width={240} allowClear={false} value={serviceItems.length === 0 ? "" : (item.type || (serviceItems[0]?.heading?.toUpperCase() ?? "BOOTCAMP"))}
                             onChange={v => updateProgramItem(idx, "type", v)}
                             options={serviceItems.length > 0 ? serviceItems.map(s => ({ value: (s.heading || "").toUpperCase(), label: s.heading || "Untitled" })) : [{ value: "", label: "⚠️ Isi data layanan dulu!" }]}
-                            placeholder={serviceItems.length > 0 ? "Pilih Tipe Program..." : "Isi Layanan terlebih dahulu"}
+                            placeholder={serviceItems.length > 0 ? "Pilih Tipe Program..." : "⚠️ Isi Layanan terlebih dahulu"}
                           />
                         </div>
                         <div>
