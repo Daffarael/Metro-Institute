@@ -122,8 +122,14 @@ export default function SkillTestPage() {
       }}>
         {/* Logo */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 48 }}>
-          <div className="w-8 h-8 bg-zinc-900 rounded-lg flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-white"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+          <div style={{
+            width: 32, height: 32,
+            borderRadius: 8, overflow: 'hidden',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'var(--color-primary-light)',
+            border: '1px solid var(--border-color)'
+          }}>
+            <img src="/images/logo.jpg" alt="Metro Institute" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
           <span style={{ fontWeight: 700, fontSize: 15, letterSpacing: '-0.02em', color: '#111' }}>Metro Institute</span>
         </div>
