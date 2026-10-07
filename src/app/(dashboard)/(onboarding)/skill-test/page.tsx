@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { motion } from 'motion/react'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import api from '@/lib/axios'
@@ -183,19 +184,19 @@ export default function SkillTestPage() {
             </p>
           </div>
 
-          <button
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => setShowIntro(false)}
             style={{
               width: '100%', height: 50, background: 'var(--color-primary)',
               color: '#ffffff', border: 'none', borderRadius: 14,
               fontSize: 15, fontWeight: 700, cursor: 'pointer',
-              letterSpacing: '-0.01em', transition: 'opacity 0.2s',
+              letterSpacing: '-0.01em',
             }}
-            onMouseEnter={e => (e.currentTarget as HTMLElement).style.opacity = '0.85'}
-            onMouseLeave={e => (e.currentTarget as HTMLElement).style.opacity = '1'}
           >
-            Mulai Test &rarr;
-          </button>
+            Mulai Test
+          </motion.button>
         </div>
       </div>
     )
