@@ -145,40 +145,7 @@ export default function SkillTestResultPage() {
           </div>
         )}
 
-        <div style={{ height: 1, background: '#eaeaea', width: '100%', margin: '0 0 40px 0' }} />
 
-        {/* All Scores (Minimalist layout) */}
-
-
-        {/* Alternative options */}
-        {!result.tiedFields && (
-          <div>
-             <h3 style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', color: '#aaa', marginBottom: 16 }}>
-              Atau pilih jalur lain
-            </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {fields.slice(1).map(([field]) => (
-                <button
-                  key={field}
-                  onClick={() => selectFieldMutation.mutate(field)}
-                  disabled={selectFieldMutation.isPending}
-                  style={{
-                    background: 'transparent',
-                    border: '1px solid #eaeaea',
-                    borderRadius: 10, padding: '14px 16px',
-                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                    cursor: 'pointer', textAlign: 'left',
-                    transition: 'all 0.2s',
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget as HTMLElement).style.borderColor = '#ccc'}
-                  onMouseLeave={(e) => (e.currentTarget as HTMLElement).style.borderColor = '#eaeaea'}
-                >
-                  <span style={{ fontSize: 14, fontWeight: 500, color: '#333' }}>{FIELD_LABELS[field]}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
 
       </div>
     </div>
