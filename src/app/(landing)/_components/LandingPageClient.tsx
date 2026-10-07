@@ -1,4 +1,4 @@
-/* eslint-disable @next/next/no-img-element */
+﻿/* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
@@ -130,68 +130,69 @@ export default function LandingPageClient({
       <section className="relative min-h-screen w-full bg-[#181C2A] overflow-hidden flex flex-col">
 
         {/* Background photo ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â right half only */}
-        <div className="absolute right-0 top-0 w-1/2 h-full z-0">
+        {/* Mobile: full-width background. Desktop: right-half only */}
+        <div className="absolute inset-0 md:inset-auto md:right-0 md:top-0 md:w-1/2 md:h-full z-0">
           <img
             src={heroBackgroundImage}
             alt="Hero Background"
             className="w-full h-full object-cover object-center"
           />
-          {/* dark gradient blending left edge into bg */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#181C2A] via-[#181C2A]/60 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#181C2A]/40 to-[#181C2A]/80" />
+          {/* Mobile: heavy dark overlay so text stays readable */}
+          <div className="absolute inset-0 bg-[#181C2A]/80 md:hidden" />
+          {/* Desktop: gradient blending */}
+          <div className="absolute inset-0 hidden md:block bg-gradient-to-r from-[#181C2A] via-[#181C2A]/60 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#181C2A]/30 to-[#181C2A]/70" />
         </div>
 
         {/* Content */}
         <motion.div
           style={{ opacity: heroTextOpacity, y: heroTextY }}
-          className="relative z-10 flex-1 flex flex-col justify-center max-w-7xl mx-auto px-6 md:px-12 w-full pt-28 pb-16"
+          className="relative z-10 flex-1 flex flex-col justify-center max-w-7xl mx-auto px-5 md:px-12 w-full pt-24 md:pt-28 pb-16"
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-center">
 
             {/* Left ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â Headline & CTA */}
             <motion.div
-              initial={{ opacity: 0, x: -40 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-              className="flex flex-col gap-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, ease: "easeOut" }}
+              className="flex flex-col gap-4 md:gap-6 text-center md:text-left"
             >
               {/* Badge */}
               {config['hero_badge_text'] && (
-                <div className="inline-flex w-fit items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm">
+                <div className="inline-flex w-fit mx-auto md:mx-0 items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm">
                   <span className="w-1.5 h-1.5 rounded-full bg-white/60" />
-                  <span className="text-white/80 text-[11px] font-semibold tracking-widest uppercase">
+                  <span className="text-white/80 text-[10px] font-semibold tracking-widest uppercase">
                     {config['hero_badge_text']}
                   </span>
                 </div>
               )}
 
-              {/* Headline */}
+              {/* Headline - always visible with fallback */}
               <h1
-                className="text-[42px] md:text-[58px] lg:text-[68px] font-extrabold text-white leading-[1.05] tracking-[-0.025em]"
-                dangerouslySetInnerHTML={{ __html: config['hero_title'] || '' }}
+                className="text-[30px] sm:text-[40px] md:text-[52px] lg:text-[64px] font-extrabold text-white leading-[1.08] tracking-[-0.02em]"
+                dangerouslySetInnerHTML={{ __html: config['hero_title'] || 'BUILD SKILLS.<br/>BUILD YOUR<br/>CAREER.' }}
               />
 
-              {/* Subtitle */}
+              {/* Subtitle - always visible with fallback */}
               <p
-                className="text-white/60 text-[14px] md:text-[16px] leading-relaxed max-w-md"
-                dangerouslySetInnerHTML={{ __html: config['hero_subtitle'] || '' }}
+                className="text-white/70 text-[13px] md:text-[15px] leading-relaxed max-w-xs sm:max-w-sm mx-auto md:mx-0"
+                dangerouslySetInnerHTML={{ __html: config['hero_subtitle'] || 'Platform digital skills untuk UI/UX, Frontend, Backend, dan Mobile Development.' }}
               />
 
-              {/* CTA */}
-              {config['hero_cta_label'] && (
-                <div className="flex items-center gap-4 flex-wrap pt-2">
-                  <a
-                    href="/register"
-                    className="inline-flex items-center gap-2 h-12 px-7 rounded-full bg-[#22222E] text-white text-[13px] font-bold hover:bg-[#16161F] transition-colors shadow-[0_8px_32px_rgba(1,133,86,0.35)]"
-                  >
-                    {config['hero_cta_label']}
-                    <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
-                  </a>
-                  <a href="/login" className="text-white/50 text-[13px] font-medium hover:text-white transition-colors">
-                    Sudah punya akun ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢
-                  </a>
-                </div>
-              )}
+              {/* CTA - always shows with fallback */}
+              <div className="flex flex-col sm:flex-row items-center gap-3 pt-1 md:pt-2">
+                <a
+                  href="/register"
+                  className="inline-flex items-center justify-center gap-2 h-12 px-7 w-full sm:w-auto rounded-full bg-white text-[#181C2A] text-[13px] font-bold hover:bg-white/90 transition-colors shadow-lg"
+                >
+                  {config['hero_cta_label'] || 'Daftar Sekarang'}
+                  <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+                </a>
+                <a href="/login" className="text-white/60 text-[13px] font-medium hover:text-white transition-colors">
+                  Sudah punya akun &rarr;
+                </a>
+              </div>
             </motion.div>
           </div>
         </motion.div>
