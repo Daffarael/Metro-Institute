@@ -160,12 +160,11 @@
 }
 
 .login-10 .hero-logo {
-  width: 200px;
-  height: 200px;
-  object-fit: contain;
-  filter: brightness(0) invert(1);
-  opacity: 0.95;
-  margin-bottom: 8px;
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 24px;
 }
 
 .login-10 .card h2 {
@@ -406,6 +405,10 @@
   line-height: 12px;
   white-space: pre-wrap;
   margin-top: 0;
+}
+
+.login-10 .mobile-switch {
+  display: none;
 }
 
 /* ─── Mobile responsive ─── */

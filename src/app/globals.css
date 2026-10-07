@@ -76,15 +76,17 @@ a:hover { color: var(--color-primary-dark); }
 
 img { display: block; max-width: 100%; }
 
-button {
-  font-family: inherit;
-  cursor: pointer;
-  border: none;
-  background: none;
-  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.15s, background-color 0.15s;
-}
-button:active {
-  transform: scale(0.96);
+@layer base {
+  button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    background: none;
+    transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.15s, background-color 0.15s;
+  }
+  button:active {
+    transform: scale(0.96);
+  }
 }
 
 input, textarea, select {
