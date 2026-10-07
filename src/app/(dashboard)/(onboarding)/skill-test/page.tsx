@@ -218,7 +218,15 @@ export default function SkillTestPage() {
         alignItems: 'center', gap: '24px', maxWidth: 800, margin: '0 auto', width: '100%'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
-          <img src="/logo-metro-clean.png" alt="Metro Logo" style={{ width: 28, height: 28, borderRadius: 6, objectFit: 'cover' }} />
+          <div style={{
+            width: 28, height: 28,
+            borderRadius: 6, overflow: 'hidden',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'var(--color-primary-light)',
+            border: '1px solid var(--border-color)'
+          }}>
+            <img src="/images/logo.jpg" alt="Metro Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          </div>
         </div>
         
         {/* Progress */}
@@ -235,7 +243,7 @@ export default function SkillTestPage() {
             </span>
           </div>
           <div style={{ height: 4, background: '#e5e5e5', borderRadius: 99, overflow: 'hidden' }}>
-            <div style={{ width: `${progress}%`, height: '100%', background: '#111', borderRadius: 99, transition: 'width 0.4s cubic-bezier(0.4, 0, 0.2, 1)' }} />
+            <div style={{ width: `${progress}%`, height: '100%', background: 'var(--color-primary)', borderRadius: 99, transition: 'width 0.4s cubic-bezier(0.4, 0, 0.2, 1)' }} />
           </div>
         </div>
       </header>
@@ -278,34 +286,26 @@ export default function SkillTestPage() {
             {question.options.map((option) => {
               const isSelected = answers[question.id] === option.id
               return (
-                <button
+                <motion.button
                   key={option.id}
+                  whileHover={(!isTransitioning && !submitMutation.isPending && !isSelected) ? { scale: 1.01, borderColor: '#ccc' } : {}}
+                  whileTap={(!isTransitioning && !submitMutation.isPending) ? { scale: 0.99 } : {}}
                   onClick={() => handleAnswer(question.id, option.id)}
                   disabled={isTransitioning || submitMutation.isPending}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 16,
                     padding: '16px 20px',
-                    background: '#fff',
-                    border: isSelected ? '2px solid #111' : '1px solid #e8e8e8',
+                    background: isSelected ? 'var(--color-primary-xlight)' : '#fff',
+                    border: isSelected ? '2px solid var(--color-primary)' : '1px solid #e8e8e8',
                     borderRadius: 16,
                     cursor: isTransitioning ? 'default' : 'pointer',
                     textAlign: 'left', transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                     outline: 'none',
                   }}
-                  onMouseEnter={(e) => {
-                    if (!isSelected && !isTransitioning) {
-                      (e.currentTarget as HTMLElement).style.borderColor = '#ccc';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isSelected) {
-                      (e.currentTarget as HTMLElement).style.borderColor = '#e8e8e8';
-                    }
-                  }}
                 >
                   <div style={{
                     width: 32, height: 32,
-                    background: isSelected ? '#111' : '#f4f4f4',
+                    background: isSelected ? 'var(--color-primary)' : '#f4f4f4',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     borderRadius: 10,
                     flexShrink: 0, transition: 'all 0.2s ease',
@@ -316,7 +316,7 @@ export default function SkillTestPage() {
                   </div>
                   <span style={{
                     fontSize: 16, fontWeight: isSelected ? 600 : 500,
-                    color: isSelected ? '#111' : '#444',
+                    color: isSelected ? 'var(--color-primary-dark)' : '#444',
                     lineHeight: 1.5,
                   }}>
                     {option.text}
