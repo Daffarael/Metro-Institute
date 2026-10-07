@@ -27,8 +27,8 @@ function ScrubbedItem({
   progress: MotionValue<number>;
   isImage?: boolean;
 }) {
-  const peak = index / (total - 1);
-  const distance = 1 / (total - 1);
+  const peak = total > 1 ? index / (total - 1) : 0.5;
+  const distance = total > 1 ? 1 / (total - 1) : 1;
   const crossfadeHalf = distance * 0.25;
 
   const fadeInStart = peak - distance + crossfadeHalf;
@@ -38,8 +38,8 @@ function ScrubbedItem({
 
   const opacity = useTransform(
     progress,
-    [fadeInStart, fadeInEnd, fadeOutStart, fadeOutEnd],
-    [0, 1, 1, 0]
+    total > 1 ? [fadeInStart, fadeInEnd, fadeOutStart, fadeOutEnd] : [0, 0, 1, 1],
+    total > 1 ? [0, 1, 1, 0] : [1, 1, 1, 1]
   );
   
   if (isImage) {
