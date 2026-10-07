@@ -76,7 +76,12 @@ export default function LoginPage() {
         router.push(res.data.user.skillTestDone ? ROUTES.BASECAMP : ROUTES.SKILL_TEST)
       }
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || 'Gagal login.')
+      const data = err?.response?.data
+      if (data?.errors && data.errors.length > 0) {
+        toast.error(`${data.message}: ${data.errors[0].message}`)
+      } else {
+        toast.error(data?.message || 'Gagal login.')
+      }
     }
   }
 
@@ -86,7 +91,12 @@ export default function LoginPage() {
       toast.success('Pendaftaran berhasil! Silakan masuk.')
       setIsRegister(false)
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || 'Gagal mendaftar.')
+      const data = err?.response?.data
+      if (data?.errors && data.errors.length > 0) {
+        toast.error(`${data.message}: ${data.errors[0].message}`)
+      } else {
+        toast.error(data?.message || 'Gagal mendaftar.')
+      }
     }
   }
 
