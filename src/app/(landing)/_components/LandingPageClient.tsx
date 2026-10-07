@@ -130,7 +130,7 @@ export default function LandingPageClient({
       <section className="relative min-h-screen w-full bg-[#181C2A] overflow-hidden flex flex-col">
 
         {/* Background photo ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â right half only */}
-        <div className="absolute right-0 top-0 w-1/2 h-full z-0">
+        <div className="absolute right-0 top-0 w-full md:w-1/2 h-full z-0">
           <img
             src={heroBackgroundImage}
             alt="Hero Background"
@@ -139,12 +139,14 @@ export default function LandingPageClient({
           {/* dark gradient blending left edge into bg */}
           <div className="absolute inset-0 bg-gradient-to-r from-[#181C2A] via-[#181C2A]/60 to-transparent" />
           <div className="absolute inset-0 bg-gradient-to-b from-[#181C2A]/40 to-[#181C2A]/80" />
+          {/* Mobile: extra overlay so text is readable over full-bg image */}
+          <div className="absolute inset-0 bg-[#181C2A]/60 md:hidden" />
         </div>
 
         {/* Content */}
         <motion.div
           style={{ opacity: heroTextOpacity, y: heroTextY }}
-          className="relative z-10 flex-1 flex flex-col justify-center max-w-7xl mx-auto px-6 md:px-12 w-full pt-28 pb-16"
+          className="relative z-10 flex-1 flex flex-col justify-center max-w-7xl mx-auto px-5 md:px-12 w-full pt-20 md:pt-28 pb-16"
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center">
 
@@ -167,13 +169,13 @@ export default function LandingPageClient({
 
               {/* Headline */}
               <h1
-                className="text-[42px] md:text-[58px] lg:text-[68px] font-extrabold text-white leading-[1.05] tracking-[-0.025em]"
+                className="text-[28px] sm:text-[38px] md:text-[52px] lg:text-[64px] font-extrabold text-white leading-[1.08] tracking-[-0.02em]"
                 dangerouslySetInnerHTML={{ __html: config['hero_title'] || '' }}
               />
 
               {/* Subtitle */}
               <p
-                className="text-white/60 text-[14px] md:text-[16px] leading-relaxed max-w-md"
+                className="text-white/70 text-[13px] md:text-[15px] leading-relaxed max-w-sm md:max-w-md"
                 dangerouslySetInnerHTML={{ __html: config['hero_subtitle'] || '' }}
               />
 
@@ -388,7 +390,7 @@ export default function LandingPageClient({
         </div>
 
         {/* Curved Boundary */}
-        <div className="absolute bottom-0 inset-x-0 z-20 pointer-events-none transform translate-y-[1px]">
+        <div className="hidden md:block absolute bottom-0 inset-x-0 z-20 pointer-events-none transform translate-y-[1px]">
           <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" className="w-full h-[40px] md:h-[80px]">
             <path d="M0 100 V 50 C 360 50, 600 0, 720 0 C 840 0, 1080 50, 1440 50 V 100 H 0 Z" fill="#f7f7f9" />
           </svg>
@@ -400,7 +402,7 @@ export default function LandingPageClient({
       ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢Ãƒâ€šÃ‚Â */}
       <section className="bg-[#f7f7f9] relative">
 
-        <div className="relative pt-[96px] bg-[#f7f7f9]">
+        <div className="relative md:pt-[96px] bg-[#f7f7f9]">
 
           {(() => {
             const DEFAULT_PORTFOLIO = [
@@ -417,7 +419,7 @@ export default function LandingPageClient({
             } catch { /* keep defaults */ }
 
             return (
-              <div className="max-w-6xl w-full mx-auto px-6 md:px-12" style={{ position: 'relative', zIndex: 10 }}>
+              <div className="max-w-6xl w-full mx-auto md:px-12" style={{ position: 'relative', zIndex: 10 }}>
                 <Scroll01 
                   items={portfolioItems}
                   title={config['portfolio_title'] || undefined}
@@ -473,53 +475,58 @@ export default function LandingPageClient({
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: false, amount: 0.1 }}
             transition={{ duration: 0.6 }}
-            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 mb-16"
+            className="flex flex-col gap-10 md:grid md:grid-cols-3 lg:grid-cols-6 md:gap-8 mb-16"
           >
-            {/* Brand Column (Left) */}
-            <div className="col-span-2 lg:col-span-3">
-              <Link href="/" className="inline-block mb-5">
-                <h3 className="font-bold text-white text-[14px]">Metro Institute</h3>
+            {/* Brand Column */}
+            <div className="md:col-span-2 lg:col-span-3">
+              <Link href="/" className="inline-block mb-4">
+                <h3 className="font-bold text-white text-[15px]">Metro Institute</h3>
               </Link>
-              <p className="text-[13px] leading-relaxed text-[rgba(255,255,255,0.55)] max-w-[250px] font-medium">
+              <p className="text-[13px] leading-relaxed text-[rgba(255,255,255,0.55)] max-w-[260px] font-medium">
                 {config['footer_brand_desc'] ?? ''}
               </p>
             </div>
 
-            {/* Dynamic Layanan Links (Auto-generated from Services) */}
-            <div>
-              <h3 className="font-bold text-white mb-5 text-[14px]">Layanan</h3>
-              <ul className="space-y-3">
-                {servicesItems.map((s: any, idx: number) => (
-                  <li key={idx}>
-                    <Link href="/login" className="text-[13px] font-medium text-[rgba(255,255,255,0.55)] hover:text-white transition-colors">
-                      {s.heading}
-                    </Link>
+            {/* Layanan + Kontak side-by-side on mobile, separate on md+ */}
+            <div className="grid grid-cols-2 gap-8 md:contents">
+
+              {/* Layanan */}
+              <div>
+                <h3 className="font-bold text-white mb-4 text-[14px]">Layanan</h3>
+                <ul className="space-y-3">
+                  {servicesItems.map((s: any, idx: number) => (
+                    <li key={idx}>
+                      <Link href="/login" className="text-[13px] font-medium text-[rgba(255,255,255,0.55)] hover:text-white transition-colors">
+                        {s.heading}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Kontak */}
+              <div>
+                <h3 className="font-bold text-white mb-4 text-[14px]">Kontak</h3>
+                <ul className="space-y-3">
+                  <li>
+                    <a 
+                      href={config['whatsapp_number'] ? `https://wa.me/${config['whatsapp_number']}` : '#'} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-[13px] font-medium text-[rgba(255,255,255,0.55)] hover:text-white transition-colors"
+                    >
+                      <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M11.996 0c-6.627 0-11.996 5.373-11.996 11.997 0 2.148.568 4.168 1.558 5.922l-1.558 5.679 5.811-1.527c1.696.88 3.614 1.385 5.626 1.385 6.627 0 11.996-5.372 11.996-11.996 0-6.624-5.369-11.997-11.996-11.997zm6.505 17.26c-.282.793-1.636 1.488-2.28 1.556-.605.064-1.383.153-4.526-1.149-3.774-1.564-6.196-5.438-6.386-5.69-.188-.25-1.528-2.036-1.528-3.882 0-1.847.962-2.756 1.306-3.136.344-.378.75-.472 1-.472.25 0 .5.002.718.012.23.01.536-.089.839.641.313.754 1.063 2.593 1.156 2.783.094.188.156.408.031.658-.125.25-.188.408-.375.627-.188.219-.395.485-.563.642-.187.172-.387.36-.172.722.219.362.973 1.593 2.086 2.589 1.439 1.285 2.64 1.681 3.016 1.853.375.172.593.14.812-.11.219-.25.938-1.093 1.188-1.468.25-.375.5-.312.844-.188.344.125 2.188 1.031 2.563 1.219.375.188.625.281.719.438.093.156.093.906-.188 1.699z"/></svg>
+                      WhatsApp
+                    </a>
                   </li>
-                ))}
-              </ul>
+                </ul>
+              </div>
+
             </div>
 
-            {/* Kontak Column */}
+            {/* Socials */}
             <div>
-              <h3 className="font-bold text-white mb-5 text-[14px]">Kontak</h3>
-              <ul className="space-y-3">
-                <li>
-                  <a 
-                    href={config['whatsapp_number'] ? `https://wa.me/${config['whatsapp_number']}` : '#'} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-[13px] font-medium text-[rgba(255,255,255,0.55)] hover:text-white transition-colors"
-                  >
-                    <span className="sr-only">WhatsApp</span>
-                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M11.996 0c-6.627 0-11.996 5.373-11.996 11.997 0 2.148.568 4.168 1.558 5.922l-1.558 5.679 5.811-1.527c1.696.88 3.614 1.385 5.626 1.385 6.627 0 11.996-5.372 11.996-11.996 0-6.624-5.369-11.997-11.996-11.997zm6.505 17.26c-.282.793-1.636 1.488-2.28 1.556-.605.064-1.383.153-4.526-1.149-3.774-1.564-6.196-5.438-6.386-5.69-.188-.25-1.528-2.036-1.528-3.882 0-1.847.962-2.756 1.306-3.136.344-.378.75-.472 1-.472.25 0 .5.002.718.012.23.01.536-.089.839.641.313.754 1.063 2.593 1.156 2.783.094.188.156.408.031.658-.125.25-.188.408-.375.627-.188.219-.395.485-.563.642-.187.172-.387.36-.172.722.219.362.973 1.593 2.086 2.589 1.439 1.285 2.64 1.681 3.016 1.853.375.172.593.14.812-.11.219-.25.938-1.093 1.188-1.468.25-.375.5-.312.844-.188.344.125 2.188 1.031 2.563 1.219.375.188.625.281.719.438.093.156.093.906-.188 1.699z"/></svg>
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            {/* Socials Column (Right) */}
-            <div>
-              <h3 className="font-bold text-white mb-5 text-[14px]">Ikuti Kami:</h3>
+              <h3 className="font-bold text-white mb-4 text-[14px]">Ikuti Kami</h3>
               <div className="flex items-center gap-4">
                 {config['facebook_url'] && (
                   <a href={config['facebook_url']} className="text-[rgba(255,255,255,0.55)] hover:text-white transition-colors">
@@ -542,6 +549,7 @@ export default function LandingPageClient({
               </div>
             </div>
           </motion.div>
+
         </div>
 
         {/* GIANT WATERMARK TEXT (Like "AI Business") */}
@@ -552,7 +560,7 @@ export default function LandingPageClient({
           transition={{ duration: 1 }}
           className="w-full flex justify-center mt-10 md:mt-16 px-4 select-none pointer-events-none overflow-hidden"
         >
-          <h2 className="text-[16vw] md:text-[14vw] font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white/20 to-transparent whitespace-nowrap leading-[0.75]">
+          <h2 className="text-[14vw] font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white/20 to-transparent whitespace-nowrap leading-[0.75]">
             Metro Institute
           </h2>
         </motion.div>
