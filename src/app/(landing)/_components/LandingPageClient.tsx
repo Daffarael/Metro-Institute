@@ -412,18 +412,27 @@ export default function LandingPageClient({
               { media: "https://images.unsplash.com/photo-1526040652367-600053e045cb?auto=format&fit=crop&q=80&w=1200", title: "AI Support Agent UI",       description: "Oleh Rina (Alumni Bootcamp Batch 6)" },
               { media: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=1200", title: "Fintech CRM Tool",          description: "Oleh Dimas (Alumni Bootcamp Batch 4)" },
             ]
-            let portfolioItems = DEFAULT_PORTFOLIO
-            try {
-              const parsed = JSON.parse(config['portfolio_items'] || '[]')
-              if (Array.isArray(parsed) && parsed.length > 0) {
-                portfolioItems = parsed.map((item: any) => ({
-                  ...item,
-                  media: item.media && item.media.includes('localhost') 
-                    ? 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=1200' 
-                    : item.media
-                }))
-              }
-            } catch { /* keep defaults */ }
+            const FALLBACK_IMGS = [
+                'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=1200',
+                'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=1200',
+                'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=1200',
+                'https://images.unsplash.com/photo-1526040652367-600053e045cb?auto=format&fit=crop&q=80&w=1200',
+                'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=1200',
+              ]
+              let portfolioItems = DEFAULT_PORTFOLIO
+              try {
+                const parsed = JSON.parse(config['portfolio_items'] || '[]')
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                  portfolioItems = parsed.map((item: any, idx: number) => {
+                    const raw: string = item.media || ''
+                    const isValid = raw.startsWith('http') && !raw.includes('localhost')
+                    return {
+                      ...item,
+                      media: isValid ? raw : FALLBACK_IMGS[idx % FALLBACK_IMGS.length],
+                    }
+                  })
+                }
+              } catch { /* keep defaults */ }
 
             return (
               <div className="max-w-6xl w-full mx-auto md:px-12" style={{ position: 'relative', zIndex: 10 }}>
