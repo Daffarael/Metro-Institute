@@ -56,12 +56,14 @@ export default function LoginPage() {
   const {
     register: regLogin,
     handleSubmit: handleLoginSubmit,
+    setError: setLoginError,
     formState: { errors: loginErrors, isSubmitting: isLoginSubmitting },
   } = useForm<LoginForm>({ resolver: zodResolver(loginSchema) })
 
   const {
     register: regSignup,
     handleSubmit: handleSignupSubmit,
+    setError: setSignupError,
     formState: { errors: signupErrors, isSubmitting: isSignupSubmitting },
   } = useForm<RegisterForm>({ resolver: zodResolver(registerSchema) })
 
@@ -78,7 +80,17 @@ export default function LoginPage() {
     } catch (err: any) {
       const data = err?.response?.data
       if (data?.errors && data.errors.length > 0) {
-        toast.error(`${data.message}: ${data.errors[0].message}`)
+        data.errors.forEach((e: any) => {
+          if (['email', 'password'].includes(e.field)) {
+            setLoginError(e.field as any, { type: 'server', message: e.message })
+          } else {
+            toast.error(e.message)
+          }
+        })
+      } else if (data?.message?.toLowerCase().includes('email')) {
+        setLoginError('email', { type: 'server', message: data.message })
+      } else if (data?.message?.toLowerCase().includes('password') || data?.message?.toLowerCase().includes('sandi')) {
+        setLoginError('password', { type: 'server', message: data.message })
       } else {
         toast.error(data?.message || 'Gagal login.')
       }
@@ -93,7 +105,18 @@ export default function LoginPage() {
     } catch (err: any) {
       const data = err?.response?.data
       if (data?.errors && data.errors.length > 0) {
-        toast.error(`${data.message}: ${data.errors[0].message}`)
+        // Map backend validation errors directly to the form fields
+        data.errors.forEach((e: any) => {
+          if (['name', 'email', 'phone', 'password'].includes(e.field)) {
+            setSignupError(e.field as any, { type: 'server', message: e.message })
+          } else {
+            toast.error(e.message)
+          }
+        })
+      } else if (data?.message?.includes('sudah terdaftar')) {
+        // Map conflicts back to email/phone
+        setSignupError('email', { type: 'server', message: data.message })
+        setSignupError('phone', { type: 'server', message: data.message })
       } else {
         toast.error(data?.message || 'Gagal mendaftar.')
       }
