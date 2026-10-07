@@ -36,7 +36,7 @@ function ScrollItem({
 
   const { scrollYProgress } = useScroll({
     target: ref,
-    offset: ["start 580px", "start 247px"],
+    offset: ["start 65%", "start 35%"],
   });
 
   const opacityValues = index === 0 ? [1, 1, 1, 0] : isLast ? [0, 0, 1, 1] : [0, 1, 1, 0];
@@ -116,7 +116,7 @@ function MobileScrollItem({
 export function Scroll01({ items, title, subtitle }: Readonly<Scroll01Props>) {
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const stickyRef = useRef<HTMLDivElement>(null);
-  const [dynamicPb, setDynamicPb] = useState(155);
+  const [dynamicPt, setDynamicPt] = useState(290); const [dynamicPb, setDynamicPb] = useState(155); const headerRef = useRef<HTMLDivElement>(null); const imageRef = useRef<HTMLDivElement>(null);
   const mobileWrapperRef = useRef<HTMLDivElement>(null);
 
   // Mobile: track scroll progress within the tall wrapper to drive activeIndex
@@ -131,17 +131,30 @@ export function Scroll01({ items, title, subtitle }: Readonly<Scroll01Props>) {
   });
 
   useEffect(() => {
-    const calculatePb = () => {
-      if (stickyRef.current) {
-        const h = stickyRef.current.offsetHeight;
-        const calculatedPb = h - 354;
-        setDynamicPb(calculatedPb > 0 ? calculatedPb : 155);
+    const calculatePaddings = () => {
+      if (headerRef.current && imageRef.current) {
+        const headerH = headerRef.current.offsetHeight;
+        const imageH = imageRef.current.offsetHeight;
+        const textH = 150; // Estimated height of text block
+
+        // Find the center of the image relative to the sticky container
+        const centerOffset = headerH + (imageH / 2);
+
+        // For the first item, we need its center to be at centerOffset
+        const pt = centerOffset - (textH / 2);
+        setDynamicPt(pt > 0 ? pt : 0);
+
+        // For the last item, we need its center to be at centerOffset when container is fully scrolled
+        // The distance from the bottom of sticky container to the image center is imageH / 2
+        const pb = (imageH / 2) - (textH / 2);
+        setDynamicPb(pb > 0 ? pb : 0);
       }
     };
-    calculatePb();
-    window.addEventListener('resize', calculatePb);
-    return () => window.removeEventListener('resize', calculatePb);
-  }, []);
+    // Add a slight delay to ensure DOM is fully rendered before calculation
+    setTimeout(calculatePaddings, 100);
+    window.addEventListener('resize', calculatePaddings);
+    return () => window.removeEventListener('resize', calculatePaddings);
+  }, [items]);
 
   return (
     <div className="relative w-full">
@@ -236,7 +249,7 @@ export function Scroll01({ items, title, subtitle }: Readonly<Scroll01Props>) {
           <div ref={stickyRef} className="sticky top-[96px] pointer-events-auto flex flex-col w-full">
             
             {/* Header */}
-            <div className="bg-[#f7f7f9] text-center px-4 pb-8 relative w-full min-h-[130px] flex flex-col justify-center">
+            <div ref={headerRef} className="bg-[#f7f7f9] text-center px-4 pb-8 relative w-full min-h-[130px] flex flex-col justify-center">
                 {title && (
                   <h2 className="text-[44px] font-black text-gray-900 tracking-tight leading-[1.15]">
                     {title}
@@ -252,7 +265,7 @@ export function Scroll01({ items, title, subtitle }: Readonly<Scroll01Props>) {
 
             {/* Image Grid */}
             <div className="grid grid-cols-[3fr_2fr] gap-6 items-start w-full">
-              <div className="relative w-full overflow-hidden rounded-[24px] shadow-xl bg-gray-100" style={{ aspectRatio: '16/10' }}>
+              <div ref={imageRef} className="relative w-full overflow-hidden rounded-[24px] shadow-xl bg-gray-100" style={{ aspectRatio: '16/10' }}>
                 {items.map((item, index) => (
                   <motion.img
                     key={`${item.title}-${index}`}
@@ -281,7 +294,7 @@ export function Scroll01({ items, title, subtitle }: Readonly<Scroll01Props>) {
         <div className="grid grid-cols-[3fr_2fr] gap-6 items-start relative z-20 pointer-events-none w-full">
           <div /> {/* Empty left column */}
           
-          <div className="pt-[290px] pointer-events-auto" style={{ paddingBottom: `${dynamicPb}px` }}>
+          <div className="pointer-events-auto" style={{ paddingTop: `${dynamicPt}px`, paddingBottom: `${dynamicPb}px` }}>
             <div className="space-y-[220px]">
               {items.map((item, index) => (
                 <ScrollItem
