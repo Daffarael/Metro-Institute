@@ -28,7 +28,10 @@ const registerSchema = z.object({
     .min(9, 'Nomor WhatsApp minimal 9 digit')
     .max(15, 'Nomor WhatsApp terlalu panjang')
     .regex(/^[0-9+]+$/, 'Hanya boleh angka dan tanda +'),
-  password: z.string().min(6, 'Password min 6 karakter'),
+  password: z.string().min(8, 'Password min 8 karakter')
+    .regex(/[A-Z]/, 'Harus ada huruf besar')
+    .regex(/[a-z]/, 'Harus ada huruf kecil')
+    .regex(/[0-9]/, 'Harus ada angka'),
 })
 type RegisterForm = z.infer<typeof registerSchema>
 
