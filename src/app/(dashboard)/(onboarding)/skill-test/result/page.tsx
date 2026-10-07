@@ -93,57 +93,33 @@ export default function SkillTestResultPage() {
               Potensimu Seimbang
             </h1>
             <p style={{ fontSize: 15, color: '#555', lineHeight: 1.6, margin: '0 auto', maxWidth: 380 }}>
-              Skor tertinggimu seri di beberapa bidang. Silakan pilih jalur yang paling sesuai dengan minat utamamu saat ini.
+              Skor analisismu menunjukkan kecocokan pada beberapa bidang sekaligus. Jelajahi Basecamp untuk menemukan minat utamamu.
             </p>
           </div>
         )}
 
         {/* Main Action */}
-        {!result.tiedFields ? (
-          <div style={{ marginBottom: 48 }}>
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => selectFieldMutation.mutate(result.topField)}
-              disabled={selectFieldMutation.isPending}
-              style={{
-                width: '100%', height: 50,
-                background: 'var(--color-primary)', color: '#fff',
-                border: 'none', borderRadius: 12,
-                fontSize: 15, fontWeight: 600, cursor: 'pointer',
-                letterSpacing: '-0.01em',
-                opacity: selectFieldMutation.isPending ? 0.6 : 1,
-              }}
-            >
-              {selectFieldMutation.isPending ? 'Menyimpan...' : `Mulai Jalur ${FIELD_LABELS[result.topField]}`}
-            </motion.button>
-            <p style={{ textAlign: 'center', fontSize: 13, color: '#888', marginTop: 16 }}>
-              +{result.xpEarned} XP diperoleh dari test ini
-            </p>
-          </div>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 48 }}>
-            {result.tiedFields.map((f) => (
-              <motion.button
-                key={f}
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.99 }}
-                onClick={() => selectFieldMutation.mutate(f)}
-                disabled={selectFieldMutation.isPending}
-                style={{
-                  width: '100%', height: 56,
-                  background: 'var(--color-primary)', color: '#fff',
-                  border: 'none', borderRadius: 12,
-                  fontSize: 15, fontWeight: 600, cursor: 'pointer',
-                  letterSpacing: '-0.01em', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  padding: '0 24px',
-                }}
-              >
-                <span>Mulai Jalur {FIELD_LABELS[f]}</span>
-              </motion.button>
-            ))}
-          </div>
-        )}
+        <div style={{ marginBottom: 48 }}>
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => selectFieldMutation.mutate(result.topField)}
+            disabled={selectFieldMutation.isPending}
+            style={{
+              width: '100%', height: 50,
+              background: 'var(--color-primary)', color: '#fff',
+              border: 'none', borderRadius: 12,
+              fontSize: 15, fontWeight: 600, cursor: 'pointer',
+              letterSpacing: '-0.01em',
+              opacity: selectFieldMutation.isPending ? 0.6 : 1,
+            }}
+          >
+            {selectFieldMutation.isPending ? 'Menyimpan...' : 'Mulai Jelajahi Basecamp'}
+          </motion.button>
+          <p style={{ textAlign: 'center', fontSize: 13, color: '#888', marginTop: 16 }}>
+            +{result.xpEarned} XP diperoleh dari test ini
+          </p>
+        </div>
 
 
 
