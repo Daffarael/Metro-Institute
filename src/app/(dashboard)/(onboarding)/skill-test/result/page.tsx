@@ -1,9 +1,9 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
-import { ChevronRight } from 'lucide-react'
-import { useMutation } from '@tanstack/react-query'
+import { ChevronRight, Zap, Palette, Terminal, Server, Smartphone } from 'lucide-react'
+import { motion } from 'motion/react'
 import { toast } from 'sonner'
 import api from '@/lib/axios'
 import { useAuthStore } from '@/stores/auth.store'
@@ -18,11 +18,11 @@ interface SkillResult {
   tiedFields: Field[] | null
 }
 
-const FIELD_ICONS: Record<string, string> = {
-  UI_UX: '🎨',
-  FRONTEND: '💻',
-  BACKEND: '⚙️',
-  MOBILE: '📱',
+const FIELD_ICONS: Record<string, any> = {
+  UI_UX: <Palette size={24} strokeWidth={2.5} />,
+  FRONTEND: <Terminal size={24} strokeWidth={2.5} />,
+  BACKEND: <Server size={24} strokeWidth={2.5} />,
+  MOBILE: <Smartphone size={24} strokeWidth={2.5} />,
 }
 
 const FIELD_DESCRIPTIONS: Record<string, string> = {
@@ -76,13 +76,21 @@ export default function SkillTestResultPage() {
       <div style={{ width: '100%', maxWidth: 480 }}>
 
         {/* Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 48 }}>
-          <img src="/images/logo.jpg" alt="Metro" style={{ width: 32, height: 32, borderRadius: 8, objectFit: 'cover' }} />
-          <span style={{ fontWeight: 700, fontSize: 14, letterSpacing: '-0.02em', color: '#111' }}>Metro Institute</span>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 48 }}>
+          <div style={{
+            width: 32, height: 32,
+            borderRadius: 8, overflow: 'hidden',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'var(--color-primary-light)',
+            border: '1px solid var(--border-color)'
+          }}>
+            <img src="/images/logo.jpg" alt="Metro Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          </div>
+          <span style={{ fontWeight: 700, fontSize: 15, letterSpacing: '-0.02em', color: '#111' }}>Metro Institute</span>
         </div>
 
         {/* Title */}
-        <div style={{ marginBottom: 32 }}>
+        <div style={{ marginBottom: 32, textAlign: 'center' }}>
           <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#999', marginBottom: 8 }}>
             Hasil Skill Test
           </p>
@@ -97,13 +105,15 @@ export default function SkillTestResultPage() {
         </div>
 
         {/* XP Badge */}
-        <div style={{
-          display: 'inline-flex', alignItems: 'center', gap: 6,
-          background: '#fff', border: '1px solid #e5e5e5',
-          borderRadius: 99, padding: '6px 14px', marginBottom: 28,
-        }}>
-          <span style={{ fontSize: 14 }}>⚡</span>
-          <span style={{ fontSize: 13, fontWeight: 700, color: '#111' }}>+{result.xpEarned} XP diperoleh</span>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 28 }}>
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            background: 'var(--color-primary-xlight)', border: '1px solid var(--color-primary-light)',
+            borderRadius: 99, padding: '8px 16px',
+          }}>
+            <Zap size={16} color="var(--color-primary)" fill="var(--color-primary)" />
+            <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-primary)' }}>+{result.xpEarned} XP diperoleh</span>
+          </div>
         </div>
 
         {/* Top Recommendation */}
@@ -114,18 +124,20 @@ export default function SkillTestResultPage() {
             borderRadius: 20,
             padding: '24px 20px',
             marginBottom: 16,
+            boxShadow: '0 4px 24px rgba(0,0,0,0.02)'
           }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16 }}>
               <div>
-                <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#bbb', marginBottom: 6 }}>
+                <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#bbb', marginBottom: 8 }}>
                   Rekomendasi Utama
                 </p>
-                <h2 style={{ fontSize: 22, fontWeight: 800, color: '#111', letterSpacing: '-0.02em', margin: 0 }}>
-                  {FIELD_ICONS[result.topField]} {FIELD_LABELS[result.topField]}
+                <h2 style={{ fontSize: 20, fontWeight: 800, color: '#111', letterSpacing: '-0.02em', margin: 0, display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <span style={{ color: 'var(--color-primary)' }}>{FIELD_ICONS[result.topField]}</span>
+                  {FIELD_LABELS[result.topField]}
                 </h2>
               </div>
               <div style={{
-                background: '#111', color: '#fff',
+                background: 'var(--color-primary)', color: '#fff',
                 borderRadius: 12, padding: '8px 14px',
                 fontSize: 18, fontWeight: 800, letterSpacing: '-0.02em',
                 flexShrink: 0,
@@ -133,30 +145,34 @@ export default function SkillTestResultPage() {
                 {result.scores[result.topField]}%
               </div>
             </div>
-            <p style={{ fontSize: 14, color: '#666', lineHeight: 1.65, margin: '0 0 20px' }}>
+            <p style={{ fontSize: 14, color: '#666', lineHeight: 1.65, margin: '0 0 24px' }}>
               {FIELD_DESCRIPTIONS[result.topField]}
             </p>
-            <button
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => selectFieldMutation.mutate(result.topField)}
               disabled={selectFieldMutation.isPending}
               style={{
                 width: '100%', height: 48,
-                background: '#111', color: '#fff',
+                background: 'var(--color-primary)', color: '#fff',
                 border: 'none', borderRadius: 12,
                 fontSize: 15, fontWeight: 700, cursor: 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                letterSpacing: '-0.01em', transition: 'opacity 0.2s',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                letterSpacing: '-0.01em',
                 opacity: selectFieldMutation.isPending ? 0.6 : 1,
               }}
             >
-              {selectFieldMutation.isPending ? 'Menyimpan...' : <>Mulai Belajar <ChevronRight size={16} /></>}
-            </button>
+              {selectFieldMutation.isPending ? 'Menyimpan...' : 'Mulai Belajar'}
+            </motion.button>
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
             {result.tiedFields.map((f) => (
-              <button
+              <motion.button
                 key={f}
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.99 }}
                 onClick={() => selectFieldMutation.mutate(f)}
                 disabled={selectFieldMutation.isPending}
                 style={{
@@ -164,16 +180,16 @@ export default function SkillTestResultPage() {
                   borderRadius: 16, padding: '16px 20px',
                   display: 'flex', alignItems: 'center', gap: 14,
                   cursor: 'pointer', textAlign: 'left',
-                  transition: 'border-color 0.2s',
+                  boxShadow: '0 2px 12px rgba(0,0,0,0.01)'
                 }}
               >
-                <span style={{ fontSize: 28 }}>{FIELD_ICONS[f]}</span>
+                <div style={{ color: 'var(--color-primary)' }}>{FIELD_ICONS[f]}</div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 15, fontWeight: 700, color: '#111' }}>{FIELD_LABELS[f]}</div>
                   <div style={{ fontSize: 12, color: '#999', marginTop: 2 }}>{result.scores[f]}% skor kamu</div>
                 </div>
                 <ChevronRight size={18} color="#bbb" />
-              </button>
+              </motion.button>
             ))}
           </div>
         )}
@@ -183,28 +199,28 @@ export default function SkillTestResultPage() {
           background: '#fff',
           border: '1px solid #e8e8e8',
           borderRadius: 20,
-          padding: '20px',
+          padding: '24px 20px',
           marginBottom: 20,
         }}>
-          <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#bbb', marginBottom: 16 }}>
+          <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#bbb', marginBottom: 20 }}>
             Skor Per Bidang
           </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
             {fields.map(([field, score]) => {
               const isTop = score === maxScore
               return (
                 <div key={field}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <span style={{ fontSize: 15 }}>{FIELD_ICONS[field]}</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <span style={{ color: isTop ? 'var(--color-primary)' : '#999' }}>{FIELD_ICONS[field]}</span>
                       <span style={{ fontSize: 13, fontWeight: 600, color: '#333' }}>{FIELD_LABELS[field]}</span>
                     </div>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: isTop ? '#111' : '#999' }}>{score}%</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: isTop ? 'var(--color-primary)' : '#999' }}>{score}%</span>
                   </div>
-                  <div style={{ height: 4, background: '#f0f0f0', borderRadius: 99, overflow: 'hidden' }}>
+                  <div style={{ height: 6, background: '#f0f0f0', borderRadius: 99, overflow: 'hidden' }}>
                     <div style={{
                       width: `${score}%`, height: '100%',
-                      background: isTop ? '#111' : '#ddd',
+                      background: isTop ? 'var(--color-primary)' : '#ddd',
                       borderRadius: 99, transition: 'width 0.6s ease',
                     }} />
                   </div>
@@ -217,25 +233,27 @@ export default function SkillTestResultPage() {
         {/* Other options */}
         {!result.tiedFields && (
           <>
-            <p style={{ fontSize: 12, color: '#aaa', textAlign: 'center', marginBottom: 12 }}>
+            <p style={{ fontSize: 12, color: '#aaa', textAlign: 'center', marginBottom: 16 }}>
               Atau pilih bidang lain yang kamu minati
             </p>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               {fields.slice(1).map(([field]) => (
-                <button
+                <motion.button
                   key={field}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => selectFieldMutation.mutate(field)}
                   disabled={selectFieldMutation.isPending}
                   style={{
                     background: '#fff', border: '1px solid #e8e8e8',
-                    borderRadius: 14, padding: '14px 12px',
-                    display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 6,
+                    borderRadius: 14, padding: '16px 14px',
+                    display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 10,
                     cursor: 'pointer', textAlign: 'left',
                   }}
                 >
-                  <span style={{ fontSize: 22 }}>{FIELD_ICONS[field]}</span>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: '#333' }}>{FIELD_LABELS[field]}</span>
-                </button>
+                  <span style={{ color: '#888' }}>{FIELD_ICONS[field]}</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: '#333' }}>{FIELD_LABELS[field]}</span>
+                </motion.button>
               ))}
             </div>
           </>
@@ -245,3 +263,4 @@ export default function SkillTestResultPage() {
     </div>
   )
 }
+
