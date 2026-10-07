@@ -58,16 +58,7 @@ export default function BasecampPage() {
       {/* ── Header ──────────────────────────────────────────── */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 'var(--space-6)', flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)' }}>
-          <div style={{
-            width: 48, height: 48, borderRadius: 'var(--radius-full)', overflow: 'hidden',
-            background: 'var(--color-bg)', border: '1px solid var(--color-border)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-          }}>
-            {user?.photoUrl
-              ? <img src={user.photoUrl} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              : <span style={{ fontSize: 'var(--text-lg)', fontWeight: 700, color: 'var(--color-primary)' }}>{user?.name?.charAt(0).toUpperCase() || 'M'}</span>
-            }
-          </div>
+
           <div>
             <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-primary)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 3 }}>
               {BADGE_LABELS[user?.badgeLevel || 'METRO_ROOKIE']}
