@@ -321,7 +321,7 @@ export default function SkillTestPage() {
                   }}>
                     {option.text}
                   </span>
-                </button>
+                </motion.button>
               )
             })}
           </div>
