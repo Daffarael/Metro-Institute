@@ -122,8 +122,10 @@ export default function SkillTestPage() {
       }}>
         {/* Logo */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 48 }}>
-          <img src="/logo-metro-clean.png" alt="Metro Logo" style={{ width: 32, height: 32, borderRadius: 8, objectFit: 'cover' }} />
-          <span style={{ fontWeight: 700, fontSize: 14, letterSpacing: '-0.02em', color: '#111' }}>Metro Institute</span>
+          <div className="w-8 h-8 bg-zinc-900 rounded-lg flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-white"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+          </div>
+          <span style={{ fontWeight: 700, fontSize: 15, letterSpacing: '-0.02em', color: '#111' }}>Metro Institute</span>
         </div>
 
         <div style={{ width: '100%', maxWidth: 460, textAlign: 'center' }}>
@@ -131,9 +133,9 @@ export default function SkillTestPage() {
           <div style={{
             width: 72, height: 72, borderRadius: 24, background: '#fff', border: '1px solid #eaeaea',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            margin: '0 auto 28px', fontSize: 32, boxShadow: '0 4px 20px rgba(0,0,0,0.03)'
+            margin: '0 auto 28px', color: '#333', boxShadow: '0 4px 20px rgba(0,0,0,0.03)'
           }}>
-            📝
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
           </div>
 
           <h1 style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-0.03em', marginBottom: 12, color: '#111' }}>
@@ -146,16 +148,16 @@ export default function SkillTestPage() {
           {/* Info cards */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 36 }}>
             {[
-              { icon: '📋', label: 'Jumlah Soal', value: `${questions.length} Pertanyaan` },
-              { icon: '⏱️', label: 'Waktu per Soal', value: `${QUESTION_TIME} Detik` },
-              { icon: '✅', label: 'Tipe Soal', value: 'Pilihan Ganda' },
-              { icon: '🎯', label: 'Tujuan', value: 'Personalisasi Belajar' },
+              { icon: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>, label: 'Jumlah Soal', value: `${questions.length} Pertanyaan` },
+              { icon: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3 2 6"/><path d="m22 6-3-3"/><path d="M6.38 18.7 4 21"/><path d="M17.64 18.67 20 21"/></svg>, label: 'Waktu per Soal', value: `${QUESTION_TIME} Detik` },
+              { icon: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>, label: 'Tipe Soal', value: 'Pilihan Ganda' },
+              { icon: <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>, label: 'Tujuan', value: 'Personalisasi Belajar' },
             ].map((item) => (
               <div key={item.label} style={{
                 background: '#ffffff', border: '1px solid #e8e8e8',
                 borderRadius: 16, padding: '16px 14px', textAlign: 'left',
               }}>
-                <div style={{ fontSize: 20, marginBottom: 10 }}>{item.icon}</div>
+                <div style={{ color: '#444', marginBottom: 12 }}>{item.icon}</div>
                 <div style={{ fontSize: 11, color: '#999', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: 4 }}>{item.label}</div>
                 <div style={{ fontSize: 13, fontWeight: 700, color: '#222' }}>{item.value}</div>
               </div>
@@ -165,9 +167,13 @@ export default function SkillTestPage() {
           {/* Tips */}
           <div style={{
             background: '#f2f2f2', borderRadius: 12, padding: '16px', marginBottom: 32, textAlign: 'left',
+            display: 'flex', gap: 12, alignItems: 'flex-start'
           }}>
+            <div style={{ color: '#666', marginTop: 2 }}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.9 1.2 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
+            </div>
             <p style={{ fontSize: 13, color: '#555', lineHeight: 1.6, margin: 0 }}>
-              💡 <strong>Tips:</strong> Jawab dengan jujur sesuai kemampuanmu sekarang. Tidak ada nilai benar atau salah.
+              <strong>Tips:</strong> Jawab dengan jujur sesuai kemampuanmu sekarang. Tidak ada nilai benar atau salah.
             </p>
           </div>
 
@@ -182,7 +188,7 @@ export default function SkillTestPage() {
             onMouseEnter={e => (e.currentTarget as HTMLElement).style.opacity = '0.85'}
             onMouseLeave={e => (e.currentTarget as HTMLElement).style.opacity = '1'}
           >
-            Mulai Test →
+            Mulai Test &rarr;
           </button>
         </div>
       </div>
