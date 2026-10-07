@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
-import { CheckCircle2, ChevronRight, Zap } from 'lucide-react'
+import { ChevronRight } from 'lucide-react'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import api from '@/lib/axios'
@@ -26,10 +26,10 @@ const FIELD_ICONS: Record<string, string> = {
 }
 
 const FIELD_DESCRIPTIONS: Record<string, string> = {
-  UI_UX: 'Kamu cocok menjadi UI/UX Designer! Karir yang banyak dicari: Product Designer, UX Researcher, UI Engineer.',
-  FRONTEND: 'Kamu punya potensi sebagai Frontend Developer! Kuasai React, Next.js, dan buat tampilan web yang luar biasa.',
-  BACKEND: 'Backend Developer adalah jalanmu! Bangun sistem yang kuat dengan Node.js, PostgreSQL, dan arsitektur scalable.',
-  MOBILE: 'Mobile Developer ada di genggamanmu! Flutter membuka jalan ke Android dan iOS sekaligus.',
+  UI_UX: 'Kamu cocok menjadi UI/UX Designer. Karir yang banyak dicari: Product Designer, UX Researcher, UI Engineer.',
+  FRONTEND: 'Kamu punya potensi sebagai Frontend Developer. Kuasai React, Next.js, dan buat tampilan web yang luar biasa.',
+  BACKEND: 'Backend Developer adalah jalanmu. Bangun sistem yang kuat dengan Node.js, PostgreSQL, dan arsitektur scalable.',
+  MOBILE: 'Mobile Developer ada di genggamanmu. Flutter membuka jalan ke Android dan iOS sekaligus.',
 }
 
 export default function SkillTestResultPage() {
@@ -61,125 +61,152 @@ export default function SkillTestResultPage() {
   }
 
   const fields = Object.entries(result.scores).sort(([, a], [, b]) => b - a) as [Field, number][]
+  const maxScore = fields[0]?.[1] ?? 0
 
   return (
-    <div style={{ minHeight: '100dvh', background: 'var(--color-bg)', padding: 'var(--space-6)' }}>
-      <div style={{ maxWidth: 560, margin: '0 auto' }}>
-        {/* Header */}
-        <div className="text-center animate-fade-in-up" style={{ marginBottom: 'var(--space-8)' }}>
-          <div style={{ fontSize: 56, marginBottom: 'var(--space-4)' }}>🎉</div>
-          <h1 style={{ fontSize: 'var(--text-3xl)', fontWeight: 800, marginBottom: 'var(--space-3)' }}>
-            Hasilmu Sudah Siap!
-          </h1>
-          <div style={{
-            display: 'inline-flex', alignItems: 'center', gap: 'var(--space-2)',
-            padding: 'var(--space-2) var(--space-4)',
-            background: 'var(--color-xp-bg)', borderRadius: 'var(--radius-full)',
-            border: '1px solid var(--color-xp)22',
-          }}>
-            <Zap size={14} color="var(--color-xp)" />
-            <span style={{ fontSize: 'var(--text-sm)', fontWeight: 700, color: 'var(--color-xp)' }}>
-              +{result.xpEarned} XP diperoleh!
-            </span>
-          </div>
+    <div style={{
+      minHeight: '100dvh',
+      background: '#f9f9f9',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'flex-start',
+      padding: '48px 20px 64px',
+    }}>
+      <div style={{ width: '100%', maxWidth: 480 }}>
+
+        {/* Logo */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 48 }}>
+          <img src="/images/logo.jpg" alt="Metro" style={{ width: 32, height: 32, borderRadius: 8, objectFit: 'cover' }} />
+          <span style={{ fontWeight: 700, fontSize: 14, letterSpacing: '-0.02em', color: '#111' }}>Metro Institute</span>
         </div>
 
-        {/* Top recommendation or Tie-breaker */}
-        {result.tiedFields ? (
-          <div className="card animate-fade-in-up" style={{
-            padding: 'var(--space-6)', marginBottom: 'var(--space-6)',
-            border: '2px solid var(--color-accent-dark)',
-            background: 'var(--color-surface)',
+        {/* Title */}
+        <div style={{ marginBottom: 32 }}>
+          <p style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#999', marginBottom: 8 }}>
+            Hasil Skill Test
+          </p>
+          <h1 style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-0.03em', color: '#111', lineHeight: 1.2, margin: 0 }}>
+            {result.tiedFields ? 'Bakatmu Seimbang!' : 'Bidang Terbaikmu'}
+          </h1>
+          <p style={{ fontSize: 14, color: '#777', marginTop: 8, lineHeight: 1.6 }}>
+            {result.tiedFields
+              ? 'Skor tertinggimu seri di beberapa bidang. Pilih yang paling menarik untukmu.'
+              : 'Berdasarkan jawabanmu, ini jalur yang paling sesuai dengan potensimu.'}
+          </p>
+        </div>
+
+        {/* XP Badge */}
+        <div style={{
+          display: 'inline-flex', alignItems: 'center', gap: 6,
+          background: '#fff', border: '1px solid #e5e5e5',
+          borderRadius: 99, padding: '6px 14px', marginBottom: 28,
+        }}>
+          <span style={{ fontSize: 14 }}>⚡</span>
+          <span style={{ fontSize: 13, fontWeight: 700, color: '#111' }}>+{result.xpEarned} XP diperoleh</span>
+        </div>
+
+        {/* Top Recommendation */}
+        {!result.tiedFields ? (
+          <div style={{
+            background: '#fff',
+            border: '1px solid #e8e8e8',
+            borderRadius: 20,
+            padding: '24px 20px',
+            marginBottom: 16,
           }}>
-            <div style={{ textAlign: 'center', marginBottom: 'var(--space-5)' }}>
-              <div style={{ fontSize: 36, marginBottom: 'var(--space-2)' }}>⚖️</div>
-              <h2 style={{ fontSize: 'var(--text-xl)', fontWeight: 800, color: 'var(--color-text-primary)' }}>
-                Bakatmu Sangat Seimbang!
-              </h2>
-              <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', marginTop: 'var(--space-2)' }}>
-                Skor tertinggimu seri di beberapa bidang ({result.scores[result.tiedFields[0]]}%). Dari pilihan di bawah, mana yang lebih bikin kamu penasaran untuk dipelajari duluan?
-              </p>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 'var(--space-3)' }}>
-              {result.tiedFields.map((f) => (
-                <button
-                  key={f}
-                  onClick={() => selectFieldMutation.mutate(f)}
-                  disabled={selectFieldMutation.isPending}
-                  className="btn btn-secondary"
-                  style={{
-                    padding: 'var(--space-4)', display: 'flex', justifyContent: 'flex-start',
-                    gap: 'var(--space-4)', background: 'var(--color-bg)',
-                    border: '1px solid var(--color-border)',
-                  }}
-                >
-                  <span style={{ fontSize: 32 }}>{FIELD_ICONS[f]}</span>
-                  <div style={{ textAlign: 'left' }}>
-                    <div style={{ fontSize: 'var(--text-base)', fontWeight: 700, color: 'var(--color-text-primary)' }}>
-                      {FIELD_LABELS[f]}
-                    </div>
-                    <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-tertiary)', marginTop: 2 }}>
-                      Pilih bidang ini
-                    </div>
-                  </div>
-                  <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', color: 'var(--color-text-tertiary)' }}>
-                    <ChevronRight size={20} />
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <div className="card animate-fade-in-up" style={{
-            padding: 'var(--space-6)', marginBottom: 'var(--space-6)',
-            border: '2px solid var(--color-primary)',
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-4)' }}>
-              <div style={{ fontSize: 36 }}>{FIELD_ICONS[result.topField]}</div>
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 16 }}>
               <div>
-                <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-secondary)', fontWeight: 500, marginBottom: 2 }}>Bidang yang paling cocok untukmu</div>
-                <h2 style={{ fontSize: 'var(--text-xl)', fontWeight: 800, color: 'var(--color-primary)' }}>
-                  {FIELD_LABELS[result.topField]}
+                <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#bbb', marginBottom: 6 }}>
+                  Rekomendasi Utama
+                </p>
+                <h2 style={{ fontSize: 22, fontWeight: 800, color: '#111', letterSpacing: '-0.02em', margin: 0 }}>
+                  {FIELD_ICONS[result.topField]} {FIELD_LABELS[result.topField]}
                 </h2>
               </div>
-              <div style={{ marginLeft: 'auto' }}>
-                <span style={{
-                  fontSize: 'var(--text-2xl)', fontWeight: 800,
-                  color: 'var(--color-primary)',
-                }}>{result.scores[result.topField]}%</span>
+              <div style={{
+                background: '#111', color: '#fff',
+                borderRadius: 12, padding: '8px 14px',
+                fontSize: 18, fontWeight: 800, letterSpacing: '-0.02em',
+                flexShrink: 0,
+              }}>
+                {result.scores[result.topField]}%
               </div>
             </div>
-            <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', lineHeight: 'var(--leading-relaxed)', marginBottom: 'var(--space-4)' }}>
+            <p style={{ fontSize: 14, color: '#666', lineHeight: 1.65, margin: '0 0 20px' }}>
               {FIELD_DESCRIPTIONS[result.topField]}
             </p>
             <button
               onClick={() => selectFieldMutation.mutate(result.topField)}
               disabled={selectFieldMutation.isPending}
-              className={`btn btn-primary btn-full ${selectFieldMutation.isPending ? 'btn-loading' : ''}`}
+              style={{
+                width: '100%', height: 48,
+                background: '#111', color: '#fff',
+                border: 'none', borderRadius: 12,
+                fontSize: 15, fontWeight: 700, cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                letterSpacing: '-0.01em', transition: 'opacity 0.2s',
+                opacity: selectFieldMutation.isPending ? 0.6 : 1,
+              }}
             >
-              {!selectFieldMutation.isPending && <>Pilih Bidang Ini & Mulai Belajar <ChevronRight size={16} /></>}
+              {selectFieldMutation.isPending ? 'Menyimpan...' : <>Mulai Belajar <ChevronRight size={16} /></>}
             </button>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
+            {result.tiedFields.map((f) => (
+              <button
+                key={f}
+                onClick={() => selectFieldMutation.mutate(f)}
+                disabled={selectFieldMutation.isPending}
+                style={{
+                  background: '#fff', border: '1px solid #e8e8e8',
+                  borderRadius: 16, padding: '16px 20px',
+                  display: 'flex', alignItems: 'center', gap: 14,
+                  cursor: 'pointer', textAlign: 'left',
+                  transition: 'border-color 0.2s',
+                }}
+              >
+                <span style={{ fontSize: 28 }}>{FIELD_ICONS[f]}</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: '#111' }}>{FIELD_LABELS[f]}</div>
+                  <div style={{ fontSize: 12, color: '#999', marginTop: 2 }}>{result.scores[f]}% skor kamu</div>
+                </div>
+                <ChevronRight size={18} color="#bbb" />
+              </button>
+            ))}
           </div>
         )}
 
-        {/* All scores */}
-        <div className="card animate-fade-in-up" style={{ padding: 'var(--space-6)', marginBottom: 'var(--space-6)' }}>
-          <h3 style={{ fontSize: 'var(--text-base)', fontWeight: 700, marginBottom: 'var(--space-5)' }}>Skor Semua Bidang</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
-            {fields.map(([field, score], idx) => {
-              const isTopScore = score === result.scores[result.tiedFields ? result.tiedFields[0] : result.topField]
+        {/* All Scores */}
+        <div style={{
+          background: '#fff',
+          border: '1px solid #e8e8e8',
+          borderRadius: 20,
+          padding: '20px',
+          marginBottom: 20,
+        }}>
+          <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#bbb', marginBottom: 16 }}>
+            Skor Per Bidang
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            {fields.map(([field, score]) => {
+              const isTop = score === maxScore
               return (
                 <div key={field}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 'var(--space-2)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-                      <span style={{ fontSize: 16 }}>{FIELD_ICONS[field]}</span>
-                      <span style={{ fontSize: 'var(--text-sm)', fontWeight: 600 }}>{FIELD_LABELS[field]}</span>
-                      {isTopScore && <span className="badge badge-primary" style={{ fontSize: '10px' }}>Terbaik</span>}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ fontSize: 15 }}>{FIELD_ICONS[field]}</span>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: '#333' }}>{FIELD_LABELS[field]}</span>
                     </div>
-                    <span style={{ fontSize: 'var(--text-sm)', fontWeight: 700, color: isTopScore ? 'var(--color-primary)' : 'var(--color-text-primary)' }}>{score}%</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: isTop ? '#111' : '#999' }}>{score}%</span>
                   </div>
-                  <div className="progress-bar">
-                    <div className="progress-bar-fill" style={{ width: `${score}%`, background: isTopScore ? 'var(--color-primary)' : 'var(--color-text-tertiary)' }} />
+                  <div style={{ height: 4, background: '#f0f0f0', borderRadius: 99, overflow: 'hidden' }}>
+                    <div style={{
+                      width: `${score}%`, height: '100%',
+                      background: isTop ? '#111' : '#ddd',
+                      borderRadius: 99, transition: 'width 0.6s ease',
+                    }} />
                   </div>
                 </div>
               )
@@ -187,28 +214,33 @@ export default function SkillTestResultPage() {
           </div>
         </div>
 
-        {/* Alternative choices (hide if tied, because they already have a choice above) */}
+        {/* Other options */}
         {!result.tiedFields && (
           <>
-            <p className="text-center text-muted" style={{ fontSize: 'var(--text-sm)', marginBottom: 'var(--space-4)' }}>
-              Atau pilih bidang lain yang kamu minati:
+            <p style={{ fontSize: 12, color: '#aaa', textAlign: 'center', marginBottom: 12 }}>
+              Atau pilih bidang lain yang kamu minati
             </p>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-3)' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
               {fields.slice(1).map(([field]) => (
                 <button
                   key={field}
                   onClick={() => selectFieldMutation.mutate(field)}
                   disabled={selectFieldMutation.isPending}
-                  className="btn btn-secondary"
-                  style={{ gap: 'var(--space-2)' }}
+                  style={{
+                    background: '#fff', border: '1px solid #e8e8e8',
+                    borderRadius: 14, padding: '14px 12px',
+                    display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 6,
+                    cursor: 'pointer', textAlign: 'left',
+                  }}
                 >
-                  <span>{FIELD_ICONS[field]}</span>
-                  <span style={{ fontSize: 'var(--text-xs)' }}>{FIELD_LABELS[field]}</span>
+                  <span style={{ fontSize: 22 }}>{FIELD_ICONS[field]}</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: '#333' }}>{FIELD_LABELS[field]}</span>
                 </button>
               ))}
             </div>
           </>
         )}
+
       </div>
     </div>
   )

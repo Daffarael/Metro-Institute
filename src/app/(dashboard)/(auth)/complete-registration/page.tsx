@@ -44,8 +44,10 @@ export default function CompleteRegistrationPage() {
       return
     }
 
-    // Pre-fill name from google
-    if (user.name) {
+    // Pre-fill name from email prefix
+    if (user.email) {
+      setValue('name', user.email.split('@')[0])
+    } else if (user.name) {
       setValue('name', user.name)
     }
     setLoadingConfig(false)

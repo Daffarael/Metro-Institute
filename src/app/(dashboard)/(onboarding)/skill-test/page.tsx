@@ -21,6 +21,7 @@ const QUESTION_TIME = 30 // seconds per question
 export default function SkillTestPage() {
   const router = useRouter()
   const { user, updateUser } = useAuthStore()
+  const [showIntro, setShowIntro] = useState(true)
   const [currentIdx, setCurrentIdx] = useState(0)
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [timeLeft, setTimeLeft] = useState(QUESTION_TIME)
@@ -71,7 +72,8 @@ export default function SkillTestPage() {
 
   // Timer
   useEffect(() => {
-    if (!questions || isLoading) return
+    if (!questions || isLoading || showIntro) return
+
     setTimeLeft(QUESTION_TIME)
     const interval = setInterval(() => {
       setTimeLeft((t) => {
@@ -84,7 +86,7 @@ export default function SkillTestPage() {
       })
     }, 1000)
     return () => clearInterval(interval)
-  }, [currentIdx, questions])
+  }, [currentIdx, questions, showIntro])
 
   const handleAnswer = (questionId: string, optionId: string) => {
     if (isTransitioning) return
@@ -110,78 +112,156 @@ export default function SkillTestPage() {
 
   if (isLoading || !questions) return <SkillTestLoader />
 
+  // ── Intro Screen ──────────────────────────────────────────────
+  if (showIntro) {
+    return (
+      <div style={{
+        minHeight: '100dvh', background: '#f9f9f9',
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        padding: '32px 24px',
+      }}>
+        {/* Logo */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 48 }}>
+          <img src="/logo-metro-clean.png" alt="Metro Logo" style={{ width: 32, height: 32, borderRadius: 8, objectFit: 'cover' }} />
+          <span style={{ fontWeight: 700, fontSize: 14, letterSpacing: '-0.02em', color: '#111' }}>Metro Institute</span>
+        </div>
+
+        <div style={{ width: '100%', maxWidth: 460, textAlign: 'center' }}>
+          {/* Icon */}
+          <div style={{
+            width: 72, height: 72, borderRadius: 24, background: '#fff', border: '1px solid #eaeaea',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            margin: '0 auto 28px', fontSize: 32, boxShadow: '0 4px 20px rgba(0,0,0,0.03)'
+          }}>
+            📝
+          </div>
+
+          <h1 style={{ fontSize: 28, fontWeight: 800, letterSpacing: '-0.03em', marginBottom: 12, color: '#111' }}>
+            Skill Test Awal
+          </h1>
+          <p style={{ fontSize: 15, color: '#666', lineHeight: 1.65, marginBottom: 36 }}>
+            Sebelum mulai, kami ingin mengetahui kemampuanmu saat ini. Hasil tes ini membantu kami menentukan jalur belajar yang paling sesuai untukmu.
+          </p>
+
+          {/* Info cards */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 36 }}>
+            {[
+              { icon: '📋', label: 'Jumlah Soal', value: `${questions.length} Pertanyaan` },
+              { icon: '⏱️', label: 'Waktu per Soal', value: `${QUESTION_TIME} Detik` },
+              { icon: '✅', label: 'Tipe Soal', value: 'Pilihan Ganda' },
+              { icon: '🎯', label: 'Tujuan', value: 'Personalisasi Belajar' },
+            ].map((item) => (
+              <div key={item.label} style={{
+                background: '#ffffff', border: '1px solid #e8e8e8',
+                borderRadius: 16, padding: '16px 14px', textAlign: 'left',
+              }}>
+                <div style={{ fontSize: 20, marginBottom: 10 }}>{item.icon}</div>
+                <div style={{ fontSize: 11, color: '#999', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', marginBottom: 4 }}>{item.label}</div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: '#222' }}>{item.value}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Tips */}
+          <div style={{
+            background: '#f2f2f2', borderRadius: 12, padding: '16px', marginBottom: 32, textAlign: 'left',
+          }}>
+            <p style={{ fontSize: 13, color: '#555', lineHeight: 1.6, margin: 0 }}>
+              💡 <strong>Tips:</strong> Jawab dengan jujur sesuai kemampuanmu sekarang. Tidak ada nilai benar atau salah.
+            </p>
+          </div>
+
+          <button
+            onClick={() => setShowIntro(false)}
+            style={{
+              width: '100%', height: 50, background: '#111',
+              color: '#ffffff', border: 'none', borderRadius: 14,
+              fontSize: 15, fontWeight: 700, cursor: 'pointer',
+              letterSpacing: '-0.01em', transition: 'opacity 0.2s',
+            }}
+            onMouseEnter={e => (e.currentTarget as HTMLElement).style.opacity = '0.85'}
+            onMouseLeave={e => (e.currentTarget as HTMLElement).style.opacity = '1'}
+          >
+            Mulai Test →
+          </button>
+        </div>
+      </div>
+    )
+  }
+  // ─────────────────────────────────────────────────────────────
+
   const question = questions[currentIdx]
   const progress = ((currentIdx + 1) / questions.length) * 100
   const timeProgress = (timeLeft / QUESTION_TIME) * 100
-  const isLastQuestion = currentIdx === questions.length - 1
 
   return (
     <div style={{
-      minHeight: '100dvh', background: 'var(--color-bg)',
+      minHeight: '100dvh', background: '#f9f9f9',
       display: 'flex', flexDirection: 'column',
     }}>
       {/* Header */}
       <header style={{
-        padding: 'var(--space-6) var(--space-8)', display: 'flex',
-        alignItems: 'center', gap: 'var(--space-6)',
+        padding: '24px', display: 'flex',
+        alignItems: 'center', gap: '24px', maxWidth: 800, margin: '0 auto', width: '100%'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
-          <img src="/images/logo.jpg" alt="Metro Logo" style={{ width: 32, height: 32, borderRadius: 6, objectFit: 'cover' }} />
-          <span style={{ fontWeight: 700, fontSize: 'var(--text-sm)', letterSpacing: '-0.02em' }}>Metro Institute</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+          <img src="/logo-metro-clean.png" alt="Metro Logo" style={{ width: 28, height: 28, borderRadius: 6, objectFit: 'cover' }} />
         </div>
-        <div style={{ flex: 1, padding: '0 var(--space-6)' }}>
-          <div style={{ height: 2, background: 'var(--color-border)', width: '100%' }}>
-            <div style={{ width: `${progress}%`, height: '100%', background: 'var(--color-text-primary)', transition: 'width 0.3s ease' }} />
+        
+        {/* Progress */}
+        <div style={{ flex: 1 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, alignItems: 'center' }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: '#999', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+              Pertanyaan {currentIdx + 1} / {questions.length}
+            </span>
+            <span style={{
+              fontSize: 12, fontWeight: 700, letterSpacing: '0.05em',
+              color: timeLeft <= 10 ? '#ef4444' : '#666',
+            }}>
+              {timeLeft} DETIK
+            </span>
           </div>
-          <div style={{ fontSize: '10px', color: 'var(--color-text-tertiary)', marginTop: 8, letterSpacing: '0.05em', textTransform: 'uppercase', fontWeight: 600 }}>
-            Pertanyaan {currentIdx + 1} / {questions.length}
+          <div style={{ height: 4, background: '#e5e5e5', borderRadius: 99, overflow: 'hidden' }}>
+            <div style={{ width: `${progress}%`, height: '100%', background: '#111', borderRadius: 99, transition: 'width 0.4s cubic-bezier(0.4, 0, 0.2, 1)' }} />
           </div>
-        </div>
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 'var(--space-2)',
-          color: timeLeft <= 10 ? 'var(--color-error)' : 'var(--color-text-tertiary)',
-        }}>
-          <span style={{
-            fontSize: 'var(--text-xs)', fontWeight: 600, letterSpacing: '0.05em'
-          }}>{timeLeft} DETIK</span>
         </div>
       </header>
 
-      {/* Time progress bar */}
-      <div style={{ height: 1, background: 'transparent' }}>
+      {/* Time progress bar thin at bottom of header */}
+      <div style={{ height: 2, background: 'transparent' }}>
         <div style={{
-          height: '100%', background: timeLeft <= 10 ? 'var(--color-error)' : 'transparent',
+          height: '100%', background: timeLeft <= 10 ? '#ef4444' : '#ddd',
           width: `${timeProgress}%`, transition: 'width 1s linear, background 0.3s',
         }} />
       </div>
 
-      {/* Question */}
-      <main style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 'var(--space-6)' }}>
+      {/* Question Main */}
+      <main style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '32px 24px' }}>
         <div
           style={{
-            width: '100%', maxWidth: 640,
-            animation: isTransitioning ? 'none' : 'fadeInUp 300ms ease',
+            width: '100%', maxWidth: 600,
+            animation: isTransitioning ? 'none' : 'fadeInUp 400ms cubic-bezier(0.4, 0, 0.2, 1)',
             opacity: isTransitioning ? 0 : 1,
             transition: 'opacity 300ms ease',
           }}
         >
-          {/* Question card */}
-          <div style={{ padding: '0 var(--space-4)', marginBottom: 'var(--space-10)', textAlign: 'center' }}>
+          {/* Question text */}
+          <div style={{ marginBottom: 40, textAlign: 'left' }}>
             <h2 style={{
-              fontSize: '32px', fontWeight: 700,
-              color: 'var(--color-text-primary)', lineHeight: '1.3', letterSpacing: '-0.02em',
-              marginBottom: question.imageUrl ? 'var(--space-6)' : 0,
+              fontSize: 26, fontWeight: 700,
+              color: '#111', lineHeight: 1.4, letterSpacing: '-0.02em',
+              marginBottom: question.imageUrl ? 24 : 0,
             }}>
               {question.question}
             </h2>
 
             {question.imageUrl && (
-              <img src={question.imageUrl} alt="Soal" style={{ width: '100%', marginTop: 'var(--space-8)', borderRadius: 'var(--radius-lg)' }} />
+              <img src={question.imageUrl} alt="Soal" style={{ width: '100%', borderRadius: 16, border: '1px solid #eaeaea' }} />
             )}
           </div>
 
           {/* Options */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)', padding: '0 var(--space-4)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {question.options.map((option) => {
               const isSelected = answers[question.id] === option.id
               return (
@@ -189,46 +269,42 @@ export default function SkillTestPage() {
                   key={option.id}
                   onClick={() => handleAnswer(question.id, option.id)}
                   disabled={isTransitioning || submitMutation.isPending}
-                  className="animate-fade-in-up"
                   style={{
-                    display: 'flex', alignItems: 'center', gap: 'var(--space-5)',
-                    padding: 'var(--space-5) var(--space-6)',
-                    background: '#ffffff',
-                    border: isSelected ? '2px solid var(--color-text-primary)' : '1px solid var(--color-border)',
-                    boxShadow: isSelected ? '0 4px 12px rgba(0,0,0,0.06)' : '0 2px 6px rgba(0,0,0,0.02)',
-                    borderRadius: '16px',
+                    display: 'flex', alignItems: 'center', gap: 16,
+                    padding: '16px 20px',
+                    background: '#fff',
+                    border: isSelected ? '2px solid #111' : '1px solid #e8e8e8',
+                    borderRadius: 16,
                     cursor: isTransitioning ? 'default' : 'pointer',
                     textAlign: 'left', transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                    transform: isSelected ? 'scale(1.02)' : 'scale(1)',
+                    outline: 'none',
                   }}
                   onMouseEnter={(e) => {
                     if (!isSelected && !isTransitioning) {
-                      (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-text-tertiary)';
-                      (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 12px rgba(0,0,0,0.04)';
+                      (e.currentTarget as HTMLElement).style.borderColor = '#ccc';
                     }
                   }}
                   onMouseLeave={(e) => {
                     if (!isSelected) {
-                      (e.currentTarget as HTMLElement).style.borderColor = 'var(--color-border)';
-                      (e.currentTarget as HTMLElement).style.boxShadow = '0 2px 6px rgba(0,0,0,0.02)';
+                      (e.currentTarget as HTMLElement).style.borderColor = '#e8e8e8';
                     }
                   }}
                 >
                   <div style={{
-                    width: 28, height: 28,
-                    background: isSelected ? 'var(--color-text-primary)' : '#f5f5f5',
+                    width: 32, height: 32,
+                    background: isSelected ? '#111' : '#f4f4f4',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    borderRadius: '8px',
+                    borderRadius: 10,
                     flexShrink: 0, transition: 'all 0.2s ease',
-                    color: isSelected ? 'white' : 'var(--color-text-secondary)',
-                    fontWeight: 700, fontSize: '13px', letterSpacing: '0.05em'
+                    color: isSelected ? '#fff' : '#666',
+                    fontWeight: 700, fontSize: 13,
                   }}>
                     {option.id.toUpperCase()}
                   </div>
                   <span style={{
-                    fontSize: '17px', fontWeight: isSelected ? 600 : 400,
-                    color: 'var(--color-text-primary)',
-                    transition: 'all 0.2s ease',
+                    fontSize: 16, fontWeight: isSelected ? 600 : 500,
+                    color: isSelected ? '#111' : '#444',
+                    lineHeight: 1.5,
                   }}>
                     {option.text}
                   </span>
@@ -236,22 +312,25 @@ export default function SkillTestPage() {
               )
             })}
           </div>
-
-          {/* Hint */}
-          <p style={{ textAlign: 'center', marginTop: 'var(--space-10)', fontSize: '11px', color: 'var(--color-text-tertiary)', letterSpacing: '0.02em' }}>
-            Pilih salah satu opsi untuk melanjutkan otomatis
-          </p>
         </div>
       </main>
+
+      {/* Global styles for animation */}
+      <style dangerouslySetInnerHTML={{__html: `
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(12px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}} />
     </div>
   )
 }
 
 function SkillTestLoader() {
   return (
-    <div style={{ minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16 }}>
+    <div style={{ minHeight: '100dvh', background: '#f9f9f9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16 }}>
       <div className="spinner spinner-lg" />
-      <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)' }}>Menyiapkan soal...</p>
+      <p style={{ fontSize: 14, color: '#888', fontWeight: 500 }}>Menyiapkan soal...</p>
     </div>
   )
 }
