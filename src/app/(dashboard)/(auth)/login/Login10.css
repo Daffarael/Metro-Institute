@@ -160,7 +160,7 @@
 }
 
 .login-10 .hero-logo {
-  height: 48px;
+  height: 72px;
   width: auto;
   object-fit: contain;
   margin-bottom: 24px;
@@ -194,18 +194,16 @@
   font-family: inherit;
   font-size: 16px;
   font-weight: 600;
-  color: inherit;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  background: rgb(255 255 255 / 10%);
-  backdrop-filter: blur(8px);
+  color: #22222E;
+  border: none;
+  background: #ffffff;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .login-10 .hero .switch:hover {
-  color: #212625;
-  background: #f9f9f9;
+  background: #f0f0f0;
 }
 
 /* ---------- form ---------- */
