@@ -226,14 +226,8 @@ function ImageField({ fieldKey, value, onChange }: { fieldKey: string; value: st
         <span style={{ fontSize: 11, color: 'var(--color-text-tertiary)' }}>PNG, JPG, WEBP â€” maks. 5MB</span>
       </label>
 
-      {/* Divider */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <div style={{ flex: 1, height: 1, background: 'var(--color-border)' }} />
-        <span style={{ fontSize: 11, color: 'var(--color-text-tertiary)', fontWeight: 500 }}>atau paste URL</span>
-        <div style={{ flex: 1, height: 1, background: 'var(--color-border)' }} />
-      </div>
 
-      <TextInput value={value} onChange={onChange} placeholder="https://..." />
+
 
       {/* Preview */}
       {value && (
