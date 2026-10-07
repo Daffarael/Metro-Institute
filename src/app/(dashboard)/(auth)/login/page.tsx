@@ -152,9 +152,13 @@ export default function LoginPage() {
               </button>
             </div>
           </form>
+          {/* Mobile only: link to switch to login */}
+          <div className="mobile-switch">
+            Sudah punya akun?
+            <span onClick={() => setIsRegister(false)}>Login</span>
+          </div>
         </div>
 
-        <div className="hero login">
           <img src="/logo-metro-clean.png" alt="Metro Institute" className="hero-logo" />
           <h2>Selamat Datang</h2>
           <p>Masuk untuk melanjutkan pembelajaran Anda hari ini.</p>
@@ -207,6 +211,11 @@ export default function LoginPage() {
               </button>
             </div>
           </form>
+          {/* Mobile only: link to switch to register */}
+          <div className="mobile-switch">
+            Belum punya akun?
+            <span onClick={() => setIsRegister(true)}>Sign Up</span>
+          </div>
         </div>
 
       </div>

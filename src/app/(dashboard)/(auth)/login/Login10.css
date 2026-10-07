@@ -407,3 +407,74 @@
   white-space: pre-wrap;
   margin-top: 0;
 }
+
+/* ─── Mobile responsive ─── */
+@media (max-width: 640px) {
+  .login-10 {
+    align-items: flex-start;
+    overflow-y: auto;
+  }
+
+  .login-10 .card {
+    width: 100%;
+    min-height: 100dvh;
+    height: auto;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Sembunyikan hero panel (kiri/kanan dark) di mobile */
+  .login-10 .hero {
+    display: none !important;
+  }
+
+  /* Form jadi full width dan tidak lagi absolute */
+  .login-10 .form {
+    position: relative !important;
+    width: 100% !important;
+    left: auto !important;
+    transform: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    height: auto !important;
+    min-height: 100dvh;
+    padding: 48px 28px 40px;
+    gap: 12px;
+  }
+
+  /* Sembunyikan form register dan tampilkan hanya form login saat default */
+  .login-10 .form.register {
+    display: none !important;
+  }
+  .login-10 .card.register .form.register {
+    display: flex !important;
+  }
+  .login-10 .card.register .form.login {
+    display: none !important;
+  }
+
+  /* Card bg tidak tampil di mobile */
+  .login-10 .card-bg {
+    display: none !important;
+  }
+
+  /* Tambah tombol switch di mobile */
+  .login-10 .mobile-switch {
+    display: block;
+    text-align: center;
+    margin-top: 16px;
+    font-size: 14px;
+    color: #5b6169;
+  }
+
+  .login-10 .mobile-switch span {
+    color: #22222E;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+    margin-left: 4px;
+  }
+}
