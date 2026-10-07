@@ -415,7 +415,14 @@ export default function LandingPageClient({
             let portfolioItems = DEFAULT_PORTFOLIO
             try {
               const parsed = JSON.parse(config['portfolio_items'] || '[]')
-              if (Array.isArray(parsed) && parsed.length > 0) portfolioItems = parsed
+              if (Array.isArray(parsed) && parsed.length > 0) {
+                portfolioItems = parsed.map((item: any) => ({
+                  ...item,
+                  media: item.media && item.media.includes('localhost') 
+                    ? 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=1200' 
+                    : item.media
+                }))
+              }
             } catch { /* keep defaults */ }
 
             return (
