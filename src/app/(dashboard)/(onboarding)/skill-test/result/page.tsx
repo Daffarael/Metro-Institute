@@ -75,7 +75,7 @@ export default function SkillTestResultPage() {
         {!result.tiedFields ? (
           <div style={{ textAlign: 'center', marginBottom: 48 }}>
             <p style={{ fontSize: 11, fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase', color: '#888', marginBottom: 12 }}>
-              Hasil Analisis &middot; {result.scores[result.topField]}% Kecocokan
+              Hasil Analisis
             </p>
             <h1 style={{ fontSize: 32, fontWeight: 700, letterSpacing: '-0.04em', color: '#111', lineHeight: 1.1, margin: '0 0 16px 0' }}>
               {FIELD_LABELS[result.topField]}
@@ -140,7 +140,6 @@ export default function SkillTestResultPage() {
                 }}
               >
                 <span>Mulai Jalur {FIELD_LABELS[f]}</span>
-                <span style={{ opacity: 0.8, fontWeight: 400 }}>{result.scores[f]}%</span>
               </motion.button>
             ))}
           </div>
@@ -149,35 +148,7 @@ export default function SkillTestResultPage() {
         <div style={{ height: 1, background: '#eaeaea', width: '100%', margin: '0 0 40px 0' }} />
 
         {/* All Scores (Minimalist layout) */}
-        <div style={{ marginBottom: 40 }}>
-          <h3 style={{ fontSize: 12, fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', color: '#aaa', marginBottom: 24 }}>
-            Rincian Skor Kecocokan
-          </h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-            {fields.map(([field, score]) => {
-              const isTop = !result.tiedFields && field === result.topField
-              return (
-                <div key={field}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                    <span style={{ fontSize: 14, fontWeight: isTop ? 600 : 500, color: isTop ? '#111' : '#555' }}>
-                      {FIELD_LABELS[field]}
-                    </span>
-                    <span style={{ fontSize: 13, fontWeight: isTop ? 600 : 500, color: isTop ? '#111' : '#888' }}>
-                      {score}%
-                    </span>
-                  </div>
-                  <div style={{ height: 3, background: '#f5f5f5', borderRadius: 99, overflow: 'hidden' }}>
-                    <div style={{
-                      width: `${score}%`, height: '100%',
-                      background: isTop ? 'var(--color-primary)' : '#ddd',
-                      borderRadius: 99, transition: 'width 0.6s ease',
-                    }} />
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        </div>
+
 
         {/* Alternative options */}
         {!result.tiedFields && (
@@ -186,7 +157,7 @@ export default function SkillTestResultPage() {
               Atau pilih jalur lain
             </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {fields.slice(1).map(([field, score]) => (
+              {fields.slice(1).map(([field]) => (
                 <button
                   key={field}
                   onClick={() => selectFieldMutation.mutate(field)}
@@ -203,7 +174,6 @@ export default function SkillTestResultPage() {
                   onMouseLeave={(e) => (e.currentTarget as HTMLElement).style.borderColor = '#eaeaea'}
                 >
                   <span style={{ fontSize: 14, fontWeight: 500, color: '#333' }}>{FIELD_LABELS[field]}</span>
-                  <span style={{ fontSize: 12, color: '#999' }}>{score}%</span>
                 </button>
               ))}
             </div>
