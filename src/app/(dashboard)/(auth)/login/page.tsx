@@ -101,8 +101,8 @@ export default function LoginPage() {
   const onSignup = async (data: RegisterForm) => {
     try {
       await authService.register({ ...data })
-      toast.success('Pendaftaran berhasil! Silakan masuk.')
-      setIsRegister(false)
+      toast.success('Pendaftaran berhasil! Silakan periksa email Anda untuk kode OTP.')
+      router.push(`/verify-email?email=${encodeURIComponent(data.email)}`)
     } catch (err: any) {
       const data = err?.response?.data
       if (data?.errors && data.errors.length > 0) {

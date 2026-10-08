@@ -79,7 +79,7 @@ export default function CompleteRegistrationPage() {
         {/* We use a solid color background since we don't have the background image URL handy here, or we can fetch it */}
         <div className="card-bg" style={{ backgroundColor: '#050505' }} />
 
-        <div className="hero">
+        <div className="hero login">
           <img src="/logo-metro-clean.png" alt="Metro Institute" className="hero-logo" />
           <h2>Langkah Terakhir!</h2>
           <p>
@@ -87,8 +87,8 @@ export default function CompleteRegistrationPage() {
           </p>
         </div>
 
-        <div className="main">
-          <form className="form" onSubmit={handleSubmit(onSubmit)}>
+        <div className="form login" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             
             <div className="input-group">
               <label>Nama Lengkap (Untuk Sertifikat)</label>

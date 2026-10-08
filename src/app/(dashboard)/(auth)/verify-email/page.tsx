@@ -1,70 +1,96 @@
 'use client'
 
-import { useEffect, useState, Suspense } from 'react'
+import { useState, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { CheckCircle2, XCircle, Loader2, MailCheck } from 'lucide-react'
+import { MailCheck, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import api from '@/lib/axios'
 import { ROUTES } from '@/lib/utils'
-
-type Status = 'verifying' | 'success' | 'error'
+import { toast } from 'sonner'
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const token = searchParams.get('token')
-  const [status, setStatus] = useState<Status>(token ? 'verifying' : 'error')
-  const [error, setError] = useState('')
+  const email = searchParams.get('email')
+  
+  const [code, setCode] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isResending, setIsResending] = useState(false)
 
-  useEffect(() => {
-    if (!token) { setStatus('error'); setError('Token verifikasi tidak ditemukan.'); return }
-    api.get(`/auth/verify-email?token=${token}`)
-      .then(() => setStatus('success'))
-      .catch((err) => {
-        setStatus('error')
-        setError(err?.response?.data?.message || 'Link verifikasi tidak valid atau sudah kedaluwarsa.')
-      })
-  }, [token])
+  const handleVerify = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!email) {
+      toast.error('Email tidak ditemukan. Silakan daftar ulang.')
+      return
+    }
+    if (code.length !== 6) {
+      toast.error('Kode OTP harus 6 digit')
+      return
+    }
+
+    setIsSubmitting(true)
+    try {
+      await api.post('/auth/verify-email', { email, code })
+      toast.success('Email berhasil diverifikasi! Silakan login.')
+      router.replace(ROUTES.LOGIN)
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || 'Kode OTP salah atau sudah kedaluwarsa')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleResend = async () => {
+    if (!email) return
+    setIsResending(true)
+    try {
+      await api.post('/auth/resend-verify', { email })
+      toast.success('Kode OTP baru telah dikirim ke email Anda.')
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || 'Gagal mengirim ulang OTP')
+    } finally {
+      setIsResending(false)
+    }
+  }
 
   return (
     <div className="auth-layout">
       <div className="auth-card" style={{ textAlign: 'center' }}>
-        {status === 'verifying' && (
-          <>
-            <Loader2 size={48} color="var(--color-primary)" style={{ margin: '0 auto var(--space-5)', animation: 'spin 1s linear infinite' }} />
-            <h1 style={{ fontSize: 'var(--text-xl)', fontWeight: 800 }}>Memverifikasi Email...</h1>
-            <p style={{ color: 'var(--color-text-secondary)', marginTop: 'var(--space-3)', fontSize: 'var(--text-sm)' }}>Mohon tunggu sebentar.</p>
-          </>
-        )}
+        <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'var(--color-primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto var(--space-5)' }}>
+          <MailCheck size={32} color="var(--color-primary)" />
+        </div>
+        
+        <h1 style={{ fontSize: 'var(--text-xl)', fontWeight: 800, marginBottom: 'var(--space-2)' }}>Verifikasi Email</h1>
+        <p style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--text-sm)', marginBottom: 'var(--space-6)', lineHeight: 'var(--leading-relaxed)' }}>
+          Kami telah mengirimkan 6-digit kode OTP ke <strong>{email || 'email Anda'}</strong>. Masukkan kode tersebut di bawah ini.
+        </p>
 
-        {status === 'success' && (
-          <>
-            <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'var(--color-primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto var(--space-5)' }}>
-              <CheckCircle2 size={32} color="var(--color-primary)" />
-            </div>
-            <h1 style={{ fontSize: 'var(--text-xl)', fontWeight: 800, marginBottom: 'var(--space-3)' }}>Email Terverifikasi! 🎉</h1>
-            <p style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--text-sm)', marginBottom: 'var(--space-6)', lineHeight: 'var(--leading-relaxed)' }}>
-              Selamat! Email kamu sudah berhasil diverifikasi. Kamu sekarang bisa menggunakan semua fitur Metro Institute.
-            </p>
-            <Link href={ROUTES.LOGIN} className="btn btn-primary" style={{ width: '100%' }}>Login Sekarang</Link>
-          </>
-        )}
+        <form onSubmit={handleVerify} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)', marginBottom: 'var(--space-6)' }}>
+          <input
+            type="text"
+            maxLength={6}
+            value={code}
+            onChange={(e) => setCode(e.target.value.replace(/[^0-9]/g, ''))}
+            placeholder="Kode OTP (6 Digit)"
+            style={{ 
+              width: '100%', padding: '16px', fontSize: '24px', letterSpacing: '8px', 
+              textAlign: 'center', borderRadius: '12px', border: '2px solid var(--color-border)',
+              outline: 'none', background: '#FAFAFA', fontWeight: 'bold'
+            }}
+          />
+          <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={isSubmitting || code.length !== 6}>
+            {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : 'Verifikasi Sekarang'}
+          </button>
+        </form>
 
-        {status === 'error' && (
-          <>
-            <div style={{ width: 64, height: 64, borderRadius: '50%', background: '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto var(--space-5)' }}>
-              <XCircle size={32} color="#EF4444" />
-            </div>
-            <h1 style={{ fontSize: 'var(--text-xl)', fontWeight: 800, marginBottom: 'var(--space-3)' }}>Verifikasi Gagal</h1>
-            <p style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--text-sm)', marginBottom: 'var(--space-6)', lineHeight: 'var(--leading-relaxed)' }}>{error}</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
-              <Link href="/resend-verify" className="btn btn-primary" style={{ width: '100%', gap: 'var(--space-2)' }}>
-                <MailCheck size={16} /> Kirim Ulang Email Verifikasi
-              </Link>
-              <Link href={ROUTES.LOGIN} className="btn btn-secondary" style={{ width: '100%' }}>Kembali ke Login</Link>
-            </div>
-          </>
-        )}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+          <button onClick={handleResend} disabled={isResending} className="btn btn-secondary" style={{ width: '100%', background: 'transparent', border: '1px solid var(--color-border)' }}>
+            {isResending ? 'Mengirim ulang...' : 'Kirim Ulang Kode OTP'}
+          </button>
+          <Link href={ROUTES.LOGIN} className="btn btn-secondary" style={{ width: '100%', background: 'transparent', border: 'none', color: 'var(--color-text-secondary)' }}>
+            Kembali ke Login
+          </Link>
+        </div>
       </div>
     </div>
   )
