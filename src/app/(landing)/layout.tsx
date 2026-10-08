@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: 'Metro Institute — Akselerasi Karir Digitalmu',
   description: 'Platform edukasi digital untuk mencetak talent teknologi berkualitas yang siap bersaing di industri global.',
   icons: {
-    icon: '/icon.png',
+    icon: '/icon.jpg',
   },
 }
 
