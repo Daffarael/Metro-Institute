@@ -45,7 +45,7 @@ export default function BootcampParticipantsPage() {
 
   const { data: bootcamp } = useQuery<Bootcamp>({
     queryKey: ['admin', 'bootcamp', bootcampId],
-    queryFn: () => api.get(`/bootcamp/${bootcampId}`).then(r => r.data.data),
+    queryFn: () => api.get(`/admin/bootcamps/${bootcampId}`).then(r => r.data.data),
   })
 
   const { data, isLoading } = useQuery({
@@ -78,10 +78,10 @@ export default function BootcampParticipantsPage() {
     <div>
       <AdminPageHeader
         title="Peserta Bootcamp"
-        description={bootcamp?.name}
+        description={bootcamp?.title}
         breadcrumbs={[
           { label: 'Bootcamp', href: '/admin/bootcamp' },
-          { label: bootcamp?.name ?? '...', href: '/admin/bootcamp' },
+          { label: bootcamp?.title ?? '...', href: '/admin/bootcamp' },
           { label: 'Peserta' },
         ]}
       />

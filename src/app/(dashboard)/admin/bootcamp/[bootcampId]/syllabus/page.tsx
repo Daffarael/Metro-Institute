@@ -398,10 +398,10 @@ export default function BootcampSyllabusPage() {
     <div style={{ paddingBottom: 'var(--space-20)' }}>
       <AdminPageHeader
         title="Kurikulum & Silabus"
-        description={bootcamp?.name ?? 'Memuat...'}
+        description={bootcamp?.title ?? 'Memuat...'}
         breadcrumbs={[
           { label: 'Bootcamp', href: '/admin/bootcamp' },
-          { label: bootcamp?.name ?? '...' },
+          { label: bootcamp?.title ?? '...' },
           { label: 'Syllabus' },
         ]}
         action={

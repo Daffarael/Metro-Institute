@@ -64,8 +64,8 @@ function ScheduleModal({ bootcampId, schedule, onClose }: {
   const mutation = useMutation({
     mutationFn: (data: ScheduleForm) =>
       isEdit
-        ? api.patch(`/bootcamp/schedules/${schedule!.id}`, data).then(r => r.data)
-        : api.post(`/bootcamp/${bootcampId}/schedules`, data).then(r => r.data),
+        ? api.put(`/admin/bootcamps/${bootcampId}/sessions/${schedule!.id}`, data).then(r => r.data)
+        : api.post(`/admin/bootcamps/${bootcampId}/schedules`, data).then(r => r.data),
     onSuccess: () => {
       toast.success(isEdit ? 'Jadwal diperbarui.' : 'Jadwal ditambahkan.')
       qc.invalidateQueries({ queryKey: ['admin', 'bootcamp', bootcampId, 'schedules'] })
@@ -130,17 +130,17 @@ export default function BootcampSchedulesPage() {
 
   const { data: bootcamp } = useQuery<Bootcamp>({
     queryKey: ['admin', 'bootcamp', bootcampId],
-    queryFn: () => api.get(`/bootcamp/${bootcampId}`).then(r => r.data.data),
+    queryFn: () => api.get(`/admin/bootcamps/${bootcampId}`).then(r => r.data.data),
   })
 
   const { data: schedules, isLoading } = useQuery<LiveSchedule[]>({
     queryKey: ['admin', 'bootcamp', bootcampId, 'schedules'],
-    queryFn: () => api.get(`/bootcamp/${bootcampId}/schedules`).then(r => r.data.data ?? []),
+    queryFn: () => api.get(`/admin/bootcamps/${bootcampId}/schedules`).then(r => r.data.data ?? []),
     staleTime: 2 * 60 * 1000,
   })
 
   const deleteSchedule = useMutation({
-    mutationFn: (id: string) => api.delete(`/bootcamp/schedules/${id}`),
+    mutationFn: (id: string) => api.delete(`/admin/bootcamps/${bootcampId}/sessions/${id}`),
     onSuccess: () => {
       toast.success('Jadwal dihapus.')
       qc.invalidateQueries({ queryKey: ['admin', 'bootcamp', bootcampId, 'schedules'] })
@@ -156,7 +156,7 @@ export default function BootcampSchedulesPage() {
     const toastId = toast.loading('Mengupload rekaman...')
     try {
       const { data: uploadData } = await api.post('/upload/image', form, { headers: { 'Content-Type': 'multipart/form-data' } })
-      await api.patch(`/bootcamp/schedules/${scheduleId}`, { recordingUrl: uploadData.url })
+      await api.put(`/admin/bootcamps/${bootcampId}/sessions/${scheduleId}`, { recordingUrl: uploadData.url })
       qc.invalidateQueries({ queryKey: ['admin', 'bootcamp', bootcampId, 'schedules'] })
       toast.success('Rekaman berhasil diupload.', { id: toastId })
     } catch {
@@ -170,22 +170,18 @@ export default function BootcampSchedulesPage() {
     <div>
       <AdminPageHeader
         title="Jadwal Live Class"
-        description={bootcamp?.name}
+        description={bootcamp?.title}
         breadcrumbs={[
           { label: 'Bootcamp', href: '/admin/bootcamp' },
-          { label: bootcamp?.name ?? '...', href: '/admin/bootcamp' },
+          { label: bootcamp?.title ?? '...', href: '/admin/bootcamp' },
           { label: 'Jadwal Live' },
         ]}
-        action={
-          <button onClick={() => setModal('new')} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 16px', borderRadius: 'var(--radius-md)', background: 'var(--color-primary)', color: '#fff', border: 'none', fontSize: 'var(--text-sm)', fontWeight: 700, cursor: 'pointer' }}>
-            <Plus size={16} /> Tambah Jadwal
-          </button>
-        }
+        action={null}
       />
 
       {isLoading ? <AdminTableSkeleton rows={5} cols={6} /> : sorted.length === 0 ? (
         <div className="card">
-          <AdminEmptyState type="empty" message="Belum ada jadwal live class." action={<button onClick={() => setModal('new')} style={{ padding: '8px 16px', borderRadius: 'var(--radius-md)', background: 'var(--color-primary)', color: '#fff', border: 'none', fontWeight: 600, cursor: 'pointer' }}>+ Tambah Jadwal</button>} />
+          <AdminEmptyState type="empty" message="Belum ada jadwal live class. Tambahkan materi bertipe 'LIVE' melalui menu Silabus." action={null} />
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
