@@ -78,18 +78,18 @@ function VerifyEmailContent() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-6 bg-[#09090b]">
-      <Card className="w-full max-w-md !bg-[#141416] !text-white !border-white/10 shadow-2xl">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">Verify Your Code</CardTitle>
-          <CardDescription className="text-zinc-400">
-            Enter the 6-digit code sent to your device
+    <div className="flex min-h-screen flex-col items-center justify-center p-6 bg-slate-50">
+      <Card className="w-full max-w-md bg-white border-slate-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-2xl overflow-hidden">
+        <CardHeader className="text-center pb-8 pt-10">
+          <CardTitle className="text-2xl font-bold text-slate-900">Verifikasi Email</CardTitle>
+          <CardDescription className="text-slate-500 mt-2 text-base">
+            Masukkan 6 digit kode yang dikirim ke perangkat Anda
           </CardDescription>
           {email && (
-            <p className="text-sm text-zinc-500 mt-2">{email}</p>
+            <p className="text-sm font-medium text-slate-900 mt-1">{email}</p>
           )}
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-8 pb-10">
           <div className="flex justify-center">
             <AnimatedOTPInput
               value={value}
@@ -109,38 +109,36 @@ function VerifyEmailContent() {
                 className="space-y-4 text-center"
               >
                 {isLoading ? (
-                  <div className="text-zinc-400 flex items-center justify-center space-x-2">
+                  <div className="text-slate-500 flex items-center justify-center space-x-2 font-medium">
                     <RefreshCw className="h-4 w-4 animate-spin" />
-                    <span>Verifying code...</span>
+                    <span>Memverifikasi kode...</span>
                   </div>
                 ) : (
-                  <div className="flex items-center justify-center space-x-2 text-green-500">
-                    <CheckCircle className="h-4 w-4" />
-                    <span className="font-medium">
-                      Code verified successfully!
-                    </span>
+                  <div className="flex items-center justify-center space-x-2 text-green-600 font-medium">
+                    <CheckCircle className="h-5 w-5" />
+                    <span>Verifikasi Berhasil!</span>
                   </div>
                 )}
               </motion.div>
             )}
           </AnimatePresence>
 
-          <div className="flex justify-center flex-col gap-3">
+          <div className="flex justify-center flex-col gap-3 pt-4">
             <Button 
               variant="outline" 
               onClick={handleResend} 
               disabled={isLoading}
-              className="w-full bg-transparent border-white/10 hover:bg-white/10 text-white"
+              className="w-full h-11 border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-slate-900 rounded-xl font-medium transition-colors"
             >
-              Resend Code
+              Kirim Ulang Kode
             </Button>
             <Button 
               variant="ghost" 
               onClick={handleReset} 
               disabled={isLoading || value.length === 0}
-              className="w-full text-zinc-400 hover:text-white hover:bg-white/5"
+              className="w-full text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-xl font-medium"
             >
-              Clear Input
+              Hapus Input
             </Button>
           </div>
         </CardContent>
@@ -151,7 +149,7 @@ function VerifyEmailContent() {
 
 export default function VerifyEmailPage() {
   return (
-    <React.Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#09090b]"><Loader2 className="w-8 h-8 animate-spin text-white" /></div>}>
+    <React.Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-slate-50"><Loader2 className="w-8 h-8 animate-spin text-slate-400" /></div>}>
       <VerifyEmailContent />
     </React.Suspense>
   )

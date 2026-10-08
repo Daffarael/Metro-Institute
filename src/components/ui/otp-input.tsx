@@ -96,7 +96,7 @@ function AnimatedInputOTPSlot({
       data-slot="input-otp-slot"
       data-active={isActive}
       className={cn(
-        "relative flex h-14 w-12 sm:h-16 sm:w-14 items-center justify-center border-y border-r !border-white/10 !bg-[#1c1c1e] !text-white text-xl sm:text-2xl font-semibold shadow-xs transition-all outline-none first:rounded-l-xl first:border-l last:rounded-r-xl data-[active=true]:z-10 data-[active=true]:!border-white/40 data-[active=true]:ring-2 data-[active=true]:ring-white/10",
+        "relative flex h-14 w-12 sm:h-16 sm:w-14 items-center justify-center border-y border-r border-slate-200 bg-white text-slate-900 text-xl sm:text-2xl font-medium shadow-sm transition-all outline-none first:rounded-l-xl first:border-l last:rounded-r-xl data-[active=true]:z-10 data-[active=true]:border-slate-400 data-[active=true]:ring-4 data-[active=true]:ring-slate-100",
         className
       )}
       initial={{ opacity: 0, scale: 0.8, y: 10 }}
@@ -151,7 +151,7 @@ function AnimatedInputOTPSlot({
           transition={{ duration: 0.1 }}
         >
           <motion.div
-            className="!bg-white/80 h-6 w-[2px] rounded-full"
+            className="bg-slate-900 h-6 w-[2px] rounded-full"
             animate={{ opacity: [0, 1, 0] }}
             transition={{
               duration: 1,
@@ -178,7 +178,7 @@ function AnimatedInputOTPSeparator({ ...props }: React.ComponentProps<"div">) {
       }}
       {...(props as any)}
     >
-      <MinusIcon className="text-white/40 h-4 w-4 mx-2" />
+      <MinusIcon className="text-slate-300 h-4 w-4 mx-2" />
     </motion.div>
   )
 }
