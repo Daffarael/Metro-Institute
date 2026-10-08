@@ -232,10 +232,10 @@ export function AnimatedNavFramer({ items = DEFAULT_NAV_ITEMS }: { items?: NavIt
                 <img
                   src="/logo-metro-clean.png"
                   alt="Metro Institute"
-                  className="h-7 w-auto"
+                  className="h-6 w-auto flex-shrink-0 object-contain"
                   style={{ filter: "brightness(0) saturate(100%) invert(14%) sepia(12%) saturate(2135%) hue-rotate(192deg) brightness(95%) contrast(90%)" }}
                 />
-                <div className="w-px h-4 bg-gray-200" />
+                <div className="w-px h-4 bg-gray-200 flex-shrink-0" />
                 <MenuToggle
                   open={mobileOpen}
                   onOpenChange={() => {}}
