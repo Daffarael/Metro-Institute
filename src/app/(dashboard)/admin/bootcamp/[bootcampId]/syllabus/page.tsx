@@ -186,15 +186,6 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
             </div>
           )}
 
-
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'var(--color-bg)', padding: '12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border-subtle)' }}>
-            <input type="checkbox" id="isPreview" checked={form.isPreview} onChange={e => f('isPreview', e.target.checked)} style={{ width: 18, height: 18, accentColor: 'var(--color-primary)' }} />
-            <div>
-              <label htmlFor="isPreview" style={{ fontSize: 'var(--text-sm)', fontWeight: 600, cursor: 'pointer', display: 'block' }}>Jadikan Preview Gratis</label>
-              <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)' }}>Non-member bisa melihat materi ini sebagai percobaan.</span>
-            </div>
-          </div>
         </div>
         <div style={{ display: 'flex', gap: 'var(--space-3)', justifyContent: 'flex-end', marginTop: 'var(--space-6)' }}>
           <button onClick={onClose} style={{ padding: '10px 18px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', background: 'transparent', cursor: 'pointer', fontWeight: 600 }}>Batal</button>
@@ -236,9 +227,7 @@ function SortableSessionItem({ session, setDeleteTarget }: { session: BootcampSe
       <span style={{ padding: '4px 10px', borderRadius: 'var(--radius-full)', background: typeConfig.bg, color: typeConfig.color, fontSize: '11px', fontWeight: 700, letterSpacing: '0.02em' }}>
         {session.type}
       </span>
-      {session.isPreview && (
-        <span style={{ padding: '4px 10px', borderRadius: 'var(--radius-full)', background: 'var(--color-accent-light)', color: '#856404', fontSize: '11px', fontWeight: 700 }}>PREVIEW</span>
-      )}
+
       <button onClick={() => setDeleteTarget({ type: 'session', id: session.id, edit: true, session })} style={{ width: 32, height: 32, borderRadius: 'var(--radius-md)', border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-secondary)' }} title="Edit Materi">
         <Edit size={15} />
       </button>
