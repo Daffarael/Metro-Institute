@@ -38,9 +38,9 @@ const scheduleSchema = z.object({
 type ScheduleForm = z.infer<typeof scheduleSchema>
 
 const inputStyle: React.CSSProperties = {
-  width: '100%', padding: '8px 12px',
+  width: '100%', padding: '10px 14px',
   borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)',
-  fontSize: 'var(--text-sm)', background: 'var(--color-surface)',
+  fontSize: 'var(--text-sm)', background: 'var(--color-bg)',
   color: 'var(--color-text-primary)', outline: 'none',
 }
 
@@ -86,31 +86,31 @@ function ScheduleModal({ bootcampId, schedule, onClose }: {
           mutation.mutate(d as any)
         })} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
           <div>
-            <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 4 }}>Judul Sesi *</label>
-            <input {...register('title')} style={inputStyle} placeholder="Sesi 1 — Pengenalan Design Thinking" />
+            <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Judul Sesi <span style={{ color: 'var(--color-error)' }}>*</span></label>
+            <input {...register('title')} style={inputStyle} placeholder="Contoh: Sesi 1 (Pengenalan Design Thinking)" />
             {errors.title && <p style={{ color: 'var(--color-error)', fontSize: 'var(--text-xs)', marginTop: 3 }}>{errors.title.message}</p>}
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-3)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)' }}>
             <div>
-              <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 4 }}>Jadwal (Tanggal & Jam) *</label>
+              <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Jadwal (Tanggal & Jam) <span style={{ color: 'var(--color-error)' }}>*</span></label>
               <input type="datetime-local" {...register('scheduledAt')} style={inputStyle} />
             </div>
             <div>
-              <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 4 }}>Durasi (menit) *</label>
+              <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Durasi (menit) <span style={{ color: 'var(--color-error)' }}>*</span></label>
               <input type="number" {...register('durationMin', { valueAsNumber: true })} style={inputStyle} min={5} max={480} />
             </div>
           </div>
 
           <div>
-            <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 4 }}>Link Meeting (Google Meet / Zoom) *</label>
+            <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Link Meeting (Google Meet / Zoom) <span style={{ color: 'var(--color-error)' }}>*</span></label>
             <input {...register('meetingUrl')} style={inputStyle} placeholder="https://meet.google.com/xxx-xxxx-xxx" />
             {errors.meetingUrl && <p style={{ color: 'var(--color-error)', fontSize: 'var(--text-xs)', marginTop: 3 }}>{errors.meetingUrl.message}</p>}
           </div>
 
           <div>
-            <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 4 }}>Window Absensi (menit) — Default 30</label>
+            <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Window Absensi (menit) (Default: 30)</label>
             <input type="number" {...register('attendanceWindowMin', { valueAsNumber: true })} style={inputStyle} min={5} max={120} />
-            <p style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 3 }}>Mentee bisa absen dalam X menit pertama sesi.</p>
+            <p style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 4 }}>Mentee bisa absen dalam X menit pertama sesi.</p>
           </div>
           <div style={{ display: 'flex', gap: 'var(--space-3)', justifyContent: 'flex-end', paddingTop: 'var(--space-2)' }}>
             <button type="button" onClick={onClose} style={{ padding: '9px 20px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', background: 'transparent', fontSize: 'var(--text-sm)', fontWeight: 500, cursor: 'pointer' }}>Batal</button>
