@@ -1,114 +1,158 @@
 'use client'
 
-import { useState, Suspense } from 'react'
+import * as React from "react"
 import { useSearchParams, useRouter } from 'next/navigation'
-import { Loader2 } from 'lucide-react'
+import { CheckCircle, RefreshCw, Loader2 } from "lucide-react"
+import { motion } from "motion/react"
 import api from '@/lib/axios'
 import { ROUTES } from '@/lib/utils'
 import { toast } from 'sonner'
-import { AnimatedOTPInput } from '@/components/ui/animated-otp-input'
+
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { AnimatedOTPInput } from "@/components/ui/otp-input"
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const email = searchParams.get('email')
-  
-  const [code, setCode] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isResending, setIsResending] = useState(false)
 
-  const submitCode = async (otpString: string) => {
+  const [value, setValue] = React.useState("")
+  const [isComplete, setIsComplete] = React.useState(false)
+  const [isLoading, setIsLoading] = React.useState(false)
+
+  const handleComplete = async (otp: string) => {
+    setValue(otp)
+    setIsComplete(true)
+    setIsLoading(true)
+
     if (!email) {
       toast.error('Email tidak ditemukan. Silakan daftar ulang.')
+      setIsLoading(false)
+      setIsComplete(false)
       return
     }
 
-    setIsSubmitting(true)
     try {
-      await api.post('/auth/verify-email', { email, code: otpString })
+      await api.post('/auth/verify-email', { email, code: otp })
       toast.success('Email berhasil diverifikasi! Silakan login.')
-      router.replace(ROUTES.LOGIN)
+      
+      // Give a tiny moment for the success animation to be seen
+      setTimeout(() => {
+        router.replace(ROUTES.LOGIN)
+      }, 1000)
     } catch (err: any) {
       toast.error(err?.response?.data?.message || 'Kode OTP salah atau sudah kedaluwarsa')
-      setCode('')
+      handleReset()
     } finally {
-      setIsSubmitting(false)
+      setIsLoading(false)
     }
   }
 
-  const handleVerify = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (code.length !== 6) {
-      toast.error('Silakan lengkapi 6 digit kode OTP')
-      return
-    }
-    submitCode(code)
+  const handleReset = async () => {
+    // Treat Reset as resend in our context, or just reset the UI state
+    // Let's reset UI state, but if they click button "Reset Code", we can also resend
+    setValue("")
+    setIsComplete(false)
+    setIsLoading(false)
   }
 
   const handleResend = async () => {
     if (!email) return
-    setIsResending(true)
+    setIsLoading(true)
     try {
       await api.post('/auth/resend-verify', { email })
       toast.success('Kode OTP baru telah dikirim ke email Anda.')
-      setCode('')
+      handleReset()
     } catch (err: any) {
       toast.error(err?.response?.data?.message || 'Gagal mengirim ulang OTP')
     } finally {
-      setIsResending(false)
+      setIsLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#09090b] p-4 font-sans selection:bg-white/20 selection:text-white">
-      <div className="w-full max-w-[420px] bg-[#141416] rounded-2xl p-8 sm:p-10 border border-white/10 shadow-2xl">
-        <div className="flex flex-col items-center text-center mb-8">
-          <h1 className="text-3xl font-bold text-white tracking-tight mb-3">Verifikasi Email</h1>
-          <p className="text-base text-[#a1a1aa] leading-relaxed">
-            Masukkan 6 digit kode yang dikirim ke <br />
-            <span className="text-[#e4e4e7]">{email || 'email Anda'}</span>
-          </p>
-        </div>
-
-        <form onSubmit={handleVerify} className="space-y-8">
-          <div className="flex justify-center w-full">
+    <div className="flex min-h-screen flex-col items-center justify-center p-6 bg-[#09090b]">
+      <Card className="w-full max-w-md bg-[#141416] text-white border-white/10 shadow-2xl">
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl font-bold">Verify Your Code</CardTitle>
+          <CardDescription className="text-zinc-400">
+            Enter the 6-digit code sent to your device
+          </CardDescription>
+          {email && (
+            <p className="text-sm text-zinc-500 mt-2">{email}</p>
+          )}
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="flex justify-center">
             <AnimatedOTPInput
-              value={code}
-              onChange={(val) => setCode(val)}
-              onComplete={(val) => {
-                setTimeout(() => submitCode(val), 100)
-              }}
+              value={value}
+              onChange={setValue}
+              onComplete={handleComplete}
               maxLength={6}
             />
           </div>
-          
-          <button 
-            type="submit" 
-            disabled={isSubmitting || code.length !== 6}
-            className="w-full h-12 bg-black hover:bg-[#18181b] border border-white/10 text-white rounded-xl font-medium text-[15px] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-          >
-            {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Verifikasi'}
-          </button>
-        </form>
 
-        <div className="mt-6 text-center">
-          <button 
-            onClick={handleResend} 
-            disabled={isResending} 
-            className="text-sm font-medium text-[#a1a1aa] hover:text-white transition-colors disabled:opacity-50"
-          >
-            {isResending ? 'Mengirim ulang...' : 'Kirim Ulang Kode OTP'}
-          </button>
-        </div>
-      </div>
+          <AnimatePresence mode="wait">
+            {isComplete && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                className="space-y-4 text-center"
+              >
+                {isLoading ? (
+                  <div className="text-zinc-400 flex items-center justify-center space-x-2">
+                    <RefreshCw className="h-4 w-4 animate-spin" />
+                    <span>Verifying code...</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center space-x-2 text-green-500">
+                    <CheckCircle className="h-4 w-4" />
+                    <span className="font-medium">
+                      Code verified successfully!
+                    </span>
+                  </div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <div className="flex justify-center flex-col gap-3">
+            <Button 
+              variant="outline" 
+              onClick={handleResend} 
+              disabled={isLoading}
+              className="w-full bg-transparent border-white/10 hover:bg-white/10 text-white"
+            >
+              Resend Code
+            </Button>
+            <Button 
+              variant="ghost" 
+              onClick={handleReset} 
+              disabled={isLoading || value.length === 0}
+              className="w-full text-zinc-400 hover:text-white hover:bg-white/5"
+            >
+              Clear Input
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }
 
 export default function VerifyEmailPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#09090b]"><Loader2 className="w-8 h-8 animate-spin text-white" /></div>}>
+    <React.Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#09090b]"><Loader2 className="w-8 h-8 animate-spin text-white" /></div>}>
       <VerifyEmailContent />
-    </Suspense>
+    </React.Suspense>
   )
 }
