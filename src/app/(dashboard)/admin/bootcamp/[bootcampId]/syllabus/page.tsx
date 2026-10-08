@@ -2,7 +2,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useParams } from 'next/navigation'
-import { Plus, GripVertical, Trash2, ChevronDown, ChevronRight, X, LayoutTemplate, Video, FileText, Target, Info } from 'lucide-react'
+import { Plus, GripVertical, Trash2, ChevronDown, ChevronRight, X, LayoutTemplate, Video, FileText, Target, Info, Edit } from 'lucide-react'
 import api from '@/lib/axios'
 import AdminPageHeader from '@/components/admin/AdminPageHeader'
 import AdminConfirmModal from '@/components/admin/AdminConfirmModal'
@@ -92,23 +92,28 @@ function AddChapterModal({ bootcampId, onClose }: any) {
   )
 }
 
-function AddSessionModal({ bootcampId, chapterId, onClose }: any) {
+function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
   const qc = useQueryClient()
   const [form, setForm] = useState({ 
-    title: '', 
-    type: 'VIDEO' as BootcampSession['type'], 
-    videoUrl: '', 
-    materialUrl: '', 
-    isPreview: false,
-    assignmentDescription: '',
-    assignmentDeadline: ''
+    title: editSession?.title || '', 
+    type: editSession?.type || ('VIDEO' as BootcampSession['type']), 
+    videoUrl: editSession?.videoUrl || '', 
+    materialUrl: editSession?.materials?.[0]?.url || '', 
+    isPreview: editSession?.isFreePreview || false,
+    assignmentDescription: editSession?.assignmentDescription || '',
+    assignmentDeadline: editSession?.assignmentDeadline ? editSession.assignmentDeadline.split('T')[0] : ''
   })
   const f = (k: string, v: any) => setForm(p => ({ ...p, [k]: v }))
 
   const mutation = useMutation({
     mutationFn: () => {
-      let payload: any = { ...form, order: 0 }
-      return api.post(`/admin/bootcamps/${bootcampId}/chapters/${chapterId}/sessions`, payload)
+      let payload: any = { ...form }
+      if (editSession) {
+        return api.put(`/admin/bootcamps/${bootcampId}/sessions/${editSession.id}`, payload)
+      } else {
+        payload.order = 0
+        return api.post(`/admin/bootcamps/${bootcampId}/chapters/${chapterId}/sessions`, payload)
+      }
     },
     onSuccess: () => {
       toast.success('Materi berhasil ditambahkan.')
@@ -235,6 +240,9 @@ function SortableSessionItem({ session, setDeleteTarget }: { session: BootcampSe
       {session.isPreview && (
         <span style={{ padding: '4px 10px', borderRadius: 'var(--radius-full)', background: 'var(--color-accent-light)', color: '#856404', fontSize: '11px', fontWeight: 700 }}>PREVIEW</span>
       )}
+      <button onClick={() => setDeleteTarget({ type: 'session', id: session.id, edit: true, session })} style={{ width: 32, height: 32, borderRadius: 'var(--radius-md)', border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-secondary)' }} title="Edit Materi">
+        <Edit size={15} />
+      </button>
       <button onClick={() => setDeleteTarget({ type: 'session', id: session.id })} style={{ width: 32, height: 32, borderRadius: 'var(--radius-md)', border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-tertiary)' }} title="Hapus Materi">
         <Trash2 size={15} />
       </button>
@@ -314,7 +322,7 @@ export default function BootcampSyllabusPage() {
   const [localChapters, setLocalChapters] = useState<BootcampChapter[]>([])
   const [showAddChapter, setShowAddChapter] = useState(false)
   const [addSessionToChapter, setAddSessionToChapter] = useState<string | null>(null)
-  const [deleteTarget, setDeleteTarget] = useState<{ type: 'chapter' | 'session'; id: string } | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<any>(null)
 
   const { data: bootcamp } = useQuery<Bootcamp>({
     queryKey: ['admin', 'bootcamp', bootcampId],
@@ -447,7 +455,38 @@ export default function BootcampSyllabusPage() {
       )}
 
       {showAddChapter && <AddChapterModal bootcampId={bootcampId} onClose={() => setShowAddChapter(false)} />}
+      
       {addSessionToChapter && <AddSessionModal bootcampId={bootcampId} chapterId={addSessionToChapter} onClose={() => setAddSessionToChapter(null)} />}
+      
+      {deleteTarget?.edit && <AddSessionModal bootcampId={bootcampId} chapterId={null} editSession={deleteTarget.session} onClose={() => setDeleteTarget(null)} />}
+      
+      {deleteTarget && !deleteTarget.edit && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ background: 'var(--color-surface)', width: 400, borderRadius: 'var(--radius-2xl)', padding: 'var(--space-6)' }}>
+            <h3 style={{ fontSize: 'var(--text-xl)', fontWeight: 700, marginBottom: 16 }}>Hapus {deleteTarget.type === 'chapter' ? 'Bab' : 'Materi'}?</h3>
+            <p style={{ color: 'var(--color-text-secondary)', marginBottom: 24 }}>Tindakan ini tidak dapat dibatalkan. Yakin ingin menghapus?</p>
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+              <button onClick={() => setDeleteTarget(null)} style={{ padding: '8px 16px', borderRadius: 8, background: 'var(--color-bg)', border: 'none', cursor: 'pointer', fontWeight: 600 }}>Batal</button>
+              <button 
+                onClick={async () => {
+                  try {
+                    const endpoint = deleteTarget.type === 'chapter' 
+                      ? `/admin/bootcamps/${bootcampId}/chapters/${deleteTarget.id}` 
+                      : `/admin/bootcamps/${bootcampId}/sessions/${deleteTarget.id}`
+                    await api.delete(endpoint)
+                    toast.success('Berhasil dihapus!')
+                    qc.invalidateQueries({ queryKey: ['admin', 'bootcamp', bootcampId, 'syllabus'] })
+                    setDeleteTarget(null)
+                  } catch (err) { toast.error('Gagal menghapus.') }
+                }} 
+                style={{ padding: '8px 16px', borderRadius: 8, background: 'var(--color-error)', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 600 }}
+              >
+                Ya, Hapus
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
