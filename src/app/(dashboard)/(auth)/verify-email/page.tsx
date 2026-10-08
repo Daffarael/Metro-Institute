@@ -2,12 +2,10 @@
 
 import { useState, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { Loader2, ArrowLeft, ShieldCheck } from 'lucide-react'
-import Link from 'next/link'
+import { Loader2 } from 'lucide-react'
 import api from '@/lib/axios'
 import { ROUTES } from '@/lib/utils'
 import { toast } from 'sonner'
-import { motion } from 'framer-motion'
 import { AnimatedOTPInput } from '@/components/ui/animated-otp-input'
 
 function VerifyEmailContent() {
@@ -16,7 +14,6 @@ function VerifyEmailContent() {
   const email = searchParams.get('email')
   
   const [code, setCode] = useState('')
-
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isResending, setIsResending] = useState(false)
 
@@ -63,21 +60,13 @@ function VerifyEmailContent() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-zinc-50 p-4 font-sans selection:bg-zinc-900 selection:text-white">
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.95, y: 10 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        className="w-full max-w-[440px] bg-white rounded-2xl p-8 sm:p-10 shadow-sm border border-zinc-200/50"
-      >
-        <div className="flex flex-col items-center mb-8">
-          <div className="w-12 h-12 bg-zinc-900 rounded-xl flex items-center justify-center mb-6 shadow-sm">
-            <ShieldCheck className="w-6 h-6 text-white" strokeWidth={2} />
-          </div>
-          <h1 className="text-2xl font-semibold text-zinc-900 tracking-tight mb-2">Verifikasi Email</h1>
-          <p className="text-sm text-zinc-500 text-center leading-relaxed">
-            Masukkan 6 digit kode OTP yang telah kami kirimkan ke <br/>
-            <span className="font-medium text-zinc-900">{email || 'email Anda'}</span>
+    <div className="min-h-screen flex items-center justify-center bg-[#09090b] p-4 font-sans selection:bg-white/20 selection:text-white">
+      <div className="w-full max-w-[420px] bg-[#141416] rounded-2xl p-8 sm:p-10 border border-white/10 shadow-2xl">
+        <div className="flex flex-col items-center text-center mb-8">
+          <h1 className="text-3xl font-bold text-white tracking-tight mb-3">Verifikasi Email</h1>
+          <p className="text-base text-[#a1a1aa] leading-relaxed">
+            Masukkan 6 digit kode yang dikirim ke <br />
+            <span className="text-[#e4e4e7]">{email || 'email Anda'}</span>
           </p>
         </div>
 
@@ -96,36 +85,29 @@ function VerifyEmailContent() {
           <button 
             type="submit" 
             disabled={isSubmitting || code.length !== 6}
-            className="w-full h-12 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl font-medium text-[15px] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+            className="w-full h-12 bg-black hover:bg-[#18181b] border border-white/10 text-white rounded-xl font-medium text-[15px] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
           >
-            {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Verifikasi Sekarang'}
+            {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Verifikasi'}
           </button>
         </form>
 
-        <div className="mt-8 text-center">
+        <div className="mt-6 text-center">
           <button 
             onClick={handleResend} 
             disabled={isResending} 
-            className="text-sm font-medium text-zinc-500 hover:text-zinc-900 transition-colors disabled:opacity-50"
+            className="text-sm font-medium text-[#a1a1aa] hover:text-white transition-colors disabled:opacity-50"
           >
-            {isResending ? 'Mengirim ulang...' : 'Belum menerima kode? Kirim Ulang'}
+            {isResending ? 'Mengirim ulang...' : 'Kirim Ulang Kode OTP'}
           </button>
         </div>
-
-        <div className="mt-8 pt-6 border-t border-zinc-100 flex justify-center">
-          <Link href={ROUTES.LOGIN} className="inline-flex items-center gap-2 text-sm font-medium text-zinc-400 hover:text-zinc-900 transition-colors">
-            <ArrowLeft className="w-4 h-4" />
-            Kembali ke Login
-          </Link>
-        </div>
-      </motion.div>
+      </div>
     </div>
   )
 }
 
 export default function VerifyEmailPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-zinc-50"><Loader2 className="w-8 h-8 animate-spin text-zinc-900" /></div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#09090b]"><Loader2 className="w-8 h-8 animate-spin text-white" /></div>}>
       <VerifyEmailContent />
     </Suspense>
   )
