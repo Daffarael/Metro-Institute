@@ -15,7 +15,7 @@ import AdminConfirmModal from '@/components/admin/AdminConfirmModal'
 import { toast } from 'sonner'
 
 interface CourseSession {
-  id: string; title: string; type: 'VIDEO' | 'MATERIAL' | 'CHALLENGE'
+  id: string; title: string; type: 'VIDEO' | 'MATERIAL' | 'QUIZ'
   videoUrl?: string; materialUrl?: string; isPreview: boolean; order: number
 }
 interface MiniCourse { id: string; title: string }
@@ -23,7 +23,7 @@ interface MiniCourse { id: string; title: string }
 const SESSION_TYPE_COLORS: Record<string, { bg: string; color: string }> = {
   VIDEO:     { bg: '#EFF6FF', color: '#2563EB' },
   MATERIAL:  { bg: '#FEF3C7', color: '#D97706' },
-  CHALLENGE: { bg: '#F5F3FF', color: '#7C3AED' },
+  QUIZ: { bg: '#F5F3FF', color: '#7C3AED' },
 }
 
 const inputStyle: React.CSSProperties = {
@@ -83,7 +83,7 @@ return (
             <select value={form.type} onChange={e => f('type', e.target.value)} style={inputStyle}>
               <option value="VIDEO">VIDEO — Rekaman video</option>
               <option value="MATERIAL">MATERIAL — PDF / dokumen</option>
-              <option value="CHALLENGE">CHALLENGE — Tugas / Quiz</option>
+              <option value="QUIZ">QUIZ — Tugas / Kuis</option>
             </select>
             <p style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 3 }}>Mini Course tidak memiliki sesi LIVE.</p>
           </div>
@@ -163,7 +163,7 @@ export default function MiniCourseCurriculumPage() {
       />
 
       <div style={{ padding: 'var(--space-3) var(--space-4)', borderRadius: 'var(--radius-md)', background: 'var(--color-info-bg)', color: 'var(--color-info)', fontSize: 'var(--text-xs)', fontWeight: 500, marginBottom: 'var(--space-5)', border: '1px solid #BFDBFE' }}>
-        💡 Tipe sesi tersedia: VIDEO, MATERIAL, CHALLENGE. Mini Course tidak memiliki sesi LIVE.
+        💡 Tipe sesi tersedia: VIDEO, MATERIAL, QUIZ. Mini Course tidak memiliki sesi LIVE.
       </div>
 
       {isLoading ? <AdminTableSkeleton rows={6} cols={5} /> : (

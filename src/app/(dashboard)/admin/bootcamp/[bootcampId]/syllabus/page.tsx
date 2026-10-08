@@ -32,7 +32,7 @@ import { CSS } from '@dnd-kit/utilities'
 
 // ─── Types ─────────────────────────────────────────────────
 interface BootcampSession {
-  id: string; title: string; type: 'LIVE' | 'VIDEO' | 'MATERIAL' | 'ASSIGNMENT'
+  id: string; title: string; type: 'LIVE' | 'VIDEO' | 'MATERIAL' | 'QUIZ'
   videoUrl?: string; materialUrl?: string; isPreview: boolean
   order: number; challengeId?: string; deadlineAt?: string
 }
@@ -48,7 +48,7 @@ const SESSION_TYPE_COLORS: Record<string, { bg: string; color: string; icon: any
   LIVE:      { bg: '#ECFDF5', color: '#059669', icon: Video },
   VIDEO:     { bg: '#EFF6FF', color: '#2563EB', icon: Video },
   MATERIAL:  { bg: '#FEF3C7', color: '#D97706', icon: FileText },
-  ASSIGNMENT: { bg: '#F5F3FF', color: '#7C3AED', icon: Target },
+  QUIZ: { bg: '#F5F3FF', color: '#7C3AED', icon: Target },
 }
 
 const inputStyle: React.CSSProperties = {
@@ -96,7 +96,7 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
   const qc = useQueryClient()
   const [form, setForm] = useState({ 
     title: editSession?.title || '', 
-    type: editSession?.type || ('VIDEO' as BootcampSession['type']), 
+    type: editSession?.type || ('LIVE' as BootcampSession['type']), 
     videoUrl: editSession?.videoUrl || '', 
     materialUrl: editSession?.materials?.[0]?.url || '', 
     isPreview: editSession?.isFreePreview || false,
@@ -143,10 +143,9 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
                 onChange={val => f('type', val as any)}
                 placeholder="Pilih Jenis Materi"
                 options={[
-                  { value: 'VIDEO', label: 'VIDEO - Video Rekaman (VoD)' },
                   { value: 'LIVE', label: 'LIVE - Sesi Video Call / Webinar' },
                   { value: 'MATERIAL', label: 'MATERIAL - Dokumen / PDF' },
-                  { value: 'ASSIGNMENT', label: 'ASSIGNMENT - Tugas / Quiz' },
+                  { value: 'QUIZ', label: 'QUIZ - Tugas / Kuis' },
                 ]}
                 width="100%"
               />
@@ -167,10 +166,10 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
             </div>
           )}
 
-          {form.type === 'ASSIGNMENT' && (
+          {form.type === 'QUIZ' && (
             <>
               <div>
-                <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Deskripsi Tugas</label>
+                <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Deskripsi Tugas / Quiz</label>
                 <textarea value={form.assignmentDescription} onChange={e => f('assignmentDescription', e.target.value)} placeholder="Tuliskan deskripsi/instruksi tugas di sini..." style={{...inputStyle, minHeight: 80}} />
               </div>
               <div>
