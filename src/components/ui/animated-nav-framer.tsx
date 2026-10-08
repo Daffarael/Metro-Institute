@@ -155,10 +155,10 @@ export function AnimatedNavFramer({ items = DEFAULT_NAV_ITEMS }: { items?: NavIt
       </div>
 
       {/* Actual nav */}
-      <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-max">
-        <AnimatePresence mode="wait">
-
-          {/* ── Desktop: full animated pill ──────────────────────── */}
+      <div className="fixed top-6 inset-x-0 z-50 flex justify-center pointer-events-none">
+        <div className="pointer-events-auto flex flex-col items-center">
+          <AnimatePresence mode="wait">
+            {/* ── Desktop: full animated pill ──────────────────────── */}
           {!useCompactNav && (
             <motion.nav
               key="desktop-nav"
@@ -279,6 +279,7 @@ export function AnimatedNavFramer({ items = DEFAULT_NAV_ITEMS }: { items?: NavIt
           )}
 
         </AnimatePresence>
+        </div>
       </div>
     </>
   );
