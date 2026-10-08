@@ -45,6 +45,7 @@ export default function CertificateTemplateEditor() {
   const [guides, setGuides] = useState<{ v: number | null, h: number | null }>({ v: null, h: null })
   
   const containerRef = useRef<HTMLDivElement>(null)
+  const dragStartRef = useRef<{ id: string, width: number, x: number, fontSize: number } | null>(null)
 
   const { data: response, isLoading } = useQuery({
     queryKey: ['admin', 'certificate-templates', id],
@@ -574,23 +575,27 @@ export default function CertificateTemplateEditor() {
                         <motion.div
                           key={handle.key}
                           onPointerDown={(e) => e.stopPropagation()}
+                          onPanStart={() => {
+                            dragStartRef.current = {
+                              id: item.id,
+                              width: item.width || (item.type === 'image' ? 150 : 200),
+                              x: item.x,
+                              fontSize: item.fontSize
+                            }
+                          }}
                           onPan={(e, info) => {
-                            const dX = info.delta.x;
-                            updateItem(item.id, (prev) => {
-                              if (prev.type === 'image' || handle.isWidthHandle) {
-                                const currentWidth = prev.width || (prev.type === 'image' ? 150 : 200)
-                                const newWidth = Math.max(50, Math.min(800, currentWidth + (dX * handle.multX)))
-                                return { 
-                                  width: Math.round(newWidth),
-                                  x: prev.x + dX / 2
-                                }
-                              } else {
-                                const newSize = Math.max(10, Math.min(120, prev.fontSize + (dX * handle.multX * 0.5)))
-                                return { 
-                                  fontSize: Math.round(newSize),
-                                  x: prev.x + dX / 2
-                                }
-                              }
+                            if (!dragStartRef.current || dragStartRef.current.id !== item.id) return
+                            const offset = info.offset.x;
+                            const start = dragStartRef.current;
+                            
+                            updateItem(item.id, {
+                              ...(item.type === 'image' || handle.isWidthHandle ? {
+                                width: Math.round(Math.max(50, Math.min(800, start.width + (offset * handle.multX)))),
+                                x: start.x + offset / 2
+                              } : {
+                                fontSize: Math.round(Math.max(10, Math.min(120, start.fontSize + (offset * handle.multX * 0.5)))),
+                                x: start.x + offset / 2
+                              })
                             })
                           }}
                           style={{
