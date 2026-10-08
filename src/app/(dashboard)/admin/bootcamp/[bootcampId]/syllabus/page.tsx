@@ -63,7 +63,7 @@ function AddChapterModal({ bootcampId, onClose }: any) {
   const [title, setTitle] = useState('')
 
   const mutation = useMutation({
-    mutationFn: () => api.post(`/bootcamp/${bootcampId}/chapters`, { title, order: 0 }),
+    mutationFn: () => api.post(`/admin/bootcamps/${bootcampId}/chapters`, { title, order: 0 }),
     onSuccess: () => {
       toast.success('Bab berhasil ditambahkan.')
       qc.invalidateQueries({ queryKey: ['admin', 'bootcamp', bootcampId, 'syllabus'] })
@@ -97,7 +97,7 @@ function AddSessionModal({ bootcampId, chapterId, onClose }: any) {
   const f = (k: string, v: any) => setForm(p => ({ ...p, [k]: v }))
 
   const mutation = useMutation({
-    mutationFn: () => api.post(`/bootcamp/${bootcampId}/chapters`, { ...form, chapterId, order: 0 }),
+    mutationFn: () => api.post(`/admin/bootcamps/${bootcampId}/chapters/${chapterId}/sessions`, { ...form, order: 0 }),
     onSuccess: () => {
       toast.success('Materi berhasil ditambahkan.')
       qc.invalidateQueries({ queryKey: ['admin', 'bootcamp', bootcampId, 'syllabus'] })
@@ -261,12 +261,12 @@ export default function BootcampSyllabusPage() {
 
   const { data: bootcamp } = useQuery<Bootcamp>({
     queryKey: ['admin', 'bootcamp', bootcampId],
-    queryFn: () => api.get(`/bootcamp/${bootcampId}`).then(r => r.data.data),
+    queryFn: () => api.get(`/bootcamps/${bootcampId}`).then(r => r.data.data),
   })
 
   const { data: chaptersData, isLoading } = useQuery<BootcampChapter[]>({
     queryKey: ['admin', 'bootcamp', bootcampId, 'syllabus'],
-    queryFn: () => api.get(`/bootcamp/${bootcampId}/chapters`).then(r => r.data.data ?? []),
+    queryFn: () => api.get(`/admin/bootcamps/${bootcampId}/chapters`).then(r => r.data.data ?? []),
   })
 
   // Sync server data to local state for fast UI optimistic updates
@@ -283,7 +283,7 @@ export default function BootcampSyllabusPage() {
 
   // Mutations
   const reorderMutation = useMutation({
-    mutationFn: (data: { chapters: any[] }) => api.put(`/bootcamp/${bootcampId}/chapters/reorder`, data),
+    mutationFn: (data: { chapters: any[] }) => api.put(`/admin/bootcamps/${bootcampId}/chapters/reorder`, data),
     onSuccess: () => toast.success('Urutan berhasil disimpan!'),
     onError: () => {
       toast.error('Gagal menyimpan urutan.')
