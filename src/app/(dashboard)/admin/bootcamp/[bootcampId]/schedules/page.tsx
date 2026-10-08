@@ -218,17 +218,11 @@ export default function BootcampSchedulesPage() {
                     <a href={s.meetingUrl?.startsWith('jitsi:') ? `/admin/bootcamp/${bootcampId}/live/${s.id}` : s.meetingUrl} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '13px', color: 'var(--color-primary)', fontWeight: 600, textDecoration: 'none', background: 'var(--color-primary-light)', padding: '4px 10px', borderRadius: 'var(--radius-full)' }}>
                       🔗 Buka Link Meeting
                     </a>
-                    {s.recordingUrl && <a href={s.recordingUrl} target="_blank" style={{ fontSize: '12px', color: '#0369A1', fontWeight: 500 }}>🎥 Tonton Rekaman</a>}
                   </div>
                 </div>
 
                 {/* Actions */}
                 <div style={{ display: 'flex', gap: 8, flexShrink: 0, alignItems: 'center' }}>
-                  {/* Upload rekaman */}
-                  <label style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 'var(--radius-full)', border: '1px solid var(--color-border)', fontSize: '13px', fontWeight: 600, cursor: 'pointer', color: 'var(--color-text-primary)', transition: 'background 0.2s', background: 'transparent' }} onMouseEnter={e => e.currentTarget.style.background = 'var(--color-bg-subtle)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
-                    <Video size={14} style={{ color: '#0369A1' }} /> Upload Rekaman
-                    <input type="file" accept="video/*" style={{ display: 'none' }} onChange={e => { const f = e.target.files?.[0]; if (f) uploadRecording(s.id, f) }} />
-                  </label>
                   <button onClick={() => setModal(s)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 'var(--radius-full)', border: '1px solid var(--color-border)', background: 'transparent', fontSize: '13px', fontWeight: 600, cursor: 'pointer', transition: 'background 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = 'var(--color-bg-subtle)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                     <Edit2 size={14} /> Edit
                   </button>
