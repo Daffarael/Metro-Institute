@@ -348,7 +348,7 @@ export default function BootcampSyllabusPage() {
         description={bootcamp?.name ?? 'Memuat...'}
         breadcrumbs={[
           { label: 'Bootcamp', href: '/admin/bootcamp' },
-          { label: bootcamp?.name ?? '...', href: `/admin/bootcamp/${bootcampId}` },
+          { label: bootcamp?.name ?? '...' },
           { label: 'Syllabus' },
         ]}
         action={
