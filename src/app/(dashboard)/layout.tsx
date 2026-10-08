@@ -26,6 +26,9 @@ export const metadata: Metadata = {
     default: 'Metro Institute — Build Skills. Build Portfolio. Build Your Career.',
     template: '%s | Metro Institute',
   },
+  icons: {
+    icon: '/icon.png',
+  },
   description: 'Platform digital skills terlengkap untuk UI/UX Design, Frontend, Backend, dan Mobile App Development. Belajar bersama mentor berpengalaman dengan kurikulum terstruktur.',
   keywords: ['digital skills', 'bootcamp', 'ui/ux', 'frontend', 'backend', 'mobile', 'belajar online'],
   authors: [{ name: 'Metro Institute' }],
