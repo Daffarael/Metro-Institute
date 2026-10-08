@@ -126,30 +126,17 @@ export default function CleanCombobox({
               <div style={{ padding: '4px', maxHeight: '320px', overflowY: 'auto' }}>
                 {/* Hapus pilihan */}
                 {allowClear && value && (
-                  <button
-                    type="button"
-                    className="clean-combobox-clear"
-                    onClick={e => { e.preventDefault(); handleSelect('') }}
-                  >
-                    Hapus pilihan
-                  </button>
+                  <ClearDropdownItem onClick={() => handleSelect('')} />
                 )}
 
                 {/* Opsi */}
                 {options.map(opt => (
-                  <button
-                    type="button"
+                  <ComboboxDropdownItem
                     key={opt.value}
-                    className={`clean-combobox-opt${value === opt.value ? ' is-selected' : ''}`}
-                    onClick={e => { e.preventDefault(); handleSelect(opt.value) }}
-                  >
-                    {opt.label}
-                    {value === opt.value && (
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                    )}
-                  </button>
+                    label={opt.label}
+                    isSelected={value === opt.value}
+                    onClick={() => handleSelect(opt.value)}
+                  />
                 ))}
               </div>
             </motion.div>
@@ -161,3 +148,75 @@ export default function CleanCombobox({
   )
 }
 
+
+function ComboboxDropdownItem({ label, isSelected, onClick }: { label: string; isSelected: boolean; onClick: () => void }) {
+  const [hovered, setHovered] = useState(false)
+  return (
+    <button
+      type="button"
+      onClick={e => { e.preventDefault(); onClick() }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '100%',
+        boxSizing: 'border-box',
+        padding: '9px 12px',
+        borderRadius: 8,
+        border: 'none',
+        background: isSelected ? 'rgba(0, 0, 0, 0.04)' : (hovered ? 'rgba(0,0,0,0.04)' : 'transparent'),
+        color: isSelected ? 'var(--color-primary)' : (hovered ? 'var(--color-text-primary)' : 'var(--color-text-secondary)'),
+        fontSize: 'var(--text-sm)',
+        fontWeight: isSelected ? 600 : 400,
+        textAlign: 'left',
+        cursor: 'pointer',
+        transition: 'all 150ms ease',
+        outline: 'none',
+      }}
+    >
+      {label}
+      {isSelected && (
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="20 6 9 17 4 12" />
+        </svg>
+      )}
+    </button>
+  )
+}
+
+
+function ClearDropdownItem({ onClick }: { onClick: () => void }) {
+  const [hovered, setHovered] = useState(false)
+  return (
+    <button
+      type="button"
+      onClick={e => { e.preventDefault(); onClick() }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        width: '100%',
+        boxSizing: 'border-box',
+        padding: '9px 12px',
+        borderRadius: 8,
+        border: 'none',
+        background: hovered ? 'rgba(0,0,0,0.04)' : 'transparent',
+        color: 'var(--color-text-tertiary)',
+        fontSize: 'var(--text-sm)',
+        fontStyle: 'italic',
+        textAlign: 'left',
+        cursor: 'pointer',
+        transition: 'all 150ms ease',
+        outline: 'none',
+        borderBottom: '1px solid var(--color-border-subtle)',
+        marginBottom: '4px'
+      }}
+    >
+      Hapus pilihan
+    </button>
+  )
+}
