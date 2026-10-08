@@ -626,59 +626,98 @@ function ProgramTabs({
     }
   }, [activeTab, tabs])
 
+  const [isOpen, setIsOpen] = useState(false)
+
   return (
-    <div className="flex md:justify-center overflow-x-auto w-full pb-4 mb-12 md:mb-16 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-      <div className="w-6 shrink-0 md:hidden" />
-      <div style={{
-        position: 'relative',
-        display: 'inline-flex',
-        alignItems: 'center',
-        background: '#f3f4f6',
-        border: '1px solid rgba(0,0,0,0.07)',
-        borderRadius: 9999,
-        padding: 4,
-        minWidth: 'max-content',
-      }}>
-        {ready && (
-          <motion.div
-            animate={{ left: pill.left, width: pill.width }}
-            transition={{ type: 'spring', bounce: 0.25, duration: 0.45 }}
-            style={{
-              position: 'absolute',
-              top: 4, bottom: 4,
-              background: '#fff',
-              boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
-              borderRadius: 9999,
-              border: '1px solid rgba(0,0,0,0.06)',
-              zIndex: 0,
-              pointerEvents: 'none',
-            }}
-          />
-        )}
-        {tabs.map((tab, i) => (
-          <button
-            key={tab}
-            ref={el => { btnRefs.current[i] = el }}
-            onClick={() => setActiveTab(tab)}
-            style={{
-              position: 'relative', zIndex: 1,
-              padding: '10px 24px',
-              border: 'none', background: 'transparent',
-              borderRadius: 9999, cursor: 'pointer',
-              fontSize: '13px',
-              fontWeight: activeTab === tab ? 700 : 500,
-              color: activeTab === tab ? '#22222E' : '#9CA3AF',
-              letterSpacing: '0.04em',
-              transition: 'color 0.2s ease',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            {tab}
-          </button>
-        ))}
+    <>
+      {/* DESKTOP TABS */}
+      <div className="hidden md:flex justify-center w-full mb-20">
+        <div style={{
+          position: 'relative',
+          display: 'inline-flex',
+          alignItems: 'center',
+          background: '#f3f4f6',
+          border: '1px solid rgba(0,0,0,0.07)',
+          borderRadius: 9999,
+          padding: 4,
+          minWidth: 'max-content',
+        }}>
+          {ready && (
+            <motion.div
+              animate={{ left: pill.left, width: pill.width }}
+              transition={{ type: 'spring', bounce: 0.25, duration: 0.45 }}
+              style={{
+                position: 'absolute',
+                top: 4, bottom: 4,
+                background: '#fff',
+                boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
+                borderRadius: 9999,
+                border: '1px solid rgba(0,0,0,0.06)',
+                zIndex: 0,
+                pointerEvents: 'none',
+              }}
+            />
+          )}
+          {tabs.map((tab, i) => (
+            <button
+              key={tab}
+              ref={el => { btnRefs.current[i] = el }}
+              onClick={() => setActiveTab(tab)}
+              style={{
+                position: 'relative', zIndex: 1,
+                padding: '10px 24px',
+                border: 'none', background: 'transparent',
+                borderRadius: 9999, cursor: 'pointer',
+                fontSize: '13px',
+                fontWeight: activeTab === tab ? 700 : 500,
+                color: activeTab === tab ? '#22222E' : '#9CA3AF',
+                letterSpacing: '0.04em',
+                transition: 'color 0.2s ease',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
       </div>
-      <div className="w-6 shrink-0 md:hidden" />
-    </div>
+
+      {/* MOBILE DROPDOWN */}
+      <div className="md:hidden w-full px-6 mb-12 relative z-20">
+        <div className="relative w-full">
+          <button 
+            onClick={() => setIsOpen(!isOpen)}
+            className="w-full flex items-center justify-between px-6 py-4 bg-[#f3f4f6] border border-black/5 rounded-2xl text-[13px] font-bold text-[#22222E] tracking-[0.04em]"
+          >
+            {activeTab}
+            <motion.div animate={{ rotate: isOpen ? 180 : 0 }}>
+              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7"></path></svg>
+            </motion.div>
+          </button>
+          
+          <AnimatePresence>
+            {isOpen && (
+              <motion.div 
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden flex flex-col z-30"
+              >
+                {tabs.map(tab => (
+                  <button
+                    key={tab}
+                    onClick={() => { setActiveTab(tab); setIsOpen(false); }}
+                    className={`px-6 py-4 text-left text-[13px] font-bold tracking-[0.04em] transition-colors ${tab === activeTab ? "bg-gray-50 text-[#22222E]" : "text-gray-500 hover:bg-gray-50"}`}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+    </>
   )
 }
 
