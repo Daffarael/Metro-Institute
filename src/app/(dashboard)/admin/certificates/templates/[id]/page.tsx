@@ -19,6 +19,7 @@ interface DragItem {
   color: string
   src?: string
   width?: number
+  transparentBg?: boolean
 }
 
 const DEFAULT_ITEMS: DragItem[] = [
@@ -279,26 +280,54 @@ export default function CertificateTemplateEditor() {
                   </div>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '11px', color: 'var(--color-text-tertiary)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Ukuran (px)</label>
-                    <input 
-                      type="number" 
-                      value={items.find(i => i.id === selectedItem)?.fontSize} 
-                      onChange={e => updateItem(selectedItem, { fontSize: Number(e.target.value) })}
-                      style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid rgba(0,0,0,0.1)', fontSize: '13px', outline: 'none' }} 
-                    />
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '11px', color: 'var(--color-text-tertiary)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Warna</label>
-                    <div style={{ position: 'relative', width: '100%', height: '34px', borderRadius: '6px', border: '1px solid rgba(0,0,0,0.1)', overflow: 'hidden' }}>
-                      <input 
-                        type="color" 
-                        value={items.find(i => i.id === selectedItem)?.color} 
-                        onChange={e => updateItem(selectedItem, { color: e.target.value })}
-                        style={{ position: 'absolute', top: -10, left: -10, width: 'calc(100% + 20px)', height: 'calc(100% + 20px)', cursor: 'pointer', border: 'none' }} 
-                      />
-                    </div>
-                  </div>
+                  {items.find(i => i.id === selectedItem)?.type === 'image' ? (
+                    <>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '11px', color: 'var(--color-text-tertiary)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Lebar (px)</label>
+                        <input 
+                          type="number" 
+                          value={items.find(i => i.id === selectedItem)?.width || 150} 
+                          onChange={e => updateItem(selectedItem, { width: Number(e.target.value) })}
+                          style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid rgba(0,0,0,0.1)', fontSize: '13px', outline: 'none' }} 
+                        />
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
+                        <label style={{ display: 'block', fontSize: '11px', color: 'var(--color-text-tertiary)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Hapus BG Putih</label>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', height: '34px' }}>
+                          <input 
+                            type="checkbox" 
+                            checked={items.find(i => i.id === selectedItem)?.transparentBg || false} 
+                            onChange={e => updateItem(selectedItem, { transparentBg: e.target.checked })}
+                            style={{ width: 16, height: 16, accentColor: 'var(--color-primary)' }}
+                          />
+                          <span style={{ fontSize: '12px', fontWeight: 500, color: '#3f3f46' }}>Aktifkan</span>
+                        </label>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '11px', color: 'var(--color-text-tertiary)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Ukuran (px)</label>
+                        <input 
+                          type="number" 
+                          value={items.find(i => i.id === selectedItem)?.fontSize} 
+                          onChange={e => updateItem(selectedItem, { fontSize: Number(e.target.value) })}
+                          style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid rgba(0,0,0,0.1)', fontSize: '13px', outline: 'none' }} 
+                        />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '11px', color: 'var(--color-text-tertiary)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Warna</label>
+                        <div style={{ position: 'relative', width: '100%', height: '34px', borderRadius: '6px', border: '1px solid rgba(0,0,0,0.1)', overflow: 'hidden' }}>
+                          <input 
+                            type="color" 
+                            value={items.find(i => i.id === selectedItem)?.color} 
+                            onChange={e => updateItem(selectedItem, { color: e.target.value })}
+                            style={{ position: 'absolute', top: -10, left: -10, width: 'calc(100% + 20px)', height: 'calc(100% + 20px)', cursor: 'pointer', border: 'none' }} 
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
                 <button onClick={() => setSelectedItem(null)} style={{ marginTop: '8px', width: '100%', padding: '8px', fontSize: '12px', fontWeight: 600, borderRadius: '6px', background: '#f4f4f5', color: '#52525b', border: 'none', cursor: 'pointer', transition: 'background 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = '#e4e4e7'} onMouseLeave={e => e.currentTarget.style.background = '#f4f4f5'}>Tutup Pengaturan</button>
               </div>
@@ -428,7 +457,16 @@ export default function CertificateTemplateEditor() {
                       transition: 'border 0.2s, background 0.2s'
                     }}>
                       {item.type === 'image' && item.src ? (
-                        <img src={item.src} alt={item.label} style={{ width: item.width || 150, display: 'block', pointerEvents: 'none' }} />
+                        <img 
+                          src={item.src} 
+                          alt={item.label} 
+                          style={{ 
+                            width: item.width || 150, 
+                            display: 'block', 
+                            pointerEvents: 'none',
+                            mixBlendMode: item.transparentBg ? 'multiply' : 'normal'
+                          }} 
+                        />
                       ) : (
                         item.label
                       )}
