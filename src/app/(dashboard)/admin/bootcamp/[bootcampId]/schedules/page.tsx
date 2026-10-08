@@ -189,9 +189,9 @@ export default function BootcampSchedulesPage() {
             const scheduledDate = new Date(s.scheduledAt)
             const isPast = scheduledDate < new Date()
             return (
-              <div key={s.id} className="card" style={{ padding: 'var(--space-4) var(--space-5)', display: 'flex', alignItems: 'flex-start', gap: 'var(--space-4)' }}>
+              <div key={s.id} className="card" style={{ padding: 'var(--space-4) var(--space-5)', display: 'flex', alignItems: 'center', gap: 'var(--space-4)', transition: 'transform 0.2s, box-shadow 0.2s', cursor: 'default' }} onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = 'var(--shadow-md)' }} onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'var(--shadow-sm)' }}>
                 {/* Date badge */}
-                <div style={{ flexShrink: 0, textAlign: 'center', background: isPast ? 'var(--color-bg)' : 'var(--color-primary-light)', borderRadius: 'var(--radius-md)', padding: '8px 12px', minWidth: 56 }}>
+                <div style={{ flexShrink: 0, textAlign: 'center', background: isPast ? 'var(--color-bg)' : 'var(--color-primary-light)', borderRadius: 'var(--radius-lg)', padding: '10px 14px', minWidth: 64, boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)' }}>
                   <div style={{ fontSize: '20px', fontWeight: 900, color: isPast ? 'var(--color-text-tertiary)' : 'var(--color-primary)', lineHeight: 1 }}>
                     {scheduledDate.getDate()}
                   </div>
@@ -202,31 +202,35 @@ export default function BootcampSchedulesPage() {
 
                 {/* Info */}
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 700, marginBottom: 4 }}>{s.title}</div>
-                  <div style={{ display: 'flex', gap: 'var(--space-4)', fontSize: 'var(--text-xs)', color: 'var(--color-text-secondary)' }}>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-                      <Clock size={11} /> {scheduledDate.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB
+                  <div style={{ fontWeight: 700, marginBottom: 6, fontSize: '15px', color: 'var(--color-text-primary)' }}>{s.title}</div>
+                  <div style={{ display: 'flex', gap: 'var(--space-4)', fontSize: '13px', color: 'var(--color-text-secondary)', fontWeight: 500 }}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <Clock size={13} style={{ color: 'var(--color-primary)' }}/> {scheduledDate.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB
                     </span>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
-                      <Clock size={11} /> {s.durationMin} menit
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <Clock size={13} style={{ color: 'var(--color-primary)' }}/> {s.durationMin} menit
                     </span>
-                    <span>👥 {s._count?.attendances ?? 0} hadir</span>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <span style={{ color: 'var(--color-primary)', fontSize: '14px', lineHeight: 1 }}>👥</span> {s._count?.attendances ?? 0} hadir
+                    </span>
                   </div>
-                  <div style={{ marginTop: 6, display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
-                    <a href={s.meetingUrl} target="_blank" style={{ fontSize: '12px', color: 'var(--color-primary)', fontWeight: 500 }}>🔗 Buka Link Meeting</a>
+                  <div style={{ marginTop: 8, display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
+                    <a href={s.meetingUrl?.startsWith('jitsi:') ? `https://meet.jit.si/${s.meetingUrl.replace('jitsi:', '')}` : s.meetingUrl} target="_blank" style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '13px', color: 'var(--color-primary)', fontWeight: 600, textDecoration: 'none', background: 'var(--color-primary-light)', padding: '4px 10px', borderRadius: 'var(--radius-full)' }}>
+                      🔗 Buka Link Meeting
+                    </a>
                     {s.recordingUrl && <a href={s.recordingUrl} target="_blank" style={{ fontSize: '12px', color: '#0369A1', fontWeight: 500 }}>🎥 Tonton Rekaman</a>}
                   </div>
                 </div>
 
                 {/* Actions */}
-                <div style={{ display: 'flex', gap: 6, flexShrink: 0, alignItems: 'center' }}>
+                <div style={{ display: 'flex', gap: 8, flexShrink: 0, alignItems: 'center' }}>
                   {/* Upload rekaman */}
-                  <label style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', fontSize: '12px', fontWeight: 500, cursor: 'pointer', color: 'var(--color-text-primary)' }}>
-                    <Video size={12} /> Upload Rekaman
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 'var(--radius-full)', border: '1px solid var(--color-border)', fontSize: '13px', fontWeight: 600, cursor: 'pointer', color: 'var(--color-text-primary)', transition: 'background 0.2s', background: 'transparent' }} onMouseEnter={e => e.currentTarget.style.background = 'var(--color-bg-subtle)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                    <Video size={14} style={{ color: '#0369A1' }} /> Upload Rekaman
                     <input type="file" accept="video/*" style={{ display: 'none' }} onChange={e => { const f = e.target.files?.[0]; if (f) uploadRecording(s.id, f) }} />
                   </label>
-                  <button onClick={() => setModal(s)} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', background: 'transparent', fontSize: '12px', fontWeight: 500, cursor: 'pointer' }}>
-                    <Edit2 size={12} /> Edit
+                  <button onClick={() => setModal(s)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 'var(--radius-full)', border: '1px solid var(--color-border)', background: 'transparent', fontSize: '13px', fontWeight: 600, cursor: 'pointer', transition: 'background 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = 'var(--color-bg-subtle)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
+                    <Edit2 size={14} /> Edit
                   </button>
                   <button onClick={() => setDeleteId(s.id)} style={{ width: 30, height: 30, borderRadius: 'var(--radius-md)', border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-error)' }}>
                     <Trash2 size={14} />
