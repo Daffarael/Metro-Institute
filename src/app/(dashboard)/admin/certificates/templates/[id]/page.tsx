@@ -94,8 +94,14 @@ export default function CertificateTemplateEditor() {
     })
   }
 
-  const updateItem = (id: string, updates: Partial<DragItem>) => {
-    setItems(prev => prev.map(item => item.id === id ? { ...item, ...updates } : item))
+  const updateItem = (id: string, updates: Partial<DragItem> | ((prev: DragItem) => Partial<DragItem>)) => {
+    setItems(prev => prev.map(item => {
+      if (item.id === id) {
+        const calculatedUpdates = typeof updates === 'function' ? updates(item) : updates;
+        return { ...item, ...calculatedUpdates };
+      }
+      return item;
+    }))
   }
 
   const [isUploading, setIsUploading] = useState(false)
@@ -566,20 +572,22 @@ export default function CertificateTemplateEditor() {
                           onPointerDown={(e) => e.stopPropagation()}
                           onPan={(e, info) => {
                             const dX = info.delta.x;
-                            if (item.type === 'image' || handle.isWidthHandle) {
-                              const currentWidth = item.width || (item.type === 'image' ? 150 : 200)
-                              const newWidth = Math.max(50, Math.min(800, currentWidth + (dX * handle.multX)))
-                              updateItem(item.id, { 
-                                width: Math.round(newWidth),
-                                x: item.x + dX / 2
-                              })
-                            } else {
-                              const newSize = Math.max(10, Math.min(120, item.fontSize + (dX * handle.multX * 0.5)))
-                              updateItem(item.id, { 
-                                fontSize: Math.round(newSize),
-                                x: item.x + dX / 2
-                              })
-                            }
+                            updateItem(item.id, (prev) => {
+                              if (prev.type === 'image' || handle.isWidthHandle) {
+                                const currentWidth = prev.width || (prev.type === 'image' ? 150 : 200)
+                                const newWidth = Math.max(50, Math.min(800, currentWidth + (dX * handle.multX)))
+                                return { 
+                                  width: Math.round(newWidth),
+                                  x: prev.x + dX / 2
+                                }
+                              } else {
+                                const newSize = Math.max(10, Math.min(120, prev.fontSize + (dX * handle.multX * 0.5)))
+                                return { 
+                                  fontSize: Math.round(newSize),
+                                  x: prev.x + dX / 2
+                                }
+                              }
+                            })
                           }}
                           style={{
                             position: 'absolute',
