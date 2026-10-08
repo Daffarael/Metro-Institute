@@ -361,6 +361,17 @@ export default function CertificateTemplateEditor() {
                           />
                         </div>
                       </div>
+                      <div style={{ gridColumn: '1 / -1' }}>
+                        <label style={{ display: 'block', fontSize: '11px', color: 'var(--color-text-tertiary)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Lebar Kotak (px)</label>
+                        <input 
+                          type="number" 
+                          placeholder="Otomatis"
+                          value={items.find(i => i.id === selectedItem)?.width || ''} 
+                          onChange={e => updateItem(selectedItem, { width: e.target.value ? Number(e.target.value) : undefined })}
+                          style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid rgba(0,0,0,0.1)', fontSize: '13px', outline: 'none' }} 
+                        />
+                        <p style={{ fontSize: '10px', color: 'var(--color-text-tertiary)', marginTop: 4 }}>* Kosongkan untuk lebar otomatis, atau gunakan kotak biru di kiri/kanan teks pada kanvas untuk mengatur batas baris.</p>
+                      </div>
                     </>
                   )}
                 </div>
@@ -519,7 +530,10 @@ export default function CertificateTemplateEditor() {
                       border: selectedItem === item.id ? '2px dashed var(--color-primary)' : '2px dashed transparent',
                       background: selectedItem === item.id ? 'rgba(255,255,255,0.4)' : 'transparent',
                       borderRadius: '8px',
-                      whiteSpace: 'nowrap',
+                      width: item.width ? `${item.width}px` : undefined,
+                      whiteSpace: item.width ? 'pre-wrap' : 'nowrap',
+                      wordBreak: 'break-word',
+                      textAlign: 'center',
                       userSelect: 'none',
                       textShadow: selectedItem === item.id ? 'none' : '0 2px 4px rgba(0,0,0,0.1)',
                       backdropFilter: selectedItem === item.id ? 'blur(2px)' : 'none',
@@ -544,6 +558,8 @@ export default function CertificateTemplateEditor() {
                         { key: 'tr', style: { top: -6, right: -6, cursor: 'nesw-resize' }, multX: 1 },
                         { key: 'bl', style: { bottom: -6, left: -6, cursor: 'nesw-resize' }, multX: -1 },
                         { key: 'br', style: { bottom: -6, right: -6, cursor: 'nwse-resize' }, multX: 1 },
+                        { key: 'ml', style: { top: '50%', left: -6, transform: 'translateY(-50%)', cursor: 'ew-resize', height: 20, borderRadius: 4 }, multX: -1, isWidthHandle: true },
+                        { key: 'mr', style: { top: '50%', right: -6, transform: 'translateY(-50%)', cursor: 'ew-resize', height: 20, borderRadius: 4 }, multX: 1, isWidthHandle: true },
                       ].map(handle => (
                         <motion.div
                           key={handle.key}
@@ -554,9 +570,10 @@ export default function CertificateTemplateEditor() {
                           onPointerDown={(e) => e.stopPropagation()}
                           onDrag={(e, info) => {
                             const dX = info.delta.x;
-                            if (item.type === 'image') {
-                              // newWidth increases exactly by mouse movement
-                              const newWidth = Math.max(50, Math.min(800, (item.width || 150) + (dX * handle.multX)))
+                            if (item.type === 'image' || handle.isWidthHandle) {
+                              // Calculate current width if it's undefined
+                              const currentWidth = item.width || (item.type === 'image' ? 150 : 200)
+                              const newWidth = Math.max(50, Math.min(800, currentWidth + (dX * handle.multX)))
                               updateItem(item.id, { 
                                 width: Math.round(newWidth),
                                 x: item.x + dX / 2
