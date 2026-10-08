@@ -12,6 +12,7 @@ import { Plus, Edit2, Users, CalendarDays, Layers, X } from 'lucide-react'
 import api from '@/lib/axios'
 import { formatRupiah, formatDate } from '@/lib/utils'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import AdminPageHeader from '@/components/admin/AdminPageHeader'
 import AdminStatusChip from '@/components/admin/AdminStatusChip'
 import AdminTableSkeleton from '@/components/admin/AdminTableSkeleton'
@@ -71,6 +72,7 @@ const inputStyle: React.CSSProperties = {
 function BootcampModal({
   bootcamp, onClose,
 }: { bootcamp?: Bootcamp; onClose: () => void }) {
+  const router = useRouter() // Don't forget to import useRouter from next/navigation
   const qc = useQueryClient()
   const isEdit = !!bootcamp
 
@@ -95,10 +97,15 @@ function BootcampModal({
       isEdit
         ? api.patch(`/bootcamp/${bootcamp!.id}`, data).then(r => r.data)
         : api.post('/bootcamp', data).then(r => r.data),
-    onSuccess: () => {
-      toast.success(isEdit ? 'Bootcamp diperbarui.' : 'Bootcamp dibuat.')
+    onSuccess: (data) => {
+      toast.success(isEdit ? 'Bootcamp diperbarui.' : 'Bootcamp berhasil dibuat!')
       qc.invalidateQueries({ queryKey: ['admin', 'bootcamps'] })
       onClose()
+      
+      // Jika ini pembuatan baru, otomatis redirect ke halaman Silabus
+      if (!isEdit && data?.data?.id) {
+        router.push(`/admin/bootcamp/${data.data.id}/syllabus`)
+      }
     },
     onError: (err: any) => toast.error(err.response?.data?.message ?? 'Gagal menyimpan.'),
   })
