@@ -558,20 +558,15 @@ export default function CertificateTemplateEditor() {
                         { key: 'tr', style: { top: -6, right: -6, cursor: 'nesw-resize' }, multX: 1 },
                         { key: 'bl', style: { bottom: -6, left: -6, cursor: 'nesw-resize' }, multX: -1 },
                         { key: 'br', style: { bottom: -6, right: -6, cursor: 'nwse-resize' }, multX: 1 },
-                        { key: 'ml', style: { top: '50%', left: -6, transform: 'translateY(-50%)', cursor: 'ew-resize', height: 20, borderRadius: 4 }, multX: -1, isWidthHandle: true },
-                        { key: 'mr', style: { top: '50%', right: -6, transform: 'translateY(-50%)', cursor: 'ew-resize', height: 20, borderRadius: 4 }, multX: 1, isWidthHandle: true },
+                        { key: 'ml', style: { top: '50%', left: -6, marginTop: -10, cursor: 'ew-resize', height: 20, borderRadius: 4 }, multX: -1, isWidthHandle: true },
+                        { key: 'mr', style: { top: '50%', right: -6, marginTop: -10, cursor: 'ew-resize', height: 20, borderRadius: 4 }, multX: 1, isWidthHandle: true },
                       ].map(handle => (
                         <motion.div
                           key={handle.key}
-                          drag
-                          dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }}
-                          dragElastic={0}
-                          dragMomentum={false}
                           onPointerDown={(e) => e.stopPropagation()}
-                          onDrag={(e, info) => {
+                          onPan={(e, info) => {
                             const dX = info.delta.x;
                             if (item.type === 'image' || handle.isWidthHandle) {
-                              // Calculate current width if it's undefined
                               const currentWidth = item.width || (item.type === 'image' ? 150 : 200)
                               const newWidth = Math.max(50, Math.min(800, currentWidth + (dX * handle.multX)))
                               updateItem(item.id, { 
@@ -579,7 +574,6 @@ export default function CertificateTemplateEditor() {
                                 x: item.x + dX / 2
                               })
                             } else {
-                              // Font size is an approximation
                               const newSize = Math.max(10, Math.min(120, item.fontSize + (dX * handle.multX * 0.5)))
                               updateItem(item.id, { 
                                 fontSize: Math.round(newSize),
