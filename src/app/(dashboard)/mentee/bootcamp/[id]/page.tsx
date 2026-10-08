@@ -60,7 +60,8 @@ export default function BootcampDetailPage() {
       }
     },
     onError: (err: unknown) => {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Gagal memulai pembayaran'
+      console.error('Enroll Error:', err)
+      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || (err as Error).message || 'Gagal memulai pembayaran'
       toast.error(msg)
     },
   })
