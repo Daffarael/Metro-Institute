@@ -152,12 +152,6 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
             </div>
           </div>
           
-          {form.type === 'VIDEO' && (
-            <div>
-              <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Link Video Youtube <span style={{ color: 'var(--color-error)' }}>*</span></label>
-              <input value={form.videoUrl} onChange={e => f('videoUrl', e.target.value)} placeholder="Contoh: https://youtube.com/watch?v=..." style={inputStyle} />
-            </div>
-          )}
 
           {form.type === 'LIVE' && (
             <div style={{ padding: '12px', background: 'var(--color-bg)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', color: 'var(--color-text-secondary)', fontSize: 'var(--text-sm)' }}>
