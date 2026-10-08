@@ -363,7 +363,20 @@ export default function CertificateTemplateEditor() {
         <div className="card" style={{ display: 'flex', flexDirection: 'column', padding: 0, overflow: 'hidden', border: '1px solid var(--color-border)', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
           <div style={{ padding: '16px 24px', borderBottom: '1px solid var(--color-border)', background: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <h3 style={{ fontSize: '14px', fontWeight: 600, margin: 0, color: 'var(--color-text-primary)' }}>Visual Editor Kanvas</h3>
-            <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--color-text-tertiary)', background: '#f4f4f5', padding: '4px 10px', borderRadius: '100px' }}>Resolusi Kanvas: 800 x 600 px</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              {bgImage && (
+                <button 
+                  onClick={() => setBgImage('')} 
+                  style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '4px 10px', fontSize: '12px', fontWeight: 600, background: '#fee2e2', color: '#ef4444', border: 'none', borderRadius: '100px', cursor: 'pointer', transition: 'all 0.2s' }}
+                  onMouseEnter={e => { e.currentTarget.style.background = '#fecaca'; e.currentTarget.style.transform = 'scale(1.02)' }}
+                  onMouseLeave={e => { e.currentTarget.style.background = '#fee2e2'; e.currentTarget.style.transform = 'scale(1)' }}
+                  title="Batalkan pilihan template ini"
+                >
+                  <X size={14} /> Hapus Template
+                </button>
+              )}
+              <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--color-text-tertiary)', background: '#f4f4f5', padding: '4px 10px', borderRadius: '100px' }}>Resolusi Kanvas: 800 x 600 px</span>
+            </div>
           </div>
           
           <div style={{ padding: '32px', display: 'flex', justifyContent: 'center', background: '#f8fafc', minHeight: 650, position: 'relative' }}>
