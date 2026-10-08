@@ -21,6 +21,7 @@ import AdminPagination from '@/components/admin/AdminPagination'
 import { motion, AnimatePresence } from 'motion/react'
 import CleanCombobox from '@/components/admin/CleanCombobox'
 import FieldMultiSelect from '@/components/admin/FieldMultiSelect'
+import ImageUpload from '@/components/admin/ImageUpload'
 import { toast } from 'sonner'
 
 // ─── Schema (sesuai design_superadmin.md Zod Schemas) ─────
@@ -35,6 +36,7 @@ const bootcampSchema = z.object({
   endDate:         z.string().min(1, 'Wajib diisi'),
   status:          z.enum(['DRAFT', 'PUBLISHED', 'OPEN', 'ONGOING', 'COMPLETED']),
   certificateTemplateId: z.string().optional().nullable(),
+  thumbnailUrl:    z.string().optional().nullable(),
 })
 
 type BootcampForm = z.infer<typeof bootcampSchema>
@@ -89,6 +91,7 @@ function BootcampModal({
       endDate:         bootcamp?.endDate?.slice(0, 10) ?? '',
       status:          (bootcamp?.status as any) ?? 'DRAFT',
       certificateTemplateId: bootcamp?.certificateTemplateId ?? null,
+      thumbnailUrl:    bootcamp?.thumbnailUrl ?? '',
     },
   })
 
@@ -191,6 +194,17 @@ function BootcampModal({
               onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
             />
             {errors.name && <p style={{ fontSize: '12px', color: 'var(--color-error)', marginTop: 6, fontWeight: 500 }}>{errors.name.message}</p>}
+          </div>
+
+          <div>
+            <label style={labelStyle}>Gambar Thumbnail</label>
+            <Controller
+              control={control}
+              name="thumbnailUrl"
+              render={({ field }) => (
+                <ImageUpload value={field.value} onChange={field.onChange} />
+              )}
+            />
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: isEdit ? '1fr 1fr' : '1fr', gap: '20px' }}>

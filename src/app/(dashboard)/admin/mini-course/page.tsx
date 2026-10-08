@@ -20,6 +20,7 @@ import AdminEmptyState from '@/components/admin/AdminEmptyState'
 import AdminPagination from '@/components/admin/AdminPagination'
 import AdminConfirmModal from '@/components/admin/AdminConfirmModal'
 import CleanCombobox from '@/components/admin/CleanCombobox'
+import ImageUpload from '@/components/admin/ImageUpload'
 import { toast } from 'sonner'
 
 // ─── Schema (sesuai design_superadmin.md) ─────────────────
@@ -33,6 +34,7 @@ const miniCourseSchema = z.object({
   totalDuration: z.number().min(1),
   status:      z.enum(['DRAFT', 'PUBLISHED'], { error: () => ({ message: 'Pilih status' }) }),
   certificateTemplateId: z.string().optional().nullable(),
+  thumbnailUrl: z.string().optional().nullable(),
 })
 type CourseForm = z.infer<typeof miniCourseSchema>
 
@@ -42,6 +44,7 @@ interface MiniCourse {
   accessDays: number; totalDuration: number; status: string
   descShort?: string; rating?: number
   certificateTemplateId?: string
+  thumbnailUrl?: string
   isFeatured?: boolean
   _count?: { enrollments: number }
 }
@@ -81,6 +84,7 @@ function CourseModal({ course, onClose }: { course?: MiniCourse; onClose: () => 
       totalDuration: course?.totalDuration ?? 60,
       status:        course?.status ?? ('' as any),
       certificateTemplateId: course?.certificateTemplateId ?? null,
+      thumbnailUrl:  course?.thumbnailUrl ?? '',
     },
   })
 
@@ -167,6 +171,16 @@ function CourseModal({ course, onClose }: { course?: MiniCourse; onClose: () => 
               onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
             />
             {errors.title && <p style={{ fontSize: '12px', color: 'var(--color-error)', marginTop: 6, fontWeight: 500 }}>{errors.title.message}</p>}
+          </div>
+          <div>
+            <label style={labelStyle}>Gambar Thumbnail</label>
+            <Controller
+              control={control}
+              name="thumbnailUrl"
+              render={({ field }) => (
+                <ImageUpload value={field.value} onChange={field.onChange} />
+              )}
+            />
           </div>
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 8 }}>
