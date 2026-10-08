@@ -120,12 +120,12 @@ function VerifyEmailContent() {
             )}
           </AnimatePresence>
 
-          <div className="flex justify-center pt-2">
+          <div className="flex justify-center mt-10">
             <Button 
               variant="outline" 
               onClick={handleResend} 
               disabled={isLoading}
-              className="w-full h-12 border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900 rounded-xl font-semibold transition-all shadow-sm"
+              className="w-full h-12 border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900 rounded-xl font-semibold transition-all shadow-sm mt-4"
             >
               Kirim Ulang Kode
             </Button>
