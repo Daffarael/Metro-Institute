@@ -463,13 +463,22 @@ export default function AdminMiniCoursePage() {
                     <td style={{ padding: 'var(--space-3) var(--space-4)' }}><AdminStatusChip status={c.status} /></td>
                     <td style={{ padding: 'var(--space-3) var(--space-4)' }}>
                       <div style={{ display: 'flex', gap: 6, whiteSpace: 'nowrap' }}>
-                        <button onClick={() => setModal(c)} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 'var(--radius-md)', background: '#EFF6FF', color: '#2563EB', border: '1px solid #BFDBFE', fontSize: '12px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s' }}>
+                        <button onClick={() => setModal(c)} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 'var(--radius-md)', background: '#fff', color: '#374151', border: '1px solid #e5e7eb', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', fontSize: '12px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s' }}
+                          onMouseEnter={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.color = 'var(--color-primary)' }}
+                          onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#374151' }}
+                        >
                           <Edit2 size={12} /> Edit
                         </button>
-                        <Link href={`/admin/mini-course/${c.id}/curriculum`} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 'var(--radius-md)', background: '#F3E8FF', color: '#9333EA', border: '1px solid #E9D5FF', fontSize: '12px', fontWeight: 600, textDecoration: 'none', transition: 'all 0.15s' }}>
+                        <Link href={`/admin/mini-course/${c.id}/curriculum`} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 'var(--radius-md)', background: '#fff', color: '#374151', border: '1px solid #e5e7eb', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', fontSize: '12px', fontWeight: 600, textDecoration: 'none', transition: 'all 0.15s' }}
+                          onMouseEnter={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.color = 'var(--color-primary)' }}
+                          onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#374151' }}
+                        >
                           <Layers size={12} /> Kurikulum
                         </Link>
-                        <Link href={`/admin/mini-course/${c.id}/stats`} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 'var(--radius-md)', background: '#F0FDF4', color: '#16A34A', border: '1px solid #BBF7D0', fontSize: '12px', fontWeight: 600, textDecoration: 'none', transition: 'all 0.15s' }}>
+                        <Link href={`/admin/mini-course/${c.id}/stats`} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 'var(--radius-md)', background: '#fff', color: '#374151', border: '1px solid #e5e7eb', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', fontSize: '12px', fontWeight: 600, textDecoration: 'none', transition: 'all 0.15s' }}
+                          onMouseEnter={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.color = 'var(--color-primary)' }}
+                          onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#374151' }}
+                        >
                           <BarChart2 size={12} /> Statistik
                         </Link>
                         {/* Featured Toggle */}
