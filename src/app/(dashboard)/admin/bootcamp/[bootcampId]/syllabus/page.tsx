@@ -136,10 +136,12 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
             <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Judul Materi <span style={{ color: 'var(--color-error)' }}>*</span></label>
             <input value={form.title} onChange={e => f('title', e.target.value)} placeholder="Contoh: Fundamental Design System" style={inputStyle} autoFocus />
           </div>
-          <div>
-            <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Deskripsi Materi (Opsional)</label>
-            <textarea value={form.description} onChange={e => f('description', e.target.value)} placeholder="Tuliskan deskripsi materi atau modul di sini..." style={{...inputStyle, minHeight: 60}} />
-          </div>
+          {form.type !== 'QUIZ' && (
+            <div>
+              <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Deskripsi Materi (Opsional)</label>
+              <textarea value={form.description} onChange={e => f('description', e.target.value)} placeholder="Tuliskan deskripsi materi atau modul di sini..." style={{...inputStyle, minHeight: 60}} />
+            </div>
+          )}
           <div>
             <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Jenis Materi</label>
             <div style={{ width: '100%' }}>
