@@ -154,6 +154,16 @@ function BootcampModal({
           boxShadow: '0 24px 48px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.06)', width: '100%', maxWidth: 640,
           margin: 'auto'
         }}>
+        <style dangerouslySetInnerHTML={{__html: `
+          input[type="date"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            opacity: 0.6;
+            transition: 0.2s;
+          }
+          input[type="date"]::-webkit-calendar-picker-indicator:hover {
+            opacity: 1;
+          }
+        `}} />
         <div style={{
           padding: '32px 32px 16px',
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
