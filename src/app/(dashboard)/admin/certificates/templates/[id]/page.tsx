@@ -7,7 +7,7 @@ import { motion } from 'framer-motion'
 import api from '@/lib/axios'
 import AdminPageHeader from '@/components/admin/AdminPageHeader'
 import { toast } from 'sonner'
-import { Save, Upload, Type } from 'lucide-react'
+import { Save, Upload, Type, X } from 'lucide-react'
 
 interface DragItem {
   id: string
