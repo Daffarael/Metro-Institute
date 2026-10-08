@@ -100,8 +100,6 @@ function AddSessionModal({ bootcampId, chapterId, onClose }: any) {
     videoUrl: '', 
     materialUrl: '', 
     isPreview: false,
-    liveProvider: 'JITSI',
-    liveUrl: '',
     assignmentDescription: '',
     assignmentDeadline: ''
   })
@@ -110,14 +108,6 @@ function AddSessionModal({ bootcampId, chapterId, onClose }: any) {
   const mutation = useMutation({
     mutationFn: () => {
       let payload: any = { ...form, order: 0 }
-      
-      // Cleanup payload based on type
-      if (form.type === 'LIVE') {
-        if (form.liveProvider === 'JITSI') {
-          payload.liveUrl = `jitsi:metro-${bootcampId}-${Date.now()}`
-        }
-      }
-
       return api.post(`/admin/bootcamps/${bootcampId}/chapters/${chapterId}/sessions`, payload)
     },
     onSuccess: () => {
@@ -166,29 +156,10 @@ function AddSessionModal({ bootcampId, chapterId, onClose }: any) {
           )}
 
           {form.type === 'LIVE' && (
-            <>
-              <div>
-                <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Platform Live</label>
-                <div style={{ width: '100%' }}>
-                  <CleanCombobox
-                    value={form.liveProvider}
-                    onChange={val => f('liveProvider', val as any)}
-                    placeholder="Pilih Provider Live"
-                    options={[
-                      { value: 'JITSI', label: 'In-Platform (Jitsi)' },
-                      { value: 'EXTERNAL', label: 'External (Zoom / GMeet)' },
-                    ]}
-                    width="100%"
-                  />
-                </div>
-              </div>
-              {form.liveProvider === 'EXTERNAL' && (
-                <div>
-                  <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Link Meeting (GMeet / Zoom) <span style={{ color: 'var(--color-error)' }}>*</span></label>
-                  <input value={form.liveUrl} onChange={e => f('liveUrl', e.target.value)} placeholder="Contoh: https://meet.google.com/..." style={inputStyle} />
-                </div>
-              )}
-            </>
+            <div style={{ padding: '12px', background: 'var(--color-bg)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', color: 'var(--color-text-secondary)', fontSize: 'var(--text-sm)' }}>
+              <strong style={{ display: 'block', color: 'var(--color-text-primary)', marginBottom: 4 }}>Live Session Terintegrasi</strong>
+              Sistem akan secara otomatis membuatkan ruang kelas Live (In-Platform) khusus untuk sesi ini setelah disimpan. Mentee tidak memerlukan link external.
+            </div>
           )}
 
           {form.type === 'CHALLENGE' && (
@@ -211,12 +182,7 @@ function AddSessionModal({ bootcampId, chapterId, onClose }: any) {
             </div>
           )}
 
-          {(form.type === 'MATERIAL' || form.type === 'CHALLENGE') && (
-            <div>
-              <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Link Dokumen / Tugas (Google Drive) <span style={{ color: 'var(--color-error)' }}>*</span></label>
-              <input value={form.materialUrl} onChange={e => f('materialUrl', e.target.value)} placeholder="Contoh: https://drive.google.com/file/d/..." style={inputStyle} />
-            </div>
-          )}
+
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'var(--color-bg)', padding: '12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border-subtle)' }}>
             <input type="checkbox" id="isPreview" checked={form.isPreview} onChange={e => f('isPreview', e.target.checked)} style={{ width: 18, height: 18, accentColor: 'var(--color-primary)' }} />
