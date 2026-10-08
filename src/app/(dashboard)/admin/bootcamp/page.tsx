@@ -82,7 +82,7 @@ function BootcampModal({
     resolver: zodResolver(bootcampSchema),
     defaultValues: {
       name:            bootcamp?.name ?? '',
-      description:     '',
+      description:     bootcamp?.description ?? '',
       fields:          bootcamp?.fields as any ?? [],
       price:           bootcamp?.price ?? 0,
       purchaseOpenAt:  bootcamp?.purchaseOpenAt?.slice(0, 10) ?? '',

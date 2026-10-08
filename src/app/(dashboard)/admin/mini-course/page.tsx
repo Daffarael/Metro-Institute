@@ -77,7 +77,7 @@ function CourseModal({ course, onClose }: { course?: MiniCourse; onClose: () => 
     defaultValues: {
       title:         course?.title ?? '',
       descShort:     course?.descShort ?? '',
-      descLong:      '',
+      descLong:      course?.descLong ?? '',
       field:         course?.field ?? ('' as any),
       price:         course?.price ?? 0,
       accessDays:    course?.accessDays ?? 180,

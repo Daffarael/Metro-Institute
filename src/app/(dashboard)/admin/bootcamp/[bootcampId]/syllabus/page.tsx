@@ -96,12 +96,13 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
   const qc = useQueryClient()
   const [form, setForm] = useState({ 
     title: editSession?.title || '', 
+    description: editSession?.description || '',
     type: editSession?.type || ('LIVE' as BootcampSession['type']), 
     videoUrl: editSession?.videoUrl || '', 
     materialUrl: editSession?.materials?.[0]?.url || '', 
     isPreview: editSession?.isFreePreview || false,
     assignmentDescription: editSession?.assignmentDescription || '',
-    assignmentDeadline: editSession?.assignmentDeadline ? editSession.assignmentDeadline.split('T')[0] : ''
+    assignmentDeadline: editSession?.assignmentDeadline ? editSession.assignmentDeadline.slice(0, 16) : ''
   })
   const f = (k: string, v: any) => setForm(p => ({ ...p, [k]: v }))
 
@@ -134,6 +135,10 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
           <div>
             <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Judul Materi <span style={{ color: 'var(--color-error)' }}>*</span></label>
             <input value={form.title} onChange={e => f('title', e.target.value)} placeholder="Contoh: Fundamental Design System" style={inputStyle} autoFocus />
+          </div>
+          <div>
+            <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Deskripsi Materi (Opsional)</label>
+            <textarea value={form.description} onChange={e => f('description', e.target.value)} placeholder="Tuliskan deskripsi materi atau modul di sini..." style={{...inputStyle, minHeight: 60}} />
           </div>
           <div>
             <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Jenis Materi</label>
