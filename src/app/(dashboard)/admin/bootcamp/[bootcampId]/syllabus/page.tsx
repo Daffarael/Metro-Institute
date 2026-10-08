@@ -261,7 +261,7 @@ export default function BootcampSyllabusPage() {
 
   const { data: bootcamp } = useQuery<Bootcamp>({
     queryKey: ['admin', 'bootcamp', bootcampId],
-    queryFn: () => api.get(`/bootcamps/${bootcampId}`).then(r => r.data.data),
+    queryFn: () => api.get(`/admin/bootcamps/${bootcampId}`).then(r => r.data.data),
   })
 
   const { data: chaptersData, isLoading } = useQuery<BootcampChapter[]>({
