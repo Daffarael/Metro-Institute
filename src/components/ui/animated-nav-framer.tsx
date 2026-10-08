@@ -155,8 +155,8 @@ export function AnimatedNavFramer({ items = DEFAULT_NAV_ITEMS }: { items?: NavIt
       </div>
 
       {/* Actual nav */}
-      <div className="fixed top-0 md:top-6 inset-x-0 z-50 flex justify-center pointer-events-none">
-        <div className="pointer-events-auto flex flex-col items-center w-full md:w-auto">
+      <div className="fixed top-6 inset-x-0 z-50 flex justify-center pointer-events-none">
+        <div className="pointer-events-auto flex flex-col items-center">
           <AnimatePresence mode="wait">
             {/* ── Desktop: full animated pill ──────────────────────── */}
           {!useCompactNav && (
@@ -217,66 +217,61 @@ export function AnimatedNavFramer({ items = DEFAULT_NAV_ITEMS }: { items?: NavIt
           {useCompactNav && (
             <motion.div
               key="compact-nav"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20, transition: { duration: 0.15 } }}
-              className="flex flex-col items-center w-full"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.15 } }}
+              className="flex flex-col items-center"
             >
-              <motion.div
+              <motion.button
                 initial={{ y: -80, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ type: "spring", damping: 18, stiffness: 250 }}
-                className="flex items-center justify-between w-full h-16 px-6 bg-white/95 shadow-sm backdrop-blur-md border-b border-gray-200/50"
+                onClick={() => setMobileOpen(!mobileOpen)}
+                className="flex items-center gap-3 pl-4 pr-4 h-12 rounded-full border border-gray-200/50 bg-white/90 shadow-lg backdrop-blur-md"
               >
                 <img
                   src="/logo-metro-clean.png"
                   alt="Metro Institute"
-                  className="h-7 w-auto object-contain"
+                  className="h-6 w-auto flex-shrink-0 object-contain"
                   style={{ filter: "brightness(0) saturate(100%) invert(14%) sepia(12%) saturate(2135%) hue-rotate(192deg) brightness(95%) contrast(90%)" }}
                 />
-                <button
-                  onClick={() => setMobileOpen(!mobileOpen)}
-                  className="p-2 -mr-2 flex items-center justify-center"
-                >
-                  <MenuToggle
-                    open={mobileOpen}
-                    onOpenChange={() => {}}
-                    stroke="#374151"
-                    strokeWidth={2.5}
-                    className="w-6 h-6 pointer-events-none"
-                  />
-                </button>
-              </motion.div>
+                <div className="w-px h-4 bg-gray-200 flex-shrink-0" />
+                <MenuToggle
+                  open={mobileOpen}
+                  onOpenChange={() => {}}
+                  stroke="#374151"
+                  strokeWidth={2.5}
+                  className="w-5 h-5 pointer-events-none"
+                />
+              </motion.button>
 
               <AnimatePresence>
                 {mobileOpen && (
                   <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
+                    initial={{ opacity: 0, y: -8, scale: 0.96 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -8, scale: 0.96 }}
                     transition={{ type: "spring", damping: 20, stiffness: 300 }}
-                    className="w-full bg-white/95 backdrop-blur-md border-b border-gray-200/50 overflow-hidden shadow-xl"
+                    className="mt-2 w-52 rounded-2xl border border-gray-200/50 bg-white/95 shadow-xl backdrop-blur-md overflow-hidden"
                   >
-                    <div className="flex flex-col w-full py-2">
-                      {items.map((item, i) => (
-                        <motion.a
-                          key={item.name}
-                          href={item.href}
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: i * 0.05, type: "spring", damping: 15 }}
-                          onClick={() => setMobileOpen(false)}
-                          className={cn(
-                            "flex items-center px-6 py-4 text-[13px] font-bold tracking-[0.15em] uppercase transition-colors border-b border-gray-100 last:border-0",
-                            item.isHighlighted
-                              ? "text-[#22222E] bg-gray-50"
-                              : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                          )}
-                        >
-                          {item.name}
-                        </motion.a>
-                      ))}
-                    </div>
+                    {items.map((item, i) => (
+                      <motion.a
+                        key={item.name}
+                        href={item.href}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: i * 0.05, type: "spring", damping: 15 }}
+                        onClick={() => setMobileOpen(false)}
+                        className={cn(
+                          "flex items-center px-5 py-3.5 text-[12px] font-bold tracking-[0.15em] uppercase transition-colors border-b border-gray-100 last:border-0",
+                          item.isHighlighted
+                            ? "text-[#22222E] bg-gray-50"
+                            : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                        )}
+                      >
+                        {item.name}
+                      </motion.a>
+                    ))}
                   </motion.div>
                 )}
               </AnimatePresence>
