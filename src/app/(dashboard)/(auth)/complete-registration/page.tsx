@@ -56,7 +56,7 @@ export default function CompleteRegistrationPage() {
   const onSubmit = async (data: CompleteForm) => {
     try {
       // Update user profile in backend
-      const res = await api.patch('/users/me/complete-google-registration', {
+      const res = await api.patch('/users/me', {
         name: data.name,
         phone: data.phone
       })
