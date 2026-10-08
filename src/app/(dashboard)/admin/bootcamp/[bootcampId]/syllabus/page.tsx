@@ -127,10 +127,10 @@ function AddSessionModal({ bootcampId, chapterId, onClose }: any) {
                 onChange={val => f('type', val as any)}
                 placeholder="Pilih Jenis Materi"
                 options={[
-                  { value: 'VIDEO', label: 'VIDEO — Video Rekaman (VoD)' },
-                  { value: 'LIVE', label: 'LIVE — Sesi Video Call / Webinar' },
-                  { value: 'MATERIAL', label: 'MATERIAL — Dokumen / PDF' },
-                  { value: 'CHALLENGE', label: 'CHALLENGE — Tugas / Quiz' },
+                  { value: 'VIDEO', label: 'VIDEO - Video Rekaman (VoD)' },
+                  { value: 'LIVE', label: 'LIVE - Sesi Video Call / Webinar' },
+                  { value: 'MATERIAL', label: 'MATERIAL - Dokumen / PDF' },
+                  { value: 'CHALLENGE', label: 'CHALLENGE - Tugas / Quiz' },
                 ]}
                 width="100%"
               />
