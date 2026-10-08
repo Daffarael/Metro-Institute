@@ -116,7 +116,7 @@ function AddSessionModal({ bootcampId, chapterId, onClose }: any) {
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
           <div>
-            <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Judul Materi *</label>
+            <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Judul Materi <span style={{ color: 'var(--color-error)' }}>*</span></label>
             <input value={form.title} onChange={e => f('title', e.target.value)} placeholder="Contoh: Fundamental Design System" style={inputStyle} autoFocus />
           </div>
           <div>
