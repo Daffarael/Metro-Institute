@@ -245,11 +245,33 @@ export default function CertificateTemplateEditor() {
             
             <div style={{ paddingTop: '16px', borderTop: '1px solid var(--color-border-subtle)' }}>
               <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: 8, letterSpacing: '0.02em' }}>ELEMEN TAMBAHAN</label>
-              <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '10px 16px', borderRadius: '8px', background: '#f8fafc', border: '1px dashed #cbd5e1', cursor: 'pointer', color: '#475569', fontSize: '13px', fontWeight: 600, transition: 'all 0.2s' }} onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--color-primary)'} onMouseLeave={e => e.currentTarget.style.borderColor = '#cbd5e1'}>
-                <Upload size={16} /> Tambah Gambar Tanda Tangan
-                <input type="file" accept="image/png" style={{ display: 'none' }} onChange={e => e.target.files && handleUpload(e.target.files[0], 'signature')} disabled={isUploading} />
-              </label>
-              <p style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 8 }}>Unggah gambar PNG transparan.</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '10px 16px', borderRadius: '8px', background: '#f8fafc', border: '1px dashed #cbd5e1', cursor: 'pointer', color: '#475569', fontSize: '13px', fontWeight: 600, transition: 'all 0.2s' }} onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--color-primary)'} onMouseLeave={e => e.currentTarget.style.borderColor = '#cbd5e1'}>
+                  <Upload size={16} /> Tambah Gambar Tanda Tangan
+                  <input type="file" accept="image/png, image/jpeg" style={{ display: 'none' }} onChange={e => e.target.files && handleUpload(e.target.files[0], 'signature')} disabled={isUploading} />
+                </label>
+                <button 
+                  onClick={() => {
+                    const newTextItem: DragItem = {
+                      id: `Text_${Date.now()}`,
+                      type: 'text',
+                      label: 'Teks Baru',
+                      x: 400,
+                      y: 400,
+                      fontSize: 18,
+                      color: '#000000'
+                    }
+                    setItems(prev => [...prev, newTextItem])
+                    setSelectedItem(newTextItem.id)
+                  }}
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '10px 16px', borderRadius: '8px', background: '#f8fafc', border: '1px dashed #cbd5e1', cursor: 'pointer', color: '#475569', fontSize: '13px', fontWeight: 600, transition: 'all 0.2s' }}
+                  onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--color-primary)'}
+                  onMouseLeave={e => e.currentTarget.style.borderColor = '#cbd5e1'}
+                >
+                  <Type size={16} /> Tambah Teks Khusus
+                </button>
+              </div>
+              <p style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 8 }}>Tambahkan gambar PNG transparan atau teks khusus.</p>
             </div>
           </div>
 
@@ -306,6 +328,19 @@ export default function CertificateTemplateEditor() {
                     </>
                   ) : (
                     <>
+                      <div style={{ gridColumn: '1 / -1' }}>
+                        <label style={{ display: 'block', fontSize: '11px', color: 'var(--color-text-tertiary)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Isi Teks</label>
+                        <input 
+                          type="text" 
+                          value={items.find(i => i.id === selectedItem)?.label} 
+                          onChange={e => updateItem(selectedItem, { label: e.target.value })}
+                          disabled={['MenteeName', 'CourseName', 'Date', 'CredentialId'].includes(selectedItem)}
+                          style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid rgba(0,0,0,0.1)', fontSize: '13px', outline: 'none', background: ['MenteeName', 'CourseName', 'Date', 'CredentialId'].includes(selectedItem) ? '#f4f4f5' : '#fff' }} 
+                        />
+                        {['MenteeName', 'CourseName', 'Date', 'CredentialId'].includes(selectedItem) && (
+                          <p style={{ fontSize: '10px', color: 'var(--color-text-tertiary)', marginTop: 4 }}>* Teks ini akan diisi otomatis oleh sistem.</p>
+                        )}
+                      </div>
                       <div>
                         <label style={{ display: 'block', fontSize: '11px', color: 'var(--color-text-tertiary)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Ukuran (px)</label>
                         <input 
