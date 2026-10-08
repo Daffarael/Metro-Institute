@@ -2,7 +2,6 @@
 
 import React, { useState, useRef, useEffect } from 'react'
 import { ChevronDown } from 'lucide-react'
-import { motion, AnimatePresence } from 'motion/react'
 
 export interface ComboboxOption {
   value: string
@@ -98,66 +97,90 @@ export default function CleanCombobox({
         </div>
       </button>
 
-      {/* Dropdown — Smooth Framer Motion Animation */}
-      <AnimatePresence>
-        {isOpen && (
-          <div style={{
-            position: 'absolute',
-            top: direction === 'down' ? 'calc(100% + 4px)' : 'auto',
-            bottom: direction === 'up' ? 'calc(100% + 4px)' : 'auto',
-            left: 0,
-            right: 0,
-            zIndex: 100,
-          }}>
-            <motion.div 
-              initial={{ opacity: 0, y: direction === 'down' ? -10 : 10, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: direction === 'down' ? -10 : 10, scale: 0.95 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-              style={{
-                background: '#fff',
-                borderRadius: 'var(--radius-md)',
-                boxShadow: '0 12px 32px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.06)',
-                border: '1px solid rgba(0,0,0,0.05)',
-                overflow: 'hidden',
-                transformOrigin: direction === 'down' ? 'top center' : 'bottom center',
-              }}
-            >
-              <div style={{ padding: '4px', maxHeight: '320px', overflowY: 'auto' }}>
-                {/* Hapus pilihan */}
-                {allowClear && value && (
-                  <button
-                    type="button"
-                    className="clean-combobox-clear"
-                    onClick={e => { e.preventDefault(); handleSelect('') }}
-                  >
-                    Hapus pilihan
-                  </button>
-                )}
+      {/* Dropdown — Matching FieldMultiSelect Animation Exactly */}
+      <div style={{
+        position: 'absolute',
+        top: direction === 'down' ? 'calc(100% + 4px)' : 'auto',
+        bottom: direction === 'up' ? 'calc(100% + 4px)' : 'auto',
+        left: 0,
+        right: 0,
+        zIndex: 100,
+        pointerEvents: isOpen ? 'auto' : 'none',
+      }}>
+        <div style={{
+          background: '#fff',
+          borderRadius: 'var(--radius-md)',
+          boxShadow: '0 8px 24px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.06)',
+          border: '1px solid rgba(0,0,0,0.05)',
+          overflow: 'hidden',
+          opacity: isOpen ? 1 : 0,
+          transform: isOpen ? 'translateY(0px) scale(1)' : `translateY(${direction === 'down' ? '-6px' : '6px'}) scale(0.97)`,
+          transformOrigin: direction === 'down' ? 'top center' : 'bottom center',
+          transition: 'opacity 0.2s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+        }}>
+          <div style={{ padding: '4px', maxHeight: '320px', overflowY: 'auto' }}>
+            {/* Hapus pilihan */}
+            {allowClear && value && (
+              <button
+                type="button"
+                className="clean-combobox-clear"
+                onClick={e => { e.preventDefault(); handleSelect('') }}
+              >
+                Hapus pilihan
+              </button>
+            )}
 
-                {/* Opsi */}
-                {options.map(opt => (
-                  <button
-                    type="button"
-                    key={opt.value}
-                    className={`clean-combobox-opt${value === opt.value ? ' is-selected' : ''}`}
-                    onClick={e => { e.preventDefault(); handleSelect(opt.value) }}
-                  >
-                    {opt.label}
-                    {value === opt.value && (
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </motion.div>
+            {/* Opsi */}
+            {options.map(opt => (
+              <ComboboxDropdownItem 
+                key={opt.value}
+                label={opt.label}
+                isSelected={value === opt.value}
+                onClick={() => handleSelect(opt.value)}
+              />
+            ))}
           </div>
-        )}
-      </AnimatePresence>
+        </div>
+      </div>
 
     </div>
+  )
+}
+
+function ComboboxDropdownItem({ label, isSelected, onClick }: { label: string; isSelected: boolean; onClick: () => void }) {
+  const [hovered, setHovered] = useState(false)
+  return (
+    <button
+      type="button"
+      onClick={e => { e.preventDefault(); onClick() }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '100%',
+        padding: '9px 12px',
+        borderRadius: 8,
+        border: 'none',
+        background: hovered || isSelected ? 'rgba(0,0,0,0.04)' : 'transparent',
+        color: isSelected ? 'var(--color-primary)' : (hovered ? 'var(--color-text-primary)' : 'var(--color-text-secondary)'),
+        fontSize: '14px',
+        fontWeight: isSelected ? 600 : 400,
+        cursor: 'pointer',
+        textAlign: 'left',
+        transition: 'background 0.12s ease, color 0.12s ease',
+        outline: 'none',
+        WebkitTapHighlightColor: 'transparent',
+      }}
+    >
+      {label}
+      {isSelected && (
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <polyline points="20 6 9 17 4 12" />
+        </svg>
+      )}
+    </button>
   )
 }
 
