@@ -186,17 +186,19 @@ export default function BootcampSchedulesPage() {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
           {sorted.map(s => {
-            const scheduledDate = new Date(s.scheduledAt)
-            const isPast = scheduledDate < new Date()
+            const hasSchedule = !!s.scheduledAt
+            const scheduledDate = hasSchedule ? new Date(s.scheduledAt) : null
+            const isPast = hasSchedule && scheduledDate ? scheduledDate < new Date() : false
+            
             return (
               <div key={s.id} className="card" style={{ padding: 'var(--space-4) var(--space-5)', display: 'flex', alignItems: 'center', gap: 'var(--space-4)', transition: 'transform 0.2s, box-shadow 0.2s', cursor: 'default' }} onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = 'var(--shadow-md)' }} onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'var(--shadow-sm)' }}>
                 {/* Date badge */}
-                <div style={{ flexShrink: 0, textAlign: 'center', background: isPast ? 'var(--color-bg)' : 'var(--color-primary-light)', borderRadius: 'var(--radius-lg)', padding: '10px 14px', minWidth: 64, boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)' }}>
-                  <div style={{ fontSize: '20px', fontWeight: 900, color: isPast ? 'var(--color-text-tertiary)' : 'var(--color-primary)', lineHeight: 1 }}>
-                    {scheduledDate.getDate()}
+                <div style={{ flexShrink: 0, textAlign: 'center', background: isPast ? 'var(--color-bg)' : (hasSchedule ? 'var(--color-primary-light)' : '#fef3c7'), borderRadius: 'var(--radius-lg)', padding: '10px 14px', minWidth: 64, boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)' }}>
+                  <div style={{ fontSize: hasSchedule ? '20px' : '14px', fontWeight: 900, color: isPast ? 'var(--color-text-tertiary)' : (hasSchedule ? 'var(--color-primary)' : '#d97706'), lineHeight: 1 }}>
+                    {hasSchedule && scheduledDate ? scheduledDate.getDate() : 'TBA'}
                   </div>
-                  <div style={{ fontSize: '11px', color: isPast ? 'var(--color-text-tertiary)' : 'var(--color-primary)', fontWeight: 600 }}>
-                    {scheduledDate.toLocaleString('id-ID', { month: 'short' })}
+                  <div style={{ fontSize: '11px', color: isPast ? 'var(--color-text-tertiary)' : (hasSchedule ? 'var(--color-primary)' : '#d97706'), fontWeight: 600 }}>
+                    {hasSchedule && scheduledDate ? scheduledDate.toLocaleString('id-ID', { month: 'short' }) : 'Belum Atur'}
                   </div>
                 </div>
 
@@ -205,10 +207,10 @@ export default function BootcampSchedulesPage() {
                   <div style={{ fontWeight: 700, marginBottom: 6, fontSize: '15px', color: 'var(--color-text-primary)' }}>{s.title}</div>
                   <div style={{ display: 'flex', gap: 'var(--space-4)', fontSize: '13px', color: 'var(--color-text-secondary)', fontWeight: 500 }}>
                     <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                      <Clock size={13} style={{ color: 'var(--color-primary)' }}/> {scheduledDate.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB
+                      <Clock size={13} style={{ color: 'var(--color-primary)' }}/> {hasSchedule && scheduledDate ? `${scheduledDate.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB` : 'Belum Dijadwalkan'}
                     </span>
                     <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                      <Clock size={13} style={{ color: 'var(--color-primary)' }}/> {s.durationMin} menit
+                      <Clock size={13} style={{ color: 'var(--color-primary)' }}/> {s.durationMin || 0} menit
                     </span>
                     <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                       <span style={{ color: 'var(--color-primary)', fontSize: '14px', lineHeight: 1 }}>👥</span> {s._count?.attendances ?? 0} hadir
