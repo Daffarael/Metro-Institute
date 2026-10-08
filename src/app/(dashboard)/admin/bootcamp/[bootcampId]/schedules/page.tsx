@@ -197,11 +197,11 @@ export default function BootcampSchedulesPage() {
             return (
               <div key={s.id} className="card" style={{ padding: 'var(--space-4) var(--space-5)', display: 'flex', alignItems: 'center', gap: 'var(--space-4)', transition: 'transform 0.2s, box-shadow 0.2s', cursor: 'default' }} onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = 'var(--shadow-md)' }} onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'var(--shadow-sm)' }}>
                 {/* Date badge */}
-                <div style={{ flexShrink: 0, textAlign: 'center', background: isPast ? 'var(--color-bg)' : (hasSchedule ? 'var(--color-primary-light)' : '#fef3c7'), borderRadius: 'var(--radius-lg)', padding: '10px 14px', minWidth: 64, boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.02)' }}>
-                  <div style={{ fontSize: hasSchedule ? '20px' : '14px', fontWeight: 900, color: isPast ? 'var(--color-text-tertiary)' : (hasSchedule ? 'var(--color-primary)' : '#d97706'), lineHeight: 1 }}>
+                <div style={{ flexShrink: 0, textAlign: 'center', background: isPast ? 'var(--color-bg)' : (hasSchedule ? 'var(--color-primary-light)' : 'var(--color-bg)'), borderRadius: 'var(--radius-lg)', padding: '10px 14px', minWidth: 64, boxShadow: hasSchedule ? 'inset 0 2px 4px rgba(0,0,0,0.02)' : 'none', border: hasSchedule ? '1px solid transparent' : '1px dashed var(--color-border)' }}>
+                  <div style={{ fontSize: hasSchedule ? '20px' : '15px', fontWeight: 900, color: isPast ? 'var(--color-text-tertiary)' : (hasSchedule ? 'var(--color-primary)' : 'var(--color-text-secondary)'), lineHeight: 1, marginBottom: 2 }}>
                     {hasSchedule && scheduledDate ? scheduledDate.getDate() : 'TBA'}
                   </div>
-                  <div style={{ fontSize: '11px', color: isPast ? 'var(--color-text-tertiary)' : (hasSchedule ? 'var(--color-primary)' : '#d97706'), fontWeight: 600 }}>
+                  <div style={{ fontSize: '11px', color: isPast ? 'var(--color-text-tertiary)' : (hasSchedule ? 'var(--color-primary)' : 'var(--color-text-tertiary)'), fontWeight: 600 }}>
                     {hasSchedule && scheduledDate ? scheduledDate.toLocaleString('id-ID', { month: 'short' }) : 'Belum Atur'}
                   </div>
                 </div>
@@ -210,14 +210,14 @@ export default function BootcampSchedulesPage() {
                 <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: 700, marginBottom: 6, fontSize: '15px', color: 'var(--color-text-primary)' }}>{s.title}</div>
                   <div style={{ display: 'flex', gap: 'var(--space-4)', fontSize: '13px', color: 'var(--color-text-secondary)', fontWeight: 500 }}>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                      <Clock size={13} style={{ color: 'var(--color-primary)' }}/> {hasSchedule && scheduledDate ? `${scheduledDate.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB` : 'Belum Dijadwalkan'}
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 4, color: hasSchedule ? 'inherit' : 'var(--color-text-tertiary)' }}>
+                      <Clock size={13} style={{ color: hasSchedule ? 'var(--color-primary)' : 'var(--color-text-tertiary)' }}/> {hasSchedule && scheduledDate ? `${scheduledDate.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB` : 'Belum Dijadwalkan'}
                     </span>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                      <Clock size={13} style={{ color: 'var(--color-primary)' }}/> {s.durationMin || 0} menit
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 4, color: hasSchedule ? 'inherit' : 'var(--color-text-tertiary)' }}>
+                      <Clock size={13} style={{ color: hasSchedule ? 'var(--color-primary)' : 'var(--color-text-tertiary)' }}/> {s.durationMin || 0} menit
                     </span>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                      <span style={{ color: 'var(--color-primary)', fontSize: '14px', lineHeight: 1 }}>👥</span> {s._count?.attendances ?? 0} hadir
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 4, color: hasSchedule ? 'inherit' : 'var(--color-text-tertiary)' }}>
+                      <span style={{ color: hasSchedule ? 'var(--color-primary)' : 'var(--color-text-tertiary)', fontSize: '14px', lineHeight: 1 }}>👥</span> {s._count?.attendances ?? 0} hadir
                     </span>
                   </div>
                   <div style={{ marginTop: 8, display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
@@ -226,7 +226,9 @@ export default function BootcampSchedulesPage() {
                         🔗 Buka Link Meeting
                       </a>
                     ) : (
-                      <span style={{ fontSize: '12px', color: 'var(--color-error)' }}>Belum ada link meeting</span>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '4px 10px', borderRadius: 'var(--radius-full)', background: 'var(--color-bg)', border: '1px dashed var(--color-border)', fontSize: '12px', color: 'var(--color-text-tertiary)', fontWeight: 500 }}>
+                        🔗 Belum ada link meeting
+                      </span>
                     )}
                   </div>
                 </div>
