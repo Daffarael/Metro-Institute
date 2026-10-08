@@ -81,13 +81,10 @@ function VerifyEmailContent() {
     <div className="flex min-h-screen flex-col items-center justify-center p-6 bg-slate-50">
       <Card className="w-full max-w-md bg-white border-slate-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-2xl overflow-hidden">
         <CardHeader className="text-center pb-8 pt-10">
-          <CardTitle className="text-2xl font-bold text-slate-900">Verifikasi Email</CardTitle>
-          <CardDescription className="text-slate-500 mt-2 text-base">
-            Masukkan 6 digit kode yang dikirim ke perangkat Anda
+          <CardTitle className="text-3xl font-bold text-slate-900 mb-2">Verifikasi Email</CardTitle>
+          <CardDescription className="text-slate-500 text-base">
+            Masukkan 6 digit kode yang dikirim ke email Anda
           </CardDescription>
-          {email && (
-            <p className="text-sm font-medium text-slate-900 mt-1">{email}</p>
-          )}
         </CardHeader>
         <CardContent className="space-y-8 pb-10">
           <div className="flex justify-center">
@@ -123,22 +120,14 @@ function VerifyEmailContent() {
             )}
           </AnimatePresence>
 
-          <div className="flex justify-center flex-col gap-3 pt-4">
+          <div className="flex justify-center pt-2">
             <Button 
               variant="outline" 
               onClick={handleResend} 
               disabled={isLoading}
-              className="w-full h-11 border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-slate-900 rounded-xl font-medium transition-colors"
+              className="w-full h-12 border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900 rounded-xl font-semibold transition-all shadow-sm"
             >
               Kirim Ulang Kode
-            </Button>
-            <Button 
-              variant="ghost" 
-              onClick={handleReset} 
-              disabled={isLoading || value.length === 0}
-              className="w-full text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-xl font-medium"
-            >
-              Hapus Input
             </Button>
           </div>
         </CardContent>
