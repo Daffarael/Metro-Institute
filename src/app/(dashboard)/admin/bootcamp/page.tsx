@@ -186,21 +186,28 @@ function BootcampModal({
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
             <div>
               <label style={labelStyle}>Status</label>
-              <Controller
-                control={control}
-                name="status"
-                render={({ field }) => (
-                  <CleanCombobox 
-                    options={STATUS_OPTS.map(s => ({ value: s, label: s }))}
-                    value={field.value as string} 
-                    onChange={field.onChange} 
-                    placeholder="Pilih Status"
-                    width="100%"
-                    direction="down"
-                    style={{...inputStyleClean, padding: '12px 16px', background: '#fff'}}
-                  />
-                )}
-              />
+              {isEdit ? (
+                <Controller
+                  control={control}
+                  name="status"
+                  render={({ field }) => (
+                    <CleanCombobox 
+                      options={STATUS_OPTS.map(s => ({ value: s, label: s }))}
+                      value={field.value as string} 
+                      onChange={field.onChange} 
+                      placeholder="Pilih Status"
+                      width="100%"
+                      direction="down"
+                      style={{...inputStyleClean, padding: '12px 16px', background: '#fff'}}
+                    />
+                  )}
+                />
+              ) : (
+                <div style={{...inputStyleClean, display: 'flex', alignItems: 'center', background: 'rgba(0,0,0,0.02)', color: 'var(--color-text-secondary)'}}>
+                  <span style={{ fontWeight: 600 }}>DRAFT</span>
+                  <span style={{ fontSize: '11px', marginLeft: 'auto', fontStyle: 'italic' }}>*Bisa di-publish nanti</span>
+                </div>
+              )}
             </div>
             <div>
               <label style={labelStyle}>Harga (Rp) <span style={{color: 'var(--color-error)'}}>*</span></label>
