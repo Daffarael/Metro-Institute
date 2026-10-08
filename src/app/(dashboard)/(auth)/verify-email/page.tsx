@@ -3,7 +3,7 @@
 import * as React from "react"
 import { useSearchParams, useRouter } from 'next/navigation'
 import { CheckCircle, RefreshCw, Loader2 } from "lucide-react"
-import { motion } from "motion/react"
+import { motion, AnimatePresence } from "motion/react"
 import api from '@/lib/axios'
 import { ROUTES } from '@/lib/utils'
 import { toast } from 'sonner'
