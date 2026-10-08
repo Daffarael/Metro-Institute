@@ -159,23 +159,22 @@ function ComboboxDropdownItem({ label, isSelected, onClick }: { label: string; i
         alignItems: 'center',
         justifyContent: 'space-between',
         width: '100%',
-        boxSizing: 'border-box',
         padding: '9px 12px',
         borderRadius: 8,
         border: 'none',
-        background: isSelected ? 'rgba(0, 0, 0, 0.04)' : (hovered ? 'rgba(0,0,0,0.04)' : 'transparent'),
-        color: isSelected ? 'var(--color-primary)' : (hovered ? 'var(--color-text-primary)' : 'var(--color-text-secondary)'),
+        background: hovered ? 'rgba(0,0,0,0.04)' : 'transparent',
+        color: 'var(--color-text-primary)',
         fontSize: 'var(--text-sm)',
         fontWeight: isSelected ? 600 : 400,
-        textAlign: 'left',
         cursor: 'pointer',
-        transition: 'all 150ms ease',
+        textAlign: 'left',
+        transition: 'background 0.12s ease',
         outline: 'none',
       }}
     >
       {label}
       {isSelected && (
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-secondary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="20 6 9 17 4 12" />
         </svg>
       )}
