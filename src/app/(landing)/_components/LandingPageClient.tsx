@@ -627,7 +627,8 @@ function ProgramTabs({
   }, [activeTab, tabs])
 
   return (
-    <div className="flex justify-center mb-16 md:mb-20">
+    <div className="flex md:justify-center overflow-x-auto w-full pb-4 mb-12 md:mb-16 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      <div className="w-6 shrink-0 md:hidden" />
       <div style={{
         position: 'relative',
         display: 'inline-flex',
@@ -636,6 +637,7 @@ function ProgramTabs({
         border: '1px solid rgba(0,0,0,0.07)',
         borderRadius: 9999,
         padding: 4,
+        minWidth: 'max-content',
       }}>
         {ready && (
           <motion.div
@@ -675,6 +677,7 @@ function ProgramTabs({
           </button>
         ))}
       </div>
+      <div className="w-6 shrink-0 md:hidden" />
     </div>
   )
 }
