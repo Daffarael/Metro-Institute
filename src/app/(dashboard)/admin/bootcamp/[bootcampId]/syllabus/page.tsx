@@ -2,7 +2,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useParams } from 'next/navigation'
-import { Plus, GripVertical, Trash2, ChevronDown, ChevronRight, X, LayoutTemplate, Video, FileText, Target } from 'lucide-react'
+import { Plus, GripVertical, Trash2, ChevronDown, ChevronRight, X, LayoutTemplate, Video, FileText, Target, Info } from 'lucide-react'
 import api from '@/lib/axios'
 import AdminPageHeader from '@/components/admin/AdminPageHeader'
 import AdminConfirmModal from '@/components/admin/AdminConfirmModal'
@@ -358,11 +358,13 @@ export default function BootcampSyllabusPage() {
         }
       />
 
-      <div style={{ padding: 'var(--space-4)', borderRadius: 'var(--radius-lg)', background: 'var(--color-info-bg)', color: 'var(--color-info)', fontSize: 'var(--text-sm)', fontWeight: 500, marginBottom: 'var(--space-6)', border: '1px solid #BFDBFE', display: 'flex', alignItems: 'center', gap: 12 }}>
-        <div style={{ padding: 8, background: '#EFF6FF', borderRadius: 'var(--radius-md)' }}>💡</div>
+      <div style={{ padding: 'var(--space-4)', borderRadius: 'var(--radius-lg)', background: 'var(--color-bg)', color: 'var(--color-text-secondary)', fontSize: 'var(--text-sm)', fontWeight: 500, marginBottom: 'var(--space-6)', border: '1px solid var(--color-border)', display: 'flex', alignItems: 'center', gap: 14 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 8, background: 'var(--color-surface)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', color: 'var(--color-text-secondary)' }}>
+          <Info size={18} />
+        </div>
         <div>
-          <strong style={{ display: 'block', marginBottom: 2 }}>Tips Drag & Drop</strong>
-          Tarik icon <GripVertical size={14} style={{ display: 'inline', verticalAlign: 'middle' }} /> untuk mengatur urutan Bab dan Materi. Perubahan akan tersimpan otomatis.
+          <strong style={{ display: 'block', marginBottom: 2, color: 'var(--color-text-primary)' }}>Tips Drag & Drop</strong>
+          Tarik icon <GripVertical size={14} style={{ display: 'inline', verticalAlign: 'middle', margin: '0 2px' }} /> untuk mengatur urutan Bab dan Materi. Perubahan akan tersimpan otomatis.
         </div>
       </div>
 
