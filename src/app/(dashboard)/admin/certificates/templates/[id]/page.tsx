@@ -184,11 +184,24 @@ export default function CertificateTemplateEditor() {
             <div>
               <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: 8, letterSpacing: '0.02em' }}>GAMBAR BACKGROUND</label>
               <div style={{ display: 'flex', gap: 8 }}>
-                <input type="text" value={bgImage} onChange={e => setBgImage(e.target.value)} placeholder="https://..." 
-                  style={{ flex: 1, padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.1)', fontSize: '13px', background: '#fafafa', outline: 'none', transition: 'all 0.2s', minWidth: 0 }} 
-                  onFocus={e => { e.currentTarget.style.borderColor = 'var(--color-primary)'; e.currentTarget.style.background = '#fff' }}
-                  onBlur={e => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.1)'; e.currentTarget.style.background = '#fafafa' }}
-                />
+                <div style={{ flex: 1, position: 'relative', display: 'flex', alignItems: 'center' }}>
+                  <input type="text" value={bgImage} onChange={e => setBgImage(e.target.value)} placeholder="https://..." 
+                    style={{ width: '100%', padding: '10px 32px 10px 14px', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.1)', fontSize: '13px', background: '#fafafa', outline: 'none', transition: 'all 0.2s', minWidth: 0 }} 
+                    onFocus={e => { e.currentTarget.style.borderColor = 'var(--color-primary)'; e.currentTarget.style.background = '#fff' }}
+                    onBlur={e => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.1)'; e.currentTarget.style.background = '#fafafa' }}
+                  />
+                  {bgImage && (
+                    <button 
+                      onClick={() => setBgImage('')} 
+                      style={{ position: 'absolute', right: 8, background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#94a3b8', transition: 'color 0.2s' }} 
+                      onMouseEnter={e => e.currentTarget.style.color = '#ef4444'}
+                      onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}
+                      title="Hapus Gambar Background"
+                    >
+                      <X size={16} />
+                    </button>
+                  )}
+                </div>
                 <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 16px', borderRadius: '8px', background: '#f1f5f9', border: '1px solid rgba(0,0,0,0.1)', cursor: 'pointer', color: '#475569' }} title="Unggah Gambar">
                   <Upload size={16} />
                   <input type="file" accept="image/png, image/jpeg" style={{ display: 'none' }} onChange={e => e.target.files && handleUpload(e.target.files[0])} disabled={isUploading} />
