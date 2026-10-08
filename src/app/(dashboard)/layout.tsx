@@ -23,7 +23,7 @@ const reggaeOne = Reggae_One({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Metro Institute — Build Skills. Build Portfolio. Build Your Career.',
+    default: 'Metro Institute - Build Skills. Build Portfolio. Build Your Career.',
     template: '%s | Metro Institute',
   },
   icons: {

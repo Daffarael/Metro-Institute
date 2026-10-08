@@ -1059,7 +1059,7 @@ input[type="number"] {
   justify-content: space-between;
   outline: none;
   -webkit-tap-highlight-color: transparent;
-  transition: color 200ms ease;
+  transition: background 200ms ease, color 200ms ease;
 }
 
 @media (hover: hover) and (pointer: fine) {
