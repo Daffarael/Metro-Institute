@@ -94,11 +94,32 @@ function AddChapterModal({ bootcampId, onClose }: any) {
 
 function AddSessionModal({ bootcampId, chapterId, onClose }: any) {
   const qc = useQueryClient()
-  const [form, setForm] = useState({ title: '', type: 'VIDEO' as BootcampSession['type'], videoUrl: '', materialUrl: '', isPreview: false })
+  const [form, setForm] = useState({ 
+    title: '', 
+    type: 'VIDEO' as BootcampSession['type'], 
+    videoUrl: '', 
+    materialUrl: '', 
+    isPreview: false,
+    liveProvider: 'JITSI',
+    liveUrl: '',
+    assignmentDescription: '',
+    assignmentDeadline: ''
+  })
   const f = (k: string, v: any) => setForm(p => ({ ...p, [k]: v }))
 
   const mutation = useMutation({
-    mutationFn: () => api.post(`/admin/bootcamps/${bootcampId}/chapters/${chapterId}/sessions`, { ...form, order: 0 }),
+    mutationFn: () => {
+      let payload: any = { ...form, order: 0 }
+      
+      // Cleanup payload based on type
+      if (form.type === 'LIVE') {
+        if (form.liveProvider === 'JITSI') {
+          payload.liveUrl = `jitsi:metro-${bootcampId}-${Date.now()}`
+        }
+      }
+
+      return api.post(`/admin/bootcamps/${bootcampId}/chapters/${chapterId}/sessions`, payload)
+    },
     onSuccess: () => {
       toast.success('Materi berhasil ditambahkan.')
       qc.invalidateQueries({ queryKey: ['admin', 'bootcamp', bootcampId, 'syllabus'] })
@@ -145,9 +166,48 @@ function AddSessionModal({ bootcampId, chapterId, onClose }: any) {
           )}
 
           {form.type === 'LIVE' && (
+            <>
+              <div>
+                <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Platform Live</label>
+                <div style={{ width: '100%' }}>
+                  <CleanCombobox
+                    value={form.liveProvider}
+                    onChange={val => f('liveProvider', val as any)}
+                    placeholder="Pilih Provider Live"
+                    options={[
+                      { value: 'JITSI', label: 'In-Platform (Jitsi)' },
+                      { value: 'EXTERNAL', label: 'External (Zoom / GMeet)' },
+                    ]}
+                    width="100%"
+                  />
+                </div>
+              </div>
+              {form.liveProvider === 'EXTERNAL' && (
+                <div>
+                  <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Link Meeting (GMeet / Zoom) <span style={{ color: 'var(--color-error)' }}>*</span></label>
+                  <input value={form.liveUrl} onChange={e => f('liveUrl', e.target.value)} placeholder="Contoh: https://meet.google.com/..." style={inputStyle} />
+                </div>
+              )}
+            </>
+          )}
+
+          {form.type === 'CHALLENGE' && (
+            <>
+              <div>
+                <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Deskripsi Tugas</label>
+                <textarea value={form.assignmentDescription} onChange={e => f('assignmentDescription', e.target.value)} placeholder="Tuliskan deskripsi/instruksi tugas di sini..." style={{...inputStyle, minHeight: 80}} />
+              </div>
+              <div>
+                <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Tenggat Waktu (Deadline)</label>
+                <input type="datetime-local" value={form.assignmentDeadline} onChange={e => f('assignmentDeadline', e.target.value)} style={inputStyle} />
+              </div>
+            </>
+          )}
+
+          {form.type === 'MATERIAL' && (
             <div>
-              <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Link Meeting (GMeet / Zoom) <span style={{ color: 'var(--color-error)' }}>*</span></label>
-              <input value={form.videoUrl} onChange={e => f('videoUrl', e.target.value)} placeholder="Contoh: https://meet.google.com/..." style={inputStyle} />
+              <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Link Dokumen (Google Drive) <span style={{ color: 'var(--color-error)' }}>*</span></label>
+              <input value={form.materialUrl} onChange={e => f('materialUrl', e.target.value)} placeholder="Contoh: https://drive.google.com/file/d/..." style={inputStyle} />
             </div>
           )}
 
