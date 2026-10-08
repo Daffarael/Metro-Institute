@@ -7,6 +7,7 @@ import api from '@/lib/axios'
 import AdminPageHeader from '@/components/admin/AdminPageHeader'
 import AdminConfirmModal from '@/components/admin/AdminConfirmModal'
 import AdminTableSkeleton from '@/components/admin/AdminTableSkeleton'
+import CleanCombobox from '@/components/admin/CleanCombobox'
 import { toast } from 'sonner'
 import { motion, AnimatePresence } from 'motion/react'
 
@@ -120,12 +121,20 @@ function AddSessionModal({ bootcampId, chapterId, onClose }: any) {
           </div>
           <div>
             <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Jenis Materi</label>
-            <select value={form.type} onChange={e => f('type', e.target.value)} style={inputStyle}>
-              <option value="VIDEO">▶️ VIDEO — Video Rekaman (VoD)</option>
-              <option value="LIVE">🔴 LIVE — Sesi Video Call / Webinar</option>
-              <option value="MATERIAL">📄 MATERIAL — Dokumen / PDF</option>
-              <option value="CHALLENGE">🎯 CHALLENGE — Tugas / Quiz</option>
-            </select>
+            <div style={{ width: '100%' }}>
+              <CleanCombobox
+                value={form.type}
+                onChange={val => f('type', val as any)}
+                placeholder="Pilih Jenis Materi"
+                options={[
+                  { value: 'VIDEO', label: '▶️ VIDEO — Video Rekaman (VoD)' },
+                  { value: 'LIVE', label: '🔴 LIVE — Sesi Video Call / Webinar' },
+                  { value: 'MATERIAL', label: '📄 MATERIAL — Dokumen / PDF' },
+                  { value: 'CHALLENGE', label: '🎯 CHALLENGE — Tugas / Quiz' },
+                ]}
+                width="100%"
+              />
+            </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'var(--color-bg)', padding: '12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border-subtle)' }}>
             <input type="checkbox" id="isPreview" checked={form.isPreview} onChange={e => f('isPreview', e.target.checked)} style={{ width: 18, height: 18, accentColor: 'var(--color-primary)' }} />
