@@ -15,6 +15,7 @@ import AdminTableSkeleton from '@/components/admin/AdminTableSkeleton'
 import AdminEmptyState from '@/components/admin/AdminEmptyState'
 import AdminPagination from '@/components/admin/AdminPagination'
 import AdminConfirmModal from '@/components/admin/AdminConfirmModal'
+import CleanCombobox from '@/components/admin/CleanCombobox'
 import { toast } from 'sonner'
 
 // ─── Types (sesuai Prisma Bootcamp Registration + User) ────
@@ -88,23 +89,23 @@ export default function BootcampParticipantsPage() {
 
       {/* Filters */}
       <div style={{ display: 'flex', gap: 'var(--space-3)', marginBottom: 'var(--space-4)', flexWrap: 'wrap' }}>
-        <select
+        <CleanCombobox
           value={filters.field ?? ''}
-          onChange={e => setFilters(f => ({ ...f, field: e.target.value || undefined, page: 1 }))}
-          style={{ padding: '8px 12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', fontSize: 'var(--text-sm)', background: 'var(--color-surface)', minWidth: 140 }}
-        >
-          <option value="">Semua Bidang</option>
-          {FIELD_OPTS.map(f => <option key={f} value={f}>{(FIELD_LABELS as any)?.[f] ?? f}</option>)}
-        </select>
-        <select
+          onChange={val => setFilters(f => ({ ...f, field: val || undefined, page: 1 }))}
+          placeholder="Semua Bidang"
+          options={FIELD_OPTS.map(f => ({ value: f, label: (FIELD_LABELS as any)?.[f] ?? f }))}
+          width={180}
+        />
+        <CleanCombobox
           value={filters.status ?? ''}
-          onChange={e => setFilters(f => ({ ...f, status: e.target.value || undefined, page: 1 }))}
-          style={{ padding: '8px 12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', fontSize: 'var(--text-sm)', background: 'var(--color-surface)', minWidth: 140 }}
-        >
-          <option value="">Semua Status</option>
-          <option value="ACTIVE">Aktif</option>
-          <option value="REMOVED">Dikeluarkan</option>
-        </select>
+          onChange={val => setFilters(f => ({ ...f, status: val || undefined, page: 1 }))}
+          placeholder="Semua Status"
+          options={[
+            { value: 'ACTIVE', label: 'Aktif' },
+            { value: 'REMOVED', label: 'Dikeluarkan' }
+          ]}
+          width={180}
+        />
       </div>
 
       {/* Table */}
