@@ -215,7 +215,7 @@ export default function BootcampSchedulesPage() {
                     </span>
                   </div>
                   <div style={{ marginTop: 8, display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
-                    <a href={s.meetingUrl?.startsWith('jitsi:') ? `https://meet.jit.si/${s.meetingUrl.replace('jitsi:', '')}` : s.meetingUrl} target="_blank" style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '13px', color: 'var(--color-primary)', fontWeight: 600, textDecoration: 'none', background: 'var(--color-primary-light)', padding: '4px 10px', borderRadius: 'var(--radius-full)' }}>
+                    <a href={s.meetingUrl?.startsWith('jitsi:') ? `/admin/bootcamp/${bootcampId}/live/${s.id}` : s.meetingUrl} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '13px', color: 'var(--color-primary)', fontWeight: 600, textDecoration: 'none', background: 'var(--color-primary-light)', padding: '4px 10px', borderRadius: 'var(--radius-full)' }}>
                       🔗 Buka Link Meeting
                     </a>
                     {s.recordingUrl && <a href={s.recordingUrl} target="_blank" style={{ fontSize: '12px', color: '#0369A1', fontWeight: 500 }}>🎥 Tonton Rekaman</a>}
