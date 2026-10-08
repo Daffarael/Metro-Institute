@@ -33,6 +33,7 @@ const scheduleSchema = z.object({
   scheduledAt:         z.string().min(1, 'Wajib diisi'),
   durationMin:         z.number().min(5).max(480),
   attendanceWindowMin: z.number().min(5).max(120),
+  meetingUrl:          z.string().url('Format URL tidak valid').min(1, 'Wajib diisi'),
 })
 type ScheduleForm = z.infer<typeof scheduleSchema>
 
@@ -82,10 +83,7 @@ function ScheduleModal({ bootcampId, schedule, onClose }: {
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-tertiary)' }}><X size={18} /></button>
         </div>
         <form onSubmit={handleSubmit(d => {
-          const jitsiUrl = schedule?.meetingUrl?.startsWith('jitsi:') 
-            ? schedule.meetingUrl 
-            : `jitsi:metro-live-${bootcampId.substring(0,8)}-${Date.now()}`;
-          mutation.mutate({ ...d, meetingUrl: jitsiUrl } as any)
+          mutation.mutate(d as any)
         })} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
           <div>
             <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 4 }}>Judul Sesi *</label>
@@ -101,6 +99,12 @@ function ScheduleModal({ bootcampId, schedule, onClose }: {
               <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 4 }}>Durasi (menit) *</label>
               <input type="number" {...register('durationMin', { valueAsNumber: true })} style={inputStyle} min={5} max={480} />
             </div>
+          </div>
+
+          <div>
+            <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 4 }}>Link Meeting (Google Meet / Zoom) *</label>
+            <input {...register('meetingUrl')} style={inputStyle} placeholder="https://meet.google.com/xxx-xxxx-xxx" />
+            {errors.meetingUrl && <p style={{ color: 'var(--color-error)', fontSize: 'var(--text-xs)', marginTop: 3 }}>{errors.meetingUrl.message}</p>}
           </div>
 
           <div>
