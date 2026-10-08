@@ -329,7 +329,27 @@ export default function CertificateTemplateEditor() {
                     </>
                   )}
                 </div>
-                <button onClick={() => setSelectedItem(null)} style={{ marginTop: '8px', width: '100%', padding: '8px', fontSize: '12px', fontWeight: 600, borderRadius: '6px', background: '#f4f4f5', color: '#52525b', border: 'none', cursor: 'pointer', transition: 'background 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = '#e4e4e7'} onMouseLeave={e => e.currentTarget.style.background = '#f4f4f5'}>Tutup Pengaturan</button>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '8px' }}>
+                  <button 
+                    onClick={() => {
+                      setItems(prev => prev.filter(i => i.id !== selectedItem))
+                      setSelectedItem(null)
+                    }} 
+                    style={{ width: '100%', padding: '8px', fontSize: '12px', fontWeight: 600, borderRadius: '6px', background: '#fee2e2', color: '#ef4444', border: 'none', cursor: 'pointer', transition: 'background 0.2s' }} 
+                    onMouseEnter={e => e.currentTarget.style.background = '#fecaca'} 
+                    onMouseLeave={e => e.currentTarget.style.background = '#fee2e2'}
+                  >
+                    Hapus Elemen
+                  </button>
+                  <button 
+                    onClick={() => setSelectedItem(null)} 
+                    style={{ width: '100%', padding: '8px', fontSize: '12px', fontWeight: 600, borderRadius: '6px', background: '#f4f4f5', color: '#52525b', border: 'none', cursor: 'pointer', transition: 'background 0.2s' }} 
+                    onMouseEnter={e => e.currentTarget.style.background = '#e4e4e7'} 
+                    onMouseLeave={e => e.currentTarget.style.background = '#f4f4f5'}
+                  >
+                    Tutup
+                  </button>
+                </div>
               </div>
             ) : (
               <div style={{ fontSize: '12px', color: 'var(--color-text-tertiary)', textAlign: 'center', padding: '20px 0', lineHeight: 1.6 }}>
