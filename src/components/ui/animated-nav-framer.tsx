@@ -194,10 +194,10 @@ export function AnimatedNavFramer({ items = DEFAULT_NAV_ITEMS }: { items?: NavIt
                     variants={itemVariants}
                     onClick={(e) => e.stopPropagation()}
                     className={cn(
-                      "text-[11px] font-bold tracking-[0.2em] uppercase transition-colors px-2 py-1 whitespace-nowrap",
+                      "text-[11px] font-bold tracking-[0.2em] uppercase transition-all whitespace-nowrap",
                       item.isHighlighted
-                        ? "text-[#22222E] hover:text-[#16161F] ml-4"
-                        : "text-gray-600 hover:text-gray-900"
+                        ? "ml-4 bg-[#22222E] text-white hover:bg-[#16161F] px-5 py-2.5 rounded-full shadow-md shadow-[#22222E]/20"
+                        : "px-2 py-1 text-gray-600 hover:text-gray-900"
                     )}
                   >
                     {item.name}
@@ -265,7 +265,7 @@ export function AnimatedNavFramer({ items = DEFAULT_NAV_ITEMS }: { items?: NavIt
                         className={cn(
                           "flex items-center px-5 py-3.5 text-[12px] font-bold tracking-[0.15em] uppercase transition-colors border-b border-gray-100 last:border-0",
                           item.isHighlighted
-                            ? "text-[#22222E] bg-gray-50"
+                            ? "text-white bg-[#22222E] hover:bg-[#16161F]"
                             : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                         )}
                       >
