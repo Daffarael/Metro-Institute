@@ -217,11 +217,11 @@ function SortableChapterItem({ chapter, bootcampId, setDeleteTarget, onAddSessio
         <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-secondary)', background: 'var(--color-surface)', padding: '4px 10px', borderRadius: 'var(--radius-full)', border: '1px solid var(--color-border-subtle)' }}>
           {chapter.sessions.length} Materi
         </span>
-        <button onClick={() => onAddSession(chapter.id)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-primary)', background: 'var(--color-primary-light)', fontSize: '12px', fontWeight: 700, cursor: 'pointer', color: 'var(--color-primary)', transition: 'all 0.2s' }}>
+        <button onClick={() => onAddSession(chapter.id)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', background: 'var(--color-surface)', fontSize: '12px', fontWeight: 600, cursor: 'pointer', color: 'var(--color-text-secondary)', transition: 'all 0.2s' }} onMouseOver={e => { e.currentTarget.style.color = 'var(--color-text-primary)'; e.currentTarget.style.borderColor = 'var(--color-border-heavy)' }} onMouseOut={e => { e.currentTarget.style.color = 'var(--color-text-secondary)'; e.currentTarget.style.borderColor = 'var(--color-border)' }}>
           <Plus size={14} /> Tambah
         </button>
-        <button onClick={() => setDeleteTarget({ type: 'chapter', id: chapter.id })} style={{ width: 32, height: 32, borderRadius: 'var(--radius-md)', border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-error)' }} title="Hapus Bab">
-          <Trash2 size={16} />
+        <button onClick={() => setDeleteTarget({ type: 'chapter', id: chapter.id })} style={{ width: 30, height: 30, borderRadius: 'var(--radius-md)', border: '1px solid transparent', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-tertiary)', transition: 'all 0.2s' }} title="Hapus Bab" onMouseOver={e => { e.currentTarget.style.color = 'var(--color-error)'; e.currentTarget.style.background = '#FEE2E2' }} onMouseOut={e => { e.currentTarget.style.color = 'var(--color-text-tertiary)'; e.currentTarget.style.background = 'transparent' }}>
+          <Trash2 size={15} />
         </button>
       </div>
 
