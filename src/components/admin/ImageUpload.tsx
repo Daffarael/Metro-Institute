@@ -22,8 +22,8 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
       toast.error('Hanya file gambar yang diperbolehkan')
       return
     }
-    if (file.size > 2 * 1024 * 1024) {
-      toast.error('Ukuran maksimal gambar adalah 2MB')
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Ukuran maksimal gambar adalah 5MB')
       return
     }
 
@@ -105,7 +105,7 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
               <span style={{ fontSize: 13, color: 'var(--color-text-secondary)', fontWeight: 500 }}>
                 Klik untuk unggah gambar
               </span>
-              <span style={{ fontSize: 11, color: 'var(--color-text-tertiary)' }}>JPG, PNG (Maks. 2MB)</span>
+              <span style={{ fontSize: 11, color: 'var(--color-text-tertiary)' }}>JPG, PNG (Maks. 5MB)</span>
             </>
           )}
         </div>
