@@ -138,6 +138,38 @@ export default function CertificateTemplateEditor() {
     }
   }
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger if user is typing in an input or textarea
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLSelectElement) {
+        return
+      }
+
+      if (!selectedItem) return
+
+      const moveAmount = e.shiftKey ? 10 : 1
+
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+        e.preventDefault() // prevent page scrolling
+        setItems(prev => prev.map(item => {
+          if (item.id === selectedItem) {
+            let newX = item.x
+            let newY = item.y
+            if (e.key === 'ArrowUp') newY -= moveAmount
+            if (e.key === 'ArrowDown') newY += moveAmount
+            if (e.key === 'ArrowLeft') newX -= moveAmount
+            if (e.key === 'ArrowRight') newX += moveAmount
+            return { ...item, x: newX, y: newY }
+          }
+          return item
+        }))
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [selectedItem])
+
   return (
     <div>
       <AdminPageHeader
