@@ -292,7 +292,7 @@ export default function CertificateTemplateEditor() {
                         />
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
-                        <label style={{ display: 'block', fontSize: '11px', color: 'var(--color-text-tertiary)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Hapus BG Putih</label>
+                        <label style={{ display: 'block', fontSize: '11px', color: 'var(--color-text-tertiary)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Hapus Background</label>
                         <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', height: '34px' }}>
                           <input 
                             type="checkbox" 
@@ -469,7 +469,8 @@ export default function CertificateTemplateEditor() {
                       left: 0,
                       top: 0,
                       cursor: 'grab',
-                      zIndex: selectedItem === item.id ? 10 : 1
+                      zIndex: selectedItem === item.id ? 10 : 1,
+                      mixBlendMode: item.transparentBg ? 'multiply' : 'normal'
                     }}
                     whileDrag={{ cursor: 'grabbing', scale: 1.05 }}
                   >
@@ -496,8 +497,7 @@ export default function CertificateTemplateEditor() {
                           style={{ 
                             width: item.width || 150, 
                             display: 'block', 
-                            pointerEvents: 'none',
-                            mixBlendMode: item.transparentBg ? 'multiply' : 'normal'
+                            pointerEvents: 'none'
                           }} 
                         />
                       ) : (
