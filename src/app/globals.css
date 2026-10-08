@@ -1047,7 +1047,7 @@ input[type="number"] {
 .clean-combobox-opt {
   padding: 9px 12px;
   text-align: left;
-  background: transparent;
+  background-color: transparent;
   border: none;
   width: 100%;
   font-size: 14px;
@@ -1059,20 +1059,20 @@ input[type="number"] {
   justify-content: space-between;
   outline: none;
   -webkit-tap-highlight-color: transparent;
-  transition: background 200ms ease, color 200ms ease;
+  transition: background-color 50ms ease-out, color 50ms ease-out;
 }
 
 @media (hover: hover) and (pointer: fine) {
   .clean-combobox-opt:hover {
     color: var(--color-text-primary);
-    background: rgba(0, 0, 0, 0.04);
+    background-color: rgba(0, 0, 0, 0.04);
   }
 }
 
 .clean-combobox-opt.is-selected {
   color: var(--color-primary);
   font-weight: 600;
-  background: rgba(0, 0, 0, 0.04);
+  background-color: rgba(0, 0, 0, 0.04);
 }
 
 .clean-combobox-clear {
