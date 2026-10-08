@@ -62,6 +62,20 @@ function CheckoutSuccessContent() {
             Mohon tunggu, kami sedang memverifikasi pembayaranmu.
           </p>
         </>
+      ) : !tx ? (
+        <>
+          <h1 style={{ fontSize: 'var(--text-xl)', fontWeight: 800, marginBottom: 'var(--space-3)' }}>
+            Transaksi Tidak Ditemukan
+          </h1>
+          <p style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--text-sm)' }}>
+            Kami tidak dapat menemukan detail transaksi ini. Silakan cek riwayat transaksi Anda.
+          </p>
+          <div style={{ marginTop: 'var(--space-5)' }}>
+            <Link href={ROUTES.TRANSACTIONS} className="btn btn-primary">
+              Lihat Transaksi
+            </Link>
+          </div>
+        </>
       ) : (
         <>
           <div style={{ width: 72, height: 72, borderRadius: '50%', background: 'var(--color-primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto var(--space-5)' }}>
