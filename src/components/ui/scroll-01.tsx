@@ -169,10 +169,10 @@ export function Scroll01({ items, title, subtitle }: Readonly<Scroll01Props>) {
       {/* Desktop view */}
       <div className="hidden md:block relative w-full h-full">
         {/* STICKY LAYER */}
-        <div className="sticky top-[96px] w-full min-h-[calc(100vh-96px)] flex flex-col justify-center pointer-events-auto pb-16">
+        <div className="sticky top-[80px] w-full min-h-[calc(100vh-80px)] flex flex-col justify-start pt-8 pointer-events-auto pb-16">
           
           {/* Header */}
-          <div className="bg-[#f7f7f9] text-center px-4 pb-12 pt-8 w-full flex flex-col justify-center">
+          <div className="bg-[#f7f7f9] text-center px-4 pb-12 pt-4 w-full flex flex-col justify-center">
             {title && (
               <h2 className="text-[44px] font-black text-gray-900 tracking-tight leading-[1.15]">
                 {title}
