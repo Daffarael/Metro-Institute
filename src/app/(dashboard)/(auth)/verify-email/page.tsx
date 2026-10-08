@@ -103,7 +103,7 @@ function VerifyEmailContent() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                className="space-y-4 text-center"
+                className="text-center mt-6"
               >
                 {isLoading ? (
                   <div className="text-slate-500 flex items-center justify-center space-x-2 font-medium">
