@@ -6,6 +6,7 @@ import { useQuery, useMutation } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import api from '@/lib/axios'
 import AdminPageHeader from '@/components/admin/AdminPageHeader'
+import CleanCombobox from '@/components/admin/CleanCombobox'
 import { toast } from 'sonner'
 import { Save, Upload, Type, X } from 'lucide-react'
 
@@ -213,12 +214,15 @@ export default function CertificateTemplateEditor() {
             </div>
             <div>
               <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: 8, letterSpacing: '0.02em' }}>TIPE PRODUK</label>
-              <select value={type} onChange={e => setType(e.target.value)} 
-                style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.1)', fontSize: '13px', background: '#fafafa', outline: 'none', cursor: 'pointer', appearance: 'none' }}
-              >
-                <option value="BOOTCAMP">Bootcamp</option>
-                <option value="MINI_COURSE">Mini Course</option>
-              </select>
+              <CleanCombobox 
+                value={type} 
+                onChange={setType}
+                options={[
+                  { value: "BOOTCAMP", label: "Bootcamp" },
+                  { value: "MINI_COURSE", label: "Mini Course" }
+                ]}
+                allowClear={false}
+              />
             </div>
             <div>
               <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: 8, letterSpacing: '0.02em' }}>GAMBAR BACKGROUND</label>
