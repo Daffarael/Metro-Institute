@@ -91,8 +91,8 @@ export function Scroll01({ items, title, subtitle }: Readonly<Scroll01Props>) {
   });
 
   return (
-    <div ref={wrapperRef} className="relative w-full" style={{ height: `${items.length * 100}vh` }}>
-      {/* Mobile: scroll-locked section — full viewport width, N*100svh tall */}
+    <div ref={wrapperRef} className="relative w-full" style={{ height: `${items.length * 60}vh` }}>
+      {/* Mobile: scroll-locked section — full viewport width, N*60svh tall */}
       <div
         className="block md:hidden relative z-30 -mt-[80px]"
         style={{ height: '100%' }}
