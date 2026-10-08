@@ -95,8 +95,8 @@ function BootcampModal({
   const mutation = useMutation({
     mutationFn: (data: BootcampForm) =>
       isEdit
-        ? api.patch(`/bootcamp/${bootcamp!.id}`, data).then(r => r.data)
-        : api.post('/bootcamp', data).then(r => r.data),
+        ? api.patch(`/admin/bootcamps/${bootcamp!.id}`, data).then(r => r.data)
+        : api.post('/admin/bootcamps', data).then(r => r.data),
     onSuccess: (data) => {
       toast.success(isEdit ? 'Bootcamp diperbarui.' : 'Bootcamp berhasil dibuat!')
       qc.invalidateQueries({ queryKey: ['admin', 'bootcamps'] })
