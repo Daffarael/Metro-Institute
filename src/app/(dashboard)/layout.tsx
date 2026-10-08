@@ -1,3 +1,4 @@
+import Script from 'next/script'
 import type { Metadata } from 'next'
 import { Inter, Reggae_One, Geist } from 'next/font/google'
 import '../globals.css'
@@ -56,10 +57,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html lang="id" className={cn(inter.variable, reggaeOne.variable, "font-sans", geist.variable)} data-scroll-behavior="smooth" suppressHydrationWarning>
-      <body suppressHydrationWarning>
-        <GlobalConfigInitializer config={data.config} />
+      <body suppressHydrationWarning>        <GlobalConfigInitializer config={data.config} />
         <Providers>
           {children}
+          <Script 
+            src="https://app.sandbox.midtrans.com/snap/snap.js" 
+            data-client-key={process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY} 
+            strategy="lazyOnload" 
+          />
           <Toaster
             position="bottom-right"
             toastOptions={{
