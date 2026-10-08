@@ -67,10 +67,10 @@ function ScrubbedItem({
     <article
       style={{ opacity, position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 2rem' }}
     >
-      <div className="text-center w-full bg-[#f7f7f9] bg-opacity-80 py-8 px-6 rounded-2xl backdrop-blur-sm">
+      <div className="text-center w-full bg-[#f7f7f9] bg-opacity-80 py-8 rounded-2xl backdrop-blur-sm">
         <h3 className="mb-2 text-2xl font-semibold text-gray-900">{item.title}</h3>
         <p className="text-sm font-semibold tracking-wider text-primary uppercase mb-3">{item.description}</p>
-        {item.summary && <p className="text-gray-600 max-w-lg mx-auto leading-relaxed text-justify">{item.summary}</p>}
+        {item.summary && <p className="text-gray-600 max-w-lg mx-auto leading-relaxed">{item.summary}</p>}
       </div>
     </article>
   );
@@ -142,7 +142,6 @@ export function Scroll01({ items, title, subtitle }: Readonly<Scroll01Props>) {
                 >
                   <h3 className="text-xl font-semibold text-gray-900 text-center">{item.title}</h3>
                   <p className="text-gray-500 text-sm text-center mt-2 leading-relaxed">{item.description}</p>
-                  {item.summary && <p className="text-gray-600 text-sm mt-3 leading-relaxed text-justify px-2">{item.summary}</p>}
                 </motion.div>
               ))}
             </div>
