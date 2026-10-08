@@ -16,7 +16,7 @@ import {
 import { InteractiveHoverLinks } from "@/components/ui/interactive-hover-links";
 import { Scroll01 } from "@/components/ui/scroll-01";
 import { AnimatedNavFramer } from "@/components/ui/animated-nav-framer";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import LandingEbookSection from './LandingEbookSection'
 
 import type { FeaturedBootcamp, FeaturedCourse } from '../page'
@@ -74,6 +74,7 @@ export default function LandingPageClient({
   const [activeTab, setActiveTab] = useState(programTabs[0] || 'BOOTCAMP')
   const [scrolled, setScrolled]           = useState(false)
   const [carouselIndex, setCarouselIndex] = useState(0)
+  const [carouselDir, setCarouselDir]     = useState(1) // 1 = forward (→), -1 = backward (←)
 
   // Parse programs_items from CMS config
   const allProgramItems = (() => {
@@ -304,13 +305,13 @@ export default function LandingPageClient({
                 {activeProducts.length > 1 && (
                   <>
                     <button
-                      onClick={() => setCarouselIndex(i => (i - 1 + activeProducts.length) % activeProducts.length)}
+                      onClick={() => { setCarouselDir(-1); setCarouselIndex(i => (i - 1 + activeProducts.length) % activeProducts.length) }}
                       className="hidden md:flex absolute left-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full items-center justify-center shadow-sm hover:shadow-md transition-all z-20 text-gray-400 hover:text-[#22222E]"
                     >
                       <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
                     </button>
                     <button
-                      onClick={() => setCarouselIndex(i => (i + 1) % activeProducts.length)}
+                      onClick={() => { setCarouselDir(1); setCarouselIndex(i => (i + 1) % activeProducts.length) }}
                       className="hidden md:flex absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full items-center justify-center shadow-sm hover:shadow-md transition-all z-20 text-gray-400 hover:text-[#22222E]"
                     >
                       <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
@@ -320,55 +321,59 @@ export default function LandingPageClient({
 
                 {/* Active Card */}
                 {/* Active Card */}
-                {(() => {
-                  const product = activeProducts[carouselIndex]
-                  return (
-                    <motion.div
-                      key={product.title}
-                      initial={{ opacity: 0, x: 40 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.4, ease: 'easeOut' }}
-                      className="flex flex-col items-center justify-center w-full h-full py-16 md:py-24 px-6 md:px-12"
-                    >
-                      {/* Product Card */}
-                      <div className="w-full max-w-2xl">
-                        {/* Thumbnail */}
-                        <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden mb-8 bg-gray-200 shadow-xl">
-                          {product.thumbnailUrl ? (
-                            <img
-                              src={product.thumbnailUrl}
-                              alt={product.title}
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            /* fallback gradient if no thumbnail */
-                            <div className="w-full h-full bg-gradient-to-br from-[#22222E] to-[#13131A] flex items-center justify-center">
-                              <span className="text-white/30 text-6xl font-black tracking-tight">
-                                {product.title?.charAt(0) ?? 'P'}
-                              </span>
-                            </div>
-                          )}
-                        </div>
+                <AnimatePresence mode="wait" custom={carouselDir}>
+                  {(() => {
+                    const product = activeProducts[carouselIndex]
+                    return (
+                      <motion.div
+                        key={`${activeTab}-${carouselIndex}`}
+                        custom={carouselDir}
+                        initial={(dir) => ({ opacity: 0, x: dir * 60 })}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={(dir) => ({ opacity: 0, x: dir * -60 })}
+                        transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
+                        className="flex flex-col items-center justify-center w-full h-full py-16 md:py-24 px-6 md:px-12"
+                      >
+                        {/* Product Card */}
+                        <div className="w-full max-w-2xl">
+                          {/* Thumbnail */}
+                          <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden mb-8 bg-gray-200 shadow-xl">
+                            {product.thumbnailUrl ? (
+                              <img
+                                src={product.thumbnailUrl}
+                                alt={product.title}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              /* fallback gradient if no thumbnail */
+                              <div className="w-full h-full bg-gradient-to-br from-[#22222E] to-[#13131A] flex items-center justify-center">
+                                <span className="text-white/30 text-6xl font-black tracking-tight">
+                                  {product.title?.charAt(0) ?? 'P'}
+                                </span>
+                              </div>
+                            )}
+                          </div>
 
-                        {/* Title & Description */}
-                        <h3 className="text-2xl md:text-3xl font-bold text-gray-900 text-center mb-4">{product.title}</h3>
-                        <p className="text-center text-gray-500 text-sm md:text-base leading-relaxed mb-8 max-w-xl mx-auto">
-                          {product.description}
-                        </p>
+                          {/* Title & Description */}
+                          <h3 className="text-2xl md:text-3xl font-bold text-gray-900 text-center mb-4">{product.title}</h3>
+                          <p className="text-center text-gray-500 text-sm md:text-base leading-relaxed mb-8 max-w-xl mx-auto">
+                            {product.description}
+                          </p>
 
-                        <div className="flex justify-center mt-8">
-                          <Link
-                            href="/register"
-                            className="h-10 px-6 rounded-full bg-[#f0f0f3] text-[#22222E] font-semibold text-xs md:text-sm flex items-center gap-2 hover:bg-[#e4e4e7] transition-colors"
-                          >
-                            Lihat Detail
-                            <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
-                          </Link>
+                          <div className="flex justify-center mt-8">
+                            <Link
+                              href="/register"
+                              className="h-10 px-6 rounded-full bg-[#f0f0f3] text-[#22222E] font-semibold text-xs md:text-sm flex items-center gap-2 hover:bg-[#e4e4e7] transition-colors"
+                            >
+                              Lihat Detail
+                              <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+                            </Link>
+                          </div>
                         </div>
-                      </div>
-                    </motion.div>
-                  )
-                })()}
+                      </motion.div>
+                    )
+                  })()}
+                </AnimatePresence>
 
                 {/* Dot indicators */}
                 {activeProducts.length > 1 && (
@@ -376,7 +381,7 @@ export default function LandingPageClient({
                     {activeProducts.map((_, i) => (
                       <button
                         key={i}
-                        onClick={() => setCarouselIndex(i)}
+                        onClick={() => { setCarouselDir(i > carouselIndex ? 1 : -1); setCarouselIndex(i) }}
                         className={`rounded-full transition-all ${i === carouselIndex ? 'w-6 h-2 bg-[#22222E]' : 'w-2 h-2 bg-gray-300 hover:bg-gray-400'}`}
                       />
                     ))}
