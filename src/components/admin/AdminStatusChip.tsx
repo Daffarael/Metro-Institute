@@ -9,6 +9,7 @@ const STATUS_MAP: Record<string, ChipStyle> = {
   DRAFT:          { color: '#6B7280', label: 'Draft' }, // Gray
   PUBLISHED:      { color: '#0ea5e9', label: 'Tayang' }, // Sky blue
   OPEN:           { color: '#018556', label: 'Buka Beli' }, // Green
+  CLOSED:         { color: '#EF4444', label: 'Tutup Beli' }, // Red
   ONGOING:        { color: '#10B981', label: 'Berjalan' }, // Emerald
   COMPLETED:      { color: '#374151', label: 'Selesai' }, // Dark Gray
   // RegistrationStatus

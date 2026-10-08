@@ -34,7 +34,7 @@ const bootcampSchema = z.object({
   purchaseCloseAt: z.string().min(1, 'Wajib diisi'),
   startDate:       z.string().min(1, 'Wajib diisi'),
   endDate:         z.string().min(1, 'Wajib diisi'),
-  status:          z.enum(['DRAFT', 'PUBLISHED', 'OPEN', 'ONGOING', 'COMPLETED']),
+  status:          z.enum(['DRAFT', 'OPEN', 'CLOSED']),
   certificateTemplateId: z.string().optional().nullable(),
   thumbnailUrl:    z.string().optional().nullable(),
 })
@@ -57,8 +57,8 @@ interface BootcampFilters {
 
 const FIELD_OPTS = ['UI_UX', 'FRONTEND', 'BACKEND', 'MOBILE'] as const
 const FIELD_LABELS: Record<string, string> = { UI_UX: 'UI/UX', FRONTEND: 'Frontend', BACKEND: 'Backend', MOBILE: 'Mobile' }
-const STATUS_OPTS = ['DRAFT', 'PUBLISHED', 'OPEN', 'ONGOING', 'COMPLETED'] as const
-const STATUS_NEXT: Record<string, string> = { DRAFT: 'PUBLISHED', PUBLISHED: 'OPEN', OPEN: 'ONGOING', ONGOING: 'COMPLETED', COMPLETED: '' }
+const STATUS_OPTS = ['DRAFT', 'OPEN', 'CLOSED'] as const
+const STATUS_NEXT: Record<string, string> = { DRAFT: 'OPEN', OPEN: 'CLOSED', CLOSED: '' }
 
 // ─── Input / Select style helpers ─────────────────────────
 const inputStyle: React.CSSProperties = {
