@@ -32,7 +32,6 @@ const scheduleSchema = z.object({
   title:               z.string().min(3, 'Minimal 3 karakter'),
   scheduledAt:         z.string().min(1, 'Wajib diisi'),
   durationMin:         z.number().min(5).max(480),
-  meetingUrl:          z.string().url('Harus URL valid'),
   attendanceWindowMin: z.number().min(5).max(120),
 })
 type ScheduleForm = z.infer<typeof scheduleSchema>
@@ -82,7 +81,12 @@ function ScheduleModal({ bootcampId, schedule, onClose }: {
           <h3 style={{ fontWeight: 700, fontSize: 'var(--text-lg)' }}>{isEdit ? 'Edit Jadwal' : 'Tambah Jadwal Live'}</h3>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-tertiary)' }}><X size={18} /></button>
         </div>
-        <form onSubmit={handleSubmit(d => mutation.mutate(d))} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+        <form onSubmit={handleSubmit(d => {
+          const jitsiUrl = schedule?.meetingUrl?.startsWith('jitsi:') 
+            ? schedule.meetingUrl 
+            : `jitsi:metro-live-${bootcampId.substring(0,8)}-${Date.now()}`;
+          mutation.mutate({ ...d, meetingUrl: jitsiUrl } as any)
+        })} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
           <div>
             <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 4 }}>Judul Sesi *</label>
             <input {...register('title')} style={inputStyle} placeholder="Sesi 1 — Pengenalan Design Thinking" />
@@ -98,11 +102,7 @@ function ScheduleModal({ bootcampId, schedule, onClose }: {
               <input type="number" {...register('durationMin', { valueAsNumber: true })} style={inputStyle} min={5} max={480} />
             </div>
           </div>
-          <div>
-            <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 4 }}>Meeting URL (Zoom/Meet) *</label>
-            <input {...register('meetingUrl')} style={inputStyle} placeholder="https://zoom.us/j/..." />
-            {errors.meetingUrl && <p style={{ color: 'var(--color-error)', fontSize: 'var(--text-xs)', marginTop: 3 }}>{errors.meetingUrl.message}</p>}
-          </div>
+
           <div>
             <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 4 }}>Window Absensi (menit) — Default 30</label>
             <input type="number" {...register('attendanceWindowMin', { valueAsNumber: true })} style={inputStyle} min={5} max={120} />
