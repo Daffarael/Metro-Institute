@@ -183,10 +183,10 @@ function BootcampModal({
             {errors.name && <p style={{ fontSize: '12px', color: 'var(--color-error)', marginTop: 6, fontWeight: 500 }}>{errors.name.message}</p>}
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-            <div>
-              <label style={labelStyle}>Status</label>
-              {isEdit ? (
+          <div style={{ display: 'grid', gridTemplateColumns: isEdit ? '1fr 1fr' : '1fr', gap: '20px' }}>
+            {isEdit && (
+              <div>
+                <label style={labelStyle}>Status</label>
                 <Controller
                   control={control}
                   name="status"
@@ -202,13 +202,8 @@ function BootcampModal({
                     />
                   )}
                 />
-              ) : (
-                <div style={{...inputStyleClean, display: 'flex', alignItems: 'center', background: 'rgba(0,0,0,0.02)', color: 'var(--color-text-secondary)'}}>
-                  <span style={{ fontWeight: 600 }}>DRAFT</span>
-                  <span style={{ fontSize: '11px', marginLeft: 'auto', fontStyle: 'italic' }}>*Bisa di-publish nanti</span>
-                </div>
-              )}
-            </div>
+              </div>
+            )}
             <div>
               <label style={labelStyle}>Harga (Rp) <span style={{color: 'var(--color-error)'}}>*</span></label>
               <input type="number" {...register('price', { valueAsNumber: true })} style={inputStyleClean} placeholder="1500000" min={0} 
