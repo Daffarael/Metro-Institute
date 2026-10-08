@@ -347,7 +347,7 @@ export default function AdminBootcampPage() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin', 'bootcamps', filters], placeholderData: keepPreviousData,
-    queryFn: () => api.get('/bootcamp', { params: filters }).then(r => r.data.data),
+    queryFn: () => api.get('/admin/bootcamps', { params: filters }).then(r => r.data.data),
     staleTime: 2 * 60 * 1000,
   })
 
