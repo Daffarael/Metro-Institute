@@ -136,6 +136,28 @@ function AddSessionModal({ bootcampId, chapterId, onClose }: any) {
               />
             </div>
           </div>
+          
+          {form.type === 'VIDEO' && (
+            <div>
+              <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Link Video Youtube <span style={{ color: 'var(--color-error)' }}>*</span></label>
+              <input value={form.videoUrl} onChange={e => f('videoUrl', e.target.value)} placeholder="Contoh: https://youtube.com/watch?v=..." style={inputStyle} />
+            </div>
+          )}
+
+          {form.type === 'LIVE' && (
+            <div>
+              <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Link Meeting (GMeet / Zoom) <span style={{ color: 'var(--color-error)' }}>*</span></label>
+              <input value={form.videoUrl} onChange={e => f('videoUrl', e.target.value)} placeholder="Contoh: https://meet.google.com/..." style={inputStyle} />
+            </div>
+          )}
+
+          {(form.type === 'MATERIAL' || form.type === 'CHALLENGE') && (
+            <div>
+              <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Link Dokumen / Tugas (Google Drive) <span style={{ color: 'var(--color-error)' }}>*</span></label>
+              <input value={form.materialUrl} onChange={e => f('materialUrl', e.target.value)} placeholder="Contoh: https://drive.google.com/file/d/..." style={inputStyle} />
+            </div>
+          )}
+
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'var(--color-bg)', padding: '12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border-subtle)' }}>
             <input type="checkbox" id="isPreview" checked={form.isPreview} onChange={e => f('isPreview', e.target.checked)} style={{ width: 18, height: 18, accentColor: 'var(--color-primary)' }} />
             <div>
