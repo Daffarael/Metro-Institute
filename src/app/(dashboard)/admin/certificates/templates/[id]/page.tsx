@@ -216,8 +216,21 @@ export default function CertificateTemplateEditor() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '11px', color: 'var(--color-text-tertiary)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Elemen Terpilih</label>
-                  <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-primary)', background: 'var(--color-primary-light)', padding: '6px 10px', borderRadius: '6px', display: 'inline-block' }}>
+                  <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-primary)', background: 'var(--color-primary-light)', padding: '6px 10px', borderRadius: '6px', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
                     {items.find(i => i.id === selectedItem)?.label}
+                    <button
+                      onClick={() => setSelectedItem(null)}
+                      style={{
+                        background: 'transparent', border: 'none', cursor: 'pointer', padding: 0,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        color: 'var(--color-primary)', opacity: 0.7, transition: 'opacity 0.2s'
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.opacity = '1'}
+                      onMouseLeave={e => e.currentTarget.style.opacity = '0.7'}
+                      title="Batalkan Pilihan"
+                    >
+                      <X size={14} strokeWidth={2.5} />
+                    </button>
                   </div>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
