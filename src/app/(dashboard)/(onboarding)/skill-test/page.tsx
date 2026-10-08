@@ -27,6 +27,7 @@ export default function SkillTestPage() {
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [timeLeft, setTimeLeft] = useState(QUESTION_TIME)
   const [isTransitioning, setIsTransitioning] = useState(false)
+  const [isProcessing, setIsProcessing] = useState(false)
 
   // Load saved progress from sessionStorage
   useEffect(() => {
@@ -90,15 +91,22 @@ export default function SkillTestPage() {
   }, [currentIdx, questions, showIntro])
 
   const handleAnswer = (questionId: string, optionId: string) => {
-    if (isTransitioning) return
+    if (isTransitioning || isProcessing) return
+    setIsProcessing(true)
     const newAnswers = { ...answers, [questionId]: optionId }
     setAnswers(newAnswers)
     saveProgress(currentIdx, newAnswers)
-    setIsTransitioning(true)
+
+    // Wait 500ms to let user see their selection
     setTimeout(() => {
-      setIsTransitioning(false)
-      handleNext(false, newAnswers)
-    }, 400)
+      setIsTransitioning(true)
+      // Wait 300ms for fade out
+      setTimeout(() => {
+        setIsTransitioning(false)
+        setIsProcessing(false)
+        handleNext(false, newAnswers)
+      }, 350)
+    }, 600)
   }
 
   const handleNext = (skipAnswer = false, currentAnswers = answers) => {
@@ -261,9 +269,9 @@ export default function SkillTestPage() {
         <div
           style={{
             width: '100%', maxWidth: 600,
-            animation: isTransitioning ? 'none' : 'fadeInUp 400ms cubic-bezier(0.4, 0, 0.2, 1)',
+            animation: isTransitioning ? 'none' : 'fadeInUp 500ms cubic-bezier(0.4, 0, 0.2, 1)',
             opacity: isTransitioning ? 0 : 1,
-            transition: 'opacity 300ms ease',
+            transition: 'opacity 350ms ease',
           }}
         >
           {/* Question text */}
@@ -288,10 +296,10 @@ export default function SkillTestPage() {
               return (
                 <motion.button
                   key={option.id}
-                  whileHover={(!isTransitioning && !submitMutation.isPending && !isSelected) ? { scale: 1.01, borderColor: '#ccc' } : {}}
-                  whileTap={(!isTransitioning && !submitMutation.isPending) ? { scale: 0.99 } : {}}
+                  whileHover={(!isTransitioning && !isProcessing && !submitMutation.isPending && !isSelected) ? { scale: 1.01, borderColor: '#ccc' } : {}}
+                  whileTap={(!isTransitioning && !isProcessing && !submitMutation.isPending) ? { scale: 0.99 } : {}}
                   onClick={() => handleAnswer(question.id, option.id)}
-                  disabled={isTransitioning || submitMutation.isPending}
+                  disabled={isTransitioning || isProcessing || submitMutation.isPending}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 16,
                     padding: '16px 20px',
