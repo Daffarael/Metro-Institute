@@ -5,7 +5,7 @@ import '../landing.css'
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
 
 export const metadata: Metadata = {
-  title: 'Metro Institute — Akselerasi Karir Digitalmu',
+  title: 'Metro Institute - Akselerasi Digitalmu',
   description: 'Platform edukasi digital untuk mencetak talent teknologi berkualitas yang siap bersaing di industri global.',
   icons: {
     icon: '/icon.jpg',
