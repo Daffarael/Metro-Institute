@@ -2,11 +2,12 @@
 
 import { useState, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { MailCheck, Loader2 } from 'lucide-react'
+import { Mail, Loader2, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import api from '@/lib/axios'
 import { ROUTES } from '@/lib/utils'
 import { toast } from 'sonner'
+import { motion } from 'framer-motion'
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams()
@@ -54,51 +55,66 @@ function VerifyEmailContent() {
   }
 
   return (
-    <div className="auth-layout">
-      <div className="auth-card" style={{ textAlign: 'center' }}>
-        <div style={{ width: 64, height: 64, borderRadius: '50%', background: 'var(--color-primary-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto var(--space-5)' }}>
-          <MailCheck size={32} color="var(--color-primary)" />
+    <div className="min-h-screen flex items-center justify-center bg-[#f8f9fa] p-6 font-sans">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+        className="w-full max-w-[420px] bg-white rounded-[32px] p-10 shadow-[0_24px_80px_-12px_rgba(34,34,46,0.08)] text-center relative overflow-hidden"
+      >
+        <div className="mx-auto w-16 h-16 bg-[#f3f4f6] rounded-2xl flex items-center justify-center mb-8 text-[#22222E]">
+          <Mail size={28} strokeWidth={2.5} />
         </div>
         
-        <h1 style={{ fontSize: 'var(--text-xl)', fontWeight: 800, marginBottom: 'var(--space-2)' }}>Verifikasi Email</h1>
-        <p style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--text-sm)', marginBottom: 'var(--space-6)', lineHeight: 'var(--leading-relaxed)' }}>
-          Kami telah mengirimkan 6-digit kode OTP ke <strong>{email || 'email Anda'}</strong>. Masukkan kode tersebut di bawah ini.
+        <h1 className="text-2xl font-extrabold text-[#22222E] mb-3 tracking-tight">Verifikasi Email</h1>
+        <p className="text-[#6B7280] text-[13px] leading-relaxed mb-8 px-2">
+          Kami telah mengirimkan 6-digit kode keamanan ke <br/>
+          <strong className="text-[#22222E] font-semibold">{email || 'email Anda'}</strong>.
         </p>
 
-        <form onSubmit={handleVerify} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)', marginBottom: 'var(--space-6)' }}>
+        <form onSubmit={handleVerify} className="flex flex-col">
           <input
             type="text"
             maxLength={6}
             value={code}
             onChange={(e) => setCode(e.target.value.replace(/[^0-9]/g, ''))}
-            placeholder="Kode OTP (6 Digit)"
-            style={{ 
-              width: '100%', padding: '16px', fontSize: '24px', letterSpacing: '8px', 
-              textAlign: 'center', borderRadius: '12px', border: '2px solid var(--color-border)',
-              outline: 'none', background: '#FAFAFA', fontWeight: 'bold'
-            }}
+            placeholder="••••••"
+            className="w-full text-center text-3xl tracking-[0.5em] font-extrabold text-[#22222E] bg-gray-50 border border-gray-200/80 rounded-2xl py-5 focus:bg-white focus:border-[#22222E] focus:ring-4 focus:ring-[#22222E]/10 outline-none transition-all placeholder:text-gray-300 placeholder:tracking-[0.2em]"
           />
-          <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={isSubmitting || code.length !== 6}>
+          
+          <button 
+            type="submit" 
+            disabled={isSubmitting || code.length !== 6}
+            className="mt-6 w-full flex items-center justify-center py-4 bg-[#22222E] hover:bg-[#16161F] text-white rounded-full font-bold text-[14px] tracking-wide transition-all disabled:opacity-50 disabled:hover:bg-[#22222E] shadow-lg shadow-[#22222E]/20"
+          >
             {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : 'Verifikasi Sekarang'}
           </button>
         </form>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
-          <button onClick={handleResend} disabled={isResending} className="btn btn-secondary" style={{ width: '100%', background: 'transparent', border: '1px solid var(--color-border)' }}>
+        <div className="mt-8 flex flex-col items-center gap-2">
+          <button 
+            onClick={handleResend} 
+            disabled={isResending} 
+            className="text-[13px] font-semibold text-[#6B7280] hover:text-[#22222E] transition-colors disabled:opacity-50"
+          >
             {isResending ? 'Mengirim ulang...' : 'Kirim Ulang Kode OTP'}
           </button>
-          <Link href={ROUTES.LOGIN} className="btn btn-secondary" style={{ width: '100%', background: 'transparent', border: 'none', color: 'var(--color-text-secondary)' }}>
+        </div>
+
+        <div className="mt-8 pt-6 border-t border-gray-100">
+          <Link href={ROUTES.LOGIN} className="inline-flex items-center gap-2 text-[12px] font-semibold text-gray-400 hover:text-[#22222E] transition-colors">
+            <ArrowLeft size={14} strokeWidth={2.5} />
             Kembali ke Login
           </Link>
         </div>
-      </div>
+      </motion.div>
     </div>
   )
 }
 
 export default function VerifyEmailPage() {
   return (
-    <Suspense fallback={<div className="auth-layout"><div className="auth-card" style={{ textAlign: 'center' }}><Loader2 size={48} color="var(--color-primary)" style={{ margin: '0 auto var(--space-5)', animation: 'spin 1s linear infinite' }} /></div></div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#f8f9fa]"><Loader2 size={40} className="animate-spin text-[#22222E]" /></div>}>
       <VerifyEmailContent />
     </Suspense>
   )
