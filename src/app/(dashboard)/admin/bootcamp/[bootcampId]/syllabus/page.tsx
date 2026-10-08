@@ -32,7 +32,7 @@ import { CSS } from '@dnd-kit/utilities'
 
 // ─── Types ─────────────────────────────────────────────────
 interface BootcampSession {
-  id: string; title: string; type: 'LIVE' | 'VIDEO' | 'MATERIAL' | 'CHALLENGE'
+  id: string; title: string; type: 'LIVE' | 'VIDEO' | 'MATERIAL' | 'ASSIGNMENT'
   videoUrl?: string; materialUrl?: string; isPreview: boolean
   order: number; challengeId?: string; deadlineAt?: string
 }
@@ -48,7 +48,7 @@ const SESSION_TYPE_COLORS: Record<string, { bg: string; color: string; icon: any
   LIVE:      { bg: '#ECFDF5', color: '#059669', icon: Video },
   VIDEO:     { bg: '#EFF6FF', color: '#2563EB', icon: Video },
   MATERIAL:  { bg: '#FEF3C7', color: '#D97706', icon: FileText },
-  CHALLENGE: { bg: '#F5F3FF', color: '#7C3AED', icon: Target },
+  ASSIGNMENT: { bg: '#F5F3FF', color: '#7C3AED', icon: Target },
 }
 
 const inputStyle: React.CSSProperties = {
@@ -146,7 +146,7 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
                   { value: 'VIDEO', label: 'VIDEO - Video Rekaman (VoD)' },
                   { value: 'LIVE', label: 'LIVE - Sesi Video Call / Webinar' },
                   { value: 'MATERIAL', label: 'MATERIAL - Dokumen / PDF' },
-                  { value: 'CHALLENGE', label: 'CHALLENGE - Tugas / Quiz' },
+                  { value: 'ASSIGNMENT', label: 'ASSIGNMENT - Tugas / Quiz' },
                 ]}
                 width="100%"
               />
@@ -167,7 +167,7 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
             </div>
           )}
 
-          {form.type === 'CHALLENGE' && (
+          {form.type === 'ASSIGNMENT' && (
             <>
               <div>
                 <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Deskripsi Tugas</label>
