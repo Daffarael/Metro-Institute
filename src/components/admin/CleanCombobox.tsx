@@ -101,46 +101,43 @@ export default function CleanCombobox({
       {/* Dropdown â€” AnimatePresence to prevent prop jumping (flicker) on close */}
       <AnimatePresence>
         {isOpen && (
-          <div style={{
-            position: 'absolute',
-            top: direction === 'down' ? 'calc(100% + 4px)' : 'auto',
-            bottom: direction === 'up' ? 'calc(100% + 4px)' : 'auto',
-            left: 0,
-            right: 0,
-            zIndex: 100,
-          }}>
-            <motion.div 
-              initial={{ opacity: 0, y: direction === 'down' ? -6 : 6, scale: 0.97 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: direction === 'down' ? -6 : 6, scale: 0.97 }}
-              transition={{ duration: 0.2, ease: 'easeOut' }}
-              style={{
-                background: '#fff',
-                borderRadius: 'var(--radius-md)',
-                boxShadow: '0 8px 24px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.06)',
-                border: '1px solid rgba(0,0,0,0.05)',
-                overflow: 'hidden',
-                transformOrigin: direction === 'down' ? 'top center' : 'bottom center',
-              }}
-            >
-              <div style={{ padding: '4px', maxHeight: '320px', overflowY: 'auto' }}>
-                {/* Hapus pilihan */}
-                {allowClear && value && (
-                  <ClearDropdownItem onClick={() => handleSelect('')} />
-                )}
+          <motion.div
+            initial={{ opacity: 0, y: direction === 'down' ? -6 : 6, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: direction === 'down' ? -6 : 6, scale: 0.97 }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
+            style={{
+              position: 'absolute',
+              top: direction === 'down' ? 'calc(100% + 4px)' : 'auto',
+              bottom: direction === 'up' ? 'calc(100% + 4px)' : 'auto',
+              left: 0,
+              right: 0,
+              zIndex: 100,
+              background: '#fff',
+              borderRadius: 'var(--radius-md)',
+              boxShadow: '0 8px 24px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.06)',
+              border: '1px solid rgba(0,0,0,0.05)',
+              overflow: 'hidden',
+              transformOrigin: direction === 'down' ? 'top center' : 'bottom center',
+            }}
+          >
+            <div style={{ padding: '4px', maxHeight: '320px', overflowY: 'auto' }}>
+              {/* Hapus pilihan */}
+              {allowClear && value && (
+                <ClearDropdownItem onClick={() => handleSelect('')} />
+              )}
 
-                {/* Opsi */}
-                {options.map(opt => (
-                  <ComboboxDropdownItem
-                    key={opt.value}
-                    label={opt.label}
-                    isSelected={value === opt.value}
-                    onClick={() => handleSelect(opt.value)}
-                  />
-                ))}
-              </div>
-            </motion.div>
-          </div>
+              {/* Opsi */}
+              {options.map(opt => (
+                <ComboboxDropdownItem
+                  key={opt.value}
+                  label={opt.label}
+                  isSelected={value === opt.value}
+                  onClick={() => handleSelect(opt.value)}
+                />
+              ))}
+            </div>
+          </motion.div>
         )}
       </AnimatePresence>
 
