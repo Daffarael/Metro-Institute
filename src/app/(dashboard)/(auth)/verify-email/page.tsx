@@ -79,7 +79,7 @@ function VerifyEmailContent() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-6 bg-[#09090b]">
-      <Card className="w-full max-w-md bg-[#141416] text-white border-white/10 shadow-2xl">
+      <Card className="w-full max-w-md !bg-[#141416] !text-white !border-white/10 shadow-2xl">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Verify Your Code</CardTitle>
           <CardDescription className="text-zinc-400">
