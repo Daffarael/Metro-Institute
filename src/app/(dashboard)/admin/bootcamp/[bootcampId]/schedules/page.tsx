@@ -215,7 +215,7 @@ export default function BootcampSchedulesPage() {
                     </span>
                   </div>
                   <div style={{ marginTop: 8, display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
-                    <a href={s.meetingUrl?.startsWith('jitsi:') ? `/admin/bootcamp/${bootcampId}/live/${s.id}` : s.meetingUrl} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '13px', color: 'var(--color-primary)', fontWeight: 600, textDecoration: 'none', background: 'var(--color-primary-light)', padding: '4px 10px', borderRadius: 'var(--radius-full)' }}>
+                    <a href={s.meetingUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '13px', color: 'var(--color-primary)', fontWeight: 600, textDecoration: 'none', background: 'var(--color-primary-light)', padding: '4px 10px', borderRadius: 'var(--radius-full)' }}>
                       🔗 Buka Link Meeting
                     </a>
                   </div>
