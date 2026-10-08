@@ -463,13 +463,13 @@ export default function AdminMiniCoursePage() {
                     <td style={{ padding: 'var(--space-3) var(--space-4)' }}><AdminStatusChip status={c.status} /></td>
                     <td style={{ padding: 'var(--space-3) var(--space-4)' }}>
                       <div style={{ display: 'flex', gap: 6, whiteSpace: 'nowrap' }}>
-                        <button onClick={() => setModal(c)} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', background: 'transparent', fontSize: '12px', fontWeight: 500, cursor: 'pointer' }}>
+                        <button onClick={() => setModal(c)} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 'var(--radius-md)', background: '#EFF6FF', color: '#2563EB', border: '1px solid #BFDBFE', fontSize: '12px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s' }}>
                           <Edit2 size={12} /> Edit
                         </button>
-                        <Link href={`/admin/mini-course/${c.id}/curriculum`} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', fontSize: '12px', fontWeight: 500, textDecoration: 'none', color: 'var(--color-text-primary)' }}>
+                        <Link href={`/admin/mini-course/${c.id}/curriculum`} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 'var(--radius-md)', background: '#F3E8FF', color: '#9333EA', border: '1px solid #E9D5FF', fontSize: '12px', fontWeight: 600, textDecoration: 'none', transition: 'all 0.15s' }}>
                           <Layers size={12} /> Kurikulum
                         </Link>
-                        <Link href={`/admin/mini-course/${c.id}/stats`} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', fontSize: '12px', fontWeight: 500, textDecoration: 'none', color: 'var(--color-text-primary)' }}>
+                        <Link href={`/admin/mini-course/${c.id}/stats`} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 'var(--radius-md)', background: '#F0FDF4', color: '#16A34A', border: '1px solid #BBF7D0', fontSize: '12px', fontWeight: 600, textDecoration: 'none', transition: 'all 0.15s' }}>
                           <BarChart2 size={12} /> Statistik
                         </Link>
                         {/* Featured Toggle */}

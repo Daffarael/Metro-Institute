@@ -505,17 +505,17 @@ export default function AdminBootcampPage() {
                       <div style={{ display: 'flex', gap: 6, whiteSpace: 'nowrap' }}>
                         <button
                           onClick={() => setModal(b)}
-                          style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', background: 'transparent', fontSize: '12px', fontWeight: 500, cursor: 'pointer' }}
+                          style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 'var(--radius-md)', background: '#EFF6FF', color: '#2563EB', border: '1px solid #BFDBFE', fontSize: '12px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s' }}
                         >
                           <Edit2 size={12} /> Edit
                         </button>
-                        <Link href={`/admin/bootcamp/${b.id}/syllabus`} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', background: 'transparent', fontSize: '12px', fontWeight: 500, textDecoration: 'none', color: 'var(--color-text-primary)' }}>
+                        <Link href={`/admin/bootcamp/${b.id}/syllabus`} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 'var(--radius-md)', background: '#F3E8FF', color: '#9333EA', border: '1px solid #E9D5FF', fontSize: '12px', fontWeight: 600, textDecoration: 'none', transition: 'all 0.15s' }}>
                           <Layers size={12} /> Silabus
                         </Link>
-                        <Link href={`/admin/bootcamp/${b.id}/schedules`} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', background: 'transparent', fontSize: '12px', fontWeight: 500, textDecoration: 'none', color: 'var(--color-text-primary)' }}>
+                        <Link href={`/admin/bootcamp/${b.id}/schedules`} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 'var(--radius-md)', background: '#ECFDF5', color: '#059669', border: '1px solid #A7F3D0', fontSize: '12px', fontWeight: 600, textDecoration: 'none', transition: 'all 0.15s' }}>
                           <CalendarDays size={12} /> Jadwal
                         </Link>
-                        <Link href={`/admin/bootcamp/${b.id}/participants`} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', background: 'transparent', fontSize: '12px', fontWeight: 500, textDecoration: 'none', color: 'var(--color-text-primary)' }}>
+                        <Link href={`/admin/bootcamp/${b.id}/participants`} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 'var(--radius-md)', background: '#FFF7ED', color: '#EA580C', border: '1px solid #FED7AA', fontSize: '12px', fontWeight: 600, textDecoration: 'none', transition: 'all 0.15s' }}>
                           <Users size={12} /> Peserta
                         </Link>
                         {/* Featured Toggle */}
