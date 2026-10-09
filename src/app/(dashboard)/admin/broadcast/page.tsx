@@ -6,6 +6,7 @@ import api from '@/lib/axios'
 import { FIELD_LABELS, BADGE_LABELS } from '@/lib/utils'
 import AdminPageHeader from '@/components/admin/AdminPageHeader'
 import CleanCombobox from '@/components/admin/CleanCombobox'
+import { AlertCircle, CheckCircle2 } from 'lucide-react'
 
 export default function AdminBroadcastPage() {
   const [title,       setTitle]       = useState('')
@@ -146,17 +147,21 @@ export default function AdminBroadcastPage() {
         {result && (
           <div style={{ 
             marginTop: '24px', padding: '16px 20px', borderRadius: 12, 
-            background: send.isError ? '#FEE2E2' : '#ecfdf5', 
-            color: send.isError ? '#EF4444' : 'var(--color-primary)', 
+            background: '#f8fafc',
+            color: send.isError ? '#ef4444' : '#10b981', 
             fontSize: '14px', fontWeight: 600,
             border: `1px solid ${send.isError ? '#fca5a5' : '#a7f3d0'}`,
-            display: 'flex', alignItems: 'center', gap: 8
+            display: 'flex', alignItems: 'center', gap: 12,
+            boxShadow: '0 4px 12px rgba(0,0,0,0.03)'
           }}>
-            <div style={{ 
-              width: 8, height: 8, borderRadius: '50%', 
-              background: send.isError ? '#EF4444' : 'var(--color-primary)' 
-            }} />
-            {result}
+            {send.isError ? (
+              <AlertCircle size={20} color="#ef4444" />
+            ) : (
+              <CheckCircle2 size={20} color="#10b981" />
+            )}
+            <span style={{ color: '#334155', fontWeight: 500 }}>
+              {result}
+            </span>
           </div>
         )}
       </div>
