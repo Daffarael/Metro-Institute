@@ -5,8 +5,9 @@ import { useQuery, useMutation } from '@tanstack/react-query'
 import api from '@/lib/axios'
 import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
-import { FileText, Video, ExternalLink, Send, Calendar, PlayCircle, Lock, ChevronDown, ChevronUp } from 'lucide-react'
+import { FileText, Video, ExternalLink, Send, Calendar, PlayCircle, Lock, ChevronDown, ChevronUp, Play } from 'lucide-react'
 import Link from 'next/link'
+import { formatDate, formatDuration } from '@/lib/utils'
 
 export default function BootcampSessionPage() {
   const params = useParams<{ bootcampId: string; sessionId: string }>()
@@ -176,71 +177,98 @@ export default function BootcampSessionPage() {
         </div>
 
         {/* === KANAN: SILABUS / SIDEBAR === */}
-        <div style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-xl)', border: '1px solid var(--color-border)', overflow: 'hidden' }}>
-          <div style={{ padding: 'var(--space-5)', borderBottom: '1px solid var(--color-border)', background: 'var(--color-bg)' }}>
-            <h2 style={{ fontSize: '15px', fontWeight: 700 }}>{bootcamp?.title || 'Daftar Materi'}</h2>
-            <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', marginTop: 4 }}>Pilih sesi untuk lanjut belajar</p>
-          </div>
-          
-          <div style={{ maxHeight: '80vh', overflowY: 'auto', padding: 'var(--space-3)' }}>
-            {bootcamp?.chapters?.map((chapter: any, chapterIdx: number) => {
-              const isOpen = expandedChapter === chapter.id
-              return (
-                <div key={chapter.id} style={{ marginBottom: 8 }}>
-                  <button
-                    onClick={() => setExpandedChapter(isOpen ? null : chapter.id)}
-                    style={{ width: '100%', padding: '12px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: isOpen ? 'var(--color-bg)' : 'transparent', border: '1px solid', borderColor: isOpen ? 'var(--color-border)' : 'transparent', borderRadius: 10, cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s' }}
-                  >
-                    <div>
-                      <div style={{ fontSize: '11px', color: 'var(--color-primary)', fontWeight: 700, marginBottom: 2 }}>BAB {chapterIdx + 1}</div>
-                      <div style={{ fontWeight: 600, fontSize: '13.5px', color: 'var(--color-text-primary)' }}>{chapter.title}</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', maxHeight: 'calc(100vh - 120px)', overflowY: 'auto', paddingRight: 'var(--space-2)' }} className="hide-scrollbar">
+          {bootcamp?.chapters?.map((chapter: any, chapterIdx: number) => {
+            const isOpen = expandedChapter === chapter.id
+            return (
+              <div key={chapter.id} className="card" style={{
+                overflow: 'hidden',
+                transition: 'all 500ms cubic-bezier(0.4,0,0.2,1)',
+                borderRadius: isOpen ? 16 : 12,
+                boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
+                border: '1px solid var(--color-border-subtle)',
+                padding: 0
+              }}>
+                <button
+                  onClick={() => setExpandedChapter(isOpen ? null : chapter.id)}
+                  style={{ width: '100%', padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--color-surface)', border: 'none', cursor: 'pointer', fontWeight: 600, fontSize: '14.5px', color: 'var(--color-text-primary)' }}
+                >
+                  <span>{chapter.title}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <span style={{ fontSize: '12px', color: 'var(--color-text-tertiary)', fontWeight: 400 }}>{chapter.sessions.length} sesi</span>
+                    <div style={{ display: 'flex', height: 28, width: 28, alignItems: 'center', justifyContent: 'center' }}>
+                      <ChevronUp
+                        size={16}
+                        color="var(--color-text-tertiary)"
+                        style={{
+                          transition: 'transform 500ms cubic-bezier(0.4,0,0.2,1)',
+                          transform: isOpen ? 'rotate(0deg)' : 'rotate(180deg)'
+                        }}
+                      />
                     </div>
-                    <div style={{ flexShrink: 0, paddingLeft: 10 }}>
-                      {isOpen ? <ChevronUp size={16} color="var(--color-text-tertiary)" /> : <ChevronDown size={16} color="var(--color-text-tertiary)" />}
-                    </div>
-                  </button>
+                  </div>
+                </button>
 
-                  {isOpen && (
-                    <div style={{ padding: '8px 4px 8px 16px', display: 'flex', flexDirection: 'column', gap: 4 }}>
-                      {chapter.sessions.map((s: any, idx: number) => {
-                        const isActive = s.id === params.sessionId
-                        return (
-                          <Link
-                            key={s.id}
-                            href={`/mentee/bootcamp/${params.bootcampId}/session/${s.id}`}
-                            style={{
-                              display: 'flex', alignItems: 'flex-start', gap: 10,
-                              padding: '10px 12px',
-                              borderRadius: 8,
-                              background: isActive ? '#EFF6FF' : 'transparent',
-                              border: '1px solid',
-                              borderColor: isActive ? '#BFDBFE' : 'transparent',
-                              textDecoration: 'none',
-                              color: 'inherit'
-                            }}
-                          >
-                            <div style={{ marginTop: 2 }}>
-                              {s.type === 'VIDEO' ? <PlayCircle size={14} color={isActive ? "#3B82F6" : "var(--color-text-tertiary)"} /> :
-                               s.type === 'LIVE' ? <Calendar size={14} color={isActive ? "#3B82F6" : "var(--color-text-tertiary)"} /> :
-                               <FileText size={14} color={isActive ? "#3B82F6" : "var(--color-text-tertiary)"} />}
-                            </div>
-                            <div>
-                              <div style={{ fontSize: '13px', fontWeight: isActive ? 700 : 500, color: isActive ? '#1D4ED8' : 'var(--color-text-primary)' }}>
-                                {idx + 1}. {s.title}
+                <div
+                  style={{
+                    display: 'grid',
+                    transition: 'all 500ms cubic-bezier(0.4,0,0.2,1)',
+                    gridTemplateRows: isOpen ? '1fr' : '0fr',
+                    opacity: isOpen ? 1 : 0,
+                    background: 'var(--color-surface)'
+                  }}
+                >
+                  <div style={{ overflow: 'hidden' }}>
+                    <div style={{ padding: '0 8px 12px' }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                        {chapter.sessions.map((s: any, idx: number) => {
+                          const isActive = s.id === params.sessionId
+                          return (
+                            <Link
+                              key={s.id}
+                              href={`/mentee/bootcamp/${params.bootcampId}/session/${s.id}`}
+                              style={{
+                                display: 'flex', alignItems: 'center', gap: 12,
+                                padding: '10px 12px',
+                                borderRadius: 10,
+                                background: isActive ? '#EFF6FF' : 'transparent',
+                                border: '1px solid',
+                                borderColor: isActive ? '#BFDBFE' : 'transparent',
+                                textDecoration: 'none',
+                                color: 'inherit',
+                                transition: 'all 0.2s',
+                              }}
+                              onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = 'color-mix(in srgb, var(--color-text-primary) 3%, transparent)' }}
+                              onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = 'transparent' }}
+                            >
+                              <div style={{
+                                display: 'flex', height: 36, width: 36, flexShrink: 0,
+                                alignItems: 'center', justifyContent: 'center',
+                                borderRadius: 10, background: isActive ? '#DBEAFE' : 'var(--color-bg)',
+                                border: '1px solid', borderColor: isActive ? '#BFDBFE' : 'var(--color-border-subtle)'
+                              }}>
+                                {s.type === 'LIVE' ? <Calendar size={15} color="#3B82F6" /> : <Play size={15} color={isActive ? "#3B82F6" : "var(--color-text-tertiary)"} />}
                               </div>
-                              <div style={{ fontSize: '11px', color: 'var(--color-text-secondary)', marginTop: 2 }}>
-                                {s.type === 'LIVE' ? 'Live Class' : s.type === 'CHALLENGE' ? 'Tugas' : 'Materi'}
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <div style={{ fontSize: '13.5px', fontWeight: isActive ? 600 : 500, color: isActive ? '#1D4ED8' : 'var(--color-text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                  {s.title}
+                                </div>
                               </div>
-                            </div>
-                          </Link>
-                        )
-                      })}
+                              {s.type === 'LIVE' && s.liveScheduledAt ? (
+                                <span style={{ fontSize: '11px', color: '#3B82F6', flexShrink: 0 }}>{formatDate(s.liveScheduledAt)}</span>
+                              ) : s.videoDuration ? (
+                                <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', flexShrink: 0 }}>{formatDuration(s.videoDuration)}</span>
+                              ) : null}
+                            </Link>
+                          )
+                        })}
+                      </div>
                     </div>
-                  )}
+                  </div>
                 </div>
-              )
-            })}
-          </div>
+              </div>
+            )
+          })}
         </div>
 
       </div>
