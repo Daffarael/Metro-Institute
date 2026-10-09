@@ -15,6 +15,7 @@ interface Certificate {
   credentialId: string
   productType: 'MINI_COURSE' | 'BOOTCAMP'
   issuedAt: string
+  pdfUrl?: string
   course?: { title: string; field: string; thumbnailUrl?: string }
   bootcamp?: { title: string; field: string; thumbnailUrl?: string }
 }
@@ -230,31 +231,24 @@ export default function CertificatesPage() {
                   <motion.a
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    href={`/verify/${cert.credentialId}`}
-                    target="_blank"
+                    href={cert.pdfUrl || '#'}
+                    target={cert.pdfUrl ? '_blank' : '_self'}
                     rel="noopener noreferrer"
-                    style={{ 
-                      flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-1)',
-                      padding: '8px', background: '#fff', color: 'var(--color-text-primary)',
-                      border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)',
-                      fontWeight: 600, fontSize: '12px', textDecoration: 'none'
+                    onClick={(e) => {
+                      if (!cert.pdfUrl) {
+                        e.preventDefault();
+                        alert('File PDF sertifikat belum tersedia.');
+                      }
                     }}
-                  >
-                    <ExternalLink size={13} /> Verifikasi
-                  </motion.a>
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => window.print()}
                     style={{ 
                       flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-1)',
                       padding: '8px', background: 'var(--color-primary)', color: '#fff',
                       border: 'none', borderRadius: 'var(--radius-md)',
-                      fontWeight: 600, fontSize: '12px', cursor: 'pointer'
+                      fontWeight: 600, fontSize: '12px', cursor: 'pointer', textDecoration: 'none'
                     }}
                   >
                     <Download size={13} /> Unduh
-                  </motion.button>
+                  </motion.a>
                 </div>
               </div>
             )
