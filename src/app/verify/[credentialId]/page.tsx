@@ -5,14 +5,17 @@ import { api } from '@/lib/axios'
 import { Loader2, CheckCircle, ShieldCheck, Calendar, User, BookOpen } from 'lucide-react'
 import { format } from 'date-fns'
 import { id } from 'date-fns/locale'
-import Image from 'next/image'
+import { useParams } from 'next/navigation'
 
-export default function VerifyCertificatePage({ params }: { params: { credentialId: string } }) {
+export default function VerifyCertificatePage() {
+  const params = useParams()
+  const credentialId = params.credentialId as string
+
   const { data, isLoading, error } = useQuery({
-    queryKey: ['verify-cert', params.credentialId],
+    queryKey: ['verify-cert', credentialId],
     queryFn: async () => {
       try {
-        const res = await api.get(`/certificates/verify/${params.credentialId}`)
+        const res = await api.get(`/certificates/verify/${credentialId}`)
         return res.data.data
       } catch (err: any) {
         throw new Error(err.response?.data?.message || 'Sertifikat tidak ditemukan')
@@ -36,7 +39,7 @@ export default function VerifyCertificatePage({ params }: { params: { credential
           <ShieldCheck size={40} color="#ef4444" />
         </div>
         <h1 style={{ fontSize: '24px', fontWeight: 700, color: '#0f172a', marginBottom: 8 }}>Verifikasi Gagal</h1>
-        <p style={{ color: '#64748b', maxWidth: 400 }}>Sertifikat dengan ID <strong>{params.credentialId}</strong> tidak ditemukan atau tidak valid di database kami.</p>
+        <p style={{ color: '#64748b', maxWidth: 400 }}>Sertifikat dengan ID <strong>{credentialId}</strong> tidak ditemukan atau tidak valid di database kami.</p>
       </div>
     )
   }
