@@ -230,7 +230,7 @@ export default function CertificatesPage() {
                   <motion.a
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    href={`${process.env.NEXT_PUBLIC_APP_URL}/verify/${cert.credentialId}`}
+                    href={`/verify/${cert.credentialId}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{ 
