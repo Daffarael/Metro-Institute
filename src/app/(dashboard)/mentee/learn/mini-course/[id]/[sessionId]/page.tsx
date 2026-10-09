@@ -695,11 +695,13 @@ function InteractiveQuiz({ quizOptions, onComplete, isCompleted }: { quizOptions
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [showResult, setShowResult] = useState(false)
   const [score, setScore] = useState(0)
+  const [isStarted, setIsStarted] = useState(false)
   
   useEffect(() => {
     setCurrentQIdx(0)
     setAnswers({})
     setShowResult(false)
+    setIsStarted(false)
   }, [quizOptions])
 
   if (!quizOptions || quizOptions.length === 0) return null
@@ -736,10 +738,33 @@ function InteractiveQuiz({ quizOptions, onComplete, isCompleted }: { quizOptions
           </div>
           <h2 style={{ fontSize: '24px', fontWeight: 800, marginBottom: 8, color: '#0f172a' }}>Kuis Selesai!</h2>
           <p style={{ color: '#475569', marginBottom: 24 }}>Jawaban Anda telah tersimpan dan sesi ditandai selesai.</p>
-          <button onClick={() => { setShowResult(false); setCurrentQIdx(0); setAnswers({}); }} style={{ padding: '10px 24px', borderRadius: 12, border: '1px solid var(--color-border)', background: '#fff', cursor: 'pointer', fontWeight: 600, fontSize: '14px', color: '#334155', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
+          <button onClick={() => { setShowResult(false); setCurrentQIdx(0); setAnswers({}); setIsStarted(false); }} style={{ padding: '10px 24px', borderRadius: 12, border: '1px solid var(--color-border)', background: '#fff', cursor: 'pointer', fontWeight: 600, fontSize: '14px', color: '#334155', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
             Coba Lagi Kuis
           </button>
        </div>
+    )
+  }
+
+  if (!isStarted) {
+    return (
+      <div style={{ background: '#f8fafc', padding: '60px 20px', borderBottom: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }} className="animate-fade-in">
+        <div style={{
+          width: 80, height: 80, borderRadius: 20, background: 'rgba(16, 185, 129, 0.1)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24
+        }}>
+          <FileText size={40} color="var(--color-primary)" />
+        </div>
+        <h2 style={{ fontSize: '24px', fontWeight: 800, marginBottom: 12, color: '#0f172a' }}>Siap untuk mulai kuis?</h2>
+        <p style={{ color: '#475569', marginBottom: 32, textAlign: 'center', maxWidth: 400, lineHeight: 1.6 }}>
+          Kuis ini terdiri dari {totalQ} pertanyaan. Pastikan Anda sudah memahami materi dengan baik sebelum memulai.
+        </p>
+        <button 
+          onClick={() => setIsStarted(true)} 
+          style={{ padding: '14px 32px', borderRadius: 12, border: 'none', background: 'var(--color-primary)', color: '#fff', cursor: 'pointer', fontWeight: 600, fontSize: '15px', boxShadow: '0 4px 12px rgba(16,185,129,0.3)' }}
+        >
+          Mulai Kuis
+        </button>
+      </div>
     )
   }
 
