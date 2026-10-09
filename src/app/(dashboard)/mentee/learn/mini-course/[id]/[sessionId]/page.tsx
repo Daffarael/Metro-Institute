@@ -204,11 +204,49 @@ export default function CourseLearningPlayerPage() {
             }}>
               <div style={{ width: '100%', maxWidth: '1200px', aspectRatio: '16/9', maxHeight: '65vh' }}>
                 {(() => {
+                  const url = currentSession.videoUrl;
+                  const isDrive = url.includes('drive.google.com');
+                  let drivePreviewUrl = '';
+                  if (isDrive) {
+                    const match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+                    if (match) {
+                      drivePreviewUrl = `https://drive.google.com/file/d/${match[1]}/preview`;
+                    } else if (url.includes('id=')) {
+                      const urlParams = new URLSearchParams(url.substring(url.indexOf('?')));
+                      const id = urlParams.get('id');
+                      if (id) {
+                        drivePreviewUrl = `https://drive.google.com/file/d/${id}/preview`;
+                      }
+                    }
+                    if (!drivePreviewUrl) drivePreviewUrl = url;
+                  }
+
+                  if (isDrive) {
+                    return (
+                      <iframe
+                        src={drivePreviewUrl}
+                        width="100%"
+                        height="100%"
+                        style={{ border: 'none' }}
+                        allow="autoplay; fullscreen"
+                        onLoad={() => {
+                          // Karena iframe tidak bisa mendeteksi durasi, asumsikan selesai setelah beberapa saat
+                          setTimeout(() => {
+                            if (!completeTriggerRef.current && !isCompleted && !data?.currentSession.isCompleted) {
+                              completeTriggerRef.current = true;
+                              completeMutation.mutate();
+                            }
+                          }, 5000);
+                        }}
+                      />
+                    );
+                  }
+
                   const Player = ReactPlayer as any;
                   return (
                     <Player
                       ref={playerRef as any}
-                      url={currentSession.videoUrl}
+                      url={url}
                       width="100%" height="100%"
                       controls
                       onProgress={handleProgress as any}
