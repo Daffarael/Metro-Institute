@@ -52,7 +52,7 @@ function AddSessionModal({ courseId, editSession, onClose }: { courseId: string;
 
   const mutation = useMutation({
     mutationFn: () => {
-      const payload = { ...form, quizOptions: form.type === 'QUIZ' ? quizOptions : null }
+      const payload = { ...form, quizOptions: (form.type === 'QUIZ' || form.type === 'ASSIGNMENT') ? quizOptions : null }
       if (editSession) {
         return api.put(`/admin/courses/sessions/${editSession.id}`, payload)
       } else {
@@ -127,7 +127,7 @@ return (
               <input value={form.materialUrl} onChange={e => f('materialUrl', e.target.value)} placeholder="https://..." style={inputStyle} />
             </div>
           )}
-          {form.type === 'QUIZ' && (
+          {(form.type === 'QUIZ' || form.type === 'ASSIGNMENT') && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
               <div>
                 <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 4 }}>Instruksi Kuis <span style={{ color: 'var(--color-error)' }}>*</span></label>
