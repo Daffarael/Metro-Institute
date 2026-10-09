@@ -34,14 +34,14 @@ export default function VerifyCertificatePage() {
 
   if (error || !data) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-[#f0fdf4] p-6 text-center">
-        <div className="w-full max-w-md bg-white rounded-3xl p-10 flex flex-col items-center shadow-lg shadow-[#059669]/5">
-          <div className="w-20 h-20 rounded-full bg-red-50 flex items-center justify-center mb-6">
-            <AlertCircle className="w-10 h-10 text-red-500" />
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#FAFAFA] p-6 text-center font-sans">
+        <div className="w-full max-w-[560px] bg-white rounded-2xl p-8 sm:p-10 flex flex-col items-center border border-gray-200 shadow-sm">
+          <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mb-6">
+            <AlertCircle className="w-8 h-8 text-red-600" aria-hidden="true" />
           </div>
-          <h1 className="text-2xl font-bold text-[#059669] mb-2">Verifikasi Gagal</h1>
-          <p className="text-[#059669]/70">
-            Sertifikat dengan ID <strong className="text-[#059669]">{credentialId}</strong> tidak ditemukan di sistem.
+          <h1 className="text-2xl font-semibold text-gray-900 mb-2">Sertifikat Tidak Valid</h1>
+          <p className="text-gray-500 text-sm max-w-sm">
+            Kredensial dengan ID <strong className="text-gray-700">{credentialId}</strong> tidak ditemukan atau tidak terdaftar di sistem kami.
           </p>
         </div>
       </div>
@@ -53,67 +53,84 @@ export default function VerifyCertificatePage() {
   const typeLabel = data.productType === 'MINI_COURSE' ? 'Mini Course' : 'Bootcamp'
 
   return (
-    <div className="min-h-screen bg-[#f0fdf4] py-16 px-4 flex flex-col items-center justify-center font-sans">
-      <div className="w-full max-w-3xl bg-white rounded-[2rem] shadow-xl shadow-[#059669]/10 p-10 md:p-16">
+    <div className="min-h-screen bg-[#FAFAFA] py-12 px-4 flex flex-col items-center justify-center font-sans">
+      <div className="w-full max-w-[560px] bg-white rounded-2xl border border-gray-200 shadow-sm p-8 sm:p-10">
         
         {/* Header */}
-        <div className="flex flex-col items-center text-center mb-16">
-          <div className="w-24 h-24 rounded-full bg-[#f0fdf4] flex items-center justify-center mb-6">
-            <CheckCircle className="w-12 h-12 text-[#059669]" strokeWidth={2} />
+        <div className="flex flex-col items-center text-center mb-8">
+          <div className="w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center mb-5">
+            <CheckCircle className="w-8 h-8 text-emerald-600" strokeWidth={2.5} aria-hidden="true" />
           </div>
-          <h1 className="text-4xl font-black text-[#059669] tracking-tight mb-4">Sertifikat Valid</h1>
-          <p className="text-[#059669]/80 text-lg font-medium max-w-md leading-relaxed">
-            Dokumen ini sah dan terdaftar resmi di dalam sistem Metro Institute.
+          <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2">Sertifikat Valid</h1>
+          <p className="text-gray-500 text-sm">
+            Dokumen ini terdaftar resmi di sistem Metro Institute.
           </p>
         </div>
 
-        {/* Certificate Details (2-Column Grid) */}
-        <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-y-8 gap-x-8 items-start mb-16">
+        {/* Certificate Details */}
+        <div className="flex flex-col border-t border-gray-100">
           
-          <div className="md:text-right text-[#059669]/60 font-bold text-xs uppercase tracking-[0.2em] pt-1">
-            ID Kredensial
-          </div>
-          <div className="font-mono font-bold text-[#059669] text-xl">
-            {data.credentialId}
-          </div>
-
-          <div className="md:text-right text-[#059669]/60 font-bold text-xs uppercase tracking-[0.2em] pt-2">
-            Diberikan Kepada
-          </div>
-          <div className="font-black text-[#059669] text-3xl capitalize tracking-tight">
-            {data.user?.name}
+          {/* Row: ID Kredensial */}
+          <div className="py-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4">
+            <div className="sm:w-1/3 text-[12px] font-medium text-gray-500 uppercase tracking-[0.04em]">
+              ID Kredensial
+            </div>
+            <div className="sm:w-2/3">
+              <span className="font-mono text-sm text-gray-700 bg-gray-50 border border-gray-200 px-2.5 py-1 rounded-md">
+                {data.credentialId}
+              </span>
+            </div>
           </div>
 
-          <div className="md:text-right text-[#059669]/60 font-bold text-xs uppercase tracking-[0.2em] pt-1">
-            Program Diselesaikan
+          {/* Row: Diberikan Kepada */}
+          <div className="py-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4">
+            <div className="sm:w-1/3 text-[12px] font-medium text-gray-500 uppercase tracking-[0.04em]">
+              Diberikan Kepada
+            </div>
+            <div className="sm:w-2/3">
+              <span className="text-xl font-semibold text-gray-900 capitalize tracking-tight">
+                {data.user?.name}
+              </span>
+            </div>
           </div>
-          <div>
-            <div className="font-bold text-[#059669] text-2xl leading-snug mb-3">{title}</div>
-            {field && (
-              <div className="inline-flex items-center px-4 py-1.5 bg-[#f0fdf4] text-[#059669] text-xs font-bold rounded-md uppercase tracking-widest border border-[#059669]/20">
-                {typeLabel} • {field.replace(/_/g, ' ')}
+
+          {/* Row: Program Diselesaikan */}
+          <div className="py-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4">
+            <div className="sm:w-1/3 text-[12px] font-medium text-gray-500 uppercase tracking-[0.04em]">
+              Program Diselesaikan
+            </div>
+            <div className="sm:w-2/3">
+              <p className="text-base font-medium text-gray-900 leading-snug mb-1.5">{title}</p>
+              <div className="flex flex-wrap gap-2">
+                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">
+                  {typeLabel}
+                </span>
+                {field && (
+                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">
+                    {field.replace(/_/g, ' ')}
+                  </span>
+                )}
               </div>
-            )}
+            </div>
           </div>
 
-          <div className="md:text-right text-[#059669]/60 font-bold text-xs uppercase tracking-[0.2em] pt-1">
-            Tanggal Penerbitan
+          {/* Row: Tanggal Penerbitan */}
+          <div className="py-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4">
+            <div className="sm:w-1/3 text-[12px] font-medium text-gray-500 uppercase tracking-[0.04em]">
+              Tanggal Penerbitan
+            </div>
+            <div className="sm:w-2/3">
+              <span className="text-sm font-medium text-gray-900">
+                {format(new Date(data.issuedAt), 'dd MMMM yyyy', { locale: id })}
+              </span>
+            </div>
           </div>
-          <div className="font-bold text-[#059669] text-xl">
-            {format(new Date(data.issuedAt), 'dd MMMM yyyy', { locale: id })}
-          </div>
-
         </div>
 
         {/* Footer */}
-        <div className="bg-[#f0fdf4] rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4 border border-[#059669]/20">
-          <div className="flex items-center gap-3">
-            <ShieldCheck className="w-6 h-6 text-[#059669]" />
-            <span className="text-base font-bold text-[#059669]">Terverifikasi Secara Digital</span>
-          </div>
-          <span className="text-xs font-bold text-[#059669]/50 uppercase tracking-widest text-center md:text-right">
-            © {new Date().getFullYear()} Metro Institute
-          </span>
+        <div className="mt-8 flex items-center justify-center gap-2 text-gray-400">
+          <ShieldCheck className="w-4 h-4" aria-hidden="true" />
+          <span className="text-[12px] font-medium">Terverifikasi secara digital oleh Metro Institute</span>
         </div>
 
       </div>
