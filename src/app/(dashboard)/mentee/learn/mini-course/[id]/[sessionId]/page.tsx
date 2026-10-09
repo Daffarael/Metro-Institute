@@ -202,7 +202,7 @@ export default function CourseLearningPlayerPage() {
               display: 'flex', justifyContent: 'center', alignItems: 'center',
               zIndex: 5,
             }}>
-              <div style={{ width: '100%', maxWidth: '1200px', aspectRatio: '16/9', maxHeight: '65vh' }}>
+              <div style={{ width: '100%', maxWidth: '900px', aspectRatio: '16/9', maxHeight: '50vh' }}>
                 {(() => {
                   const url = currentSession.videoUrl;
                   const isDrive = url.includes('drive.google.com');
@@ -223,10 +223,10 @@ export default function CourseLearningPlayerPage() {
                     if (!drivePreviewUrl) drivePreviewUrl = url;
                   } else if (url.includes('youtu.be/')) {
                     const id = url.split('youtu.be/')[1].split('?')[0];
-                    youtubeEmbedUrl = `https://www.youtube.com/embed/${id}?rel=0`;
+                    youtubeEmbedUrl = `https://www.youtube.com/embed/${id}?rel=0&modestbranding=1&fs=1`;
                   } else if (url.includes('youtube.com/watch')) {
                     const id = new URLSearchParams(url.substring(url.indexOf('?'))).get('v');
-                    if (id) youtubeEmbedUrl = `https://www.youtube.com/embed/${id}?rel=0`;
+                    if (id) youtubeEmbedUrl = `https://www.youtube.com/embed/${id}?rel=0&modestbranding=1&fs=1`;
                   }
 
                   if (isDrive) {
