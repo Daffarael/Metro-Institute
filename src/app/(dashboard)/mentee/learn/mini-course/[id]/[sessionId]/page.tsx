@@ -304,7 +304,13 @@ export default function CourseLearningPlayerPage() {
                 })()}
               </div>
             </div>
-          ) : currentSession.type === 'ASSIGNMENT' ? (
+          ) : currentSession.type === 'QUIZ' && currentSession.quizOptions && currentSession.quizOptions.length > 0 ? (
+            <InteractiveQuiz 
+              quizOptions={currentSession.quizOptions} 
+              isCompleted={currentSession.isCompleted || isCompleted} 
+              onComplete={() => completeMutation.mutate()} 
+            />
+          ) : currentSession.type === 'QUIZ' ? (
             <div style={{
               background: '#f8fafc', width: '100%', padding: '60px 20px',
               display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
@@ -316,9 +322,9 @@ export default function CourseLearningPlayerPage() {
               }}>
                 <FileText size={32} color="var(--color-primary)" />
               </div>
-              <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#1e293b', marginBottom: 8 }}>Sesi Tugas / Kuis</h2>
+              <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#1e293b', marginBottom: 8 }}>Sesi Kuis</h2>
               <p style={{ color: '#475569', fontSize: '14px', maxWidth: 400, textAlign: 'center' }}>
-                Silakan lihat instruksi tugas/kuis dan kerjakan. Tandai sebagai selesai jika Anda sudah menyelesaikannya.
+                Belum ada soal untuk kuis ini.
               </p>
             </div>
           ) : (
@@ -663,6 +669,129 @@ export default function CourseLearningPlayerPage() {
         </div>
 
       </div>
+    </div>
+  )
+}
+
+function InteractiveQuiz({ quizOptions, onComplete, isCompleted }: { quizOptions: any[], onComplete: () => void, isCompleted: boolean }) {
+  const [currentQIdx, setCurrentQIdx] = useState(0)
+  const [answers, setAnswers] = useState<Record<string, string>>({})
+  const [showResult, setShowResult] = useState(false)
+  const [score, setScore] = useState(0)
+  
+  useEffect(() => {
+    setCurrentQIdx(0)
+    setAnswers({})
+    setShowResult(false)
+  }, [quizOptions])
+
+  if (!quizOptions || quizOptions.length === 0) return null
+
+  const currentQ = quizOptions[currentQIdx]
+  const totalQ = quizOptions.length
+  const answeredCount = Object.keys(answers).length
+
+  const handleSubmit = () => {
+    let correct = 0
+    quizOptions.forEach(q => {
+      const correctOpt = q.options.find((o: any) => o.isCorrect)
+      if (correctOpt && answers[q.id] === correctOpt.id) correct++
+    })
+    setScore(Math.round((correct / totalQ) * 100))
+    setShowResult(true)
+    if (!isCompleted) {
+      onComplete()
+    }
+  }
+
+  if (showResult) {
+    return (
+       <div style={{ background: '#f8fafc', padding: '60px 20px', borderBottom: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }} className="animate-fade-in">
+          <div style={{
+            width: 120, height: 120, borderRadius: '50%', margin: '0 auto 24px',
+            background: `conic-gradient(var(--color-primary) ${score * 3.6}deg, var(--color-border) 0deg)`,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <div style={{ width: 96, height: 96, borderRadius: '50%', background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+              <div style={{ fontSize: '24px', fontWeight: 800, color: 'var(--color-primary)' }}>{score}%</div>
+              <div style={{ fontSize: '10px', color: 'var(--color-text-tertiary)' }}>Skor</div>
+            </div>
+          </div>
+          <h2 style={{ fontSize: '24px', fontWeight: 800, marginBottom: 8, color: '#0f172a' }}>Kuis Selesai!</h2>
+          <p style={{ color: '#475569', marginBottom: 24 }}>Jawaban Anda telah tersimpan dan sesi ditandai selesai.</p>
+          <button onClick={() => { setShowResult(false); setCurrentQIdx(0); setAnswers({}); }} style={{ padding: '10px 24px', borderRadius: 12, border: '1px solid var(--color-border)', background: '#fff', cursor: 'pointer', fontWeight: 600, fontSize: '14px', color: '#334155', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
+            Coba Lagi Kuis
+          </button>
+       </div>
+    )
+  }
+
+  return (
+    <div style={{ background: '#f8fafc', padding: '40px 20px', borderBottom: '1px solid #e2e8f0', width: '100%' }} className="animate-fade-in">
+       <div style={{ maxWidth: 680, margin: '0 auto' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a' }}>Kuis Interaktif</h3>
+            <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-primary)' }}>
+               {currentQIdx + 1} <span style={{ color: '#94a3b8', fontWeight: 500 }}>/ {totalQ}</span>
+            </div>
+          </div>
+          
+          <div style={{ height: 6, background: 'var(--color-border)', borderRadius: 3, marginBottom: 32, overflow: 'hidden' }}>
+            <div style={{ height: '100%', background: 'var(--color-primary)', width: `${(answeredCount / totalQ) * 100}%`, transition: 'width 0.3s' }} />
+          </div>
+
+          <div style={{ background: '#fff', borderRadius: 16, padding: '32px 24px', border: '1px solid var(--color-border)', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
+             <p style={{ fontSize: '16px', fontWeight: 500, lineHeight: 1.6, marginBottom: 32, color: '#1e293b' }}>{currentQ.question}</p>
+             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+               {currentQ.options.map((opt: any, idx: number) => {
+                 const isSelected = answers[currentQ.id] === opt.id
+                 return (
+                   <button
+                     key={opt.id}
+                     onClick={() => setAnswers(p => ({ ...p, [currentQ.id]: opt.id }))}
+                     style={{
+                       padding: '16px 20px', borderRadius: 12, border: `2px solid ${isSelected ? 'var(--color-primary)' : 'var(--color-border)'}`,
+                       background: isSelected ? 'rgba(16,185,129,0.05)' : '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 16, textAlign: 'left',
+                       transition: 'all 0.2s ease-in-out', outline: 'none'
+                     }}
+                   >
+                     <div style={{ width: 28, height: 28, borderRadius: '50%', border: `2px solid ${isSelected ? 'var(--color-primary)' : '#cbd5e1'}`, background: isSelected ? 'var(--color-primary)' : '#fff', color: isSelected ? '#fff' : '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: 700, flexShrink: 0, transition: 'all 0.2s' }}>
+                        {String.fromCharCode(65 + idx)}
+                     </div>
+                     <span style={{ fontSize: '15px', fontWeight: isSelected ? 600 : 500, color: isSelected ? '#0f172a' : '#334155' }}>{opt.text}</span>
+                   </button>
+                 )
+               })}
+             </div>
+          </div>
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 24 }}>
+             <button
+               onClick={() => setCurrentQIdx(i => Math.max(0, i - 1))}
+               disabled={currentQIdx === 0}
+               style={{ padding: '12px 24px', borderRadius: 12, border: '1px solid var(--color-border)', background: '#fff', fontWeight: 600, fontSize: '14px', cursor: currentQIdx === 0 ? 'not-allowed' : 'pointer', opacity: currentQIdx === 0 ? 0.5 : 1, color: '#334155', transition: 'all 0.2s' }}
+             >
+               Kembali
+             </button>
+             
+             {currentQIdx === totalQ - 1 ? (
+               <button
+                 onClick={handleSubmit}
+                 disabled={answeredCount < totalQ}
+                 style={{ padding: '12px 24px', borderRadius: 12, border: 'none', background: 'var(--color-primary)', color: '#fff', fontWeight: 600, fontSize: '14px', cursor: answeredCount < totalQ ? 'not-allowed' : 'pointer', opacity: answeredCount < totalQ ? 0.5 : 1, transition: 'all 0.2s', boxShadow: answeredCount < totalQ ? 'none' : '0 4px 12px rgba(16,185,129,0.3)' }}
+               >
+                 Selesaikan Kuis
+               </button>
+             ) : (
+               <button
+                 onClick={() => setCurrentQIdx(i => Math.min(totalQ - 1, i + 1))}
+                 style={{ padding: '12px 24px', borderRadius: 12, border: 'none', background: 'var(--color-primary)', color: '#fff', fontWeight: 600, fontSize: '14px', cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 4px 12px rgba(16,185,129,0.3)' }}
+               >
+                 Selanjutnya
+               </button>
+             )}
+          </div>
+       </div>
     </div>
   )
 }
