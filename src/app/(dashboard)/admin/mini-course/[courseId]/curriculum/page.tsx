@@ -44,12 +44,19 @@ function AddSessionModal({ courseId, editSession, onClose }: { courseId: string;
     isPreview: editSession?.isFreePreview || false 
   })
 
+  const [quizOptions, setQuizOptions] = useState<any[]>(
+    (editSession as any)?.quizOptions || [
+      { id: Math.random().toString(36).substr(2, 9), question: '', options: [{ id: 'A', text: '', isCorrect: true }, { id: 'B', text: '', isCorrect: false }, { id: 'C', text: '', isCorrect: false }, { id: 'D', text: '', isCorrect: false }] }
+    ]
+  )
+
   const mutation = useMutation({
     mutationFn: () => {
+      const payload = { ...form, quizOptions: form.type === 'QUIZ' ? quizOptions : null }
       if (editSession) {
-        return api.put(`/admin/courses/sessions/${editSession.id}`, form)
+        return api.put(`/admin/courses/sessions/${editSession.id}`, payload)
       } else {
-        return api.post(`/admin/courses/${courseId}/sessions`, { ...form, order: 0 })
+        return api.post(`/admin/courses/${courseId}/sessions`, { ...payload, order: 0 })
       }
     },
     onSuccess: () => {
@@ -82,7 +89,7 @@ return (
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.94, y: 10 }}
         transition={{ type: 'spring', damping: 28, stiffness: 300, mass: 0.8 }}
-       style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-xl)', boxShadow: 'var(--shadow-xl)', width: '100%', maxWidth: 480, padding: 'var(--space-6)' }}>
+       style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-xl)', boxShadow: 'var(--shadow-xl)', width: '100%', maxWidth: form.type === 'QUIZ' ? 640 : 480, maxHeight: '90vh', overflowY: 'auto', padding: 'var(--space-6)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 'var(--space-4)' }}>
           <h3 style={{ fontWeight: 700, fontSize: 'var(--text-lg)' }}>{editSession ? 'Edit Sesi Kurikulum' : 'Tambah Sesi Kurikulum'}</h3>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><X size={18} /></button>
@@ -121,14 +128,83 @@ return (
             </div>
           )}
           {form.type === 'QUIZ' && (
-            <div>
-              <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 4 }}>Instruksi / Soal Kuis (Opsional)</label>
-              <textarea 
-                value={form.assignmentDescription} 
-                onChange={e => f('assignmentDescription', e.target.value)} 
-                placeholder="Tulis instruksi tugas, soal kuis, atau cantumkan link Google Form di sini..." 
-                style={{ ...inputStyle, minHeight: 80, resize: 'vertical' }} 
-              />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+              <div>
+                <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 4 }}>Instruksi Kuis <span style={{ color: 'var(--color-error)' }}>*</span></label>
+                <textarea 
+                  value={form.assignmentDescription} 
+                  onChange={e => f('assignmentDescription', e.target.value)} 
+                  placeholder="Jelaskan instruksi kuis ini secara umum..." 
+                  style={{ ...inputStyle, minHeight: 80, resize: 'vertical' }} 
+                />
+              </div>
+
+              <div style={{ padding: '20px', background: '#f8f9fc', borderRadius: '16px', border: '1px solid rgba(0,0,0,0.04)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                  <label style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>Daftar Soal Kuis</label>
+                  <button type="button" onClick={() => setQuizOptions([...quizOptions, { id: Math.random().toString(36).substr(2, 9), question: '', options: [{ id: 'A', text: '', isCorrect: true }, { id: 'B', text: '', isCorrect: false }, { id: 'C', text: '', isCorrect: false }, { id: 'D', text: '', isCorrect: false }] }])} style={{ padding: '6px 12px', borderRadius: '8px', background: '#fff', border: '1px solid var(--color-border)', fontSize: '12px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <Plus size={14} /> Tambah Soal
+                  </button>
+                </div>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+                  {quizOptions.map((q, qIndex) => (
+                    <div key={q.id} style={{ background: '#fff', padding: '16px', borderRadius: '12px', border: '1px solid var(--color-border)', position: 'relative' }}>
+                      {quizOptions.length > 1 && (
+                        <button type="button" onClick={() => setQuizOptions(quizOptions.filter((_, i) => i !== qIndex))} style={{ position: 'absolute', top: 12, right: 12, background: 'rgba(255,59,48,0.1)', color: 'var(--color-error)', border: 'none', borderRadius: '6px', width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                          <Trash2 size={12} />
+                        </button>
+                      )}
+                      <h4 style={{ fontSize: '13px', fontWeight: 700, marginBottom: 12, color: 'var(--color-text-primary)' }}>Soal {qIndex + 1}</h4>
+                      
+                      <input
+                        value={q.question}
+                        onChange={(e) => {
+                          const newQuiz = [...quizOptions];
+                          newQuiz[qIndex].question = e.target.value;
+                          setQuizOptions(newQuiz);
+                        }}
+                        placeholder="Ketik pertanyaan di sini..."
+                        style={{ ...inputStyle, padding: '10px 14px', marginBottom: 16 }}
+                      />
+
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        {q.options.map((opt: any, optIndex: number) => (
+                          <div key={opt.id} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                            <div style={{ width: 28, height: 28, borderRadius: '6px', background: 'var(--color-bg)', border: '1px solid var(--color-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 600, color: 'var(--color-text-secondary)', flexShrink: 0 }}>
+                              {['A', 'B', 'C', 'D'][optIndex] || optIndex + 1}
+                            </div>
+                            <input
+                              value={opt.text}
+                              onChange={(e) => {
+                                const newQuiz = [...quizOptions];
+                                newQuiz[qIndex].options[optIndex].text = e.target.value;
+                                setQuizOptions(newQuiz);
+                              }}
+                              placeholder={`Pilihan ${['A', 'B', 'C', 'D'][optIndex] ?? optIndex + 1}...`}
+                              style={{ ...inputStyle, flex: 1, padding: '8px 12px', fontSize: '13px' }}
+                            />
+                            <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', padding: '0 4px', height: 28 }}>
+                              <input 
+                                type="radio" 
+                                name={`correct-${q.id}`} 
+                                checked={opt.isCorrect}
+                                onChange={() => {
+                                  const newQuiz = [...quizOptions];
+                                  newQuiz[qIndex].options.forEach((o: any) => o.isCorrect = false);
+                                  newQuiz[qIndex].options[optIndex].isCorrect = true;
+                                  setQuizOptions(newQuiz);
+                                }}
+                                style={{ width: 16, height: 16, accentColor: 'var(--color-success)' }} 
+                              />
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           )}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
