@@ -2,10 +2,11 @@
 
 import Link from 'next/link'
 import { useQuery } from '@tanstack/react-query'
-import { PlaySquare, Flame, GraduationCap, CheckCircle2, Circle, ArrowRight, MessageCircle } from 'lucide-react'
+import { PlaySquare, Flame, CheckCircle2, Circle, ArrowRight, Calendar, PlayCircle, Clock, Trophy, ChevronRight, Search, Zap, Code, Layout, Smartphone, Star, MessageCircle, GraduationCap } from 'lucide-react'
 import api from '@/lib/axios'
 import { useAuthStore } from '@/stores/auth.store'
 import { ROUTES, formatRupiah, formatDate, BADGE_LABELS } from '@/lib/utils'
+import { motion } from 'framer-motion'
 
 interface BasecampData {
   user: {
@@ -168,8 +169,35 @@ export default function BasecampPage() {
                   </div>
                 </div>
                 <div style={{ display: 'flex', gap: 'var(--space-3)', marginTop: 'var(--space-2)' }}>
-                  <Link href={ROUTES.BOOTCAMP_LIST} className="btn btn-primary" style={{ fontSize: '13px', padding: '8px 20px' }}>Eksplorasi Bootcamp</Link>
-                  <Link href={ROUTES.COURSE_LIST} className="btn btn-secondary" style={{ fontSize: '13px', padding: '8px 20px' }}>Lihat Mini Course</Link>
+                  <Link href={ROUTES.BOOTCAMP_LIST} style={{ textDecoration: 'none' }}>
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      style={{
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        padding: '10px 20px',
+                        background: 'var(--color-primary)', color: '#fff',
+                        borderRadius: 'var(--radius-md)', fontWeight: 600, fontSize: '13px',
+                      }}
+                    >
+                      Cari Bootcamp
+                    </motion.div>
+                  </Link>
+                  <Link href={ROUTES.COURSE_LIST} style={{ textDecoration: 'none' }}>
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      style={{
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        padding: '10px 20px',
+                        background: '#fff', color: 'var(--color-text-primary)',
+                        border: '1px solid var(--color-border)',
+                        borderRadius: 'var(--radius-md)', fontWeight: 600, fontSize: '13px',
+                      }}
+                    >
+                      Cari Mini Course
+                    </motion.div>
+                  </Link>
                 </div>
               </div>
             </div>
