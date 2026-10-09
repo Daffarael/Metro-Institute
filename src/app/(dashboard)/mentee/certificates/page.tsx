@@ -9,7 +9,7 @@ import api from '@/lib/axios'
 import { FIELD_LABELS, formatDate } from '@/lib/utils'
 import CleanCombobox from '@/components/admin/CleanCombobox'
 import AdminEmptyState from '@/components/admin/AdminEmptyState'
-
+import { Dialog, DialogContent } from '@/components/ui/dialog'
 interface Certificate {
   id: string
   credentialId: string
@@ -33,6 +33,7 @@ const TYPE_OPTIONS = [
 export default function CertificatesPage() {
   const [search, setSearch] = useState('')
   const [type, setType] = useState('')
+  const [previewId, setPreviewId] = useState<string | null>(null)
 
   const [activeSearch, setActiveSearch] = useState('')
   const [activeType, setActiveType] = useState('')
@@ -241,23 +242,22 @@ export default function CertificatesPage() {
 
                 {/* Actions */}
                 <div style={{ padding: 'var(--space-3) var(--space-4)', borderTop: '1px solid var(--color-border)', display: 'flex', gap: 'var(--space-2)' }}>
-                  <Link 
-                    href={cert.pdfUrl || `/certificate/${cert.credentialId}`} 
-                    style={{ flex: 1, textDecoration: 'none' }}
+                  <motion.div
+                    onClick={() => {
+                      if (cert.pdfUrl) window.open(cert.pdfUrl, '_blank')
+                      else setPreviewId(cert.credentialId)
+                    }}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    style={{ 
+                      flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-1)',
+                      padding: '8px', background: 'var(--color-primary)', color: '#fff',
+                      borderRadius: 'var(--radius-md)',
+                      fontWeight: 600, fontSize: '12px', cursor: 'pointer'
+                    }}
                   >
-                    <motion.div
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      style={{ 
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-1)',
-                        padding: '8px', background: 'var(--color-primary)', color: '#fff',
-                        borderRadius: 'var(--radius-md)',
-                        fontWeight: 600, fontSize: '12px', cursor: 'pointer'
-                      }}
-                    >
-                      <Download size={13} /> Unduh
-                    </motion.div>
-                  </Link>
+                    <Download size={13} /> Unduh
+                  </motion.div>
                 </div>
               </div>
             )
@@ -267,6 +267,18 @@ export default function CertificatesPage() {
           ) : null}
         </AnimatePresence>
       </div>
+
+      <Dialog open={!!previewId} onOpenChange={(open) => !open && setPreviewId(null)}>
+        <DialogContent style={{ maxWidth: '900px', width: '100%', height: '85vh', padding: 0, overflow: 'hidden' }}>
+          {previewId && (
+            <iframe 
+              src={`/certificate/${previewId}?modal=true`} 
+              style={{ width: '100%', height: '100%', border: 'none' }} 
+              title="Certificate Preview"
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

@@ -8,12 +8,23 @@ import { id } from 'date-fns/locale'
 import { useParams, useRouter } from 'next/navigation'
 import { useRef } from 'react'
 import { motion } from 'motion/react'
+import React from 'react'
 
 export default function DownloadCertificatePage() {
   const params = useParams()
   const router = useRouter()
   const credentialId = params.credentialId as string
   const certRef = useRef<HTMLDivElement>(null)
+  const [isModal, setIsModal] = React.useState(false)
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search)
+      if (searchParams.get('modal') === 'true') {
+        setIsModal(true)
+      }
+    }
+  }, [])
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['verify-cert', credentialId],
@@ -112,14 +123,17 @@ export default function DownloadCertificatePage() {
         }
       `}} />
       <div style={{ width: '100%', maxWidth: 800, marginBottom: 16, display: 'flex', justifyContent: 'space-between' }} className="no-print">
-        <motion.button 
-          whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-          onClick={() => router.back()} 
-          style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: '#64748b', textDecoration: 'none', fontSize: '14px', fontWeight: 600, padding: '8px 16px', background: '#fff', borderRadius: 'var(--radius-md)', border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', transition: 'all 0.2s', cursor: 'pointer' }}
-        >
-          <ArrowLeft size={16} />
-          Kembali
-        </motion.button>
+        {!isModal && (
+          <motion.button 
+            whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+            onClick={() => router.back()} 
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: '#64748b', textDecoration: 'none', fontSize: '14px', fontWeight: 600, padding: '8px 16px', background: '#fff', borderRadius: 'var(--radius-md)', border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', transition: 'all 0.2s', cursor: 'pointer' }}
+          >
+            <ArrowLeft size={16} />
+            Kembali
+          </motion.button>
+        )}
+        {isModal && <div />} {/* Spacer so Simpan PDF is pushed to the right */}
         <motion.button 
           whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
           onClick={handlePrint} 
