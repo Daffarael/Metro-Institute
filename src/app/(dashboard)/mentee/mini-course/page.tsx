@@ -220,7 +220,7 @@ function CourseCard({ course }: { course: MiniCourse }) {
       >
         {/* Thumbnail Area - CLEAN, NO GRADIENTS */}
         <div style={{
-          height: 150,
+          aspectRatio: '16/9',
           background: 'var(--color-bg)',
           borderBottom: '1px solid var(--color-border-subtle)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',

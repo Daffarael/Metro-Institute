@@ -188,7 +188,7 @@ export default function CourseDetailPage() {
 
           {/* Thumbnail (left side, mobile visible) */}
           <div style={{
-            height: 220, borderRadius: 12,
+            aspectRatio: '16/9', borderRadius: 12,
             border: '1px solid var(--color-border-subtle)',
             marginBottom: 36, overflow: 'hidden',
             background: 'var(--color-bg)',
@@ -358,7 +358,7 @@ export default function CourseDetailPage() {
           }}>
             {/* Thumbnail */}
             <div style={{
-              height: 160, background: 'var(--color-bg)',
+              aspectRatio: '16/9', background: 'var(--color-bg)',
               borderBottom: '1px solid var(--color-border-subtle)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               overflow: 'hidden',
@@ -492,7 +492,7 @@ function CourseDetailSkeleton() {
         <div className="skeleton" style={{ height: 13, width: 220, marginBottom: 24, borderRadius: 4 }} />
         <div className="skeleton" style={{ height: 36, width: '75%', marginBottom: 12, borderRadius: 6 }} />
         <div className="skeleton" style={{ height: 18, width: '55%', marginBottom: 28, borderRadius: 4 }} />
-        <div className="skeleton" style={{ height: 220, borderRadius: 12, marginBottom: 32 }} />
+        <div className="skeleton" style={{ aspectRatio: '16/9', borderRadius: 12, marginBottom: 32 }} />
         <div className="skeleton" style={{ height: 180, borderRadius: 10 }} />
       </div>
       <div>
