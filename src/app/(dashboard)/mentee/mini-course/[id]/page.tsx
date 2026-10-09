@@ -14,6 +14,7 @@ import api from '@/lib/axios'
 import { useAuthStore } from '@/stores/auth.store'
 import { useUIStore } from '@/stores/ui.store'
 import { ROUTES, formatRupiah, formatDuration, FIELD_LABELS, LEVEL_LABELS } from '@/lib/utils'
+import { CardTabs } from '@/components/ui/AnimatedTabs'
 
 interface CourseDetail {
   id: string
@@ -58,6 +59,7 @@ export default function CourseDetailPage() {
   const { setSearchPlaceholder } = useUIStore()
   const [openChapters, setOpenChapters] = useState<Set<string>>(new Set(['0']))
   const [isWishlisted, setIsWishlisted] = useState(false)
+  const [activeTab, setActiveTab] = useState<'overview' | 'curriculum' | 'reviews'>('overview')
 
   const { data: course, isLoading, refetch } = useQuery<CourseDetail>({
     queryKey: ['course-detail', id],
@@ -201,152 +203,172 @@ export default function CourseDetailPage() {
           </div>
 
           {/* About */}
-          <section style={{ marginBottom: 36 }}>
-            <h2 style={{ fontSize: '18px', fontWeight: 700, letterSpacing: '-0.01em', marginBottom: 12, color: 'var(--color-text-primary)' }}>
-              Tentang Kursus
-            </h2>
-            <div style={{
-              fontSize: '14px', color: 'var(--color-text-secondary)',
-              lineHeight: 1.7, whiteSpace: 'pre-line',
-            }}>
-              {course.description}
-            </div>
-          </section>
-
-          {/* Curriculum */}
-          <section style={{ marginBottom: 36 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 16 }}>
-              <h2 style={{ fontSize: '18px', fontWeight: 700, letterSpacing: '-0.01em', color: 'var(--color-text-primary)' }}>
-                Kurikulum
-              </h2>
-              <span style={{ fontSize: '13px', color: 'var(--color-text-tertiary)' }}>
-                {course.chapters.length} bab · {totalSessions} sesi · {formatDuration(course.totalDuration)}
-              </span>
-            </div>
-
-            <div style={{ border: '1px solid var(--color-border-subtle)', borderRadius: 10, overflow: 'hidden' }}>
-              {course.chapters.map((chapter, idx) => {
-                const isOpen = openChapters.has(String(idx))
-                return (
-                  <div key={chapter.id} style={{ borderBottom: idx < course.chapters.length - 1 ? '1px solid var(--color-border-subtle)' : 'none' }}>
-                    <button
-                      onClick={() => toggleChapter(String(idx))}
-                      style={{
-                        width: '100%', display: 'flex', alignItems: 'center',
-                        justifyContent: 'space-between',
-                        padding: '14px 18px',
-                        background: isOpen ? 'var(--color-bg)' : 'var(--color-surface)',
-                        cursor: 'pointer', border: 'none',
-                        transition: 'background 0.15s ease',
-                      }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <ChevronDown
-                          size={15}
-                          color="var(--color-text-tertiary)"
-                          strokeWidth={2}
-                          style={{
-                            transform: isOpen ? 'rotate(0deg)' : 'rotate(-90deg)',
-                            transition: 'transform 0.2s ease',
-                            flexShrink: 0,
-                          }}
-                        />
-                        <span style={{ fontWeight: 600, fontSize: '14px', textAlign: 'left', color: 'var(--color-text-primary)' }}>
-                          {chapter.title}
-                        </span>
-                      </div>
-                      <span style={{ fontSize: '12px', color: 'var(--color-text-tertiary)', whiteSpace: 'nowrap', marginLeft: 16 }}>
-                        {chapter.sessions.length} sesi
-                      </span>
-                    </button>
-
-                    {isOpen && (
-                      <div>
-                        {chapter.sessions.map((session) => (
-                          <div key={session.id} style={{
-                            display: 'flex', alignItems: 'center', gap: 12,
-                            padding: '11px 18px 11px 46px',
-                            borderTop: '1px solid var(--color-border-subtle)',
-                          }}>
-                            <span style={{ color: 'var(--color-text-tertiary)', flexShrink: 0 }}>
-                              {SESSION_ICONS[session.type] || <PlayCircle size={14} strokeWidth={1.5} />}
-                            </span>
-                            <span style={{ fontSize: '13px', flex: 1, color: 'var(--color-text-primary)' }}>
-                              {session.title}
-                            </span>
-                            {session.isFreePreview ? (
-                              <span style={{
-                                fontSize: '11px', fontWeight: 600,
-                                color: 'var(--color-primary)',
-                                background: 'rgba(var(--color-primary-rgb, 0,128,77), 0.08)',
-                                padding: '2px 8px', borderRadius: 20,
-                              }}>
-                                Preview Gratis
-                              </span>
-                            ) : course.isEnrolled ? null : (
-                              <Lock size={12} color="var(--color-border)" strokeWidth={1.5} />
-                            )}
-                            {session.videoDuration && (
-                              <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', whiteSpace: 'nowrap' }}>
-                                {formatDuration(session.videoDuration)}
-                              </span>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )
-              })}
-            </div>
-          </section>
-
-          {/* Reviews */}
-          {course.reviews.length > 0 && (
-            <section>
-              <h2 style={{ fontSize: '18px', fontWeight: 700, letterSpacing: '-0.01em', marginBottom: 16, color: 'var(--color-text-primary)' }}>
-                Ulasan <span style={{ fontWeight: 400, color: 'var(--color-text-tertiary)', fontSize: '15px' }}>({course.reviewCount})</span>
-              </h2>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                {course.reviews.slice(0, 5).map((review) => (
-                  <div key={review.id} style={{
-                    padding: '16px 18px',
-                    border: '1px solid var(--color-border-subtle)',
-                    borderRadius: 10,
-                    background: 'var(--color-surface)',
-                  }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-                      <div style={{
-                        width: 32, height: 32, borderRadius: '50%',
-                        background: 'var(--color-bg)',
-                        border: '1px solid var(--color-border-subtle)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        fontSize: '13px', fontWeight: 700, color: 'var(--color-text-secondary)',
-                        flexShrink: 0,
-                      }}>
-                        {review.user.name[0].toUpperCase()}
-                      </div>
-                      <div>
-                        <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: 2 }}>
-                          {review.user.name}
-                        </div>
-                        <div style={{ display: 'flex', gap: 2 }}>
-                          {Array.from({ length: 5 }).map((_, i) => (
-                            <Star key={i} size={11} color="#F59E0B" fill={i < review.rating ? '#F59E0B' : 'none'} />
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                    {review.content && (
-                      <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: 0 }}>
-                        {review.content}
-                      </p>
-                    )}
-                  </div>
-                ))}
+          <CardTabs
+            items={[
+              { id: 'overview', label: 'Overview' },
+              { id: 'curriculum', label: 'Kurikulum' },
+              { id: 'reviews', label: 'Ulasan' },
+            ]}
+            activeId={activeTab}
+            onChange={(id) => setActiveTab(id as 'overview' | 'curriculum' | 'reviews')}
+          >
+            {activeTab === 'overview' && (
+              <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-5)' }}>
+                <h2 style={{ fontSize: '18px', fontWeight: 700, letterSpacing: '-0.01em', marginBottom: 12, color: 'var(--color-text-primary)' }}>
+                  Tentang Kursus
+                </h2>
+                <div style={{
+                  fontSize: '14px', color: 'var(--color-text-secondary)',
+                  lineHeight: 1.7, whiteSpace: 'pre-line',
+                }}>
+                  {course.description}
+                </div>
               </div>
-            </section>
-          )}
+            )}
+
+            {activeTab === 'curriculum' && (
+              <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-5)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 16 }}>
+                  <h2 style={{ fontSize: '18px', fontWeight: 700, letterSpacing: '-0.01em', color: 'var(--color-text-primary)' }}>
+                    Kurikulum
+                  </h2>
+                  <span style={{ fontSize: '13px', color: 'var(--color-text-tertiary)' }}>
+                    {course.chapters.length} bab · {totalSessions} sesi · {formatDuration(course.totalDuration)}
+                  </span>
+                </div>
+
+                <div style={{ border: '1px solid var(--color-border-subtle)', borderRadius: 10, overflow: 'hidden' }}>
+                  {course.chapters.map((chapter, idx) => {
+                    const isOpen = openChapters.has(String(idx))
+                    return (
+                      <div key={chapter.id} style={{ borderBottom: idx < course.chapters.length - 1 ? '1px solid var(--color-border-subtle)' : 'none' }}>
+                        <button
+                          onClick={() => toggleChapter(String(idx))}
+                          style={{
+                            width: '100%', display: 'flex', alignItems: 'center',
+                            justifyContent: 'space-between',
+                            padding: '14px 18px',
+                            background: isOpen ? 'var(--color-bg)' : 'var(--color-surface)',
+                            cursor: 'pointer', border: 'none',
+                            transition: 'background 0.15s ease',
+                          }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                            <ChevronDown
+                              size={15}
+                              color="var(--color-text-tertiary)"
+                              strokeWidth={2}
+                              style={{
+                                transform: isOpen ? 'rotate(0deg)' : 'rotate(-90deg)',
+                                transition: 'transform 0.2s ease',
+                                flexShrink: 0,
+                              }}
+                            />
+                            <span style={{ fontWeight: 600, fontSize: '14px', textAlign: 'left', color: 'var(--color-text-primary)' }}>
+                              {chapter.title}
+                            </span>
+                          </div>
+                          <span style={{ fontSize: '12px', color: 'var(--color-text-tertiary)', whiteSpace: 'nowrap', marginLeft: 16 }}>
+                            {chapter.sessions.length} sesi
+                          </span>
+                        </button>
+
+                        {isOpen && (
+                          <div>
+                            {chapter.sessions.map((session) => (
+                              <div key={session.id} style={{
+                                display: 'flex', alignItems: 'center', gap: 12,
+                                padding: '11px 18px 11px 46px',
+                                borderTop: '1px solid var(--color-border-subtle)',
+                              }}>
+                                <span style={{ color: 'var(--color-text-tertiary)', flexShrink: 0 }}>
+                                  {SESSION_ICONS[session.type] || <PlayCircle size={14} strokeWidth={1.5} />}
+                                </span>
+                                <span style={{ fontSize: '13px', flex: 1, color: 'var(--color-text-primary)' }}>
+                                  {session.title}
+                                </span>
+                                {session.isFreePreview ? (
+                                  <span style={{
+                                    fontSize: '11px', fontWeight: 600,
+                                    color: 'var(--color-primary)',
+                                    background: 'rgba(var(--color-primary-rgb, 0,128,77), 0.08)',
+                                    padding: '2px 8px', borderRadius: 20,
+                                  }}>
+                                    Preview Gratis
+                                  </span>
+                                ) : course.isEnrolled ? null : (
+                                  <Lock size={12} color="var(--color-border)" strokeWidth={1.5} />
+                                )}
+                                {session.videoDuration && (
+                                  <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', whiteSpace: 'nowrap' }}>
+                                    {formatDuration(session.videoDuration)}
+                                  </span>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'reviews' && (
+              <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+                {course.reviews.length === 0 ? (
+                  <div className="empty-state" style={{ padding: '40px 0', textAlign: 'center', border: '1px solid var(--color-border-subtle)', borderRadius: 10 }}>
+                    <p style={{ color: 'var(--color-text-tertiary)', fontSize: 14 }}>Belum ada ulasan</p>
+                  </div>
+                ) : (
+                  <>
+                    <h2 style={{ fontSize: '18px', fontWeight: 700, letterSpacing: '-0.01em', marginBottom: 16, color: 'var(--color-text-primary)' }}>
+                      Ulasan <span style={{ fontWeight: 400, color: 'var(--color-text-tertiary)', fontSize: '15px' }}>({course.reviewCount})</span>
+                    </h2>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                      {course.reviews.slice(0, 5).map((review) => (
+                        <div key={review.id} style={{
+                          padding: '16px 18px',
+                          border: '1px solid var(--color-border-subtle)',
+                          borderRadius: 10,
+                          background: 'var(--color-surface)',
+                        }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+                            <div style={{
+                              width: 32, height: 32, borderRadius: '50%',
+                              background: 'var(--color-bg)',
+                              border: '1px solid var(--color-border-subtle)',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              fontSize: '13px', fontWeight: 700, color: 'var(--color-text-secondary)',
+                              flexShrink: 0,
+                            }}>
+                              {review.user.name[0].toUpperCase()}
+                            </div>
+                            <div>
+                              <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: 2 }}>
+                                {review.user.name}
+                              </div>
+                              <div style={{ display: 'flex', gap: 2 }}>
+                                {Array.from({ length: 5 }).map((_, i) => (
+                                  <Star key={i} size={11} color="#F59E0B" fill={i < review.rating ? '#F59E0B' : 'none'} />
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                          {review.content && (
+                            <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: 0 }}>
+                              {review.content}
+                            </p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+          </CardTabs>
         </div>
 
         {/* ── RIGHT: Sticky CTA ─────────────────────────── */}
