@@ -12,12 +12,10 @@ interface ImageUploadProps {
 
 export default function ImageUpload({ value, onChange }: ImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false)
+  const [isDragging, setIsDragging] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
+  const processFile = async (file: File) => {
     if (!file.type.startsWith('image/')) {
       toast.error('Hanya file gambar yang diperbolehkan')
       return
@@ -51,6 +49,32 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
     }
   }
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) processFile(file)
+  }
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (!isUploading) setIsDragging(true)
+  }
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(false)
+  }
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(false)
+    if (isUploading) return
+    const file = e.dataTransfer.files?.[0]
+    if (file) processFile(file)
+  }
+
   const handleRemove = () => {
     onChange('')
   }
@@ -59,7 +83,7 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
       {value ? (
         <div style={{
-          position: 'relative', width: '100%', height: 180, borderRadius: 12,
+          position: 'relative', width: '100%', aspectRatio: '16/9', borderRadius: 12,
           border: '1px solid var(--color-border)', overflow: 'hidden',
           background: 'var(--color-surface)'
         }}>
@@ -83,14 +107,19 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
       ) : (
         <div 
           onClick={() => fileInputRef.current?.click()}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
           style={{
-            width: '100%', height: 140, borderRadius: 12, border: '2px dashed var(--color-border)',
-            background: 'var(--color-surface)', display: 'flex', flexDirection: 'column',
+            width: '100%', height: 160, borderRadius: 12, 
+            border: `2px dashed ${isDragging ? 'var(--color-primary)' : 'var(--color-border)'}`,
+            background: isDragging ? 'rgba(1, 133, 86, 0.05)' : 'var(--color-surface)', 
+            display: 'flex', flexDirection: 'column',
             alignItems: 'center', justifyContent: 'center', cursor: isUploading ? 'not-allowed' : 'pointer',
             transition: 'all 0.2s', gap: 8
           }}
-          onMouseEnter={e => { if (!isUploading) e.currentTarget.style.borderColor = 'var(--color-primary)' }}
-          onMouseLeave={e => { if (!isUploading) e.currentTarget.style.borderColor = 'var(--color-border)' }}
+          onMouseEnter={e => { if (!isUploading && !isDragging) e.currentTarget.style.borderColor = 'var(--color-primary)' }}
+          onMouseLeave={e => { if (!isUploading && !isDragging) e.currentTarget.style.borderColor = 'var(--color-border)' }}
         >
           {isUploading ? (
             <>
@@ -103,7 +132,7 @@ export default function ImageUpload({ value, onChange }: ImageUploadProps) {
                 <ImageIcon size={24} strokeWidth={1.5} />
               </div>
               <span style={{ fontSize: 13, color: 'var(--color-text-secondary)', fontWeight: 500 }}>
-                Klik untuk unggah gambar
+                {isDragging ? 'Lepaskan gambar di sini' : 'Klik atau seret gambar ke sini'}
               </span>
               <span style={{ fontSize: 11, color: 'var(--color-text-tertiary)' }}>JPG, PNG (Maks. 5MB)</span>
             </>
