@@ -150,7 +150,7 @@ export default function CourseLearningPlayerPage() {
         display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0,
         zIndex: 10,
       }}>
-        <Link href={ROUTES.LEARN_COURSE(courseId)} style={{
+        <Link href={ROUTES.COURSE_DETAIL(courseId)} style={{
           display: 'flex', alignItems: 'center', gap: 12,
           color: '#334155', textDecoration: 'none', fontSize: '15px', fontWeight: 600,
           transition: 'color 0.2s',
