@@ -38,7 +38,7 @@ function AddSessionModal({ courseId, onClose }: { courseId: string; onClose: () 
   const [form, setForm] = useState({ title: '', type: 'VIDEO' as CourseSession['type'], videoUrl: '', materialUrl: '', isPreview: false })
 
   const mutation = useMutation({
-    mutationFn: () => api.post(`/mini-course/${courseId}/sessions`, { ...form, order: 0 }),
+    mutationFn: () => api.post(`/admin/courses/${courseId}/sessions`, { ...form, order: 0 }),
     onSuccess: () => {
       toast.success('Sesi ditambahkan.')
       qc.invalidateQueries({ queryKey: ['admin', 'course', courseId, 'curriculum']})
@@ -132,17 +132,17 @@ export default function MiniCourseCurriculumPage() {
 
   const { data: course } = useQuery<MiniCourse>({
     queryKey: ['admin', 'course', courseId], placeholderData: keepPreviousData,
-    queryFn: () => api.get(`/mini-course/${courseId}`).then(r => r.data.data),
+    queryFn: () => api.get(`/courses/${courseId}`).then(r => r.data.data),
   })
 
   const { data: sessions, isLoading } = useQuery<CourseSession[]>({
     queryKey: ['admin', 'course', courseId, 'curriculum'], placeholderData: keepPreviousData,
-    queryFn: () => api.get(`/mini-course/${courseId}/sessions`).then(r => r.data.data ?? []),
+    queryFn: () => api.get(`/admin/courses/${courseId}/sessions`).then(r => r.data.data ?? []),
     staleTime: 2 * 60 * 1000,
   })
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => api.delete(`/mini-course/sessions/${id}`),
+    mutationFn: (id: string) => api.delete(`/admin/courses/sessions/${id}`),
     onSuccess: () => {
       toast.success('Sesi dihapus.')
       qc.invalidateQueries({ queryKey: ['admin', 'course', courseId, 'curriculum']})
