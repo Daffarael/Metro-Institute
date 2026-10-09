@@ -7,7 +7,7 @@ import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
   Star, Users, Clock, ChevronDown, ChevronRight, PlayCircle,
-  FileText, CheckCircle2, Lock, Heart, Share2, Award, Shield, BookOpen,
+  FileText, CheckCircle2, Lock, Heart, Share2, Award, Shield, BookOpen, Infinity
 } from 'lucide-react'
 import { toast } from 'sonner'
 import api from '@/lib/axios'
@@ -459,7 +459,7 @@ export default function CourseDetailPage() {
                   Fasilitas Kursus
                 </p>
                 {[
-                  { icon: Clock,        text: `Akses ${course.accessDays} hari` },
+                  { icon: course.accessDays > 10000 ? Infinity : Clock,        text: course.accessDays > 10000 ? 'Akses seumur hidup' : `Akses ${course.accessDays} hari` },
                   { icon: CheckCircle2, text: `${totalSessions} sesi pembelajaran` },
                   { icon: FileText,     text: 'Materi & project files' },
                   { icon: Award,        text: 'Sertifikat penyelesaian' },

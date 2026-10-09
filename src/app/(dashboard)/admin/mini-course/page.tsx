@@ -30,7 +30,7 @@ const miniCourseSchema = z.object({
   descLong:    z.string().min(20, 'Minimal 20 karakter'),
   field:       z.enum(['UI_UX', 'FRONTEND', 'BACKEND', 'MOBILE'], { error: () => ({ message: 'Pilih bidang' }) }),
   price:       z.number().min(0),
-  accessDays:  z.number().min(1).max(3650),
+  accessDays:  z.number().min(1).max(365000),
   totalDuration: z.number().min(1),
   status:      z.enum(['DRAFT', 'PUBLISHED'], { error: () => ({ message: 'Pilih status' }) }),
   certificateTemplateId: z.string().optional().nullable(),
@@ -80,7 +80,7 @@ function CourseModal({ course, onClose }: { course?: MiniCourse; onClose: () => 
       descLong:      course?.descLong ?? '',
       field:         course?.field ?? ('' as any),
       price:         course?.price ?? 0,
-      accessDays:    course?.accessDays ?? 180,
+      accessDays:    course?.accessDays ?? 36500,
       totalDuration: course?.totalDuration ?? 60,
       status:        course?.status ?? ('' as any),
       certificateTemplateId: course?.certificateTemplateId ?? null,
@@ -226,13 +226,10 @@ function CourseModal({ course, onClose }: { course?: MiniCourse; onClose: () => 
                 onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
               />
             </div>
-            <div>
+            {/* Hidden accessDays field to support Lifetime Access default */}
+            <div style={{ display: 'none' }}>
               <label style={labelStyle}>Durasi Akses (hari) <span style={{color: 'var(--color-error)'}}>*</span></label>
-              <input type="number" {...register('accessDays', { valueAsNumber: true })} style={inputStyleClean} min={1} placeholder="180" 
-                onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
-                onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
-              />
-              <p style={{ fontSize: '12px', color: 'var(--color-text-tertiary)', marginTop: 6 }}>Dihitung sejak tanggal pembelian.</p>
+              <input type="number" {...register('accessDays', { valueAsNumber: true })} style={inputStyleClean} min={1} placeholder="36500" />
             </div>
             <div>
               <label style={labelStyle}>Estimasi Total Durasi (menit) <span style={{color: 'var(--color-error)'}}>*</span></label>
@@ -457,7 +454,7 @@ export default function AdminMiniCoursePage() {
                       <span style={{ fontSize: '11px', fontWeight: 600, padding: '2px 8px', borderRadius: 'var(--radius-full)', background: 'var(--color-primary-light)', color: 'var(--color-primary)' }}>{FIELD_LABELS[c.field] ?? c.field}</span>
                     </td>
                     <td style={{ padding: 'var(--space-3) var(--space-4)', fontWeight: 700 }}>{c.price === 0 ? 'Gratis' : formatRupiah(c.price)}</td>
-                    <td style={{ padding: 'var(--space-3) var(--space-4)', color: 'var(--color-text-secondary)' }}>{c.accessDays} hari</td>
+                    <td style={{ padding: 'var(--space-3) var(--space-4)', color: 'var(--color-text-secondary)' }}>{c.accessDays > 10000 ? 'Seumur Hidup' : `${c.accessDays} hari`}</td>
                     <td style={{ padding: 'var(--space-3) var(--space-4)', textAlign: 'center' }}>{c._count?.enrollments ?? 0}</td>
                     <td style={{ padding: 'var(--space-3) var(--space-4)', color: 'var(--color-text-secondary)' }}>{c.rating != null ? `⭐ ${c.rating.toFixed(1)}` : '—'}</td>
                     <td style={{ padding: 'var(--space-3) var(--space-4)' }}><AdminStatusChip status={c.status} /></td>
