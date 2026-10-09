@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { motion } from 'motion/react'
 import Link from 'next/link'
 import {
   ChevronLeft, ChevronRight, CheckCircle2, PlayCircle, FileText,
@@ -738,9 +739,14 @@ function InteractiveQuiz({ quizOptions, onComplete, isCompleted }: { quizOptions
           </div>
           <h2 style={{ fontSize: '24px', fontWeight: 800, marginBottom: 8, color: '#0f172a' }}>Kuis Selesai!</h2>
           <p style={{ color: '#475569', marginBottom: 24 }}>Jawaban Anda telah tersimpan dan sesi ditandai selesai.</p>
-          <button onClick={() => { setShowResult(false); setCurrentQIdx(0); setAnswers({}); setIsStarted(false); }} style={{ padding: '10px 24px', borderRadius: 12, border: '1px solid var(--color-border)', background: '#fff', cursor: 'pointer', fontWeight: 600, fontSize: '14px', color: '#334155', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
+          <motion.button 
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => { setShowResult(false); setCurrentQIdx(0); setAnswers({}); setIsStarted(false); }} 
+            style={{ padding: '10px 24px', borderRadius: 12, border: '1px solid var(--color-border)', background: '#fff', cursor: 'pointer', fontWeight: 600, fontSize: '14px', color: '#334155', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}
+          >
             Coba Lagi Kuis
-          </button>
+          </motion.button>
        </div>
     )
   }
@@ -758,12 +764,14 @@ function InteractiveQuiz({ quizOptions, onComplete, isCompleted }: { quizOptions
         <p style={{ color: '#475569', marginBottom: 32, textAlign: 'center', maxWidth: 400, lineHeight: 1.6 }}>
           Kuis ini terdiri dari {totalQ} pertanyaan. Pastikan Anda sudah memahami materi dengan baik sebelum memulai.
         </p>
-        <button 
+        <motion.button 
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
           onClick={() => setIsStarted(true)} 
           style={{ padding: '14px 32px', borderRadius: 12, border: 'none', background: 'var(--color-primary)', color: '#fff', cursor: 'pointer', fontWeight: 600, fontSize: '15px', boxShadow: '0 4px 12px rgba(16,185,129,0.3)' }}
         >
           Mulai Kuis
-        </button>
+        </motion.button>
       </div>
     )
   }
@@ -788,7 +796,9 @@ function InteractiveQuiz({ quizOptions, onComplete, isCompleted }: { quizOptions
                {currentQ.options.map((opt: any, idx: number) => {
                  const isSelected = answers[currentQ.id] === opt.id
                  return (
-                   <button
+                   <motion.button
+                     whileHover={{ scale: 1.01 }}
+                     whileTap={{ scale: 0.99 }}
                      key={opt.id}
                      onClick={() => setAnswers(p => ({ ...p, [currentQ.id]: opt.id }))}
                      style={{
@@ -801,36 +811,42 @@ function InteractiveQuiz({ quizOptions, onComplete, isCompleted }: { quizOptions
                         {String.fromCharCode(65 + idx)}
                      </div>
                      <span style={{ fontSize: '15px', fontWeight: isSelected ? 600 : 500, color: isSelected ? '#0f172a' : '#334155' }}>{opt.text}</span>
-                   </button>
+                   </motion.button>
                  )
                })}
              </div>
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 24 }}>
-             <button
+             <motion.button
+               whileHover={currentQIdx === 0 ? {} : { scale: 1.02 }}
+               whileTap={currentQIdx === 0 ? {} : { scale: 0.98 }}
                onClick={() => setCurrentQIdx(i => Math.max(0, i - 1))}
                disabled={currentQIdx === 0}
                style={{ padding: '12px 24px', borderRadius: 12, border: '1px solid var(--color-border)', background: '#fff', fontWeight: 600, fontSize: '14px', cursor: currentQIdx === 0 ? 'not-allowed' : 'pointer', opacity: currentQIdx === 0 ? 0.5 : 1, color: '#334155', transition: 'all 0.2s' }}
              >
                Kembali
-             </button>
+             </motion.button>
              
              {currentQIdx === totalQ - 1 ? (
-               <button
+               <motion.button
+                 whileHover={answeredCount < totalQ ? {} : { scale: 1.02 }}
+                 whileTap={answeredCount < totalQ ? {} : { scale: 0.98 }}
                  onClick={handleSubmit}
                  disabled={answeredCount < totalQ}
                  style={{ padding: '12px 24px', borderRadius: 12, border: 'none', background: 'var(--color-primary)', color: '#fff', fontWeight: 600, fontSize: '14px', cursor: answeredCount < totalQ ? 'not-allowed' : 'pointer', opacity: answeredCount < totalQ ? 0.5 : 1, transition: 'all 0.2s', boxShadow: answeredCount < totalQ ? 'none' : '0 4px 12px rgba(16,185,129,0.3)' }}
                >
                  Selesaikan Kuis
-               </button>
+               </motion.button>
              ) : (
-               <button
+               <motion.button
+                 whileHover={{ scale: 1.02 }}
+                 whileTap={{ scale: 0.98 }}
                  onClick={() => setCurrentQIdx(i => Math.min(totalQ - 1, i + 1))}
                  style={{ padding: '12px 24px', borderRadius: 12, border: 'none', background: 'var(--color-primary)', color: '#fff', fontWeight: 600, fontSize: '14px', cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 4px 12px rgba(16,185,129,0.3)' }}
                >
                  Selanjutnya
-               </button>
+               </motion.button>
              )}
           </div>
        </div>
