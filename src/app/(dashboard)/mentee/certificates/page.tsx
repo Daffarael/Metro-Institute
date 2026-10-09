@@ -238,15 +238,9 @@ export default function CertificatesPage() {
                   <motion.a
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    href={cert.pdfUrl || '#'}
-                    target={cert.pdfUrl ? '_blank' : '_self'}
+                    href={cert.pdfUrl || `/verify/${cert.credentialId}`}
+                    target="_blank"
                     rel="noopener noreferrer"
-                    onClick={(e) => {
-                      if (!cert.pdfUrl) {
-                        e.preventDefault();
-                        alert('File PDF sertifikat belum tersedia.');
-                      }
-                    }}
                     style={{ 
                       flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-1)',
                       padding: '8px', background: 'var(--color-primary)', color: '#fff',
