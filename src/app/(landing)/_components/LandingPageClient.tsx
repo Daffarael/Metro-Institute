@@ -76,14 +76,25 @@ export default function LandingPageClient({
   const [carouselIndex, setCarouselIndex] = useState(0)
   const [carouselDir, setCarouselDir]     = useState(1) // 1 = forward (→), -1 = backward (←)
 
-  // Parse programs_items from CMS config
-  const allProgramItems = (() => {
-    try {
-      const parsed = JSON.parse(config['programs_items'] || '[]')
-      return Array.isArray(parsed) ? parsed : []
-    } catch { return [] }
-  })()
-  const activeProducts = allProgramItems.filter(p => (p.type || 'BOOTCAMP') === activeTab)
+  // Map from API props instead of config
+  const mappedBootcamps = featuredBootcamps.map(b => ({
+    type: 'BOOTCAMP',
+    title: b.title,
+    description: `Dibimbing oleh ${b.mentorName || 'Mentor Berpengalaman'}. Status: ${BATCH_BADGE[b.batchStatus]?.label || 'Tutup'}`,
+    thumbnailUrl: b.thumbnailUrl,
+    link: `/login`, // or you could point to detail, but for now fallback to login
+  }))
+
+  const mappedCourses = featuredCourses.map(c => ({
+    type: 'MINI COURSE',
+    title: c.title,
+    description: `Mini Course: ${FIELD_LABEL[c.field] || c.field}. Diikuti oleh ${c.enrollmentCount} siswa.`,
+    thumbnailUrl: c.thumbnailUrl,
+    link: `/login`, 
+  }))
+
+  const allProgramItems = [...mappedBootcamps, ...mappedCourses]
+  const activeProducts = allProgramItems.filter(p => p.type === activeTab)
   
   useEffect(() => { setCarouselIndex(0) }, [activeTab])
 
@@ -362,7 +373,7 @@ export default function LandingPageClient({
 
                           <div className="flex justify-center mt-8">
                             <Link
-                              href="/login"
+                              href={product.link || "/login"}
                               className="h-10 px-6 rounded-full bg-[#f0f0f3] text-[#22222E] font-semibold text-xs md:text-sm flex items-center gap-2 hover:bg-[#e4e4e7] transition-colors"
                             >
                               Lihat Detail
