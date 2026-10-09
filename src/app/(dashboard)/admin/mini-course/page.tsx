@@ -322,11 +322,15 @@ export default function AdminMiniCoursePage() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin', 'courses', filters], placeholderData: keepPreviousData,
-    queryFn: () => api.get('/mini-course', { params: filters }).then(r => r.data.data),
+    queryFn: () => api.get('/courses', { params: filters }).then(r => r.data.data),
     staleTime: 2 * 60 * 1000,
   })
 
-  if (data?.items !== undefined) {
+  if (Array.isArray(data)) {
+    _cachedCourses = data
+    _cachedPagination = { page: filters.page, limit: filters.limit, total: data.length, totalPages: Math.ceil(data.length / filters.limit) }
+    _courseHasLoaded = true
+  } else if (data?.items !== undefined) {
     _cachedCourses = data.items
     _cachedPagination = data.pagination
     _courseHasLoaded = true
@@ -355,7 +359,7 @@ export default function AdminMiniCoursePage() {
   }
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => api.delete(`/mini-course/${id}`),
+    mutationFn: (id: string) => api.delete(`/admin/courses/${id}`),
     onSuccess: () => {
       toast.success('Mini course dihapus.')
       qc.invalidateQueries({ queryKey: ['admin', 'courses']})
