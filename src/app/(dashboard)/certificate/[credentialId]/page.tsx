@@ -122,7 +122,7 @@ export default function DownloadCertificatePage() {
           ref={certRef}
           style={{ 
             width: 800, height: 600, 
-            background: \`url(\${template.bgImage}) center/cover no-repeat\`, 
+            background: `url(${template.bgImage}) center/cover no-repeat`, 
             position: 'relative', 
             boxShadow: '0 10px 40px -10px rgba(0,0,0,0.15)',
             borderRadius: '4px',
@@ -142,10 +142,10 @@ export default function DownloadCertificatePage() {
                 left: item.x,
                 top: item.y,
                 transform: 'translate(-50%, -50%)',
-                fontSize: \`\${item.fontSize}px\`,
+                fontSize: `${item.fontSize}px`,
                 color: item.color,
                 fontWeight: 700,
-                width: item.width ? \`\${item.width}px\` : undefined,
+                width: item.width ? `${item.width}px` : undefined,
                 whiteSpace: item.width ? 'pre-wrap' : 'nowrap',
                 wordBreak: 'break-word',
                 textAlign: 'center',
