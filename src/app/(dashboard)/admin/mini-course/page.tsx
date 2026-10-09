@@ -76,8 +76,8 @@ function CourseModal({ course, onClose }: { course?: MiniCourse; onClose: () => 
     resolver: zodResolver(miniCourseSchema),
     defaultValues: {
       title:         course?.title ?? '',
-      descShort:     course?.descShort ?? '',
-      descLong:      course?.descLong ?? '',
+      descShort:     (course as any)?.shortDescription ?? '',
+      descLong:      (course as any)?.description ?? '',
       field:         course?.field ?? ('' as any),
       price:         course?.price ?? 0,
       accessDays:    course?.accessDays ?? 36500,
