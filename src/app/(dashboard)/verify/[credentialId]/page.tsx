@@ -2,10 +2,11 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { api } from '@/lib/axios'
-import { Loader2, CheckCircle, ShieldCheck, Calendar, User, BookOpen } from 'lucide-react'
+import { Loader2, CheckCircle, ShieldCheck, Calendar, User, BookOpen, ArrowLeft } from 'lucide-react'
 import { format } from 'date-fns'
 import { id } from 'date-fns/locale'
 import { useParams } from 'next/navigation'
+import Link from 'next/link'
 
 export default function VerifyCertificatePage() {
   const params = useParams()
@@ -39,7 +40,11 @@ export default function VerifyCertificatePage() {
           <ShieldCheck size={40} color="#ef4444" />
         </div>
         <h1 style={{ fontSize: '24px', fontWeight: 700, color: '#0f172a', marginBottom: 8 }}>Verifikasi Gagal</h1>
-        <p style={{ color: '#64748b', maxWidth: 400 }}>Sertifikat dengan ID <strong>{credentialId}</strong> tidak ditemukan atau tidak valid di database kami.</p>
+        <p style={{ color: '#64748b', maxWidth: 400, marginBottom: 24 }}>Sertifikat dengan ID <strong>{credentialId}</strong> tidak ditemukan atau tidak valid di database kami.</p>
+        <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: '#0f172a', textDecoration: 'none', fontSize: '14px', fontWeight: 600, padding: '10px 16px', background: '#fff', borderRadius: 8, border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
+          <ArrowLeft size={16} />
+          Kembali ke Beranda
+        </Link>
       </div>
     )
   }
@@ -50,6 +55,12 @@ export default function VerifyCertificatePage() {
 
   return (
     <div style={{ minHeight: '100dvh', background: '#f8fafc', padding: '40px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <div style={{ width: '100%', maxWidth: 600, marginBottom: 16 }}>
+        <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: '#64748b', textDecoration: 'none', fontSize: '14px', fontWeight: 600, padding: '8px 16px', background: '#fff', borderRadius: 8, border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', transition: 'all 0.2s' }}>
+          <ArrowLeft size={16} />
+          Kembali
+        </Link>
+      </div>
       <div style={{ width: '100%', maxWidth: 600, background: '#fff', borderRadius: 16, overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', border: '1px solid #e2e8f0' }}>
         {/* Header */}
         <div style={{ background: '#059669', padding: '32px 24px', color: '#fff', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
