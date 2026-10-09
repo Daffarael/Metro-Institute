@@ -241,21 +241,23 @@ export default function CertificatesPage() {
 
                 {/* Actions */}
                 <div style={{ padding: 'var(--space-3) var(--space-4)', borderTop: '1px solid var(--color-border)', display: 'flex', gap: 'var(--space-2)' }}>
-                  <motion.a
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    href={cert.pdfUrl || `/certificate/${cert.credentialId}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ 
-                      flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-1)',
-                      padding: '8px', background: 'var(--color-primary)', color: '#fff',
-                      border: 'none', borderRadius: 'var(--radius-md)',
-                      fontWeight: 600, fontSize: '12px', cursor: 'pointer', textDecoration: 'none'
-                    }}
+                  <Link 
+                    href={cert.pdfUrl || `/certificate/${cert.credentialId}`} 
+                    style={{ flex: 1, textDecoration: 'none' }}
                   >
-                    <Download size={13} /> Unduh
-                  </motion.a>
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      style={{ 
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'var(--space-1)',
+                        padding: '8px', background: 'var(--color-primary)', color: '#fff',
+                        borderRadius: 'var(--radius-md)',
+                        fontWeight: 600, fontSize: '12px', cursor: 'pointer'
+                      }}
+                    >
+                      <Download size={13} /> Unduh
+                    </motion.div>
+                  </Link>
                 </div>
               </div>
             )
