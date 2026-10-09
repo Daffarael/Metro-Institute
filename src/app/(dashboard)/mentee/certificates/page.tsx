@@ -240,7 +240,7 @@ export default function CertificatesPage() {
                   <motion.a
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    href={cert.pdfUrl || `/verify/${cert.credentialId}`}
+                    href={cert.pdfUrl || `/certificate/${cert.credentialId}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{ 
