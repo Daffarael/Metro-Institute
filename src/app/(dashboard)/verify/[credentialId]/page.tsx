@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { api } from '@/lib/axios'
-import { Loader2, CheckCircle, ShieldCheck, AlertCircle } from 'lucide-react'
+import { Loader2, CheckCircle, ShieldCheck, Calendar, User, BookOpen } from 'lucide-react'
 import { format } from 'date-fns'
 import { id } from 'date-fns/locale'
 import { useParams } from 'next/navigation'
@@ -26,24 +26,20 @@ export default function VerifyCertificatePage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <Loader2 className="w-10 h-10 animate-spin text-[#059669]" />
+      <div style={{ minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f8fafc' }}>
+        <Loader2 size={32} className="animate-spin text-primary" />
       </div>
     )
   }
 
   if (error || !data) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-[#FAFAFA] p-6 text-center font-sans">
-        <div className="w-full max-w-[560px] bg-white rounded-2xl p-8 sm:p-10 flex flex-col items-center border border-gray-200 shadow-sm">
-          <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mb-6">
-            <AlertCircle className="w-8 h-8 text-red-600" aria-hidden="true" />
-          </div>
-          <h1 className="text-2xl font-semibold text-gray-900 mb-2">Sertifikat Tidak Valid</h1>
-          <p className="text-gray-500 text-sm max-w-sm">
-            Kredensial dengan ID <strong className="text-gray-700">{credentialId}</strong> tidak ditemukan atau tidak terdaftar di sistem kami.
-          </p>
+      <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#f8fafc', padding: 24, textAlign: 'center' }}>
+        <div style={{ width: 80, height: 80, borderRadius: '50%', background: '#fee2e2', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24 }}>
+          <ShieldCheck size={40} color="#ef4444" />
         </div>
+        <h1 style={{ fontSize: '24px', fontWeight: 700, color: '#0f172a', marginBottom: 8 }}>Verifikasi Gagal</h1>
+        <p style={{ color: '#64748b', maxWidth: 400 }}>Sertifikat dengan ID <strong>{credentialId}</strong> tidak ditemukan atau tidak valid di database kami.</p>
       </div>
     )
   }
@@ -53,86 +49,70 @@ export default function VerifyCertificatePage() {
   const typeLabel = data.productType === 'MINI_COURSE' ? 'Mini Course' : 'Bootcamp'
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] py-12 px-4 flex flex-col items-center justify-center font-sans">
-      <div className="w-full max-w-[560px] bg-white rounded-2xl border border-gray-200 shadow-sm p-8 sm:p-10">
-        
+    <div style={{ minHeight: '100dvh', background: '#f8fafc', padding: '40px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <div style={{ width: '100%', maxWidth: 600, background: '#fff', borderRadius: 16, overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', border: '1px solid #e2e8f0' }}>
         {/* Header */}
-        <div className="flex flex-col items-center text-center mb-8">
-          <div className="w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center mb-5">
-            <CheckCircle className="w-8 h-8 text-emerald-600" strokeWidth={2.5} aria-hidden="true" />
+        <div style={{ background: 'var(--color-primary)', padding: '32px 24px', color: '#fff', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: -20, right: -20, opacity: 0.1 }}>
+            <ShieldCheck size={120} />
           </div>
-          <h1 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-2">Sertifikat Valid</h1>
-          <p className="text-gray-500 text-sm">
-            Dokumen ini terdaftar resmi di sistem Metro Institute.
-          </p>
+          <ShieldCheck size={48} color="#fff" style={{ margin: '0 auto 16px' }} />
+          <h1 style={{ fontSize: '24px', fontWeight: 700, marginBottom: 8 }}>Sertifikat Valid</h1>
+          <p style={{ opacity: 0.9, fontSize: '14px' }}>Sertifikat ini resmi diterbitkan oleh Metro Institute.</p>
         </div>
 
-        {/* Certificate Details */}
-        <div className="flex flex-col border-t border-gray-100">
-          
-          {/* Row: ID Kredensial */}
-          <div className="py-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4">
-            <div className="sm:w-1/3 text-[12px] font-medium text-gray-500 uppercase tracking-[0.04em]">
-              ID Kredensial
+        {/* Content */}
+        <div style={{ padding: '32px 24px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+            <div>
+              <div style={{ fontSize: '12px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>ID Kredensial</div>
+              <div style={{ fontSize: '16px', fontWeight: 600, color: '#0f172a', fontFamily: 'monospace' }}>{data.credentialId}</div>
             </div>
-            <div className="sm:w-2/3">
-              <span className="font-mono text-sm text-gray-700 bg-gray-50 border border-gray-200 px-2.5 py-1 rounded-md">
-                {data.credentialId}
-              </span>
-            </div>
-          </div>
 
-          {/* Row: Diberikan Kepada */}
-          <div className="py-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4">
-            <div className="sm:w-1/3 text-[12px] font-medium text-gray-500 uppercase tracking-[0.04em]">
-              Diberikan Kepada
-            </div>
-            <div className="sm:w-2/3">
-              <span className="text-xl font-semibold text-gray-900 capitalize tracking-tight">
-                {data.user?.name}
-              </span>
-            </div>
-          </div>
+            <div style={{ height: 1, background: '#e2e8f0' }} />
 
-          {/* Row: Program Diselesaikan */}
-          <div className="py-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4">
-            <div className="sm:w-1/3 text-[12px] font-medium text-gray-500 uppercase tracking-[0.04em]">
-              Program Diselesaikan
-            </div>
-            <div className="sm:w-2/3">
-              <p className="text-base font-medium text-gray-900 leading-snug mb-1.5">{title}</p>
-              <div className="flex flex-wrap gap-2">
-                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">
-                  {typeLabel}
-                </span>
-                {field && (
-                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">
-                    {field.replace(/_/g, ' ')}
-                  </span>
-                )}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              <div style={{ width: 48, height: 48, borderRadius: '50%', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-primary)' }}>
+                <User size={24} />
+              </div>
+              <div>
+                <div style={{ fontSize: '12px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>Diberikan Kepada</div>
+                <div style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a' }}>{data.user?.name}</div>
               </div>
             </div>
-          </div>
 
-          {/* Row: Tanggal Penerbitan */}
-          <div className="py-4 border-b border-gray-100 flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-4">
-            <div className="sm:w-1/3 text-[12px] font-medium text-gray-500 uppercase tracking-[0.04em]">
-              Tanggal Penerbitan
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              <div style={{ width: 48, height: 48, borderRadius: '50%', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-primary)' }}>
+                <BookOpen size={24} />
+              </div>
+              <div>
+                <div style={{ fontSize: '12px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>Program ({typeLabel})</div>
+                <div style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a' }}>{title}</div>
+                <div style={{ fontSize: '14px', color: '#64748b', marginTop: 2 }}>Bidang: {field}</div>
+              </div>
             </div>
-            <div className="sm:w-2/3">
-              <span className="text-sm font-medium text-gray-900">
-                {format(new Date(data.issuedAt), 'dd MMMM yyyy', { locale: id })}
-              </span>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              <div style={{ width: 48, height: 48, borderRadius: '50%', background: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-primary)' }}>
+                <Calendar size={24} />
+              </div>
+              <div>
+                <div style={{ fontSize: '12px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>Tanggal Penerbitan</div>
+                <div style={{ fontSize: '16px', fontWeight: 600, color: '#0f172a' }}>
+                  {format(new Date(data.issuedAt), 'd MMMM yyyy', { locale: id })}
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="mt-8 flex items-center justify-center gap-2 text-gray-400">
-          <ShieldCheck className="w-4 h-4" aria-hidden="true" />
-          <span className="text-[12px] font-medium">Terverifikasi secara digital oleh Metro Institute</span>
+        <div style={{ background: '#f8fafc', padding: '24px', borderTop: '1px solid #e2e8f0', textAlign: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, color: '#10b981', fontWeight: 600, fontSize: '14px' }}>
+            <CheckCircle size={18} /> Verifikasi Berhasil
+          </div>
+          <p style={{ fontSize: '12px', color: '#64748b', marginTop: 8 }}>Halaman ini adalah bukti verifikasi sah dari sistem Metro Institute.</p>
         </div>
-
       </div>
     </div>
   )
