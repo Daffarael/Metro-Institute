@@ -5,10 +5,22 @@ import { useQuery, useMutation } from '@tanstack/react-query'
 import api from '@/lib/axios'
 import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
-import { FileText, Video, ExternalLink, Send, Calendar, PlayCircle, Lock, ChevronDown, ChevronUp, Play, ArrowLeft } from 'lucide-react'
+import { FileText, Video, ExternalLink, Send, Calendar, PlayCircle, Lock, ChevronDown, ChevronUp, Play, ArrowLeft, HelpCircle, FileEdit } from 'lucide-react'
 import Link from 'next/link'
 import { motion } from 'motion/react'
 import { formatDate, formatDuration } from '@/lib/utils'
+
+const getSessionIcon = (type: string, isActive: boolean) => {
+  const color = isActive ? "var(--color-primary)" : "var(--color-text-tertiary)"
+  switch(type) {
+    case 'LIVE': return <Calendar size={15} color={color} />
+    case 'VIDEO': return <Play size={15} color={color} />
+    case 'MATERIAL': return <FileText size={15} color={color} />
+    case 'QUIZ': return <HelpCircle size={15} color={color} />
+    case 'ASSIGNMENT': return <FileEdit size={15} color={color} />
+    default: return <Play size={15} color={color} />
+  }
+}
 
 export default function BootcampSessionPage() {
   const params = useParams<{ bootcampId: string; sessionId: string }>()
@@ -213,8 +225,8 @@ export default function BootcampSessionPage() {
                   onClick={() => setExpandedChapter(isOpen ? null : chapter.id)}
                   style={{ width: '100%', padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--color-surface)', border: 'none', cursor: 'pointer', fontWeight: 600, fontSize: '14.5px', color: 'var(--color-text-primary)' }}
                 >
-                  <span>{chapter.title}</span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <span style={{ flex: 1, textAlign: 'left', lineHeight: 1.4, paddingRight: 16 }}>{chapter.title}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
                     <span style={{ fontSize: '12px', color: 'var(--color-text-tertiary)', fontWeight: 400 }}>{chapter.sessions.length} sesi</span>
                     <div style={{ display: 'flex', height: 28, width: 28, alignItems: 'center', justifyContent: 'center' }}>
                       <ChevronUp
@@ -267,7 +279,7 @@ export default function BootcampSessionPage() {
                                 borderRadius: 10, background: isActive ? 'var(--color-primary-light)' : 'var(--color-bg)',
                                 border: '1px solid', borderColor: isActive ? 'var(--color-primary-light)' : 'var(--color-border-subtle)'
                               }}>
-                                {s.type === 'LIVE' ? <Calendar size={15} color="var(--color-primary)" /> : <Play size={15} color={isActive ? "var(--color-primary)" : "var(--color-text-tertiary)"} />}
+                                {getSessionIcon(s.type, isActive)}
                               </div>
                               <div style={{ flex: 1, minWidth: 0 }}>
                                 <div style={{ fontSize: '13.5px', fontWeight: isActive ? 600 : 500, color: isActive ? 'var(--color-primary)' : 'var(--color-text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
