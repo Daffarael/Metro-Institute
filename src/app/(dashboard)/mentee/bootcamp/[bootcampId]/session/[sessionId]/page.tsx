@@ -56,8 +56,8 @@ export default function BootcampSessionPage() {
   return (
     <div style={{ padding: 'var(--space-6)', maxWidth: 1200, margin: '0 auto' }}>
       
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-        <button onClick={() => router.push(`/mentee/bootcamp/${params.bootcampId}`)} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid var(--color-border)', background: 'var(--color-surface)', cursor: 'pointer', fontWeight: 600 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+        <button onClick={() => router.push(`/mentee/bootcamp/${params.bootcampId}`)} className="btn btn-secondary">
           &larr; Kembali ke Detail Bootcamp
         </button>
       </div>
@@ -65,42 +65,50 @@ export default function BootcampSessionPage() {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 'var(--space-6)', alignItems: 'start' }}>
         
         {/* === KIRI: PLAYER & MATERI === */}
-        <div style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-xl)', padding: 'var(--space-6)', border: '1px solid var(--color-border)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-            <div style={{ padding: 10, background: 'var(--color-bg)', borderRadius: 10 }}>
-              {session.type === 'VIDEO' ? <Video size={24} /> : session.type === 'LIVE' ? <Calendar size={24} color="var(--color-primary)" /> : <FileText size={24} />}
-            </div>
-            <div>
-              <h1 style={{ fontSize: 'var(--text-2xl)', fontWeight: 700 }}>{session.title}</h1>
-              <span style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)' }}>Tipe: {session.type}</span>
-            </div>
-          </div>
-
-          {session.videoUrl && (
-            <div style={{ marginBottom: 30, borderRadius: 12, overflow: 'hidden', border: '1px solid var(--color-border)' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-6)' }}>
+          
+          {/* PLAYER SECTION */}
+          {session.videoUrl ? (
+            <div style={{ borderRadius: 'var(--radius-lg)', overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.08)', background: '#000' }}>
               <iframe 
                 width="100%" 
-                height="480" 
+                height="500" 
                 src={session.videoUrl.replace('watch?v=', 'embed/')} 
                 title="Video player" 
                 frameBorder="0" 
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                 allowFullScreen
+                style={{ display: 'block' }}
               />
+            </div>
+          ) : session.type === 'LIVE' ? (
+            <div style={{ borderRadius: 'var(--radius-lg)', minHeight: 400, background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'white', padding: 'var(--space-8)', boxShadow: '0 4px 20px rgba(0,0,0,0.08)', textAlign: 'center' }}>
+              <div style={{ background: 'rgba(255,255,255,0.1)', padding: 20, borderRadius: '50%', marginBottom: 20 }}>
+                <Calendar size={48} color="white" />
+              </div>
+              <h3 style={{ fontWeight: 700, fontSize: 'var(--text-2xl)', marginBottom: 12 }}>Sesi Live Class</h3>
+              <p style={{ color: 'rgba(255,255,255,0.7)', marginBottom: 32, fontSize: '15px' }}>
+                {session.liveScheduledAt ? `Jadwal: ${formatDate(session.liveScheduledAt)}` : 'Silakan masuk ke Live Room untuk mengikuti sesi kelas langsung.'}
+              </p>
+              <Link href={`/mentee/bootcamp/${params.bootcampId}/live/${params.sessionId}`} className="btn btn-primary btn-lg" style={{ borderRadius: 'var(--radius-full)' }}>
+                Masuk Live Room <ExternalLink size={18} />
+              </Link>
+            </div>
+          ) : (
+            <div style={{ borderRadius: 'var(--radius-lg)', minHeight: 300, background: 'var(--color-surface)', border: '1px solid var(--color-border)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 'var(--space-8)', textAlign: 'center' }}>
+              <FileText size={48} color="var(--color-text-tertiary)" style={{ marginBottom: 16 }} />
+              <h3 style={{ fontWeight: 600, fontSize: 'var(--text-xl)' }}>Materi Bacaan / Tugas</h3>
+              <p style={{ color: 'var(--color-text-secondary)', marginTop: 8 }}>Silakan baca instruksi dan materi di bawah.</p>
             </div>
           )}
 
-          {session.type === 'LIVE' && (
-            <div style={{ padding: 30, background: 'var(--color-bg)', borderRadius: 12, marginBottom: 30, textAlign: 'center', border: '1px solid var(--color-border)' }}>
-              <h3 style={{ fontWeight: 700, fontSize: 'var(--text-lg)', marginBottom: 10 }}>Sesi Live Class</h3>
-              <p style={{ color: 'var(--color-text-secondary)', marginBottom: 24, fontSize: '14px' }}>
-                {session.liveScheduledAt ? `Jadwal: ${new Date(session.liveScheduledAt).toLocaleString('id-ID')}` : 'Silakan masuk ke Live Room untuk mengikuti sesi kelas langsung.'}
-              </p>
-              <Link href={`/mentee/bootcamp/${params.bootcampId}/live/${params.sessionId}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 24px', background: 'var(--color-primary)', color: 'white', borderRadius: 8, textDecoration: 'none', fontWeight: 600 }}>
-                Masuk Live Room <ExternalLink size={16} />
-              </Link>
+          {/* JUDUL SESI */}
+          <div style={{ paddingBottom: 'var(--space-5)', borderBottom: '1px solid var(--color-border)' }}>
+            <div style={{ display: 'inline-block', padding: '4px 10px', background: 'var(--color-primary-xlight)', color: 'var(--color-primary)', borderRadius: 'var(--radius-sm)', fontSize: '12px', fontWeight: 700, marginBottom: 12 }}>
+              {session.type} SESSION
             </div>
-          )}
+            <h1 style={{ fontSize: 'var(--text-3xl)', fontWeight: 800, color: 'var(--color-text-primary)' }}>{session.title}</h1>
+          </div>
 
           {session.materials && session.materials.length > 0 && (
             <div style={{ padding: 20, background: 'var(--color-bg)', borderRadius: 12, marginBottom: 30 }}>
@@ -165,7 +173,8 @@ export default function BootcampSessionPage() {
                     <button 
                       disabled={(!linkUrl && !fileUrl) || submitMutation.isPending}
                       onClick={() => submitMutation.mutate()}
-                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: 14, background: 'var(--color-primary)', color: 'white', borderRadius: 8, fontWeight: 700, border: 'none', cursor: 'pointer', marginTop: 10, opacity: (!linkUrl && !fileUrl) ? 0.5 : 1 }}
+                      className="btn btn-primary"
+                      style={{ marginTop: 10, width: '100%', opacity: (!linkUrl && !fileUrl) ? 0.5 : 1 }}
                     >
                       <Send size={18} /> {submitMutation.isPending ? 'Mengirim...' : 'Kumpulkan Tugas'}
                     </button>
