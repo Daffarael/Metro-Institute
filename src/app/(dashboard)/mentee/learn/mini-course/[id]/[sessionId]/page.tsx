@@ -7,7 +7,7 @@ import Link from 'next/link'
 import {
   ChevronLeft, ChevronRight, CheckCircle2, PlayCircle, FileText,
   MessageSquare, BookOpen, StickyNote, ChevronDown, Loader2,
-  Send, Plus, Clock, Zap, Upload, Download,
+  Send, Plus, Clock, Zap, Upload, Download, Award
 } from 'lucide-react'
 import { toast } from 'sonner'
 import dynamic from 'next/dynamic'
@@ -168,6 +168,21 @@ export default function CourseLearningPlayerPage() {
         </Link>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+          {data.progress === 100 && (
+            <Link href="/mentee/certificates" style={{
+              background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+              color: '#fff', fontSize: '13px', fontWeight: 600, padding: '8px 16px',
+              borderRadius: 20, display: 'flex', alignItems: 'center', gap: 6,
+              textDecoration: 'none', boxShadow: '0 4px 12px rgba(245, 158, 11, 0.2)',
+              transition: 'transform 0.2s'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+            >
+              <Award size={16} /> Klaim Sertifikat
+            </Link>
+          )}
+
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, width: 200 }}>
             <div style={{ flex: 1, height: 8, background: '#e2e8f0', borderRadius: 4, overflow: 'hidden' }}>
               <div style={{ height: '100%', background: 'var(--color-primary)', width: `${data.progress}%`, transition: 'width 0.5s ease' }} />
