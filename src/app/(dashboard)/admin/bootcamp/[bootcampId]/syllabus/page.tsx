@@ -345,6 +345,15 @@ export default function BootcampSyllabusPage() {
     }
   })
 
+  const reorderSessionMutation = useMutation({
+    mutationFn: (data: { sessions: any[] }) => api.put(`/admin/bootcamps/${bootcampId}/sessions/reorder`, data),
+    onSuccess: () => toast.success('Urutan materi berhasil diperbarui!'),
+    onError: () => {
+      toast.error('Gagal menyimpan urutan materi.')
+      qc.invalidateQueries({ queryKey: ['admin', 'bootcamp', bootcampId, 'syllabus'] }) // revert
+    }
+  })
+
   // DnD Handlers
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -386,8 +395,10 @@ export default function BootcampSyllabusPage() {
         // Reorder
         newChapters[chapterIndex].sessions = arrayMove(newChapters[chapterIndex].sessions, oldIndex, newIndex)
         
-        // Ideally we hit an API for session reordering here
-        toast.success('Urutan materi berhasil diperbarui')
+        // API Call for session reordering
+        const payload = newChapters[chapterIndex].sessions.map((s, i) => ({ id: s.id, order: i }))
+        reorderSessionMutation.mutate({ sessions: payload })
+        
         return newChapters
       })
     }
