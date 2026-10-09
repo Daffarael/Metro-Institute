@@ -17,6 +17,7 @@ import AdminTableSkeleton from '@/components/admin/AdminTableSkeleton'
 import AdminEmptyState from '@/components/admin/AdminEmptyState'
 import AdminPagination from '@/components/admin/AdminPagination'
 import CleanCombobox from '@/components/admin/CleanCombobox'
+import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { toast } from 'sonner'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -33,6 +34,7 @@ interface Filters { productType?: string; page: number; limit: number }
 
 export default function AdminCertificatesPage() {
   const [filters, setFilters] = useState<Filters>({ page: 1, limit: 20 })
+  const [previewId, setPreviewId] = useState<string | null>(null)
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin', 'certificates', filters], placeholderData: keepPreviousData,
@@ -57,21 +59,7 @@ export default function AdminCertificatesPage() {
     return `Sistem tidak menemukan Sertifikat dengan kriteria: tipe "${filters.productType === 'BOOTCAMP' ? 'Bootcamp' : 'Mini Course'}".`
   }
 
-  const downloadCert = async (certId: string, credentialId: string) => {
-    const toastId = toast.loading('Mengunduh sertifikat...')
-    try {
-      const res = await api.get(`/admin/certificates/${certId}/download`, { responseType: 'blob' })
-      const url = URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }))
-      const link = document.createElement('a')
-      link.href = url
-      link.download = `sertifikat-${credentialId}.pdf`
-      link.click()
-      URL.revokeObjectURL(url)
-      toast.success('Sertifikat diunduh.', { id: toastId })
-    } catch {
-      toast.error('Gagal mengunduh sertifikat.', { id: toastId })
-    }
-  }
+
 
   return (
     <div>
@@ -168,7 +156,7 @@ export default function AdminCertificatesPage() {
                     </td>
                     <td style={{ padding: 'var(--space-3) var(--space-4)' }}>
                       <button
-                        onClick={() => downloadCert(cert.id, cert.credentialId)}
+                        onClick={() => setPreviewId(cert.credentialId)}
                         style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', background: 'transparent', fontSize: '12px', fontWeight: 500, cursor: 'pointer' }}
                       >
                         <Download size={12} /> Unduh
@@ -190,6 +178,18 @@ export default function AdminCertificatesPage() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <Dialog open={!!previewId} onOpenChange={(open) => !open && setPreviewId(null)}>
+        <DialogContent style={{ maxWidth: '900px', width: '100%', height: '85vh', padding: 0, overflow: 'hidden' }}>
+          {previewId && (
+            <iframe 
+              src={`/certificate/${previewId}?modal=true`} 
+              style={{ width: '100%', height: '100%', border: 'none' }} 
+              title="Certificate Preview"
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

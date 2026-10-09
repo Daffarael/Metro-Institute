@@ -243,10 +243,7 @@ export default function CertificatesPage() {
                 {/* Actions */}
                 <div style={{ padding: 'var(--space-3) var(--space-4)', borderTop: '1px solid var(--color-border)', display: 'flex', gap: 'var(--space-2)' }}>
                   <motion.div
-                    onClick={() => {
-                      if (cert.pdfUrl) window.open(cert.pdfUrl, '_blank')
-                      else setPreviewId(cert.credentialId)
-                    }}
+                    onClick={() => setPreviewId(cert.credentialId)}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     style={{ 
