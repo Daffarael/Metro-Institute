@@ -6,7 +6,7 @@
 import {  useState , useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query'
 import { useParams } from 'next/navigation'
-import { Plus, GripVertical, Trash2, X, Info, Pencil } from 'lucide-react'
+import { Plus, GripVertical, Trash2, X, Info, Edit } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
 import api from '@/lib/axios'
 import AdminPageHeader from '@/components/admin/AdminPageHeader'
@@ -17,7 +17,7 @@ import { toast } from 'sonner'
 
 interface CourseSession {
   id: string; title: string; type: 'VIDEO' | 'MATERIAL' | 'QUIZ'
-  videoUrl?: string; materialUrl?: string; isPreview: boolean; order: number
+  videoUrl?: string; materialUrl?: string; isFreePreview: boolean; order: number
 }
 interface MiniCourse { id: string; title: string }
 
@@ -40,7 +40,7 @@ function AddSessionModal({ courseId, editSession, onClose }: { courseId: string;
     type: editSession?.type || ('VIDEO' as CourseSession['type']), 
     videoUrl: editSession?.videoUrl || '', 
     materialUrl: (editSession?.materials as any)?.[0]?.url || '', 
-    isPreview: editSession?.isPreview || false 
+    isPreview: editSession?.isFreePreview || false 
   })
 
   const mutation = useMutation({
@@ -209,20 +209,20 @@ export default function MiniCourseCurriculumPage() {
                   <span style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-tertiary)', width: 24, textAlign: 'center', fontWeight: 700 }}>{i + 1}</span>
                   <span style={{ flex: 1, fontSize: 'var(--text-sm)', fontWeight: 500 }}>{s.title}</span>
                   <span style={{ padding: '2px 8px', borderRadius: 'var(--radius-full)', background: tc.bg, color: tc.color, fontSize: '11px', fontWeight: 600 }}>{s.type}</span>
-                  {s.isPreview && <span style={{ padding: '2px 8px', borderRadius: 'var(--radius-full)', background: 'var(--color-accent-light)', color: '#856404', fontSize: '11px', fontWeight: 600 }}>Preview</span>}
+                  {s.isFreePreview && <span style={{ padding: '2px 8px', borderRadius: 'var(--radius-full)', background: 'var(--color-accent-light)', color: '#856404', fontSize: '11px', fontWeight: 600 }}>Preview</span>}
                   
                   <button onClick={() => setEditSession(s)} style={{ width: 28, height: 28, borderRadius: 'var(--radius-md)', border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-tertiary)' }}
                     onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-primary)')}
                     onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-tertiary)')}
                   >
-                    <Pencil size={13} />
+                    <Edit size={15} />
                   </button>
 
                   <button onClick={() => setDeleteId(s.id)} style={{ width: 28, height: 28, borderRadius: 'var(--radius-md)', border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-tertiary)' }}
                     onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-error)')}
                     onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-tertiary)')}
                   >
-                    <Trash2 size={13} />
+                    <Trash2 size={15} />
                   </button>
                 </div>
               )
