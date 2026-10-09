@@ -82,7 +82,7 @@ function CourseModal({ course, onClose }: { course?: MiniCourse; onClose: () => 
       price:         course?.price ?? 0,
       accessDays:    course?.accessDays ?? 36500,
       totalDuration: course?.totalDuration ?? 60,
-      status:        course?.status ?? ('' as any),
+      status:        course?.status ?? 'DRAFT',
       certificateTemplateId: course?.certificateTemplateId ?? null,
       thumbnailUrl:  course?.thumbnailUrl ?? '',
     },
@@ -239,26 +239,28 @@ function CourseModal({ course, onClose }: { course?: MiniCourse; onClose: () => 
               />
             </div>
           </div>
-          <div>
-            <label style={labelStyle}>Status <span style={{color: 'var(--color-error)'}}>*</span></label>
-            <Controller
-              control={control}
-              name="status"
-              render={({ field }) => (
-                <CleanCombobox 
-                  options={[
-                    { value: 'DRAFT', label: 'DRAFT' },
-                    { value: 'PUBLISHED', label: 'PUBLISHED' }
-                  ]}
-                  value={field.value as string} 
-                  onChange={field.onChange} 
-                  placeholder="Pilih Status"
-                  width="100%"
-                />
-              )}
-            />
-            {errors.status && <p style={{ color: 'var(--color-error)', fontSize: '12px', marginTop: 4, fontWeight: 500 }}>{errors.status.message}</p>}
-          </div>
+          {isEdit && (
+            <div>
+              <label style={labelStyle}>Status <span style={{color: 'var(--color-error)'}}>*</span></label>
+              <Controller
+                control={control}
+                name="status"
+                render={({ field }) => (
+                  <CleanCombobox 
+                    options={[
+                      { value: 'DRAFT', label: 'DRAFT' },
+                      { value: 'PUBLISHED', label: 'PUBLISHED' }
+                    ]}
+                    value={field.value as string} 
+                    onChange={field.onChange} 
+                    placeholder="Pilih Status"
+                    width="100%"
+                  />
+                )}
+              />
+              {errors.status && <p style={{ color: 'var(--color-error)', fontSize: '12px', marginTop: 4, fontWeight: 500 }}>{errors.status.message}</p>}
+            </div>
+          )}
           <div>
             <label style={labelStyle}>Template Sertifikat</label>
             <Controller
