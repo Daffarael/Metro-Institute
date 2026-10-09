@@ -304,7 +304,7 @@ export default function CourseLearningPlayerPage() {
                 })()}
               </div>
             </div>
-          ) : currentSession.type === 'QUIZ' && currentSession.quizOptions && currentSession.quizOptions.length > 0 ? (
+          ) : (currentSession.type === 'QUIZ' || currentSession.type === 'ASSIGNMENT') && currentSession.quizOptions && currentSession.quizOptions.length > 0 ? (
             <InteractiveQuiz 
               quizOptions={currentSession.quizOptions} 
               isCompleted={currentSession.isCompleted || isCompleted} 
@@ -325,6 +325,23 @@ export default function CourseLearningPlayerPage() {
               <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#1e293b', marginBottom: 8 }}>Sesi Kuis</h2>
               <p style={{ color: '#475569', fontSize: '14px', maxWidth: 400, textAlign: 'center' }}>
                 Belum ada soal untuk kuis ini.
+              </p>
+            </div>
+          ) : currentSession.type === 'ASSIGNMENT' ? (
+            <div style={{
+              background: '#f8fafc', width: '100%', padding: '60px 20px',
+              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+              borderBottom: '1px solid #e2e8f0'
+            }}>
+              <div style={{
+                width: 64, height: 64, borderRadius: 16, background: 'rgba(16, 185, 129, 0.1)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16
+              }}>
+                <FileText size={32} color="var(--color-primary)" />
+              </div>
+              <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#1e293b', marginBottom: 8 }}>Sesi Tugas</h2>
+              <p style={{ color: '#475569', fontSize: '14px', maxWidth: 400, textAlign: 'center' }}>
+                Silakan lihat instruksi tugas dan kerjakan. Tandai sebagai selesai jika Anda sudah menyelesaikannya.
               </p>
             </div>
           ) : (
