@@ -284,7 +284,7 @@ function CourseCard({ course }: { course: EnrolledCourse }) {
         top: 0,
         left: 0,
         padding: '4px 10px',
-        background: course.type === 'bootcamp' ? '#8B5CF6' : '#3B82F6',
+        background: course.type === 'bootcamp' ? 'var(--color-primary)' : '#3B82F6',
         borderRadius: '11px 0 8px 0',
         fontSize: '10px',
         fontWeight: 600,
