@@ -86,9 +86,9 @@ return (
                 value={form.type}
                 onChange={val => f('type', val as any)}
                 options={[
-                  { value: 'VIDEO', label: 'VIDEO — Rekaman video' },
-                  { value: 'MATERIAL', label: 'MATERIAL — PDF / dokumen' },
-                  { value: 'QUIZ', label: 'QUIZ — Tugas / Kuis' }
+                  { value: 'VIDEO', label: 'Video Pembelajaran' },
+                  { value: 'MATERIAL', label: 'Materi Teks / PDF' },
+                  { value: 'QUIZ', label: 'Tugas / Kuis' }
                 ]}
                 placeholder="Pilih tipe konten"
               />
