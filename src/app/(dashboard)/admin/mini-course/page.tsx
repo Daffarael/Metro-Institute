@@ -80,10 +80,10 @@ function CourseModal({ course, onClose }: { course?: MiniCourse; onClose: () => 
       descLong:      (course as any)?.description ?? '',
       field:         course?.field ?? ('' as any),
       price:         course?.price ?? 0,
-      accessDays:    course?.accessDays ?? 36500,
+      accessDays:    (course as any)?.accessDays ?? 36500,
       totalDuration: course?.totalDuration ?? 60,
-      status:        course?.status ?? 'DRAFT',
-      certificateTemplateId: course?.certificateTemplateId ?? null,
+      status:        (course as any)?.isPublished ? 'PUBLISHED' : 'DRAFT',
+      certificateTemplateId: (course as any)?.certificateTemplateId ?? null,
       thumbnailUrl:  course?.thumbnailUrl ?? '',
     },
   })
