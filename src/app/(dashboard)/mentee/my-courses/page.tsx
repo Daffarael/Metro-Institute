@@ -371,30 +371,30 @@ function CourseCard({ course }: { course: EnrolledCourse }) {
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
           <Link href={href} style={{ 
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            padding: '8px 16px', borderRadius: 'var(--radius-md)',
+            padding: '8px 12px', borderRadius: 'var(--radius-md)',
             border: '1px solid var(--color-border)', background: 'var(--color-surface)',
             color: 'var(--color-text-primary)', fontSize: '13px', fontWeight: 600,
-            textDecoration: 'none'
+            textDecoration: 'none', whiteSpace: 'nowrap'
           }}>
             Detail
           </Link>
           {course.type === 'bootcamp' && course.startDate && new Date(course.startDate) > new Date() ? (
             <div style={{ 
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-              padding: '8px 16px', borderRadius: 'var(--radius-md)',
+              padding: '8px 12px', borderRadius: 'var(--radius-md)',
               background: 'var(--color-bg)', border: '1px solid var(--color-border-subtle)',
               color: 'var(--color-text-tertiary)', fontSize: '13px', fontWeight: 600,
-              cursor: 'not-allowed'
+              cursor: 'not-allowed', whiteSpace: 'nowrap'
             }}>
               <Lock size={14} /> Belum Mulai
             </div>
           ) : (
             <Link href={learnHref} style={{ 
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-              padding: '8px 16px', borderRadius: 'var(--radius-md)',
+              padding: '8px 12px', borderRadius: 'var(--radius-md)',
               background: 'var(--color-primary)', border: '1px solid var(--color-primary)',
               color: '#fff', fontSize: '13px', fontWeight: 600,
-              textDecoration: 'none'
+              textDecoration: 'none', whiteSpace: 'nowrap'
             }}>
               <Play size={14} fill="currentColor" /> {course.progress > 0 ? 'Lanjut' : 'Mulai'}
             </Link>
