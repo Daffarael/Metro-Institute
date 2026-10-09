@@ -5,7 +5,7 @@ import { useQuery, useMutation } from '@tanstack/react-query'
 import api from '@/lib/axios'
 import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
-import { FileText, Video, ExternalLink, Send, Calendar, PlayCircle, Lock, ChevronDown, ChevronUp, Play } from 'lucide-react'
+import { FileText, Video, ExternalLink, Send, Calendar, PlayCircle, Lock, ChevronDown, ChevronUp, Play, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { formatDate, formatDuration } from '@/lib/utils'
 
@@ -56,9 +56,9 @@ export default function BootcampSessionPage() {
   return (
     <div style={{ padding: 'var(--space-6)', maxWidth: 1200, margin: '0 auto' }}>
       
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
-        <button onClick={() => router.push(`/mentee/bootcamp/${params.bootcampId}`)} className="btn btn-secondary">
-          &larr; Kembali ke Detail Bootcamp
+      <div style={{ marginBottom: 24 }}>
+        <button onClick={() => router.push(`/mentee/bootcamp/${params.bootcampId}`)} className="btn btn-ghost" style={{ padding: '0 8px', height: 36, color: 'var(--color-text-secondary)' }}>
+          <ArrowLeft size={16} /> Kembali ke Bootcamp
         </button>
       </div>
 
@@ -82,23 +82,23 @@ export default function BootcampSessionPage() {
               />
             </div>
           ) : session.type === 'LIVE' ? (
-            <div style={{ borderRadius: 'var(--radius-lg)', minHeight: 400, background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'white', padding: 'var(--space-8)', boxShadow: '0 4px 20px rgba(0,0,0,0.08)', textAlign: 'center' }}>
-              <div style={{ background: 'rgba(255,255,255,0.1)', padding: 20, borderRadius: '50%', marginBottom: 20 }}>
-                <Calendar size={48} color="white" />
+            <div style={{ borderRadius: 'var(--radius-lg)', minHeight: 350, background: 'var(--color-bg)', border: '1px solid var(--color-border-subtle)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 'var(--space-8)', textAlign: 'center' }}>
+              <div style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', padding: 16, borderRadius: '50%', marginBottom: 24, boxShadow: '0 4px 12px rgba(0,0,0,0.02)' }}>
+                <Calendar size={36} color="var(--color-primary)" />
               </div>
-              <h3 style={{ fontWeight: 700, fontSize: 'var(--text-2xl)', marginBottom: 12 }}>Sesi Live Class</h3>
-              <p style={{ color: 'rgba(255,255,255,0.7)', marginBottom: 32, fontSize: '15px' }}>
+              <h3 style={{ fontWeight: 700, fontSize: 'var(--text-xl)', marginBottom: 12, color: 'var(--color-text-primary)' }}>Sesi Live Class</h3>
+              <p style={{ color: 'var(--color-text-secondary)', marginBottom: 32, fontSize: '15px' }}>
                 {session.liveScheduledAt ? `Jadwal: ${formatDate(session.liveScheduledAt)}` : 'Silakan masuk ke Live Room untuk mengikuti sesi kelas langsung.'}
               </p>
-              <Link href={`/mentee/bootcamp/${params.bootcampId}/live/${params.sessionId}`} className="btn btn-primary btn-lg" style={{ borderRadius: 'var(--radius-full)' }}>
-                Masuk Live Room <ExternalLink size={18} />
+              <Link href={`/mentee/bootcamp/${params.bootcampId}/live/${params.sessionId}`} className="btn btn-primary" style={{ padding: '0 32px' }}>
+                Masuk Live Room <ExternalLink size={16} />
               </Link>
             </div>
           ) : (
-            <div style={{ borderRadius: 'var(--radius-lg)', minHeight: 300, background: 'var(--color-surface)', border: '1px solid var(--color-border)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 'var(--space-8)', textAlign: 'center' }}>
-              <FileText size={48} color="var(--color-text-tertiary)" style={{ marginBottom: 16 }} />
-              <h3 style={{ fontWeight: 600, fontSize: 'var(--text-xl)' }}>Materi Bacaan / Tugas</h3>
-              <p style={{ color: 'var(--color-text-secondary)', marginTop: 8 }}>Silakan baca instruksi dan materi di bawah.</p>
+            <div style={{ borderRadius: 'var(--radius-lg)', minHeight: 300, background: 'var(--color-bg)', border: '1px solid var(--color-border-subtle)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 'var(--space-8)', textAlign: 'center' }}>
+              <FileText size={40} color="var(--color-text-tertiary)" style={{ marginBottom: 16 }} />
+              <h3 style={{ fontWeight: 600, fontSize: 'var(--text-lg)', color: 'var(--color-text-primary)' }}>Materi Bacaan / Tugas</h3>
+              <p style={{ color: 'var(--color-text-secondary)', marginTop: 8 }}>Silakan pelajari materi dan instruksi di bawah.</p>
             </div>
           )}
 
