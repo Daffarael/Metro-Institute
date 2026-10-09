@@ -194,20 +194,18 @@ export default function CertificatesPage() {
                 {/* Certificate design header */}
                 <div style={{
                   height: 120, position: 'relative', overflow: 'hidden',
-                  background: product?.certificateTemplate?.bgImage
-                    ? `url(${product.certificateTemplate.bgImage}) center/contain no-repeat #f8fafc`
-                    : product?.thumbnailUrl 
-                      ? `url(${product.thumbnailUrl}) center/contain no-repeat #f8fafc`
+                  background: product?.thumbnailUrl 
+                      ? `url(${product.thumbnailUrl}) center/cover no-repeat #f8fafc`
                       : 'linear-gradient(135deg, var(--color-primary) 0%, #01a96b 50%, var(--color-accent) 100%)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
-                  {!(product?.certificateTemplate?.bgImage || product?.thumbnailUrl) && (
+                  {!(product?.thumbnailUrl) && (
                     <div style={{
                       position: 'absolute', inset: 0,
                       background: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.03) 10px, rgba(255,255,255,0.03) 20px)',
                     }} />
                   )}
-                  {!(product?.certificateTemplate?.bgImage || product?.thumbnailUrl) && (
+                  {!(product?.thumbnailUrl) && (
                     <div style={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
                       <div style={{ fontSize: 36 }}>{FIELD_ICONS[field]}</div>
                       <div style={{ color: 'rgba(255,255,255,0.9)', fontSize: '11px', fontWeight: 600, marginTop: 4 }}>
@@ -219,7 +217,7 @@ export default function CertificatesPage() {
                   <div style={{
                     position: 'absolute', bottom: 8, right: 12,
                     fontSize: '10px', color: 'rgba(255,255,255,0.4)', fontWeight: 700,
-                    textShadow: (product?.certificateTemplate?.bgImage || product?.thumbnailUrl) ? '0px 1px 3px rgba(0,0,0,0.8)' : 'none'
+                    textShadow: (product?.thumbnailUrl) ? '0px 1px 3px rgba(0,0,0,0.8)' : 'none'
                   }}>METRO INSTITUTE</div>
                 </div>
 
