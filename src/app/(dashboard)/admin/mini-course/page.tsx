@@ -91,8 +91,8 @@ function CourseModal({ course, onClose }: { course?: MiniCourse; onClose: () => 
   const mutation = useMutation({
     mutationFn: (data: CourseForm) =>
       isEdit
-        ? api.patch(`/mini-course/${course!.id}`, data).then(r => r.data)
-        : api.post('/mini-course', data).then(r => r.data),
+        ? api.patch(`/admin/courses/${course!.id}`, data).then(r => r.data)
+        : api.post('/admin/courses', data).then(r => r.data),
     onSuccess: () => {
       toast.success(isEdit ? 'Mini course diperbarui.' : 'Mini course dibuat.')
       qc.invalidateQueries({ queryKey: ['admin', 'courses']})
