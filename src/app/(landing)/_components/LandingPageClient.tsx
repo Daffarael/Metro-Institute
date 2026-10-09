@@ -362,7 +362,7 @@ export default function LandingPageClient({
 
                           <div className="flex justify-center mt-8">
                             <Link
-                              href="/register"
+                              href="/login"
                               className="h-10 px-6 rounded-full bg-[#f0f0f3] text-[#22222E] font-semibold text-xs md:text-sm flex items-center gap-2 hover:bg-[#e4e4e7] transition-colors"
                             >
                               Lihat Detail
