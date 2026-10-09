@@ -43,6 +43,7 @@ export const ROUTES = {
   CATALOG:   '/mentee/mini-course',
 
   // Learn
+  LEARN_BOOTCAMP: (id: string) => `/mentee/bootcamp/${id}`,
   LEARN_BOOTCAMP_SESSION: (bootcampId: string, sessionId: string) =>
     `/mentee/bootcamp/${bootcampId}/session/${sessionId}`,
   LEARN_COURSE: (id: string) => `/mentee/learn/mini-course/${id}`,
