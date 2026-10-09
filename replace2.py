@@ -1,145 +1,23 @@
-'use client'
+import sys
 
-import { useState, useRef, useEffect, useCallback } from 'react'
-import { useParams, useRouter } from 'next/navigation'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import Link from 'next/link'
-import {
-  ChevronLeft, ChevronRight, CheckCircle2, PlayCircle, FileText,
-  MessageSquare, BookOpen, StickyNote, ChevronDown, Loader2,
-  Send, Plus, Clock, Zap, Upload,
-} from 'lucide-react'
-import { toast } from 'sonner'
-import dynamic from 'next/dynamic'
-import api from '@/lib/axios'
-import { ROUTES, formatDuration } from '@/lib/utils'
+def replace_file():
+    filepath = 'src/app/(dashboard)/mentee/learn/mini-course/[id]/[sessionId]/page.tsx'
+    with open(filepath, 'r', encoding='utf-8') as f:
+        lines = f.readlines()
+        
+    start_idx = -1
+    for i, line in enumerate(lines):
+        if 'const { course, chapters, currentSession, prevSessionId, nextSessionId } = data' in line:
+            start_idx = i + 2 # skip this line and the empty line
+            break
+            
+    if start_idx == -1:
+        print('Could not find start')
+        return
 
-const ReactPlayer = dynamic(() => import('react-player'), { ssr: false })
-
-interface Session {
-  id: string; title: string; type: string; videoUrl?: string
-  videoDuration?: number; materials?: Array<{ name: string; url: string }>
-  isFreePreview: boolean; isCompleted: boolean; orderIndex: number
-  xpReward: number; assignmentDescription?: string; assignmentDeadline?: string
-  quizOptions?: Array<{ id: string; text: string; isCorrect: boolean; explanation: string }>
-  assignment?: { score?: number; feedback?: string; fileUrl?: string; submittedAt?: string }
-}
-
-interface Chapter {
-  id: string; title: string; sessions: Session[]
-}
-
-interface LearningData {
-  course: { id: string; title: string; field: string }
-  chapters: Chapter[]
-  currentSession: Session
-  prevSessionId?: string
-  nextSessionId?: string
-  progress: number
-}
-
-export default function CourseLearningPlayerPage() {
-  const { id: courseId, sessionId } = useParams<{ id: string; sessionId: string }>()
-  const router = useRouter()
-  const queryClient = useQueryClient()
-  const [activeTab, setActiveTab] = useState<'overview' | 'notes' | 'qna' | 'materials'>('overview')
-  const [playedSeconds, setPlayedSeconds] = useState(0)
-  const [isCompleted, setIsCompleted] = useState(false)
-  const [expandedChapters, setExpandedChapters] = useState<Set<string>>(new Set(['0']))
-  const [note, setNote] = useState('')
-  const [qnaMessage, setQnaMessage] = useState('')
-  const playerRef = useRef<unknown>(null)
-  const completeTriggerRef = useRef(false)
-
-  const { data, isLoading } = useQuery<LearningData>({
-    queryKey: ['learn-course', courseId, sessionId],
-    queryFn: () =>
-      api.get(`/courses/${courseId}/learn/${sessionId}`).then((r) => r.data.data),
-  })
-
-  const { data: notes = [] } = useQuery({
-    queryKey: ['notes', courseId, sessionId],
-    queryFn: () => api.get(`/courses/${courseId}/sessions/${sessionId}/notes`).then((r) => r.data.data),
-    enabled: activeTab === 'notes',
-  })
-
-  const { data: qnaMessages = [] } = useQuery({
-    queryKey: ['qna', courseId, sessionId],
-    queryFn: () => api.get(`/courses/${courseId}/sessions/${sessionId}/qna`).then((r) => r.data.data),
-    enabled: activeTab === 'qna',
-  })
-
-  const completeMutation = useMutation({
-    mutationFn: () => api.post(`/courses/${courseId}/sessions/${sessionId}/complete`).then((r) => r.data),
-    onSuccess: (data) => {
-      setIsCompleted(true)
-      queryClient.invalidateQueries({ queryKey: ['learn-course'] })
-      if (data.data?.xpEarned) {
-        toast.success(`+${data.data.xpEarned} XP diperoleh! 🎉`, { duration: 3000 })
-      }
-    },
-  })
-
-  const addNoteMutation = useMutation({
-    mutationFn: (content: string) =>
-      api.post(`/courses/${courseId}/sessions/${sessionId}/notes`, { content, timestampSec: Math.floor(playedSeconds) }),
-    onSuccess: () => {
-      setNote('')
-      queryClient.invalidateQueries({ queryKey: ['notes'] })
-      toast.success('Catatan disimpan')
-    },
-  })
-
-  const sendQnaMutation = useMutation({
-    mutationFn: (content: string) =>
-      api.post(`/courses/${courseId}/sessions/${sessionId}/qna`, { content }),
-    onSuccess: () => {
-      setQnaMessage('')
-      queryClient.invalidateQueries({ queryKey: ['qna'] })
-    },
-  })
-
-  const uploadAssignmentMutation = useMutation({
-    mutationFn: (formData: FormData) =>
-      api.post(`/courses/${courseId}/sessions/${sessionId}/assignment`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      }),
-    onSuccess: () => {
-      toast.success('Tugas berhasil dikumpulkan!')
-      queryClient.invalidateQueries({ queryKey: ['learn-course'] })
-    },
-    onError: () => toast.error('Gagal mengumpulkan tugas.'),
-  })
-
-  // Auto complete when 90% watched
-  const handleProgress = useCallback(({ playedSeconds: ps, played }: { playedSeconds: number; played: number }) => {
-    setPlayedSeconds(ps)
-    if (played >= 0.9 && !completeTriggerRef.current && !isCompleted && !data?.currentSession.isCompleted) {
-      completeTriggerRef.current = true
-      completeMutation.mutate()
-    }
-  }, [isCompleted, data])
-
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    if (file.size > 20 * 1024 * 1024) { toast.error('File maksimal 20MB'); return }
-    const fd = new FormData()
-    fd.append('file', file)
-    uploadAssignmentMutation.mutate(fd)
-  }
-
-  if (isLoading || !data) {
-    return (
-      <div style={{ minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <Loader2 size={32} className="animate-spin" color="var(--color-primary)" />
-      </div>
-    )
-  }
-
-  const { course, chapters, currentSession, prevSessionId, nextSessionId } = data
-
-  return (
+    end_idx = len(lines) - 2 # assuming the last line is '}' and before that is the end of the return statement
+    
+    new_content = '''  return (
     <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: '#0f172a' }}>
       {/* -- Top Header --------------------------------------- */}
       <header style={{
@@ -169,7 +47,7 @@ export default function CourseLearningPlayerPage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, width: 200 }}>
             <div style={{ flex: 1, height: 6, background: '#1e293b', borderRadius: 3, overflow: 'hidden' }}>
-              <div style={{ height: '100%', background: 'var(--color-primary)', width: `${data.progress}%`, transition: 'width 0.5s ease' }} />
+              <div style={{ height: '100%', background: 'var(--color-primary)', width: \%, transition: 'width 0.5s ease' }} />
             </div>
             <span style={{ fontSize: '13px', fontWeight: 600, color: '#94a3b8', whiteSpace: 'nowrap' }}>
               {data.progress}% Selesai
@@ -478,7 +356,7 @@ export default function CourseLearningPlayerPage() {
                 <span style={{ fontSize: '13px', color: 'var(--color-primary)', fontWeight: 700 }}>{data.progress}%</span>
               </div>
               <div style={{ height: 6, background: 'var(--color-bg)', borderRadius: 3, overflow: 'hidden' }}>
-                <div style={{ height: '100%', background: 'var(--color-primary)', width: `${data.progress}%`, transition: 'width 0.5s ease' }} />
+                <div style={{ height: '100%', background: 'var(--color-primary)', width: \%, transition: 'width 0.5s ease' }} />
               </div>
             </div>
           </div>
@@ -574,4 +452,13 @@ export default function CourseLearningPlayerPage() {
     </div>
   )
 }
+'''
 
+    lines = lines[:start_idx] + [new_content + '\n']
+    
+    with open(filepath, 'w', encoding='utf-8') as f:
+        f.writelines(lines)
+    
+    print("Done")
+
+replace_file()
