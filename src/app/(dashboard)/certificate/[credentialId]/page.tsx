@@ -7,6 +7,7 @@ import { format } from 'date-fns'
 import { id } from 'date-fns/locale'
 import { useParams, useRouter } from 'next/navigation'
 import { useRef } from 'react'
+import { motion } from 'motion/react'
 
 export default function DownloadCertificatePage() {
   const params = useParams()
@@ -106,14 +107,22 @@ export default function DownloadCertificatePage() {
         }
       `}} />
       <div style={{ width: '100%', maxWidth: 800, marginBottom: 16, display: 'flex', justifyContent: 'space-between' }} className="no-print">
-        <button onClick={() => router.back()} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: '#64748b', textDecoration: 'none', fontSize: '14px', fontWeight: 600, padding: '8px 16px', background: '#fff', borderRadius: 8, border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', transition: 'all 0.2s', cursor: 'pointer' }}>
+        <motion.button 
+          whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+          onClick={() => router.back()} 
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: '#64748b', textDecoration: 'none', fontSize: '14px', fontWeight: 600, padding: '8px 16px', background: '#fff', borderRadius: 'var(--radius-md)', border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', transition: 'all 0.2s', cursor: 'pointer' }}
+        >
           <ArrowLeft size={16} />
           Kembali
-        </button>
-        <button onClick={handlePrint} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: '#fff', textDecoration: 'none', fontSize: '14px', fontWeight: 600, padding: '8px 16px', background: 'var(--color-primary)', borderRadius: 8, border: 'none', boxShadow: '0 4px 12px rgba(1, 169, 107, 0.2)', transition: 'all 0.2s', cursor: 'pointer' }}>
+        </motion.button>
+        <motion.button 
+          whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+          onClick={handlePrint} 
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: '#fff', textDecoration: 'none', fontSize: '14px', fontWeight: 600, padding: '8px 16px', background: 'var(--color-primary)', borderRadius: 'var(--radius-md)', border: 'none', boxShadow: '0 4px 12px rgba(1, 169, 107, 0.2)', transition: 'all 0.2s', cursor: 'pointer' }}
+        >
           <Download size={16} />
           Simpan PDF (Print)
-        </button>
+        </motion.button>
       </div>
       
       <div style={{ width: '100%', maxWidth: 800, display: 'flex', justifyContent: 'center' }}>
