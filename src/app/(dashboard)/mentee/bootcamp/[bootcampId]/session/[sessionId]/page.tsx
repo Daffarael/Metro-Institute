@@ -121,7 +121,12 @@ export default function BootcampSessionPage() {
             <div style={{ display: 'inline-block', padding: '4px 10px', background: 'var(--color-primary-xlight)', color: 'var(--color-primary)', borderRadius: 'var(--radius-sm)', fontSize: '12px', fontWeight: 700, marginBottom: 12 }}>
               {session.type} SESSION
             </div>
-            <h1 style={{ fontSize: 'var(--text-3xl)', fontWeight: 800, color: 'var(--color-text-primary)' }}>{session.title}</h1>
+            <h1 style={{ fontSize: 'var(--text-3xl)', fontWeight: 800, color: 'var(--color-text-primary)', marginBottom: session.description ? 16 : 0 }}>{session.title}</h1>
+            {session.description && (
+              <p style={{ fontSize: '15px', color: 'var(--color-text-secondary)', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>
+                {session.description}
+              </p>
+            )}
           </div>
 
           {session.materials && session.materials.length > 0 && (
