@@ -7,7 +7,7 @@ import Link from 'next/link'
 import {
   ChevronLeft, ChevronRight, CheckCircle2, PlayCircle, FileText,
   MessageSquare, BookOpen, StickyNote, ChevronDown, Loader2,
-  Send, Plus, Clock, Zap, Upload,
+  Send, Plus, Clock, Zap, Upload, Download,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import dynamic from 'next/dynamic'
@@ -331,10 +331,10 @@ export default function CourseLearningPlayerPage() {
                           border: '1px solid var(--color-border)', background: 'var(--color-bg)',
                           fontSize: '15px', color: 'var(--color-text-primary)'
                         }}
-                        onKeyDown={(e) => e.key === 'Enter' && addNoteMutation.mutate()}
+                        onKeyDown={(e) => e.key === 'Enter' && addNoteMutation.mutate(note)}
                       />
                       <button
-                        onClick={() => addNoteMutation.mutate()} disabled={addNoteMutation.isPending || !note.trim()}
+                        onClick={() => addNoteMutation.mutate(note)} disabled={addNoteMutation.isPending || !note.trim()}
                         style={{
                           padding: '0 24px', borderRadius: 12, border: 'none',
                           background: 'var(--color-primary)', color: '#fff', fontWeight: 600,
@@ -381,10 +381,10 @@ export default function CourseLearningPlayerPage() {
                           border: '1px solid var(--color-border)', background: 'var(--color-bg)',
                           fontSize: '15px'
                         }}
-                        onKeyDown={(e) => e.key === 'Enter' && addQnaMutation.mutate()}
+                        onKeyDown={(e) => e.key === 'Enter' && sendQnaMutation.mutate(qnaMessage)}
                       />
                       <button
-                        onClick={() => addQnaMutation.mutate()} disabled={addQnaMutation.isPending || !qnaMessage.trim()}
+                        onClick={() => sendQnaMutation.mutate(qnaMessage)} disabled={sendQnaMutation.isPending || !qnaMessage.trim()}
                         style={{
                           padding: '0 24px', borderRadius: 12, border: 'none',
                           background: '#1e293b', color: '#fff', fontWeight: 600,
