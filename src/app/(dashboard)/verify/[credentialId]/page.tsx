@@ -2,15 +2,17 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { api } from '@/lib/axios'
-import { Loader2, CheckCircle, ShieldCheck, Calendar, User, BookOpen, ArrowLeft } from 'lucide-react'
+import { Loader2, ShieldCheck, ArrowLeft, Download } from 'lucide-react'
 import { format } from 'date-fns'
 import { id } from 'date-fns/locale'
 import { useParams, useRouter } from 'next/navigation'
+import { useRef } from 'react'
 
 export default function VerifyCertificatePage() {
   const params = useParams()
   const router = useRouter()
   const credentialId = params.credentialId as string
+  const certRef = useRef<HTMLDivElement>(null)
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['verify-cert', credentialId],
@@ -50,81 +52,118 @@ export default function VerifyCertificatePage() {
   }
 
   const title = data.productType === 'MINI_COURSE' ? data.course?.title : data.bootcamp?.title
-  const field = data.productType === 'MINI_COURSE' ? data.course?.field : data.bootcamp?.field
-  const typeLabel = data.productType === 'MINI_COURSE' ? 'Mini Course' : 'Bootcamp'
+  const template = data.productType === 'MINI_COURSE' ? data.course?.certificateTemplate : data.bootcamp?.certificateTemplate
+
+  const renderContent = (item: any) => {
+    if (item.type === 'image') return null;
+    switch(item.id) {
+      case 'MenteeName': return data.user?.name;
+      case 'CourseName': return title;
+      case 'Date': return format(new Date(data.issuedAt), 'd MMMM yyyy', { locale: id });
+      case 'CredentialId': return data.credentialId;
+      default: return item.label;
+    }
+  }
+
+  const handlePrint = () => {
+    window.print()
+  }
 
   return (
-    <div style={{ minHeight: '100dvh', background: '#f8fafc', padding: '40px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <div style={{ width: '100%', maxWidth: 600, marginBottom: 16 }}>
+    <div style={{ minHeight: '100dvh', background: '#f8fafc', padding: '40px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center' }} className="print-wrapper">
+      <style dangerouslySetInnerHTML={{__html: `
+        @media print {
+          body * { visibility: hidden; }
+          .print-wrapper { background: white !important; padding: 0 !important; margin: 0 !important; display: block !important; }
+          #certificate-container, #certificate-container * { visibility: visible; }
+          #certificate-container { 
+            position: absolute !important; 
+            left: 50% !important; 
+            top: 50% !important; 
+            transform: translate(-50%, -50%) scale(1) !important;
+            width: 800px !important;
+            height: 600px !important;
+            box-shadow: none !important;
+            margin: 0 !important;
+          }
+          @page { size: landscape; margin: 0; }
+        }
+      `}} />
+      <div style={{ width: '100%', maxWidth: 800, marginBottom: 16, display: 'flex', justifyContent: 'space-between' }} className="no-print">
         <button onClick={() => router.back()} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: '#64748b', textDecoration: 'none', fontSize: '14px', fontWeight: 600, padding: '8px 16px', background: '#fff', borderRadius: 8, border: '1px solid #e2e8f0', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', transition: 'all 0.2s', cursor: 'pointer' }}>
           <ArrowLeft size={16} />
           Kembali
         </button>
+        {template?.bgImage && (
+          <button onClick={handlePrint} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: '#fff', textDecoration: 'none', fontSize: '14px', fontWeight: 600, padding: '8px 16px', background: 'var(--color-primary)', borderRadius: 8, border: 'none', boxShadow: '0 4px 12px rgba(1, 169, 107, 0.2)', transition: 'all 0.2s', cursor: 'pointer' }}>
+            <Download size={16} />
+            Unduh PDF / Print
+          </button>
+        )}
       </div>
-      <div style={{ width: '100%', maxWidth: 600, background: '#fff', borderRadius: 16, overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', border: '1px solid #e2e8f0' }}>
-        {/* Header */}
-        <div style={{ background: '#059669', padding: '32px 24px', color: '#fff', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', top: -20, right: -20, opacity: 0.1 }}>
-            <ShieldCheck size={120} color="#fff" />
-          </div>
-          <ShieldCheck size={48} color="#fff" style={{ margin: '0 auto 16px' }} />
-          <h1 style={{ fontSize: '24px', fontWeight: 700, marginBottom: 8, color: '#fff' }}>Sertifikat Valid</h1>
-          <p style={{ opacity: 0.9, fontSize: '14px', color: '#fff' }}>Sertifikat ini resmi diterbitkan oleh Metro Institute.</p>
-        </div>
-
-        {/* Content */}
-        <div style={{ padding: '32px 24px' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-            <div>
-              <div style={{ fontSize: '12px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>ID Kredensial</div>
-              <div style={{ fontSize: '16px', fontWeight: 600, color: '#0f172a', fontFamily: 'monospace' }}>{data.credentialId}</div>
-            </div>
-
-            <div style={{ height: 1, background: '#e2e8f0' }} />
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-              <div style={{ width: 48, height: 48, borderRadius: '50%', background: '#ecfdf5', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#059669' }}>
-                <User size={24} />
+      
+      {template?.bgImage ? (
+        <div style={{ width: '100%', maxWidth: 800, display: 'flex', justifyContent: 'center' }}>
+          <div 
+            id="certificate-container"
+            ref={certRef}
+            style={{ 
+              width: 800, height: 600, 
+              background: \`url(\${template.bgImage}) center/cover no-repeat\`, 
+              position: 'relative', 
+              boxShadow: '0 10px 40px -10px rgba(0,0,0,0.15)',
+              borderRadius: '4px',
+              overflow: 'hidden',
+              backgroundColor: '#fff',
+              transformOrigin: 'top center',
+              // Simple responsive scaling for view
+              transform: 'scale(min(1, calc((100vw - 48px) / 800)))',
+              marginBottom: 'min(0px, calc(600px * (min(1, calc((100vw - 48px) / 800)) - 1)))'
+            }}
+          >
+            {Array.isArray(template.config) && template.config.map((item: any) => (
+              <div
+                key={item.id}
+                style={{
+                  position: 'absolute',
+                  left: item.x,
+                  top: item.y,
+                  transform: 'translate(-50%, -50%)',
+                  fontSize: \`\${item.fontSize}px\`,
+                  color: item.color,
+                  fontWeight: 700,
+                  width: item.width ? \`\${item.width}px\` : undefined,
+                  whiteSpace: item.width ? 'pre-wrap' : 'nowrap',
+                  wordBreak: 'break-word',
+                  textAlign: 'center',
+                  mixBlendMode: item.transparentBg ? 'multiply' : 'normal',
+                }}
+              >
+                {item.type === 'image' && item.src ? (
+                  <img 
+                    src={item.src} 
+                    alt={item.label} 
+                    style={{ width: item.width || 150, display: 'block', pointerEvents: 'none' }} 
+                  />
+                ) : (
+                  renderContent(item)
+                )}
               </div>
-              <div>
-                <div style={{ fontSize: '12px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>Diberikan Kepada</div>
-                <div style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a' }}>{data.user?.name}</div>
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-              <div style={{ width: 48, height: 48, borderRadius: '50%', background: '#ecfdf5', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#059669' }}>
-                <BookOpen size={24} />
-              </div>
-              <div>
-                <div style={{ fontSize: '12px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>Program ({typeLabel})</div>
-                <div style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a' }}>{title}</div>
-                <div style={{ fontSize: '14px', color: '#059669', marginTop: 2, fontWeight: 500 }}>Bidang: {field?.replace(/_/g, ' ')}</div>
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-              <div style={{ width: 48, height: 48, borderRadius: '50%', background: '#ecfdf5', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#059669' }}>
-                <Calendar size={24} />
-              </div>
-              <div>
-                <div style={{ fontSize: '12px', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 4 }}>Tanggal Penerbitan</div>
-                <div style={{ fontSize: '16px', fontWeight: 600, color: '#0f172a' }}>
-                  {format(new Date(data.issuedAt), 'd MMMM yyyy', { locale: id })}
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
-
-        {/* Footer */}
-        <div style={{ background: '#f8fafc', padding: '24px', borderTop: '1px solid #e2e8f0', textAlign: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, color: '#10b981', fontWeight: 600, fontSize: '14px' }}>
-            <CheckCircle size={18} /> Verifikasi Berhasil
+      ) : (
+        <div style={{ width: '100%', maxWidth: 600, background: '#fff', borderRadius: 16, overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', border: '1px solid #e2e8f0' }} className="no-print">
+          {/* Fallback to old receipt-style if no template */}
+          <div style={{ background: '#059669', padding: '32px 24px', color: '#fff', textAlign: 'center' }}>
+            <h1 style={{ fontSize: '24px', fontWeight: 700, marginBottom: 8, color: '#fff' }}>Sertifikat Valid</h1>
+            <p style={{ opacity: 0.9, fontSize: '14px', color: '#fff' }}>Sertifikat terverifikasi valid, namun template PDF belum diatur oleh admin untuk produk ini.</p>
           </div>
-          <p style={{ fontSize: '12px', color: '#64748b', marginTop: 8 }}>Halaman ini adalah bukti verifikasi sah dari sistem Metro Institute.</p>
         </div>
-      </div>
+      )}
+      <style dangerouslySetInnerHTML={{__html: \`
+        @media print { .no-print { display: none !important; } }
+      \`}} />
     </div>
   )
 }
