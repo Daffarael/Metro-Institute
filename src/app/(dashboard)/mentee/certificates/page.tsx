@@ -195,9 +195,9 @@ export default function CertificatesPage() {
                 <div style={{
                   height: 120, position: 'relative', overflow: 'hidden',
                   background: product?.certificateTemplate?.bgImage
-                    ? `url(${product.certificateTemplate.bgImage}) center/cover no-repeat`
+                    ? `url(${product.certificateTemplate.bgImage}) center/contain no-repeat #f8fafc`
                     : product?.thumbnailUrl 
-                      ? `url(${product.thumbnailUrl}) center/cover no-repeat`
+                      ? `url(${product.thumbnailUrl}) center/contain no-repeat #f8fafc`
                       : 'linear-gradient(135deg, var(--color-primary) 0%, #01a96b 50%, var(--color-accent) 100%)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
