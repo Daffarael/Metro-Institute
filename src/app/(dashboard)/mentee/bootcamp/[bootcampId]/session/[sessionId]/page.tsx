@@ -5,7 +5,8 @@ import { useQuery, useMutation } from '@tanstack/react-query'
 import api from '@/lib/axios'
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { FileText, Video, ExternalLink, Send } from 'lucide-react'
+import { FileText, Video, ExternalLink, Send, Calendar } from 'lucide-react'
+import Link from 'next/link'
 
 export default function BootcampSessionPage() {
   const params = useParams<{ bootcampId: string; sessionId: string }>()
@@ -43,7 +44,7 @@ export default function BootcampSessionPage() {
       <div style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-xl)', padding: 'var(--space-6)', border: '1px solid var(--color-border)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
           <div style={{ padding: 10, background: 'var(--color-bg)', borderRadius: 10 }}>
-            {session.type === 'VIDEO' ? <Video size={24} /> : <FileText size={24} />}
+            {session.type === 'VIDEO' ? <Video size={24} /> : session.type === 'LIVE' ? <Calendar size={24} color="#3B82F6" /> : <FileText size={24} />}
           </div>
           <div>
             <h1 style={{ fontSize: 'var(--text-2xl)', fontWeight: 700 }}>{session.title}</h1>
@@ -63,6 +64,18 @@ export default function BootcampSessionPage() {
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
               allowFullScreen
             />
+          </div>
+        )}
+
+        {session.type === 'LIVE' && (
+          <div style={{ padding: 30, background: 'var(--color-bg)', borderRadius: 12, marginBottom: 30, textAlign: 'center', border: '1px solid var(--color-border)' }}>
+            <h3 style={{ fontWeight: 700, fontSize: 'var(--text-lg)', marginBottom: 10 }}>Sesi Live Class</h3>
+            <p style={{ color: 'var(--color-text-secondary)', marginBottom: 24, fontSize: '14px' }}>
+              {session.liveScheduledAt ? `Jadwal: ${new Date(session.liveScheduledAt).toLocaleString('id-ID')}` : 'Silakan masuk ke Live Room untuk mengikuti sesi kelas langsung.'}
+            </p>
+            <Link href={`/mentee/bootcamp/${params.bootcampId}/live/${params.sessionId}`} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 24px', background: '#3B82F6', color: 'white', borderRadius: 8, textDecoration: 'none', fontWeight: 600 }}>
+              Masuk Live Room <ExternalLink size={16} />
+            </Link>
           </div>
         )}
 
