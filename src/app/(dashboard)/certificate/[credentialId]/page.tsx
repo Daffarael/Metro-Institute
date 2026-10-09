@@ -90,20 +90,25 @@ export default function DownloadCertificatePage() {
     <div style={{ minHeight: '100dvh', background: '#f8fafc', padding: '40px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center' }} className="print-wrapper">
       <style dangerouslySetInnerHTML={{__html: `
         @media print {
+          @page { size: 800px 600px; margin: 0; }
+          body {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
           body * { visibility: hidden; }
           .print-wrapper { background: white !important; padding: 0 !important; margin: 0 !important; display: block !important; }
           #certificate-container, #certificate-container * { visibility: visible; }
           #certificate-container { 
-            position: absolute !important; 
-            left: 50% !important; 
-            top: 50% !important; 
-            transform: translate(-50%, -50%) scale(1) !important;
+            position: fixed !important; 
+            left: 0 !important; 
+            top: 0 !important; 
+            transform: none !important;
             width: 800px !important;
             height: 600px !important;
             box-shadow: none !important;
             margin: 0 !important;
+            border-radius: 0 !important;
           }
-          @page { size: landscape; margin: 0; }
         }
       `}} />
       <div style={{ width: '100%', maxWidth: 800, marginBottom: 16, display: 'flex', justifyContent: 'space-between' }} className="no-print">
