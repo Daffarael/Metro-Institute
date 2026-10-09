@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { motion, AnimatePresence } from 'motion/react'
 import Link from 'next/link'
-import { BookOpen, Play, CheckCircle2 } from 'lucide-react'
+import { BookOpen, Play, CheckCircle2, Lock } from 'lucide-react'
 import api from '@/lib/axios'
 import { ROUTES, FIELD_LABELS, LEVEL_LABELS } from '@/lib/utils'
 import CleanCombobox from '@/components/admin/CleanCombobox'
@@ -13,7 +13,7 @@ import AdminEmptyState from '@/components/admin/AdminEmptyState'
 interface EnrolledCourse {
   id: string; title: string; type: 'bootcamp' | 'mini-course'
   progress: number; thumbnailUrl?: string; thumbnail?: string; field: string
-  accessUntil?: string; level?: string
+  accessUntil?: string; level?: string; startDate?: string
 }
 
 const FIELD_OPTIONS = [
@@ -378,15 +378,27 @@ function CourseCard({ course }: { course: EnrolledCourse }) {
           }}>
             Detail
           </Link>
-          <Link href={learnHref} style={{ 
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-            padding: '8px 16px', borderRadius: 'var(--radius-md)',
-            background: 'var(--color-primary)', border: '1px solid var(--color-primary)',
-            color: '#fff', fontSize: '13px', fontWeight: 600,
-            textDecoration: 'none'
-          }}>
-            <Play size={14} fill="currentColor" /> {course.progress > 0 ? 'Lanjut' : 'Mulai'}
-          </Link>
+          {course.type === 'bootcamp' && course.startDate && new Date(course.startDate) > new Date() ? (
+            <div style={{ 
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+              padding: '8px 16px', borderRadius: 'var(--radius-md)',
+              background: 'var(--color-bg)', border: '1px solid var(--color-border-subtle)',
+              color: 'var(--color-text-tertiary)', fontSize: '13px', fontWeight: 600,
+              cursor: 'not-allowed'
+            }}>
+              <Lock size={14} /> Belum Mulai
+            </div>
+          ) : (
+            <Link href={learnHref} style={{ 
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+              padding: '8px 16px', borderRadius: 'var(--radius-md)',
+              background: 'var(--color-primary)', border: '1px solid var(--color-primary)',
+              color: '#fff', fontSize: '13px', fontWeight: 600,
+              textDecoration: 'none'
+            }}>
+              <Play size={14} fill="currentColor" /> {course.progress > 0 ? 'Lanjut' : 'Mulai'}
+            </Link>
+          )}
         </div>
       </div>
     </div>
