@@ -52,7 +52,7 @@ export default function BootcampSessionPage() {
           </div>
         </div>
 
-        {session.type === 'VIDEO' && session.videoUrl && (
+        {session.videoUrl && (
           <div style={{ marginBottom: 30, borderRadius: 12, overflow: 'hidden', border: '1px solid var(--color-border)' }}>
             {/* Simple youtube embed or generic video player */}
             <iframe 
@@ -79,16 +79,20 @@ export default function BootcampSessionPage() {
           </div>
         )}
 
-        {session.type === 'MATERIAL' && session.materials?.[0] && (
+        {session.materials && session.materials.length > 0 && (
           <div style={{ padding: 20, background: 'var(--color-bg)', borderRadius: 12, marginBottom: 30 }}>
-            <h3 style={{ fontWeight: 600, marginBottom: 10 }}>Materi Tersedia</h3>
-            <a href={session.materials[0].url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 20px', background: 'var(--color-primary)', color: 'white', borderRadius: 8, textDecoration: 'none', fontWeight: 600 }}>
-              Buka Dokumen <ExternalLink size={16} />
-            </a>
+            <h3 style={{ fontWeight: 600, marginBottom: 16 }}>Materi Tersedia</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {session.materials.map((mat: any, idx: number) => (
+                <a key={idx} href={mat.url} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 20px', background: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-text-primary)', borderRadius: 8, textDecoration: 'none', fontWeight: 600 }}>
+                  <FileText size={16} color="var(--color-primary)" /> {mat.name || `Dokumen Materi ${idx + 1}`}
+                </a>
+              ))}
+            </div>
           </div>
         )}
 
-        {session.type === 'CHALLENGE' && (
+        {(session.type === 'CHALLENGE' || session.assignmentDescription) && (
           <div style={{ marginTop: 20 }}>
             <h3 style={{ fontSize: 'var(--text-lg)', fontWeight: 700, marginBottom: 10 }}>Instruksi Tugas</h3>
             <div style={{ padding: 20, background: 'var(--color-bg)', borderRadius: 12, marginBottom: 30, whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>
