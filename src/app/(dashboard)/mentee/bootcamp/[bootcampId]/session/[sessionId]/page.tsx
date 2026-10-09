@@ -61,8 +61,20 @@ export default function BootcampSessionPage() {
     }
   })
 
-  if (isLoading) return <div style={{ padding: 40, textAlign: 'center' }}>Memuat materi...</div>
-  if (!session) return <div style={{ padding: 40, textAlign: 'center' }}>Sesi tidak ditemukan.</div>
+  if (isLoading || !bootcamp) return <div style={{ padding: 40, textAlign: 'center' }}>Memuat materi...</div>
+  if (!session) return <div style={{ padding: 40, textAlign: 'center' }}>Sesi tidak ditemukan atau Anda tidak memiliki akses.</div>
+
+  const hasStarted = bootcamp.startDate ? new Date(bootcamp.startDate) <= new Date() : true;
+  if (!hasStarted) {
+    return (
+      <div style={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16 }}>
+        <Lock size={48} color="var(--color-text-secondary)" />
+        <h2>Akses Ditolak</h2>
+        <p>Bootcamp ini belum dimulai. Silakan kembali lagi nanti.</p>
+        <button onClick={() => router.push(`/mentee/bootcamp/${params.bootcampId}`)} className="btn btn-primary">Kembali ke Halaman Bootcamp</button>
+      </div>
+    )
+  }
 
   const assignment = session.assignments?.[0]
 

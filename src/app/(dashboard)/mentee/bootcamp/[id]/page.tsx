@@ -408,20 +408,35 @@ export default function BootcampDetailPage() {
 
               {/* CTA */}
               {data.isEnrolled ? (
-                <Link href={data.chapters?.[0]?.sessions?.[0] ? ROUTES.LEARN_BOOTCAMP_SESSION(id, data.chapters[0].sessions[0].id) : '#'} style={{ textDecoration: 'none', display: 'block' }}>
-                  <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+                new Date(data.startDate) <= new Date() ? (
+                  <Link href={data.chapters?.[0]?.sessions?.[0] ? ROUTES.LEARN_BOOTCAMP_SESSION(id, data.chapters[0].sessions[0].id) : '#'} style={{ textDecoration: 'none', display: 'block' }}>
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      style={{
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                        width: '100%', padding: '12px 0',
+                        background: 'var(--color-primary)', color: '#fff',
+                        borderRadius: 8, fontWeight: 700, fontSize: '14px',
+                      }}
+                    >
+                      <PlayCircle size={16} strokeWidth={2} /> Lanjut Belajar
+                    </motion.div>
+                  </Link>
+                ) : (
+                  <div
                     style={{
                       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                       width: '100%', padding: '12px 0',
-                      background: 'var(--color-primary)', color: '#fff',
+                      background: 'var(--color-bg)', color: 'var(--color-text-secondary)',
+                      border: '1px solid var(--color-border-subtle)',
                       borderRadius: 8, fontWeight: 700, fontSize: '14px',
+                      cursor: 'not-allowed',
                     }}
                   >
-                    <PlayCircle size={16} strokeWidth={2} /> Lanjut Belajar
-                  </motion.div>
-                </Link>
+                    <Lock size={16} strokeWidth={2} /> Belum Dimulai
+                  </div>
+                )
               ) : (
                 <motion.button
                   whileHover={(!enrollMutation.isPending && canEnroll) ? { scale: 1.02 } : {}}
