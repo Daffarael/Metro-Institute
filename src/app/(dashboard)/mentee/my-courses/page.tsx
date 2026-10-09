@@ -12,7 +12,7 @@ import AdminEmptyState from '@/components/admin/AdminEmptyState'
 
 interface EnrolledCourse {
   id: string; title: string; type: 'bootcamp' | 'mini-course'
-  progress: number; thumbnailUrl?: string; field: string
+  progress: number; thumbnailUrl?: string; thumbnail?: string; field: string
   accessUntil?: string; level?: string
 }
 
@@ -306,9 +306,9 @@ function CourseCard({ course }: { course: EnrolledCourse }) {
         overflow: 'hidden', flexShrink: 0,
         position: 'relative',
       }}>
-        {course.thumbnailUrl ? (
+        {course.thumbnailUrl || course.thumbnail ? (
           <img
-            src={course.thumbnailUrl}
+            src={course.thumbnailUrl || course.thumbnail}
             alt={course.title}
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
           />
