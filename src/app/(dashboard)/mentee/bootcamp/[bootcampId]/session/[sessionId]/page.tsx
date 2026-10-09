@@ -82,16 +82,13 @@ export default function BootcampSessionPage() {
               />
             </div>
           ) : session.type === 'LIVE' ? (
-            <div style={{ position: 'relative', borderRadius: 'var(--radius-lg)', overflow: 'hidden', minHeight: 400, background: '#0f172a', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'white', textAlign: 'center', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
-              {/* Subtle background glow */}
-              <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at 50% 50%, rgba(1, 133, 86, 0.15) 0%, transparent 60%)' }} />
-              
+            <div style={{ position: 'relative', borderRadius: 'var(--radius-lg)', overflow: 'hidden', minHeight: 400, background: 'var(--color-primary-xlight)', border: '1px solid var(--color-primary-light)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
               <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 'var(--space-6)' }}>
-                <div style={{ background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(10px)', padding: 24, borderRadius: '50%', marginBottom: 24, border: '1px solid rgba(255,255,255,0.1)' }}>
-                  <Calendar size={48} color="white" strokeWidth={1.5} />
+                <div style={{ background: 'var(--color-surface)', padding: 24, borderRadius: '50%', marginBottom: 24, boxShadow: '0 8px 24px rgba(1, 133, 86, 0.12)' }}>
+                  <Calendar size={48} color="var(--color-primary)" strokeWidth={1.5} />
                 </div>
-                <h3 style={{ fontWeight: 700, fontSize: 'var(--text-3xl)', marginBottom: 12, letterSpacing: '-0.02em', color: 'white' }}>Sesi Live Class</h3>
-                <p style={{ color: 'rgba(255,255,255,0.7)', marginBottom: 32, fontSize: '16px', maxWidth: 450, lineHeight: 1.6 }}>
+                <h3 style={{ fontWeight: 800, fontSize: 'var(--text-3xl)', marginBottom: 12, letterSpacing: '-0.02em', color: 'var(--color-text-primary)' }}>Sesi Live Class</h3>
+                <p style={{ color: 'var(--color-text-secondary)', marginBottom: 32, fontSize: '16px', maxWidth: 450, lineHeight: 1.6 }}>
                   {session.liveScheduledAt ? `Sesi akan diselenggarakan pada ${formatDate(session.liveScheduledAt)}` : 'Jadwal sesi live belum ditentukan. Silakan hubungi mentor.'}
                 </p>
                 <Link href={`/mentee/bootcamp/${params.bootcampId}/live/${params.sessionId}`} className="btn btn-primary" style={{ padding: '0 32px', height: 48, fontSize: '16px', borderRadius: 'var(--radius-full)' }}>
@@ -100,11 +97,11 @@ export default function BootcampSessionPage() {
               </div>
             </div>
           ) : (
-            <div style={{ borderRadius: 'var(--radius-lg)', minHeight: 350, background: '#f8fafc', border: '1px solid var(--color-border)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 'var(--space-8)', textAlign: 'center' }}>
-              <div style={{ background: 'var(--color-surface)', padding: 20, borderRadius: '50%', marginBottom: 24, boxShadow: '0 4px 12px rgba(0,0,0,0.05)', border: '1px solid var(--color-border-subtle)' }}>
-                <FileText size={44} color="var(--color-primary)" strokeWidth={1.5} />
+            <div style={{ borderRadius: 'var(--radius-lg)', minHeight: 350, background: 'var(--color-surface)', border: '1px solid var(--color-border)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 'var(--space-8)', textAlign: 'center', boxShadow: '0 2px 12px rgba(0,0,0,0.03)' }}>
+              <div style={{ background: 'var(--color-bg)', padding: 20, borderRadius: '50%', marginBottom: 24, border: '1px solid var(--color-border-subtle)' }}>
+                <FileText size={44} color="var(--color-text-tertiary)" strokeWidth={1.5} />
               </div>
-              <h3 style={{ fontWeight: 700, fontSize: 'var(--text-2xl)', color: 'var(--color-text-primary)', marginBottom: 12 }}>Materi Bacaan & Tugas</h3>
+              <h3 style={{ fontWeight: 800, fontSize: 'var(--text-2xl)', color: 'var(--color-text-primary)', marginBottom: 12 }}>Materi Bacaan & Tugas</h3>
               <p style={{ color: 'var(--color-text-secondary)', marginTop: 8, maxWidth: 450, fontSize: '15px', lineHeight: 1.6 }}>
                 Silakan pelajari materi bacaan yang telah disediakan dan kerjakan tugas sesuai instruksi di bawah ini.
               </p>
