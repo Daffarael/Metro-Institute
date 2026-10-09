@@ -207,6 +207,8 @@ export default function CourseLearningPlayerPage() {
                   const url = currentSession.videoUrl;
                   const isDrive = url.includes('drive.google.com');
                   let drivePreviewUrl = '';
+                  let youtubeEmbedUrl = '';
+
                   if (isDrive) {
                     const match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
                     if (match) {
@@ -219,6 +221,12 @@ export default function CourseLearningPlayerPage() {
                       }
                     }
                     if (!drivePreviewUrl) drivePreviewUrl = url;
+                  } else if (url.includes('youtu.be/')) {
+                    const id = url.split('youtu.be/')[1].split('?')[0];
+                    youtubeEmbedUrl = `https://www.youtube.com/embed/${id}?rel=0`;
+                  } else if (url.includes('youtube.com/watch')) {
+                    const id = new URLSearchParams(url.substring(url.indexOf('?'))).get('v');
+                    if (id) youtubeEmbedUrl = `https://www.youtube.com/embed/${id}?rel=0`;
                   }
 
                   if (isDrive) {
@@ -231,6 +239,27 @@ export default function CourseLearningPlayerPage() {
                         allow="autoplay; fullscreen"
                         onLoad={() => {
                           // Karena iframe tidak bisa mendeteksi durasi, asumsikan selesai setelah beberapa saat
+                          setTimeout(() => {
+                            if (!completeTriggerRef.current && !isCompleted && !data?.currentSession.isCompleted) {
+                              completeTriggerRef.current = true;
+                              completeMutation.mutate();
+                            }
+                          }, 5000);
+                        }}
+                      />
+                    );
+                  }
+
+                  if (youtubeEmbedUrl) {
+                    return (
+                      <iframe
+                        src={youtubeEmbedUrl}
+                        width="100%"
+                        height="100%"
+                        style={{ border: 'none' }}
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                        onLoad={() => {
                           setTimeout(() => {
                             if (!completeTriggerRef.current && !isCompleted && !data?.currentSession.isCompleted) {
                               completeTriggerRef.current = true;
