@@ -34,14 +34,14 @@ export default function VerifyCertificatePage() {
 
   if (error || !data) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-[#059669] p-6 text-center">
-        <div className="w-full max-w-md bg-white rounded-3xl p-10 flex flex-col items-center">
-          <div className="w-20 h-20 rounded-full border-4 border-[#059669] flex items-center justify-center mb-6">
-            <AlertCircle className="w-10 h-10 text-[#059669]" />
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#ecfdf5] p-6 text-center">
+        <div className="w-full max-w-sm bg-white rounded-3xl p-10 flex flex-col items-center shadow-sm">
+          <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center mb-6">
+            <AlertCircle className="w-8 h-8 text-red-500" />
           </div>
-          <h1 className="text-2xl font-bold text-[#059669] mb-2">Verifikasi Gagal</h1>
-          <p className="text-[#059669]/80">
-            Sertifikat dengan ID <strong className="text-[#059669]">{credentialId}</strong> tidak valid atau tidak ditemukan.
+          <h1 className="text-xl font-bold text-[#064e3b] mb-2">Verifikasi Gagal</h1>
+          <p className="text-[#064e3b]/70 text-sm">
+            Sertifikat tidak valid atau tidak ditemukan.
           </p>
         </div>
       </div>
@@ -53,68 +53,69 @@ export default function VerifyCertificatePage() {
   const typeLabel = data.productType === 'MINI_COURSE' ? 'Mini Course' : 'Bootcamp'
 
   return (
-    <div className="min-h-screen bg-[#059669] py-12 px-4 flex flex-col items-center justify-center font-sans">
-      <div className="w-full max-w-[420px] bg-white rounded-[32px] relative shadow-2xl overflow-hidden">
+    <div className="min-h-screen bg-[#ecfdf5] py-12 px-4 flex flex-col items-center justify-center font-sans">
+      <div className="w-full max-w-[400px] bg-white rounded-3xl relative shadow-[0_10px_40px_rgb(5,150,105,0.05)] overflow-hidden">
         
-        {/* Ticket Cutouts */}
-        <div className="absolute top-[280px] -left-5 w-10 h-10 bg-[#059669] rounded-full z-10"></div>
-        <div className="absolute top-[280px] -right-5 w-10 h-10 bg-[#059669] rounded-full z-10"></div>
-
         {/* Top Section */}
-        <div className="px-8 pt-12 pb-10 text-center flex flex-col items-center">
-          <div className="w-20 h-20 rounded-full border-2 border-[#10b981]/30 flex items-center justify-center mb-6">
-            <CheckCircle className="w-10 h-10 text-[#059669]" strokeWidth={2} />
+        <div className="px-8 pt-10 pb-8 text-center flex flex-col items-center">
+          <div className="w-16 h-16 rounded-full bg-[#ecfdf5] flex items-center justify-center mb-6">
+            <CheckCircle className="w-8 h-8 text-[#059669]" strokeWidth={2.5} />
           </div>
-          <h1 className="text-3xl font-bold text-[#059669] mb-2 tracking-tight">Sertifikat Valid!</h1>
-          <p className="text-[#059669]/70 text-sm font-medium">Sertifikat ini resmi diterbitkan oleh<br/>Metro Institute</p>
+          <h1 className="text-2xl font-bold text-[#064e3b] mb-2">Sertifikat Valid!</h1>
+          <p className="text-[#064e3b]/60 text-sm font-medium">Dokumen ini resmi diterbitkan oleh Metro Institute</p>
         </div>
 
-        {/* Dashed Separator */}
-        <div className="w-full px-8 relative">
-          <div className="w-full border-t-2 border-dashed border-[#10b981]/20"></div>
+        {/* Separator 1 with Cutouts */}
+        <div className="relative w-full h-8 flex items-center">
+          {/* Left Cutout */}
+          <div className="absolute -left-4 w-8 h-8 bg-[#ecfdf5] rounded-full z-10"></div>
+          {/* Dashed Line */}
+          <div className="w-full border-t-[1.5px] border-dashed border-[#a7f3d0] mx-6 relative z-0"></div>
+          {/* Right Cutout */}
+          <div className="absolute -right-4 w-8 h-8 bg-[#ecfdf5] rounded-full z-10"></div>
         </div>
 
         {/* Middle Section */}
-        <div className="px-8 pt-10 pb-6">
+        <div className="px-8 pt-6 pb-6">
           <div className="flex justify-between items-start mb-8">
             <div>
-              <p className="text-[11px] font-bold text-[#059669]/50 uppercase tracking-widest mb-1">ID Kredensial</p>
-              <p className="text-sm font-bold text-[#059669] font-mono">{data.credentialId}</p>
+              <p className="text-[10px] font-bold text-[#064e3b]/50 uppercase tracking-widest mb-1">ID Kredensial</p>
+              <p className="text-sm font-bold text-[#064e3b] font-mono tracking-tight">{data.credentialId}</p>
             </div>
             <div className="text-right">
-              <p className="text-[11px] font-bold text-[#059669]/50 uppercase tracking-widest mb-1">Tanggal Terbit</p>
-              <p className="text-sm font-bold text-[#059669]">{format(new Date(data.issuedAt), 'dd MMM yyyy', { locale: id })}</p>
+              <p className="text-[10px] font-bold text-[#064e3b]/50 uppercase tracking-widest mb-1">Tanggal Terbit</p>
+              <p className="text-sm font-bold text-[#064e3b]">{format(new Date(data.issuedAt), 'dd MMM yyyy', { locale: id })}</p>
             </div>
           </div>
 
-          {/* Embedded Card (Program & User info) */}
-          <div className="bg-[#10b981]/5 border border-[#10b981]/10 rounded-2xl p-6">
-            <div className="mb-5">
-              <p className="text-[11px] font-bold text-[#059669]/50 uppercase tracking-widest mb-1">Diberikan Kepada</p>
-              <p className="text-xl font-bold text-[#059669] capitalize">{data.user?.name}</p>
+          {/* Embedded Card */}
+          <div className="bg-[#ecfdf5]/60 rounded-2xl p-5">
+            <div className="mb-4">
+              <p className="text-[10px] font-bold text-[#064e3b]/50 uppercase tracking-widest mb-1">Diberikan Kepada</p>
+              <p className="text-lg font-bold text-[#064e3b] capitalize">{data.user?.name}</p>
             </div>
             <div>
-              <p className="text-[11px] font-bold text-[#059669]/50 uppercase tracking-widest mb-1">Program Selesai ({typeLabel})</p>
-              <p className="text-base font-bold text-[#059669] leading-snug">{title}</p>
-              {field && <p className="text-xs font-medium text-[#059669]/70 mt-1 uppercase tracking-wider">{field.replace(/_/g, ' ')}</p>}
+              <p className="text-[10px] font-bold text-[#064e3b]/50 uppercase tracking-widest mb-1">Program Selesai ({typeLabel})</p>
+              <p className="text-sm font-bold text-[#064e3b] leading-snug">{title}</p>
+              {field && <p className="text-xs font-medium text-[#064e3b]/70 mt-1 uppercase tracking-wider">{field.replace(/_/g, ' ')}</p>}
             </div>
           </div>
         </div>
 
-        {/* Dashed Separator 2 */}
+        {/* Separator 2 */}
         <div className="w-full px-8 mt-2 relative">
-          <div className="w-full border-t-2 border-dashed border-[#10b981]/20"></div>
+          <div className="w-full border-t-[1.5px] border-dashed border-[#a7f3d0]"></div>
         </div>
 
         {/* Bottom Section (Barcode) */}
         <div className="px-8 pt-8 pb-10 flex flex-col items-center">
-          {/* Fake Barcode using CSS lines */}
-          <div className="flex items-center justify-center gap-[2px] h-12 w-full max-w-[280px] mb-3 opacity-80">
-            {[...Array(40)].map((_, i) => (
-              <div key={i} className="bg-[#059669] h-full" style={{ width: `${Math.max(1, Math.random() * 4)}px`, opacity: Math.random() > 0.2 ? 1 : 0 }}></div>
+          <div className="flex items-center justify-center h-14 w-full max-w-[260px] mb-3 opacity-90">
+            {/* Generating an exact barcode-like pattern using specific widths */}
+            {[2, 4, 1, 2, 3, 1, 1, 4, 2, 1, 3, 2, 1, 4, 2, 2, 1, 3, 1, 4, 2, 1, 3, 2, 4, 1, 1, 2, 3, 1].map((w, i) => (
+              <div key={i} className="bg-[#064e3b] h-full" style={{ width: `${w}px`, marginRight: `${(i % 3 === 0) ? 2 : 1}px` }}></div>
             ))}
           </div>
-          <p className="text-[#059669]/60 font-mono text-xs tracking-[0.3em] uppercase">{data.credentialId}</p>
+          <p className="text-[#064e3b]/60 font-mono text-[10px] tracking-[0.4em] uppercase">{data.credentialId.replace(/-/g, '')}</p>
         </div>
 
       </div>
