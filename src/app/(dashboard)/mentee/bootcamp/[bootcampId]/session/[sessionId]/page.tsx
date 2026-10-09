@@ -105,14 +105,16 @@ export default function BootcampSessionPage() {
               </div>
             </div>
           ) : (
-            <div style={{ borderRadius: 'var(--radius-lg)', minHeight: 350, background: 'var(--color-surface)', border: '1px solid var(--color-border)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 'var(--space-8)', textAlign: 'center', boxShadow: '0 2px 12px rgba(0,0,0,0.03)' }}>
-              <div style={{ background: 'var(--color-bg)', padding: 20, borderRadius: '50%', marginBottom: 24, border: '1px solid var(--color-border-subtle)' }}>
-                <FileText size={44} color="var(--color-text-tertiary)" strokeWidth={1.5} />
+            <div style={{ position: 'relative', borderRadius: 'var(--radius-lg)', overflow: 'hidden', minHeight: 400, background: 'var(--color-primary-xlight)', border: '1px solid var(--color-primary-light)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
+              <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: 'var(--space-6)' }}>
+                <div style={{ background: 'var(--color-surface)', padding: 24, borderRadius: '50%', marginBottom: 24, boxShadow: '0 8px 24px rgba(1, 133, 86, 0.12)' }}>
+                  <FileText size={48} color="var(--color-primary)" strokeWidth={1.5} />
+                </div>
+                <h3 style={{ fontWeight: 800, fontSize: 'var(--text-3xl)', marginBottom: 12, letterSpacing: '-0.02em', color: 'var(--color-text-primary)' }}>Materi Bacaan & Tugas</h3>
+                <p style={{ color: 'var(--color-text-secondary)', maxWidth: 450, fontSize: '16px', lineHeight: 1.6 }}>
+                  Silakan pelajari materi bacaan yang telah disediakan dan kerjakan tugas sesuai instruksi di bawah ini.
+                </p>
               </div>
-              <h3 style={{ fontWeight: 800, fontSize: 'var(--text-2xl)', color: 'var(--color-text-primary)', marginBottom: 12 }}>Materi Bacaan & Tugas</h3>
-              <p style={{ color: 'var(--color-text-secondary)', marginTop: 8, maxWidth: 450, fontSize: '15px', lineHeight: 1.6 }}>
-                Silakan pelajari materi bacaan yang telah disediakan dan kerjakan tugas sesuai instruksi di bawah ini.
-              </p>
             </div>
           )}
 
