@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
 import { FileText, Video, ExternalLink, Send, Calendar, PlayCircle, Lock, ChevronDown, ChevronUp, Play, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
+import { motion } from 'motion/react'
 import { formatDate, formatDuration } from '@/lib/utils'
 
 export default function BootcampSessionPage() {
@@ -91,8 +92,15 @@ export default function BootcampSessionPage() {
                 <p style={{ color: 'var(--color-text-secondary)', marginBottom: 32, fontSize: '16px', maxWidth: 450, lineHeight: 1.6 }}>
                   {session.liveScheduledAt ? `Sesi akan diselenggarakan pada ${formatDate(session.liveScheduledAt)}` : 'Jadwal sesi live belum ditentukan. Silakan hubungi mentor.'}
                 </p>
-                <Link href={`/mentee/bootcamp/${params.bootcampId}/live/${params.sessionId}`} className="btn btn-primary" style={{ padding: '0 32px', height: 48, fontSize: '16px', borderRadius: 'var(--radius-full)' }}>
-                  Masuk Live Room <ExternalLink size={18} />
+                <Link href={`/mentee/bootcamp/${params.bootcampId}/live/${params.sessionId}`} style={{ textDecoration: 'none' }}>
+                  <motion.div
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
+                    className="btn btn-primary" 
+                    style={{ padding: '0 32px', height: 48, fontSize: '16px', borderRadius: 'var(--radius-full)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+                  >
+                    Masuk Live Room <ExternalLink size={18} />
+                  </motion.div>
                 </Link>
               </div>
             </div>
@@ -176,14 +184,16 @@ export default function BootcampSessionPage() {
                         style={{ width: '100%', padding: 12, borderRadius: 8, border: '1px solid var(--color-border)', outline: 'none' }} 
                       />
                     </div>
-                    <button 
+                    <motion.button 
+                      whileHover={{ scale: (!linkUrl && !fileUrl) || submitMutation.isPending ? 1 : 1.02 }}
+                      whileTap={{ scale: (!linkUrl && !fileUrl) || submitMutation.isPending ? 1 : 0.98 }}
                       disabled={(!linkUrl && !fileUrl) || submitMutation.isPending}
                       onClick={() => submitMutation.mutate()}
                       className="btn btn-primary"
                       style={{ marginTop: 10, width: '100%', opacity: (!linkUrl && !fileUrl) ? 0.5 : 1 }}
                     >
                       <Send size={18} /> {submitMutation.isPending ? 'Mengirim...' : 'Kumpulkan Tugas'}
-                    </button>
+                    </motion.button>
                   </div>
                 )}
               </div>
