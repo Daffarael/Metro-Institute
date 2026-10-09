@@ -384,19 +384,22 @@ export default function BootcampSyllabusPage() {
     if (activeType === 'session' && overType === 'session' && active.id !== over.id) {
       // Reorder Sessions (assuming they are in the SAME chapter for now)
       setLocalChapters(prev => {
-        const newChapters = [...prev]
-        // Find which chapter holds the active session
-        const chapterIndex = newChapters.findIndex(c => c.sessions.some(s => `session-${s.id}` === active.id))
+        const chapterIndex = prev.findIndex(c => c.sessions.some(s => `session-${s.id}` === active.id))
         if (chapterIndex === -1) return prev
 
-        const oldIndex = newChapters[chapterIndex].sessions.findIndex(s => `session-${s.id}` === active.id)
-        const newIndex = newChapters[chapterIndex].sessions.findIndex(s => `session-${s.id}` === over.id)
+        const oldIndex = prev[chapterIndex].sessions.findIndex(s => `session-${s.id}` === active.id)
+        const newIndex = prev[chapterIndex].sessions.findIndex(s => `session-${s.id}` === over.id)
         
-        // Reorder
-        newChapters[chapterIndex].sessions = arrayMove(newChapters[chapterIndex].sessions, oldIndex, newIndex)
+        const newSessions = arrayMove(prev[chapterIndex].sessions, oldIndex, newIndex)
+        
+        const newChapters = [...prev]
+        newChapters[chapterIndex] = {
+          ...prev[chapterIndex],
+          sessions: newSessions
+        }
         
         // API Call for session reordering
-        const payload = newChapters[chapterIndex].sessions.map((s, i) => ({ id: s.id, order: i }))
+        const payload = newSessions.map((s, i) => ({ id: s.id, order: i }))
         reorderSessionMutation.mutate({ sessions: payload })
         
         return newChapters
