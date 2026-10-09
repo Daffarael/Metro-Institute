@@ -6,7 +6,7 @@
 import {  useState , useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query'
 import { useParams } from 'next/navigation'
-import { Plus, GripVertical, Trash2, X } from 'lucide-react'
+import { Plus, GripVertical, Trash2, X, Info } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
 import api from '@/lib/axios'
 import AdminPageHeader from '@/components/admin/AdminPageHeader'
@@ -162,8 +162,9 @@ export default function MiniCourseCurriculumPage() {
         }
       />
 
-      <div style={{ padding: 'var(--space-3) var(--space-4)', borderRadius: 'var(--radius-md)', background: 'var(--color-info-bg)', color: 'var(--color-info)', fontSize: 'var(--text-xs)', fontWeight: 500, marginBottom: 'var(--space-5)', border: '1px solid #BFDBFE' }}>
-        💡 Tipe sesi tersedia: VIDEO, MATERIAL, QUIZ. Mini Course tidak memiliki sesi LIVE.
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-text-tertiary)', fontSize: '13px', marginBottom: '24px' }}>
+        <Info size={14} />
+        <span>Tipe sesi tersedia: VIDEO, MATERIAL, dan QUIZ. Khusus Mini Course tidak ada sesi LIVE.</span>
       </div>
 
       {isLoading ? <AdminTableSkeleton rows={6} cols={5} /> : (
