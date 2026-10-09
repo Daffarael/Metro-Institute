@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { api } from '@/lib/axios'
-import { Loader2, CheckCircle, ShieldCheck, Calendar, User, BookOpen } from 'lucide-react'
+import { Loader2, CheckCircle, ShieldCheck, Calendar, User, BookOpen, AlertCircle, Award } from 'lucide-react'
 import { format } from 'date-fns'
 import { id } from 'date-fns/locale'
 import { useParams } from 'next/navigation'
@@ -26,20 +26,22 @@ export default function VerifyCertificatePage() {
 
   if (isLoading) {
     return (
-      <div style={{ minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f8fafc' }}>
-        <Loader2 size={32} className="animate-spin text-primary" />
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <Loader2 className="w-10 h-10 animate-spin text-primary" />
       </div>
     )
   }
 
   if (error || !data) {
     return (
-      <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#fff', padding: 24, textAlign: 'center' }}>
-        <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'rgba(16, 185, 129, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24 }}>
-          <ShieldCheck size={40} color="var(--color-primary)" />
+      <div className="min-h-screen flex flex-col items-center justify-center bg-white p-6 text-center">
+        <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-6">
+          <AlertCircle className="w-10 h-10 text-primary" />
         </div>
-        <h1 style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-primary)', marginBottom: 8 }}>Verifikasi Gagal</h1>
-        <p style={{ color: '#047857', maxWidth: 400 }}>Sertifikat dengan ID <strong>{credentialId}</strong> tidak ditemukan atau tidak valid di database kami.</p>
+        <h1 className="text-2xl font-bold text-primary mb-2">Verifikasi Gagal</h1>
+        <p className="text-primary/70 max-w-md">
+          Sertifikat dengan ID kredensial <strong className="text-primary">{credentialId}</strong> tidak ditemukan atau tidak valid di database Metro Institute.
+        </p>
       </div>
     )
   }
@@ -49,66 +51,76 @@ export default function VerifyCertificatePage() {
   const typeLabel = data.productType === 'MINI_COURSE' ? 'Mini Course' : 'Bootcamp'
 
   return (
-    <div style={{ minHeight: '100dvh', background: '#fff', padding: '40px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', fontFamily: 'var(--font-sans)' }}>
-      <div style={{ width: '100%', maxWidth: 600, background: '#fff', borderRadius: 24, overflow: 'hidden', border: '1px solid rgba(16, 185, 129, 0.3)', boxShadow: '0 10px 40px rgba(16, 185, 129, 0.05)' }}>
-        {/* Header */}
-        <div style={{ background: '#fff', padding: '40px 24px', textAlign: 'center', position: 'relative', borderBottom: '1px solid rgba(16, 185, 129, 0.2)' }}>
-          <ShieldCheck size={56} color="var(--color-primary)" style={{ margin: '0 auto 16px' }} />
-          <h1 style={{ fontSize: '28px', fontWeight: 800, marginBottom: 8, color: 'var(--color-primary)', letterSpacing: '-0.02em' }}>Sertifikat Valid</h1>
-          <p style={{ color: '#047857', fontSize: '15px' }}>Sertifikat ini resmi diterbitkan oleh Metro Institute.</p>
-        </div>
-
-        {/* Content */}
-        <div style={{ padding: '40px 32px' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '11px', fontWeight: 700, color: '#059669', textTransform: 'uppercase', letterSpacing: 2, marginBottom: 8 }}>ID Kredensial</div>
-              <div style={{ fontSize: '18px', fontWeight: 700, color: 'var(--color-primary)', fontFamily: 'monospace', background: 'rgba(16, 185, 129, 0.05)', padding: '12px 24px', borderRadius: 12, display: 'inline-block', border: '1px solid rgba(16, 185, 129, 0.1)' }}>{data.credentialId}</div>
+    <div className="min-h-screen bg-white py-12 px-4 sm:px-6 flex flex-col items-center font-sans">
+      <div className="w-full max-w-3xl bg-white border border-primary/20 shadow-2xl shadow-primary/5 rounded-none">
+        
+        {/* Header - Formal & Solid */}
+        <div className="bg-primary px-8 py-10 flex flex-col sm:flex-row items-center sm:items-start justify-between relative overflow-hidden">
+          <div className="absolute -right-10 -top-10 opacity-10">
+            <Award className="w-64 h-64 text-white" />
+          </div>
+          <div className="relative z-10 flex items-center gap-4 mb-4 sm:mb-0">
+            <div className="w-16 h-16 bg-white flex items-center justify-center rounded-sm">
+              <ShieldCheck className="w-8 h-8 text-primary" />
             </div>
-
-            <div style={{ height: 1, background: 'rgba(16, 185, 129, 0.15)' }} />
-
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 20 }}>
-              <div style={{ width: 48, height: 48, borderRadius: 16, background: 'rgba(16, 185, 129, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-primary)', flexShrink: 0 }}>
-                <User size={24} strokeWidth={2.5} />
-              </div>
-              <div style={{ paddingTop: 2 }}>
-                <div style={{ fontSize: '11px', fontWeight: 700, color: '#059669', textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 4 }}>Diberikan Kepada</div>
-                <div style={{ fontSize: '20px', fontWeight: 800, color: 'var(--color-primary)' }}>{data.user?.name}</div>
-              </div>
+            <div className="text-left">
+              <h1 className="text-2xl font-black text-white tracking-tight uppercase">Sertifikat Valid</h1>
+              <p className="text-white/80 text-sm font-medium tracking-wide">Sistem Verifikasi Metro Institute</p>
             </div>
-
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 20 }}>
-              <div style={{ width: 48, height: 48, borderRadius: 16, background: 'rgba(16, 185, 129, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-primary)', flexShrink: 0 }}>
-                <BookOpen size={24} strokeWidth={2.5} />
-              </div>
-              <div style={{ paddingTop: 2 }}>
-                <div style={{ fontSize: '11px', fontWeight: 700, color: '#059669', textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 4 }}>Program ({typeLabel})</div>
-                <div style={{ fontSize: '20px', fontWeight: 800, color: 'var(--color-primary)' }}>{title}</div>
-                <div style={{ fontSize: '14px', color: '#047857', marginTop: 4, fontWeight: 500 }}>Bidang: {field}</div>
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 20 }}>
-              <div style={{ width: 48, height: 48, borderRadius: 16, background: 'rgba(16, 185, 129, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-primary)', flexShrink: 0 }}>
-                <Calendar size={24} strokeWidth={2.5} />
-              </div>
-              <div style={{ paddingTop: 2 }}>
-                <div style={{ fontSize: '11px', fontWeight: 700, color: '#059669', textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 4 }}>Tanggal Penerbitan</div>
-                <div style={{ fontSize: '18px', fontWeight: 700, color: 'var(--color-primary)' }}>
-                  {format(new Date(data.issuedAt), 'd MMMM yyyy', { locale: id })}
-                </div>
-              </div>
+          </div>
+          <div className="relative z-10 text-center sm:text-right mt-4 sm:mt-0">
+            <div className="text-white/70 text-xs font-bold uppercase tracking-widest mb-1">Status</div>
+            <div className="inline-flex items-center gap-2 bg-white text-primary px-3 py-1 text-sm font-bold uppercase tracking-wider rounded-sm">
+              <CheckCircle className="w-4 h-4" /> Terverifikasi
             </div>
           </div>
         </div>
 
-        {/* Footer */}
-        <div style={{ background: 'rgba(16, 185, 129, 0.03)', padding: '24px', borderTop: '1px solid rgba(16, 185, 129, 0.2)', textAlign: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, color: 'var(--color-primary)', fontWeight: 700, fontSize: '15px' }}>
-            <CheckCircle size={20} strokeWidth={2.5} /> Verifikasi Berhasil
+        {/* Content - Data Sheet Style */}
+        <div className="p-8 sm:p-12">
+          <div className="mb-10 text-center sm:text-left">
+            <p className="text-primary/70 text-sm font-medium leading-relaxed max-w-2xl">
+              Dokumen ini menyatakan bahwa sertifikat berikut adalah sah dan tercatat di dalam database resmi Metro Institute. Detail kredensial dapat dilihat pada informasi di bawah ini.
+            </p>
           </div>
-          <p style={{ fontSize: '13px', color: '#047857', marginTop: 8, fontWeight: 500 }}>Halaman ini adalah bukti verifikasi sah dari sistem Metro Institute.</p>
+
+          <div className="border border-primary/20 rounded-sm overflow-hidden">
+            <table className="w-full text-left border-collapse">
+              <tbody>
+                <tr className="border-b border-primary/10 bg-primary/[0.02]">
+                  <th className="py-4 px-6 w-1/3 text-xs font-bold text-primary/60 uppercase tracking-wider border-r border-primary/10">ID Kredensial</th>
+                  <td className="py-4 px-6 font-mono text-base font-bold text-primary">{data.credentialId}</td>
+                </tr>
+                <tr className="border-b border-primary/10">
+                  <th className="py-4 px-6 w-1/3 text-xs font-bold text-primary/60 uppercase tracking-wider border-r border-primary/10">Diberikan Kepada</th>
+                  <td className="py-4 px-6 text-xl font-black text-primary capitalize">{data.user?.name}</td>
+                </tr>
+                <tr className="border-b border-primary/10 bg-primary/[0.02]">
+                  <th className="py-4 px-6 w-1/3 text-xs font-bold text-primary/60 uppercase tracking-wider border-r border-primary/10">Program Selesai</th>
+                  <td className="py-4 px-6">
+                    <div className="font-bold text-lg text-primary">{title}</div>
+                    <div className="text-sm font-medium text-primary/70 mt-1 flex items-center gap-2">
+                      <span className="uppercase text-[10px] tracking-wider border border-primary/30 px-2 py-0.5 rounded-sm">{typeLabel}</span>
+                      <span>Bidang: {field?.replace('_', ' ')}</span>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <th className="py-4 px-6 w-1/3 text-xs font-bold text-primary/60 uppercase tracking-wider border-r border-primary/10">Tanggal Terbit</th>
+                  <td className="py-4 px-6 font-bold text-primary">
+                    {format(new Date(data.issuedAt), 'dd MMMM yyyy', { locale: id })}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div className="mt-12 text-center flex flex-col items-center">
+            <div className="w-16 h-[1px] bg-primary/20 mb-6"></div>
+            <p className="text-xs font-semibold text-primary/60 uppercase tracking-widest">
+              © {new Date().getFullYear()} Metro Institute. All rights reserved.
+            </p>
+          </div>
         </div>
       </div>
     </div>
