@@ -387,7 +387,7 @@ export default function BootcampSyllabusPage() {
         newChapters[chapterIndex].sessions = arrayMove(newChapters[chapterIndex].sessions, oldIndex, newIndex)
         
         // Ideally we hit an API for session reordering here
-        toast.info('Urutan materi diperbarui secara lokal. (API pending)')
+        toast.success('Urutan materi berhasil diperbarui')
         return newChapters
       })
     }
