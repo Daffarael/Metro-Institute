@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { api } from '@/lib/axios'
-import { Loader2, CheckCircle, ShieldCheck, Calendar, User, BookOpen, AlertCircle, Award } from 'lucide-react'
+import { Loader2, CheckCircle, ShieldCheck, AlertCircle } from 'lucide-react'
 import { format } from 'date-fns'
 import { id } from 'date-fns/locale'
 import { useParams } from 'next/navigation'
@@ -27,7 +27,7 @@ export default function VerifyCertificatePage() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
-        <Loader2 className="w-10 h-10 animate-spin text-primary" />
+        <Loader2 className="w-10 h-10 animate-spin text-[#059669]" />
       </div>
     )
   }
@@ -35,12 +35,12 @@ export default function VerifyCertificatePage() {
   if (error || !data) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-white p-6 text-center">
-        <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-6">
-          <AlertCircle className="w-10 h-10 text-primary" />
+        <div className="w-20 h-20 rounded-full bg-[#059669]/10 flex items-center justify-center mb-6">
+          <AlertCircle className="w-10 h-10 text-[#059669]" />
         </div>
-        <h1 className="text-2xl font-bold text-primary mb-2">Verifikasi Gagal</h1>
-        <p className="text-primary/70 max-w-md">
-          Sertifikat dengan ID kredensial <strong className="text-primary">{credentialId}</strong> tidak ditemukan atau tidak valid di database Metro Institute.
+        <h1 className="text-2xl font-bold text-[#059669] mb-2">Verifikasi Gagal</h1>
+        <p className="text-[#059669]/70 max-w-md">
+          Sertifikat dengan ID <strong className="text-[#059669]">{credentialId}</strong> tidak valid atau tidak ditemukan di database kami.
         </p>
       </div>
     )
@@ -51,77 +51,56 @@ export default function VerifyCertificatePage() {
   const typeLabel = data.productType === 'MINI_COURSE' ? 'Mini Course' : 'Bootcamp'
 
   return (
-    <div className="min-h-screen bg-white py-12 px-4 sm:px-6 flex flex-col items-center font-sans">
-      <div className="w-full max-w-3xl bg-white border border-primary/20 shadow-2xl shadow-primary/5 rounded-none">
+    <div className="min-h-screen bg-white py-16 px-4 flex flex-col items-center font-sans">
+      <div className="w-full max-w-2xl bg-white rounded-3xl border border-[#10b981]/20 shadow-[0_8px_40px_rgb(16,185,129,0.06)] overflow-hidden">
         
-        {/* Header - Formal & Solid */}
-        <div className="bg-primary px-8 py-10 flex flex-col sm:flex-row items-center sm:items-start justify-between relative overflow-hidden">
-          <div className="absolute -right-10 -top-10 opacity-10">
-            <Award className="w-64 h-64 text-white" />
+        <div className="p-10 sm:p-14 pb-8 text-center">
+          <div className="w-20 h-20 bg-[#059669]/5 rounded-full flex items-center justify-center mx-auto mb-6">
+            <ShieldCheck className="w-10 h-10 text-[#059669]" />
           </div>
-          <div className="relative z-10 flex items-center gap-4 mb-4 sm:mb-0">
-            <div className="w-16 h-16 bg-white flex items-center justify-center rounded-sm">
-              <ShieldCheck className="w-8 h-8 text-primary" />
+          <h1 className="text-3xl font-bold text-[#059669] mb-3 tracking-tight">Sertifikat Valid</h1>
+          <p className="text-[#059669]/70 text-base font-medium">Dokumen ini adalah bukti sah yang diterbitkan oleh Metro Institute.</p>
+        </div>
+
+        <div className="px-10 sm:px-14 pb-14">
+          <div className="w-full h-px bg-[#10b981]/20 mb-10"></div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-y-10 gap-x-8">
+            <div className="md:col-span-2">
+              <p className="text-xs font-bold text-[#059669]/50 uppercase tracking-[0.2em] mb-2">Diberikan Kepada</p>
+              <p className="text-2xl font-bold text-[#059669] capitalize">{data.user?.name}</p>
             </div>
-            <div className="text-left">
-              <h1 className="text-2xl font-black text-white tracking-tight uppercase">Sertifikat Valid</h1>
-              <p className="text-white/80 text-sm font-medium tracking-wide">Sistem Verifikasi Metro Institute</p>
+
+            <div className="md:col-span-2">
+              <p className="text-xs font-bold text-[#059669]/50 uppercase tracking-[0.2em] mb-2">Program ({typeLabel})</p>
+              <p className="text-xl font-semibold text-[#059669] leading-snug">{title}</p>
+              {field && <p className="text-sm font-medium text-[#059669]/70 mt-1.5">Bidang: {field.replace(/_/g, ' ')}</p>}
             </div>
-          </div>
-          <div className="relative z-10 text-center sm:text-right mt-4 sm:mt-0">
-            <div className="text-white/70 text-xs font-bold uppercase tracking-widest mb-1">Status</div>
-            <div className="inline-flex items-center gap-2 bg-white text-primary px-3 py-1 text-sm font-bold uppercase tracking-wider rounded-sm">
-              <CheckCircle className="w-4 h-4" /> Terverifikasi
+
+            <div>
+              <p className="text-xs font-bold text-[#059669]/50 uppercase tracking-[0.2em] mb-2">ID Kredensial</p>
+              <p className="text-base font-mono font-semibold text-[#059669]">{data.credentialId}</p>
+            </div>
+
+            <div>
+              <p className="text-xs font-bold text-[#059669]/50 uppercase tracking-[0.2em] mb-2">Tanggal Terbit</p>
+              <p className="text-base font-semibold text-[#059669]">
+                {format(new Date(data.issuedAt), 'dd MMMM yyyy', { locale: id })}
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Content - Data Sheet Style */}
-        <div className="p-8 sm:p-12">
-          <div className="mb-10 text-center sm:text-left">
-            <p className="text-primary/70 text-sm font-medium leading-relaxed max-w-2xl">
-              Dokumen ini menyatakan bahwa sertifikat berikut adalah sah dan tercatat di dalam database resmi Metro Institute. Detail kredensial dapat dilihat pada informasi di bawah ini.
-            </p>
-          </div>
-
-          <div className="border border-primary/20 rounded-sm overflow-hidden">
-            <table className="w-full text-left border-collapse">
-              <tbody>
-                <tr className="border-b border-primary/10 bg-primary/[0.02]">
-                  <th className="py-4 px-6 w-1/3 text-xs font-bold text-primary/60 uppercase tracking-wider border-r border-primary/10">ID Kredensial</th>
-                  <td className="py-4 px-6 font-mono text-base font-bold text-primary">{data.credentialId}</td>
-                </tr>
-                <tr className="border-b border-primary/10">
-                  <th className="py-4 px-6 w-1/3 text-xs font-bold text-primary/60 uppercase tracking-wider border-r border-primary/10">Diberikan Kepada</th>
-                  <td className="py-4 px-6 text-xl font-black text-primary capitalize">{data.user?.name}</td>
-                </tr>
-                <tr className="border-b border-primary/10 bg-primary/[0.02]">
-                  <th className="py-4 px-6 w-1/3 text-xs font-bold text-primary/60 uppercase tracking-wider border-r border-primary/10">Program Selesai</th>
-                  <td className="py-4 px-6">
-                    <div className="font-bold text-lg text-primary">{title}</div>
-                    <div className="text-sm font-medium text-primary/70 mt-1 flex items-center gap-2">
-                      <span className="uppercase text-[10px] tracking-wider border border-primary/30 px-2 py-0.5 rounded-sm">{typeLabel}</span>
-                      <span>Bidang: {field?.replace('_', ' ')}</span>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <th className="py-4 px-6 w-1/3 text-xs font-bold text-primary/60 uppercase tracking-wider border-r border-primary/10">Tanggal Terbit</th>
-                  <td className="py-4 px-6 font-bold text-primary">
-                    {format(new Date(data.issuedAt), 'dd MMMM yyyy', { locale: id })}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div className="mt-12 text-center flex flex-col items-center">
-            <div className="w-16 h-[1px] bg-primary/20 mb-6"></div>
-            <p className="text-xs font-semibold text-primary/60 uppercase tracking-widest">
-              © {new Date().getFullYear()} Metro Institute. All rights reserved.
-            </p>
+        <div className="bg-[#059669]/5 p-6 border-t border-[#10b981]/10 flex flex-col sm:flex-row items-center justify-center gap-3">
+          <div className="flex items-center gap-2 text-[#059669] font-semibold text-sm">
+            <CheckCircle className="w-5 h-5" /> Verifikasi Berhasil
           </div>
         </div>
+
+      </div>
+      
+      <div className="mt-8 text-center text-[#059669]/40 text-xs font-medium uppercase tracking-widest">
+        © {new Date().getFullYear()} Metro Institute
       </div>
     </div>
   )
