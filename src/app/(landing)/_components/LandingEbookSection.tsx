@@ -39,8 +39,8 @@ export default function LandingEbookSection({ config }: LandingEbookSectionProps
 
   const onSubmit = async (data: EbookForm) => {
     try {
-      // Mock API for now since backend /leads is not fully discussed yet, but we will call it anyway
-      await api.post('/leads', data).catch(() => {
+      const payload = { ...data, source: `Ebook: ${title}` }
+      await api.post('/leads', payload).catch(() => {
         // Ignored for now if endpoint doesn't exist, UX priority
       })
       toast.success('Sukses! Link ebook akan dikirim ke WhatsApp Anda.')
