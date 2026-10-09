@@ -202,7 +202,7 @@ export default function CourseLearningPlayerPage() {
               display: 'flex', justifyContent: 'center', alignItems: 'center',
               zIndex: 5,
             }}>
-              <div style={{ width: '100%', maxWidth: '900px', aspectRatio: '16/9', maxHeight: '50vh' }}>
+              <div style={{ width: '100%', maxWidth: '700px', aspectRatio: '16/9', maxHeight: '40vh' }}>
                 {(() => {
                   const url = currentSession.videoUrl;
                   const isDrive = url.includes('drive.google.com');
