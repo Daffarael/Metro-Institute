@@ -193,25 +193,31 @@ export default function CertificatesPage() {
               <div key={cert.id} className="card animate-fade-in-up" style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                 {/* Certificate design header */}
                 <div style={{
-                  height: 120, position: 'relative', overflow: 'hidden',
-                  background: product?.thumbnailUrl 
-                      ? `url(${product.thumbnailUrl}) center/cover no-repeat #f8fafc`
-                      : 'linear-gradient(135deg, var(--color-primary) 0%, #01a96b 50%, var(--color-accent) 100%)',
+                  aspectRatio: '16/9', position: 'relative', overflow: 'hidden',
+                  background: product?.thumbnailUrl ? '#f8fafc' : 'linear-gradient(135deg, var(--color-primary) 0%, #01a96b 50%, var(--color-accent) 100%)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  borderBottom: '1px solid var(--color-border-subtle)',
                 }}>
-                  {!(product?.thumbnailUrl) && (
-                    <div style={{
-                      position: 'absolute', inset: 0,
-                      background: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.03) 10px, rgba(255,255,255,0.03) 20px)',
-                    }} />
+                  {product?.thumbnailUrl && (
+                    <img
+                      src={product.thumbnailUrl}
+                      alt={title}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
                   )}
                   {!(product?.thumbnailUrl) && (
-                    <div style={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
-                      <div style={{ fontSize: 36 }}>{FIELD_ICONS[field]}</div>
-                      <div style={{ color: 'rgba(255,255,255,0.9)', fontSize: '11px', fontWeight: 600, marginTop: 4 }}>
-                        SERTIFIKAT {typeLabel.toUpperCase()}
+                    <>
+                      <div style={{
+                        position: 'absolute', inset: 0,
+                        background: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.03) 10px, rgba(255,255,255,0.03) 20px)',
+                      }} />
+                      <div style={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
+                        <div style={{ fontSize: 36 }}>{FIELD_ICONS[field]}</div>
+                        <div style={{ color: 'rgba(255,255,255,0.9)', fontSize: '11px', fontWeight: 600, marginTop: 4 }}>
+                          SERTIFIKAT {typeLabel.toUpperCase()}
+                        </div>
                       </div>
-                    </div>
+                    </>
                   )}
                   {/* Metro watermark */}
                   <div style={{
