@@ -40,6 +40,7 @@ function AddSessionModal({ courseId, editSession, onClose }: { courseId: string;
     type: editSession?.type || ('VIDEO' as CourseSession['type']), 
     videoUrl: editSession?.videoUrl || '', 
     materialUrl: (editSession?.materials as any)?.[0]?.url || '', 
+    assignmentDescription: (editSession as any)?.assignmentDescription || '',
     isPreview: editSession?.isFreePreview || false 
   })
 
@@ -117,6 +118,17 @@ return (
             <div>
               <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 4 }}>URL Materi</label>
               <input value={form.materialUrl} onChange={e => f('materialUrl', e.target.value)} placeholder="https://..." style={inputStyle} />
+            </div>
+          )}
+          {form.type === 'QUIZ' && (
+            <div>
+              <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 4 }}>Instruksi / Soal Kuis (Opsional)</label>
+              <textarea 
+                value={form.assignmentDescription} 
+                onChange={e => f('assignmentDescription', e.target.value)} 
+                placeholder="Tulis instruksi tugas, soal kuis, atau cantumkan link Google Form di sini..." 
+                style={{ ...inputStyle, minHeight: 80, resize: 'vertical' }} 
+              />
             </div>
           )}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

@@ -140,26 +140,26 @@ export default function CourseLearningPlayerPage() {
   const { course, chapters, currentSession, prevSessionId, nextSessionId } = data
 
   return (
-    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: '#0f172a' }}>
+    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: '#f8fafc' }}>
       {/* -- Top Header --------------------------------------- */}
       <header style={{
-        background: '#0f172a',
-        borderBottom: '1px solid #1e293b',
+        background: '#fff',
+        borderBottom: '1px solid #e2e8f0',
         height: 64, padding: '0 24px',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0,
         zIndex: 10,
       }}>
         <Link href={ROUTES.LEARN_COURSE(courseId)} style={{
           display: 'flex', alignItems: 'center', gap: 12,
-          color: '#e2e8f0', textDecoration: 'none', fontSize: '15px', fontWeight: 600,
+          color: '#334155', textDecoration: 'none', fontSize: '15px', fontWeight: 600,
           transition: 'color 0.2s',
         }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = '#fff')}
-          onMouseLeave={(e) => (e.currentTarget.style.color = '#e2e8f0')}
+          onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--color-primary)')}
+          onMouseLeave={(e) => (e.currentTarget.style.color = '#334155')}
         >
           <div style={{
-            width: 32, height: 32, borderRadius: '50%', background: 'rgba(255,255,255,0.1)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center'
+            width: 32, height: 32, borderRadius: '50%', background: '#f1f5f9',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b'
           }}>
             <ChevronLeft size={18} />
           </div>
@@ -168,10 +168,10 @@ export default function CourseLearningPlayerPage() {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, width: 200 }}>
-            <div style={{ flex: 1, height: 6, background: '#1e293b', borderRadius: 3, overflow: 'hidden' }}>
+            <div style={{ flex: 1, height: 8, background: '#e2e8f0', borderRadius: 4, overflow: 'hidden' }}>
               <div style={{ height: '100%', background: 'var(--color-primary)', width: `${data.progress}%`, transition: 'width 0.5s ease' }} />
             </div>
-            <span style={{ fontSize: '13px', fontWeight: 600, color: '#94a3b8', whiteSpace: 'nowrap' }}>
+            <span style={{ fontSize: '13px', fontWeight: 600, color: '#475569', whiteSpace: 'nowrap' }}>
               {data.progress}% Selesai
             </span>
           </div>
@@ -192,14 +192,14 @@ export default function CourseLearningPlayerPage() {
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         
         {/* Left Side: Video & Content */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: 'var(--color-bg)', overflow: 'hidden' }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#fff', overflow: 'hidden' }}>
           
           {/* Video Player */}
           {currentSession.type === 'VIDEO' && currentSession.videoUrl ? (
             <div style={{
               background: '#000', width: '100%', flexShrink: 0,
               display: 'flex', justifyContent: 'center', alignItems: 'center',
-              boxShadow: '0 10px 30px rgba(0,0,0,0.1)', zIndex: 5,
+              zIndex: 5,
             }}>
               <div style={{ width: '100%', maxWidth: '1200px', aspectRatio: '16/9', maxHeight: '65vh' }}>
                 {(() => {
@@ -212,17 +212,37 @@ export default function CourseLearningPlayerPage() {
                       controls
                       onProgress={handleProgress as any}
                       onEnded={() => { if (!completeTriggerRef.current) { completeTriggerRef.current = true; completeMutation.mutate() } }}
-                      config={{ file: { attributes: { controlsList: 'nodownload' } } } as any}
+                      config={{
+                        youtube: { playerVars: { origin: typeof window !== 'undefined' ? window.location.origin : '' } },
+                        file: { attributes: { controlsList: 'nodownload' } }
+                      } as any}
                     />
                   );
                 })()}
               </div>
             </div>
+          ) : currentSession.type === 'ASSIGNMENT' ? (
+            <div style={{
+              background: '#f8fafc', width: '100%', padding: '60px 20px',
+              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+              borderBottom: '1px solid #e2e8f0'
+            }}>
+              <div style={{
+                width: 64, height: 64, borderRadius: 16, background: 'rgba(16, 185, 129, 0.1)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16
+              }}>
+                <FileText size={32} color="var(--color-primary)" />
+              </div>
+              <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#1e293b', marginBottom: 8 }}>Sesi Tugas / Kuis</h2>
+              <p style={{ color: '#475569', fontSize: '14px', maxWidth: 400, textAlign: 'center' }}>
+                Silakan lihat instruksi tugas/kuis dan kerjakan. Tandai sebagai selesai jika Anda sudah menyelesaikannya.
+              </p>
+            </div>
           ) : (
             <div style={{
-              background: '#0f172a', width: '100%', padding: '60px 20px',
+              background: '#f8fafc', width: '100%', padding: '60px 20px',
               display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-              borderBottom: '1px solid #1e293b'
+              borderBottom: '1px solid #e2e8f0'
             }}>
               <div style={{
                 width: 64, height: 64, borderRadius: 16, background: 'rgba(16, 185, 129, 0.1)',
@@ -230,10 +250,22 @@ export default function CourseLearningPlayerPage() {
               }}>
                 <BookOpen size={32} color="var(--color-primary)" />
               </div>
-              <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#fff', marginBottom: 8 }}>Sesi Teks / Tugas</h2>
-              <p style={{ color: '#94a3b8', fontSize: '14px', maxWidth: 400, textAlign: 'center' }}>
-                Pelajari materi di bawah ini dan tandai sebagai selesai jika Anda sudah memahaminya.
+              <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#1e293b', marginBottom: 8 }}>Sesi Materi Teks</h2>
+              <p style={{ color: '#475569', fontSize: '14px', maxWidth: 400, textAlign: 'center', marginBottom: 24 }}>
+                Silakan pelajari materi untuk sesi ini melalui tautan di bawah.
               </p>
+              {currentSession.materials && currentSession.materials.length > 0 && (
+                 <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
+                   {currentSession.materials.map((mat: any) => (
+                     <a key={mat.url} href={mat.url} target="_blank" rel="noreferrer" style={{
+                       padding: '12px 24px', background: 'var(--color-primary)', color: 'white', 
+                       borderRadius: 8, textDecoration: 'none', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8
+                     }}>
+                       <Download size={18} /> Unduh / Buka Materi
+                     </a>
+                   ))}
+                 </div>
+              )}
             </div>
           )}
 
@@ -243,12 +275,12 @@ export default function CourseLearningPlayerPage() {
               {/* Header Info */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 32 }}>
                 <div>
-                  <h1 style={{ fontSize: '28px', fontWeight: 800, color: 'var(--color-text-primary)', marginBottom: 12, lineHeight: 1.3 }}>
+                  <h1 style={{ fontSize: '28px', fontWeight: 800, color: '#0f172a', marginBottom: 12, lineHeight: 1.3 }}>
                     {currentSession.title}
                   </h1>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
                     {currentSession.videoDuration && (
-                      <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '14px', fontWeight: 500, color: 'var(--color-text-secondary)' }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '14px', fontWeight: 500, color: '#64748b' }}>
                         <Clock size={16} /> {formatDuration(currentSession.videoDuration)}
                       </span>
                     )}
@@ -277,15 +309,15 @@ export default function CourseLearningPlayerPage() {
 
               {/* Tabs Container */}
               <div style={{
-                display: 'flex', gap: 8, marginBottom: 32, padding: 4,
-                background: 'var(--color-surface)', borderRadius: 16, border: '1px solid var(--color-border-subtle)',
-                width: 'max-content'
+                display: 'inline-flex', gap: 4, marginBottom: 32, padding: 6,
+                background: '#f1f5f9', borderRadius: 12, border: '1px solid #e2e8f0',
               }}>
                 {[
                   { id: 'overview', label: 'Ringkasan', icon: BookOpen },
                   { id: 'notes', label: 'Catatan', icon: StickyNote },
                   { id: 'qna', label: 'Tanya Jawab', icon: MessageSquare },
-                  { id: 'materials', label: 'Materi', icon: FileText },
+                  // Materi tab only if it's explicitly a TEXT/MATERI session
+                  ...(currentSession.type === 'TEXT' ? [{ id: 'materials', label: 'Materi', icon: FileText }] : [])
                 ].map((tab) => {
                   const isActive = activeTab === tab.id
                   return (
@@ -293,12 +325,13 @@ export default function CourseLearningPlayerPage() {
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id as typeof activeTab)}
                       style={{
-                        padding: '10px 20px', borderRadius: 12,
-                        border: 'none', cursor: 'pointer', fontSize: '14px', fontWeight: 600,
+                        padding: '8px 20px', borderRadius: 8,
+                        border: isActive ? '1px solid #e2e8f0' : '1px solid transparent', 
+                        cursor: 'pointer', fontSize: '14px', fontWeight: isActive ? 600 : 500,
                         display: 'flex', alignItems: 'center', gap: 8,
                         background: isActive ? '#fff' : 'transparent',
-                        color: isActive ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)',
-                        boxShadow: isActive ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
+                        color: isActive ? '#0f172a' : '#64748b',
+                        boxShadow: isActive ? '0 1px 2px rgba(0,0,0,0.05)' : 'none',
                         transition: 'all 0.2s'
                       }}
                     >
@@ -310,11 +343,11 @@ export default function CourseLearningPlayerPage() {
               </div>
 
               {/* Tab Content */}
-              <div style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border-subtle)', borderRadius: 24, padding: 32, minHeight: 400 }}>
+              <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 16, padding: 32, minHeight: 400 }}>
                 {activeTab === 'overview' && (
                   <div>
-                    <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: 16 }}>Tentang Sesi Ini</h2>
-                    <p style={{ color: 'var(--color-text-secondary)', lineHeight: 1.7, fontSize: '15px' }}>
+                    <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', marginBottom: 16 }}>Tentang Sesi Ini</h2>
+                    <p style={{ color: '#475569', lineHeight: 1.7, fontSize: '15px' }}>
                       {currentSession.assignmentDescription || "Sesi ini akan membahas materi secara mendalam sesuai kurikulum yang telah disusun. Pastikan Anda menyimak dengan baik."}
                     </p>
                   </div>
@@ -328,8 +361,8 @@ export default function CourseLearningPlayerPage() {
                         placeholder="Tulis catatan penting dari sesi ini..."
                         style={{
                           flex: 1, padding: '14px 20px', borderRadius: 12,
-                          border: '1px solid var(--color-border)', background: 'var(--color-bg)',
-                          fontSize: '15px', color: 'var(--color-text-primary)'
+                          border: '1px solid #e2e8f0', background: '#fff',
+                          fontSize: '15px', color: '#0f172a'
                         }}
                         onKeyDown={(e) => e.key === 'Enter' && addNoteMutation.mutate(note)}
                       />
@@ -348,20 +381,20 @@ export default function CourseLearningPlayerPage() {
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                       {(notes as Array<{ id: string; content: string; timestamp: number }>).map((n) => (
                         <div key={n.id} style={{
-                          padding: '16px 20px', border: '1px solid var(--color-border-subtle)',
-                          borderRadius: 16, background: 'var(--color-bg)', display: 'flex', alignItems: 'flex-start', gap: 16
+                          padding: '16px 20px', border: '1px solid #e2e8f0',
+                          borderRadius: 12, background: '#f8fafc', display: 'flex', alignItems: 'flex-start', gap: 16
                         }}>
                           <div style={{
                             padding: '4px 10px', background: 'rgba(16, 185, 129, 0.1)', color: 'var(--color-primary)',
-                            borderRadius: 8, fontSize: '12px', fontWeight: 700, fontFamily: 'monospace'
+                            borderRadius: 6, fontSize: '12px', fontWeight: 700, fontFamily: 'monospace'
                           }}>
                             {formatDuration(n.timestamp)}
                           </div>
-                          <p style={{ flex: 1, margin: 0, color: 'var(--color-text-secondary)', fontSize: '15px', lineHeight: 1.6 }}>{n.content}</p>
+                          <p style={{ flex: 1, margin: 0, color: '#475569', fontSize: '15px', lineHeight: 1.6 }}>{n.content}</p>
                         </div>
                       ))}
                       {notes.length === 0 && (
-                        <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--color-text-tertiary)' }}>
+                        <div style={{ textAlign: 'center', padding: '40px 0', color: '#94a3b8' }}>
                           <StickyNote size={48} opacity={0.2} style={{ margin: '0 auto 16px' }} />
                           <p>Belum ada catatan.</p>
                         </div>
@@ -378,8 +411,8 @@ export default function CourseLearningPlayerPage() {
                         placeholder="Ada pertanyaan? Tanyakan di sini..."
                         style={{
                           flex: 1, padding: '14px 20px', borderRadius: 12,
-                          border: '1px solid var(--color-border)', background: 'var(--color-bg)',
-                          fontSize: '15px'
+                          border: '1px solid #e2e8f0', background: '#fff',
+                          fontSize: '15px', color: '#0f172a'
                         }}
                         onKeyDown={(e) => e.key === 'Enter' && sendQnaMutation.mutate(qnaMessage)}
                       />
@@ -387,7 +420,7 @@ export default function CourseLearningPlayerPage() {
                         onClick={() => sendQnaMutation.mutate(qnaMessage)} disabled={sendQnaMutation.isPending || !qnaMessage.trim()}
                         style={{
                           padding: '0 24px', borderRadius: 12, border: 'none',
-                          background: '#1e293b', color: '#fff', fontWeight: 600,
+                          background: 'var(--color-primary)', color: '#fff', fontWeight: 600,
                           cursor: qnaMessage.trim() ? 'pointer' : 'not-allowed', opacity: qnaMessage.trim() ? 1 : 0.6,
                           display: 'flex', alignItems: 'center', gap: 8
                         }}
@@ -397,7 +430,7 @@ export default function CourseLearningPlayerPage() {
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                       {(qnaMessages as Array<{ id: string; content: string; user: { name: string }; createdAt: string }>).map((msg) => (
-                        <div key={msg.id} style={{ padding: '20px', border: '1px solid var(--color-border-subtle)', borderRadius: 16, background: 'var(--color-bg)' }}>
+                        <div key={msg.id} style={{ padding: '20px', border: '1px solid #e2e8f0', borderRadius: 12, background: '#f8fafc' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
                             <div style={{
                               width: 36, height: 36, borderRadius: '50%', background: '#e2e8f0',
@@ -406,15 +439,15 @@ export default function CourseLearningPlayerPage() {
                               {msg.user.name[0]}
                             </div>
                             <div>
-                              <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-text-primary)' }}>{msg.user.name}</div>
-                              <div style={{ fontSize: '12px', color: 'var(--color-text-tertiary)' }}>{new Date(msg.createdAt).toLocaleString('id-ID')}</div>
+                              <div style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a' }}>{msg.user.name}</div>
+                              <div style={{ fontSize: '12px', color: '#64748b' }}>{new Date(msg.createdAt).toLocaleString('id-ID')}</div>
                             </div>
                           </div>
-                          <p style={{ fontSize: '15px', color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>{msg.content}</p>
+                          <p style={{ fontSize: '15px', color: '#334155', lineHeight: 1.6 }}>{msg.content}</p>
                         </div>
                       ))}
                       {qnaMessages.length === 0 && (
-                        <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--color-text-tertiary)' }}>
+                        <div style={{ textAlign: 'center', padding: '40px 0', color: '#94a3b8' }}>
                           <MessageSquare size={48} opacity={0.2} style={{ margin: '0 auto 16px' }} />
                           <p>Jadilah yang pertama bertanya!</p>
                         </div>
@@ -423,22 +456,22 @@ export default function CourseLearningPlayerPage() {
                   </div>
                 )}
 
-                {activeTab === 'materials' && (
+                {activeTab === 'materials' && currentSession.type === 'TEXT' && (
                   <div>
-                    <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: 20 }}>Materi Pendukung</h2>
+                    <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', marginBottom: 20 }}>Materi Pendukung</h2>
                     {currentSession.materials && currentSession.materials.length > 0 ? (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                        {currentSession.materials.map((mat) => (
+                        {currentSession.materials.map((mat: any) => (
                           <a
                             key={mat.url} href={mat.url} target="_blank" rel="noopener noreferrer"
                             style={{
                               display: 'flex', alignItems: 'center', gap: 16,
-                              padding: '16px 20px', border: '1px solid var(--color-border-subtle)',
-                              borderRadius: 16, textDecoration: 'none', background: 'var(--color-bg)',
-                              color: 'var(--color-text-primary)', transition: 'all 0.2s',
+                              padding: '16px 20px', border: '1px solid #e2e8f0',
+                              borderRadius: 12, textDecoration: 'none', background: '#fff',
+                              color: '#0f172a', transition: 'all 0.2s',
                             }}
                             onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-primary)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.05)' }}
-                            onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-border-subtle)'; e.currentTarget.style.boxShadow = 'none' }}
+                            onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.boxShadow = 'none' }}
                           >
                             <div style={{ width: 40, height: 40, borderRadius: 10, background: 'rgba(16, 185, 129, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                               <FileText size={20} color="var(--color-primary)" />
@@ -451,7 +484,7 @@ export default function CourseLearningPlayerPage() {
                         ))}
                       </div>
                     ) : (
-                      <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--color-text-tertiary)' }}>
+                      <div style={{ textAlign: 'center', padding: '40px 0', color: '#94a3b8' }}>
                         <FileText size={48} opacity={0.2} style={{ margin: '0 auto 16px' }} />
                         <p>Tidak ada materi tambahan untuk sesi ini.</p>
                       </div>
@@ -466,27 +499,27 @@ export default function CourseLearningPlayerPage() {
         {/* Right Side: Curriculum Sidebar */}
         <div style={{
           width: 360, background: '#fff',
-          borderLeft: '1px solid var(--color-border)',
+          borderLeft: '1px solid #e2e8f0',
           display: 'flex', flexDirection: 'column', flexShrink: 0,
           boxShadow: '-4px 0 24px rgba(0,0,0,0.02)', zIndex: 10
         }}>
-          <div style={{ padding: '24px', borderBottom: '1px solid var(--color-border-subtle)' }}>
-            <h3 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--color-text-primary)' }}>Kurikulum Kelas</h3>
+          <div style={{ padding: '24px', borderBottom: '1px solid #e2e8f0' }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>Kurikulum Kelas</h3>
             <div style={{ marginTop: 16 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                <span style={{ fontSize: '13px', color: 'var(--color-text-secondary)', fontWeight: 500 }}>Progres Belajar</span>
+                <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 500 }}>Progres Belajar</span>
                 <span style={{ fontSize: '13px', color: 'var(--color-primary)', fontWeight: 700 }}>{data.progress}%</span>
               </div>
-              <div style={{ height: 6, background: 'var(--color-bg)', borderRadius: 3, overflow: 'hidden' }}>
+              <div style={{ height: 6, background: '#f1f5f9', borderRadius: 3, overflow: 'hidden' }}>
                 <div style={{ height: '100%', background: 'var(--color-primary)', width: `${data.progress}%`, transition: 'width 0.5s ease' }} />
               </div>
             </div>
           </div>
 
           <div style={{ flex: 1, overflow: 'auto', padding: '16px 0' }}>
-            {chapters.map((chapter, idx) => {
+            {chapters.map((chapter: any, idx: number) => {
               const isOpen = expandedChapters.has(String(idx))
-              const completedCount = chapter.sessions.filter((s) => s.isCompleted).length
+              const completedCount = chapter.sessions.filter((s: any) => s.isCompleted).length
               return (
                 <div key={chapter.id} style={{ marginBottom: 8 }}>
                   <button
@@ -500,29 +533,29 @@ export default function CourseLearningPlayerPage() {
                       padding: '16px 24px', background: 'transparent', border: 'none', cursor: 'pointer',
                       transition: 'background 0.2s'
                     }}
-                    onMouseEnter={(e) => e.currentTarget.style.background = 'var(--color-bg)'}
+                    onMouseEnter={(e) => e.currentTarget.style.background = '#f8fafc'}
                     onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                   >
                     <div style={{ textAlign: 'left', flex: 1, paddingRight: 16 }}>
-                      <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: 4 }}>
+                      <div style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>
                         {chapter.title}
                       </div>
-                      <div style={{ fontSize: '12px', color: 'var(--color-text-tertiary)', fontWeight: 500 }}>
+                      <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 500 }}>
                         {completedCount}/{chapter.sessions.length} Sesi Selesai
                       </div>
                     </div>
                     <div style={{
-                      width: 28, height: 28, borderRadius: '50%', background: 'var(--color-bg)',
+                      width: 28, height: 28, borderRadius: '50%', background: '#f1f5f9',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
                     }}>
-                      <ChevronDown size={16} color="var(--color-text-secondary)"
+                      <ChevronDown size={16} color="#64748b"
                         style={{ transform: isOpen ? 'rotate(-180deg)' : 'rotate(0deg)', transition: 'transform 0.3s' }} />
                     </div>
                   </button>
                   
                   {isOpen && (
                     <div style={{ padding: '8px 16px' }}>
-                      {chapter.sessions.map((sess, sIdx) => {
+                      {chapter.sessions.map((sess: any, sIdx: number) => {
                         const isActive = sess.id === sessionId
                         return (
                           <Link
@@ -536,7 +569,7 @@ export default function CourseLearningPlayerPage() {
                               border: isActive ? '1px solid rgba(16, 185, 129, 0.2)' : '1px solid transparent',
                               transition: 'all 0.2s'
                             }}
-                            onMouseEnter={(e) => { if(!isActive) e.currentTarget.style.background = 'var(--color-bg)' }}
+                            onMouseEnter={(e) => { if(!isActive) e.currentTarget.style.background = '#f8fafc' }}
                             onMouseLeave={(e) => { if(!isActive) e.currentTarget.style.background = 'transparent' }}
                           >
                             <div style={{ marginTop: 2 }}>
@@ -548,13 +581,13 @@ export default function CourseLearningPlayerPage() {
                             <div style={{ flex: 1 }}>
                               <div style={{
                                 fontSize: '13px', fontWeight: isActive ? 700 : 500,
-                                color: isActive ? 'var(--color-primary)' : 'var(--color-text-secondary)',
+                                color: isActive ? 'var(--color-primary)' : '#475569',
                                 lineHeight: 1.4, marginBottom: 4
                               }}>
                                 {sIdx + 1}. {sess.title}
                               </div>
                               {sess.videoDuration && (
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '11px', color: 'var(--color-text-tertiary)', fontWeight: 500 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '11px', color: '#94a3b8', fontWeight: 500 }}>
                                   <Clock size={12} /> {formatDuration(sess.videoDuration)}
                                 </div>
                               )}
