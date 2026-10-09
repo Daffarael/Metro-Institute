@@ -13,6 +13,7 @@ import { toast } from 'sonner'
 import dynamic from 'next/dynamic'
 import api from '@/lib/axios'
 import { ROUTES, formatDuration } from '@/lib/utils'
+import { CardTabs } from '@/components/ui/AnimatedTabs'
 
 const ReactPlayer = dynamic(() => import('react-player'), { ssr: false })
 
@@ -307,190 +308,166 @@ export default function CourseLearningPlayerPage() {
                 )}
               </div>
 
-              {/* Tabs Container */}
-              <div style={{
-                display: 'inline-flex', gap: 4, marginBottom: 32, padding: 6,
-                background: '#f1f5f9', borderRadius: 12, border: '1px solid #e2e8f0',
-              }}>
-                {[
-                  { id: 'overview', label: 'Ringkasan', icon: BookOpen },
-                  { id: 'notes', label: 'Catatan', icon: StickyNote },
-                  { id: 'qna', label: 'Tanya Jawab', icon: MessageSquare },
-                  // Materi tab only if it's explicitly a TEXT/MATERI session
-                  ...(currentSession.type === 'TEXT' ? [{ id: 'materials', label: 'Materi', icon: FileText }] : [])
-                ].map((tab) => {
-                  const isActive = activeTab === tab.id
-                  return (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id as typeof activeTab)}
-                      style={{
-                        padding: '8px 20px', borderRadius: 8,
-                        border: isActive ? '1px solid #e2e8f0' : '1px solid transparent', 
-                        cursor: 'pointer', fontSize: '14px', fontWeight: isActive ? 600 : 500,
-                        display: 'flex', alignItems: 'center', gap: 8,
-                        background: isActive ? '#fff' : 'transparent',
-                        color: isActive ? '#0f172a' : '#64748b',
-                        boxShadow: isActive ? '0 1px 2px rgba(0,0,0,0.05)' : 'none',
-                        transition: 'all 0.2s'
-                      }}
-                    >
-                      <tab.icon size={16} color={isActive ? 'var(--color-primary)' : 'currentColor'} />
-                      {tab.label}
-                    </button>
-                  )
-                })}
-              </div>
-
-              {/* Tab Content */}
-              <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: 16, padding: 32, minHeight: 400 }}>
-                {activeTab === 'overview' && (
-                  <div>
-                    <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', marginBottom: 16 }}>Tentang Sesi Ini</h2>
-                    <p style={{ color: '#475569', lineHeight: 1.7, fontSize: '15px' }}>
-                      {currentSession.assignmentDescription || "Sesi ini akan membahas materi secara mendalam sesuai kurikulum yang telah disusun. Pastikan Anda menyimak dengan baik."}
-                    </p>
-                  </div>
-                )}
-
-                {activeTab === 'notes' && (
-                  <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                    <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
-                      <input
-                        value={note} onChange={(e) => setNote(e.target.value)}
-                        placeholder="Tulis catatan penting dari sesi ini..."
-                        style={{
-                          flex: 1, padding: '14px 20px', borderRadius: 12,
-                          border: '1px solid #e2e8f0', background: '#fff',
-                          fontSize: '15px', color: '#0f172a'
-                        }}
-                        onKeyDown={(e) => e.key === 'Enter' && addNoteMutation.mutate(note)}
-                      />
-                      <button
-                        onClick={() => addNoteMutation.mutate(note)} disabled={addNoteMutation.isPending || !note.trim()}
-                        style={{
-                          padding: '0 24px', borderRadius: 12, border: 'none',
-                          background: 'var(--color-primary)', color: '#fff', fontWeight: 600,
-                          cursor: note.trim() ? 'pointer' : 'not-allowed', opacity: note.trim() ? 1 : 0.6,
-                          display: 'flex', alignItems: 'center', gap: 8
-                        }}
-                      >
-                        <Plus size={18} /> Simpan
-                      </button>
+              <div style={{ marginBottom: 32 }}>
+                <CardTabs
+                  items={[
+                    { id: 'overview', label: 'Ringkasan' },
+                    { id: 'notes', label: 'Catatan' },
+                    { id: 'qna', label: 'Tanya Jawab' },
+                    // Materi tab only if it's explicitly a TEXT/MATERI session
+                    ...(currentSession.type === 'TEXT' ? [{ id: 'materials', label: 'Materi' }] : [])
+                  ]}
+                  activeId={activeTab}
+                  onChange={(id) => setActiveTab(id as typeof activeTab)}
+                >
+                  {activeTab === 'overview' && (
+                    <div>
+                      <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', marginBottom: 16 }}>Tentang Sesi Ini</h2>
+                      <p style={{ color: '#475569', lineHeight: 1.7, fontSize: '15px' }}>
+                        {currentSession.assignmentDescription || "Sesi ini akan membahas materi secara mendalam sesuai kurikulum yang telah disusun. Pastikan Anda menyimak dengan baik."}
+                      </p>
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                      {(notes as Array<{ id: string; content: string; timestamp: number }>).map((n) => (
-                        <div key={n.id} style={{
-                          padding: '16px 20px', border: '1px solid #e2e8f0',
-                          borderRadius: 12, background: '#f8fafc', display: 'flex', alignItems: 'flex-start', gap: 16
-                        }}>
-                          <div style={{
-                            padding: '4px 10px', background: 'rgba(16, 185, 129, 0.1)', color: 'var(--color-primary)',
-                            borderRadius: 6, fontSize: '12px', fontWeight: 700, fontFamily: 'monospace'
+                  )}
+
+                  {activeTab === 'notes' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                      <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
+                        <input
+                          value={note} onChange={(e) => setNote(e.target.value)}
+                          placeholder="Tulis catatan penting dari sesi ini..."
+                          style={{
+                            flex: 1, padding: '14px 20px', borderRadius: 12,
+                            border: '1px solid #e2e8f0', background: '#fff',
+                            fontSize: '15px', color: '#0f172a'
+                          }}
+                          onKeyDown={(e) => e.key === 'Enter' && addNoteMutation.mutate(note)}
+                        />
+                        <button
+                          onClick={() => addNoteMutation.mutate(note)} disabled={addNoteMutation.isPending || !note.trim()}
+                          style={{
+                            padding: '0 24px', borderRadius: 12, border: 'none',
+                            background: 'var(--color-primary)', color: '#fff', fontWeight: 600,
+                            cursor: note.trim() ? 'pointer' : 'not-allowed', opacity: note.trim() ? 1 : 0.6,
+                            display: 'flex', alignItems: 'center', gap: 8
+                          }}
+                        >
+                          <Plus size={18} /> Simpan
+                        </button>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                        {(notes as Array<{ id: string; content: string; timestamp: number }>).map((n) => (
+                          <div key={n.id} style={{
+                            padding: '16px 20px', border: '1px solid #e2e8f0',
+                            borderRadius: 12, background: '#f8fafc', display: 'flex', alignItems: 'flex-start', gap: 16
                           }}>
-                            {formatDuration(n.timestamp)}
-                          </div>
-                          <p style={{ flex: 1, margin: 0, color: '#475569', fontSize: '15px', lineHeight: 1.6 }}>{n.content}</p>
-                        </div>
-                      ))}
-                      {notes.length === 0 && (
-                        <div style={{ textAlign: 'center', padding: '40px 0', color: '#94a3b8' }}>
-                          <StickyNote size={48} opacity={0.2} style={{ margin: '0 auto 16px' }} />
-                          <p>Belum ada catatan.</p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {activeTab === 'qna' && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-                    <div style={{ display: 'flex', gap: 12 }}>
-                      <input
-                        value={qnaMessage} onChange={(e) => setQnaMessage(e.target.value)}
-                        placeholder="Ada pertanyaan? Tanyakan di sini..."
-                        style={{
-                          flex: 1, padding: '14px 20px', borderRadius: 12,
-                          border: '1px solid #e2e8f0', background: '#fff',
-                          fontSize: '15px', color: '#0f172a'
-                        }}
-                        onKeyDown={(e) => e.key === 'Enter' && sendQnaMutation.mutate(qnaMessage)}
-                      />
-                      <button
-                        onClick={() => sendQnaMutation.mutate(qnaMessage)} disabled={sendQnaMutation.isPending || !qnaMessage.trim()}
-                        style={{
-                          padding: '0 24px', borderRadius: 12, border: 'none',
-                          background: 'var(--color-primary)', color: '#fff', fontWeight: 600,
-                          cursor: qnaMessage.trim() ? 'pointer' : 'not-allowed', opacity: qnaMessage.trim() ? 1 : 0.6,
-                          display: 'flex', alignItems: 'center', gap: 8
-                        }}
-                      >
-                        <Send size={18} /> Kirim
-                      </button>
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                      {(qnaMessages as Array<{ id: string; content: string; user: { name: string }; createdAt: string }>).map((msg) => (
-                        <div key={msg.id} style={{ padding: '20px', border: '1px solid #e2e8f0', borderRadius: 12, background: '#f8fafc' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
                             <div style={{
-                              width: 36, height: 36, borderRadius: '50%', background: '#e2e8f0',
-                              display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 700, color: '#475569'
+                              padding: '4px 10px', background: 'rgba(16, 185, 129, 0.1)', color: 'var(--color-primary)',
+                              borderRadius: 6, fontSize: '12px', fontWeight: 700, fontFamily: 'monospace'
                             }}>
-                              {msg.user.name[0]}
+                              {formatDuration(n.timestamp)}
                             </div>
-                            <div>
-                              <div style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a' }}>{msg.user.name}</div>
-                              <div style={{ fontSize: '12px', color: '#64748b' }}>{new Date(msg.createdAt).toLocaleString('id-ID')}</div>
-                            </div>
+                            <p style={{ flex: 1, margin: 0, color: '#475569', fontSize: '15px', lineHeight: 1.6 }}>{n.content}</p>
                           </div>
-                          <p style={{ fontSize: '15px', color: '#334155', lineHeight: 1.6 }}>{msg.content}</p>
+                        ))}
+                        {notes.length === 0 && (
+                          <div style={{ textAlign: 'center', padding: '40px 0', color: '#94a3b8' }}>
+                            <StickyNote size={48} opacity={0.2} style={{ margin: '0 auto 16px' }} />
+                            <p>Belum ada catatan.</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {activeTab === 'qna' && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+                      <div style={{ display: 'flex', gap: 12 }}>
+                        <input
+                          value={qnaMessage} onChange={(e) => setQnaMessage(e.target.value)}
+                          placeholder="Ada pertanyaan? Tanyakan di sini..."
+                          style={{
+                            flex: 1, padding: '14px 20px', borderRadius: 12,
+                            border: '1px solid #e2e8f0', background: '#fff',
+                            fontSize: '15px', color: '#0f172a'
+                          }}
+                          onKeyDown={(e) => e.key === 'Enter' && sendQnaMutation.mutate(qnaMessage)}
+                        />
+                        <button
+                          onClick={() => sendQnaMutation.mutate(qnaMessage)} disabled={sendQnaMutation.isPending || !qnaMessage.trim()}
+                          style={{
+                            padding: '0 24px', borderRadius: 12, border: 'none',
+                            background: 'var(--color-primary)', color: '#fff', fontWeight: 600,
+                            cursor: qnaMessage.trim() ? 'pointer' : 'not-allowed', opacity: qnaMessage.trim() ? 1 : 0.6,
+                            display: 'flex', alignItems: 'center', gap: 8
+                          }}
+                        >
+                          <Send size={18} /> Kirim
+                        </button>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                        {(qnaMessages as Array<{ id: string; content: string; user: { name: string }; createdAt: string }>).map((msg) => (
+                          <div key={msg.id} style={{ padding: '20px', border: '1px solid #e2e8f0', borderRadius: 12, background: '#f8fafc' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+                              <div style={{
+                                width: 36, height: 36, borderRadius: '50%', background: '#e2e8f0',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 700, color: '#475569'
+                              }}>
+                                {msg.user.name[0]}
+                              </div>
+                              <div>
+                                <div style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a' }}>{msg.user.name}</div>
+                                <div style={{ fontSize: '12px', color: '#64748b' }}>{new Date(msg.createdAt).toLocaleString('id-ID')}</div>
+                              </div>
+                            </div>
+                            <p style={{ fontSize: '15px', color: '#334155', lineHeight: 1.6 }}>{msg.content}</p>
+                          </div>
+                        ))}
+                        {qnaMessages.length === 0 && (
+                          <div style={{ textAlign: 'center', padding: '40px 0', color: '#94a3b8' }}>
+                            <MessageSquare size={48} opacity={0.2} style={{ margin: '0 auto 16px' }} />
+                            <p>Jadilah yang pertama bertanya!</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {activeTab === 'materials' && currentSession.type === 'TEXT' && (
+                    <div>
+                      <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', marginBottom: 20 }}>Materi Pendukung</h2>
+                      {currentSession.materials && currentSession.materials.length > 0 ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                          {currentSession.materials.map((mat: any) => (
+                            <a
+                              key={mat.url} href={mat.url} target="_blank" rel="noopener noreferrer"
+                              style={{
+                                display: 'flex', alignItems: 'center', gap: 16,
+                                padding: '16px 20px', border: '1px solid #e2e8f0',
+                                borderRadius: 12, textDecoration: 'none', background: '#fff',
+                                color: '#0f172a', transition: 'all 0.2s',
+                              }}
+                              onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-primary)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.05)' }}
+                              onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.boxShadow = 'none' }}
+                            >
+                              <div style={{ width: 40, height: 40, borderRadius: 10, background: 'rgba(16, 185, 129, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <FileText size={20} color="var(--color-primary)" />
+                              </div>
+                              <span style={{ flex: 1, fontSize: '15px', fontWeight: 600 }}>{mat.name}</span>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--color-primary)', fontSize: '13px', fontWeight: 600 }}>
+                                <Download size={16} /> Unduh
+                              </div>
+                            </a>
+                          ))}
                         </div>
-                      ))}
-                      {qnaMessages.length === 0 && (
+                      ) : (
                         <div style={{ textAlign: 'center', padding: '40px 0', color: '#94a3b8' }}>
-                          <MessageSquare size={48} opacity={0.2} style={{ margin: '0 auto 16px' }} />
-                          <p>Jadilah yang pertama bertanya!</p>
+                          <FileText size={48} opacity={0.2} style={{ margin: '0 auto 16px' }} />
+                          <p>Tidak ada materi tambahan untuk sesi ini.</p>
                         </div>
                       )}
                     </div>
-                  </div>
-                )}
-
-                {activeTab === 'materials' && currentSession.type === 'TEXT' && (
-                  <div>
-                    <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', marginBottom: 20 }}>Materi Pendukung</h2>
-                    {currentSession.materials && currentSession.materials.length > 0 ? (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                        {currentSession.materials.map((mat: any) => (
-                          <a
-                            key={mat.url} href={mat.url} target="_blank" rel="noopener noreferrer"
-                            style={{
-                              display: 'flex', alignItems: 'center', gap: 16,
-                              padding: '16px 20px', border: '1px solid #e2e8f0',
-                              borderRadius: 12, textDecoration: 'none', background: '#fff',
-                              color: '#0f172a', transition: 'all 0.2s',
-                            }}
-                            onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-primary)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.05)' }}
-                            onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.boxShadow = 'none' }}
-                          >
-                            <div style={{ width: 40, height: 40, borderRadius: 10, background: 'rgba(16, 185, 129, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                              <FileText size={20} color="var(--color-primary)" />
-                            </div>
-                            <span style={{ flex: 1, fontSize: '15px', fontWeight: 600 }}>{mat.name}</span>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--color-primary)', fontSize: '13px', fontWeight: 600 }}>
-                              <Download size={16} /> Unduh
-                            </div>
-                          </a>
-                        ))}
-                      </div>
-                    ) : (
-                      <div style={{ textAlign: 'center', padding: '40px 0', color: '#94a3b8' }}>
-                        <FileText size={48} opacity={0.2} style={{ margin: '0 auto 16px' }} />
-                        <p>Tidak ada materi tambahan untuk sesi ini.</p>
-                      </div>
-                    )}
-                  </div>
-                )}
+                  )}
+                </CardTabs>
               </div>
             </div>
           </div>
