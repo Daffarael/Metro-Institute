@@ -12,6 +12,7 @@ import api from '@/lib/axios'
 import AdminPageHeader from '@/components/admin/AdminPageHeader'
 import AdminTableSkeleton from '@/components/admin/AdminTableSkeleton'
 import AdminConfirmModal from '@/components/admin/AdminConfirmModal'
+import CleanCombobox from '@/components/admin/CleanCombobox'
 import { toast } from 'sonner'
 
 interface CourseSession {
@@ -75,16 +76,23 @@ return (
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
           <div>
-            <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 4 }}>Judul Sesi *</label>
+            <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 4 }}>Judul Sesi <span style={{ color: 'var(--color-error)' }}>*</span></label>
             <input value={form.title} onChange={e => f('title', e.target.value)} placeholder="Pengenalan Figma Interface" style={inputStyle} autoFocus />
           </div>
           <div>
             <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 4 }}>Tipe Konten</label>
-            <select value={form.type} onChange={e => f('type', e.target.value)} style={inputStyle}>
-              <option value="VIDEO">VIDEO — Rekaman video</option>
-              <option value="MATERIAL">MATERIAL — PDF / dokumen</option>
-              <option value="QUIZ">QUIZ — Tugas / Kuis</option>
-            </select>
+            <div style={{ width: '100%' }}>
+              <CleanCombobox
+                value={form.type}
+                onChange={val => f('type', val as any)}
+                options={[
+                  { value: 'VIDEO', label: 'VIDEO — Rekaman video' },
+                  { value: 'MATERIAL', label: 'MATERIAL — PDF / dokumen' },
+                  { value: 'QUIZ', label: 'QUIZ — Tugas / Kuis' }
+                ]}
+                placeholder="Pilih tipe konten"
+              />
+            </div>
             <p style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 3 }}>Mini Course tidak memiliki sesi LIVE.</p>
           </div>
           {form.type === 'VIDEO' && (
