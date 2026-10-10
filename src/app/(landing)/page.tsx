@@ -13,6 +13,7 @@ export interface FeaturedBootcamp {
   batchStatus: string
   rating: number
   mentorName: string | null
+  outcomes: string[]
 }
 
 export interface FeaturedCourse {
@@ -24,6 +25,7 @@ export interface FeaturedCourse {
   thumbnailUrl: string | null
   rating: number
   enrollmentCount: number
+  tags: string[]
 }
 
 interface HomepageData {

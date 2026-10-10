@@ -76,7 +76,12 @@ export default function LoginPage() {
       if (res.data.user.role === 'SUPER_ADMIN' || res.data.user.role === 'ADMIN') {
         router.push('/admin/dashboard')
       } else {
-        router.push(res.data.user.skillTestDone ? ROUTES.BASECAMP : ROUTES.SKILL_TEST)
+        const redirectUrl = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('redirect') : null;
+        if (redirectUrl) {
+          router.push(redirectUrl);
+        } else {
+          router.push(res.data.user.skillTestDone ? ROUTES.BASECAMP : ROUTES.SKILL_TEST)
+        }
       }
     } catch (err: any) {
       const data = err?.response?.data

@@ -82,7 +82,8 @@ export default function LandingPageClient({
     title: b.title,
     description: b.shortDescription || 'Bootcamp komprehensif untuk tingkatkan skill kamu.',
     thumbnailUrl: b.thumbnailUrl,
-    link: `/login`, // or you could point to detail, but for now fallback to login
+    points: b.outcomes?.length ? b.outcomes.slice(0, 4) : ['Live Session Interaktif', 'Materi Terstruktur', 'Sertifikat Kelulusan', 'Praktik Langsung'],
+    link: `/login?redirect=/mentee/bootcamp/${b.id}`,
   }))
 
   const mappedCourses = featuredCourses.map(c => ({
@@ -90,7 +91,8 @@ export default function LandingPageClient({
     title: c.title,
     description: c.shortDescription || 'Materi singkat dan padat untuk belajar skill spesifik.',
     thumbnailUrl: c.thumbnailUrl,
-    link: `/login`, 
+    points: c.tags?.length ? c.tags.slice(0, 4) : ['Materi Video on Demand', 'Akses Kapan Saja', 'Sertifikat Kelulusan', 'Praktik Mandiri'],
+    link: `/login?redirect=/mentee/mini-course/${c.id}`, 
   }))
 
   const allProgramItems = [...mappedBootcamps, ...mappedCourses]
@@ -367,9 +369,20 @@ export default function LandingPageClient({
 
                           {/* Title & Description */}
                           <h3 className="text-2xl md:text-3xl font-bold text-gray-900 text-center mb-4">{product.title}</h3>
-                          <p className="text-center text-gray-500 text-sm md:text-base leading-relaxed mb-8 max-w-xl mx-auto">
+                          <p className="text-center text-gray-500 text-sm md:text-base leading-relaxed mb-6 max-w-xl mx-auto">
                             {product.description}
                           </p>
+
+                          {product.points && product.points.length > 0 && (
+                            <ul className="flex flex-col gap-3 max-w-md mx-auto mb-8 text-sm text-gray-700">
+                              {product.points.map((pt, idx) => (
+                                <li key={idx} className="flex items-start gap-2">
+                                  <svg className="w-5 h-5 text-[#22222E] shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                                  <span>{pt}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
 
                           <div className="flex justify-center mt-8">
                             <Link
