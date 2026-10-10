@@ -6,6 +6,7 @@ import LandingPageClient from './_components/LandingPageClient'
 export interface FeaturedBootcamp {
   id: string
   title: string
+  shortDescription: string
   field: string
   price: number
   thumbnailUrl: string | null
@@ -17,6 +18,7 @@ export interface FeaturedBootcamp {
 export interface FeaturedCourse {
   id: string
   title: string
+  shortDescription: string
   field: string
   price: number
   thumbnailUrl: string | null
