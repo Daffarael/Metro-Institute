@@ -38,7 +38,7 @@ export default function AdminAssignmentDesk() {
       <div className={selectedAssignment ? "grid-cols-2" : ""} style={{ display: 'grid', gridTemplateColumns: selectedAssignment ? '' : '1fr', gap: 24, alignItems: 'start' }}>
         
         {/* LIST TABLE */}
-        <div style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-xl)', overflow: 'hidden' }}>
+        <div style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-xl)', overflowX: 'auto', overflowY: 'hidden' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--text-sm)' }}>
             <thead style={{ background: 'var(--color-bg)', textAlign: 'left' }}>
               <tr>

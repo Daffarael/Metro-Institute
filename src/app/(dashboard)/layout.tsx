@@ -63,6 +63,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html lang="id" className={cn(inter.variable, reggaeOne.variable, "font-sans", geist.variable)} data-scroll-behavior="smooth" suppressHydrationWarning>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+      </head>
       <body suppressHydrationWarning>        <GlobalConfigInitializer config={data.config} />
         <Providers>
           {children}

@@ -25,6 +25,9 @@ export default function LandingLayout({
 }) {
   return (
     <html lang="id" className={`${inter.variable} font-sans`} suppressHydrationWarning>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+      </head>
       <body suppressHydrationWarning className="font-sans">
         {children}
       </body>
