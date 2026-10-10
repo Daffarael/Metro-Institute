@@ -332,7 +332,7 @@ export default function CourseDetailPage() {
 
             {activeTab === 'reviews' && (
               <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
-                {course.isEnrolled && (
+                {course.isEnrolled && course.progress >= 100 ? (
                   <div style={{ padding: '20px', border: '1px solid var(--color-border-subtle)', borderRadius: 10, background: 'var(--color-surface)' }}>
                     <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: 12 }}>Berikan Ulasan Anda</h3>
                     <div style={{ display: 'flex', gap: 4, marginBottom: 16 }}>
@@ -376,7 +376,11 @@ export default function CourseDetailPage() {
                       </motion.button>
                     </div>
                   </div>
-                )}
+                ) : course.isEnrolled ? (
+                  <div style={{ padding: '20px', textAlign: 'center', border: '1px solid var(--color-border-subtle)', borderRadius: 10, background: 'var(--color-surface)' }}>
+                    <p style={{ color: 'var(--color-text-secondary)', fontSize: 14 }}>Selesaikan kursus ini (Progres 100%) untuk memberikan ulasan.</p>
+                  </div>
+                ) : null}
 
                 {course.reviews.length === 0 ? (
                   <div className="empty-state" style={{ padding: '40px 0', textAlign: 'center', border: '1px solid var(--color-border-subtle)', borderRadius: 10 }}>

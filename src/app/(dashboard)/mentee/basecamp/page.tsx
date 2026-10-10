@@ -109,9 +109,13 @@ export default function BasecampPage() {
                 <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-primary)' }}>Lanjutkan Belajar</span>
               </div>
               <Link
-                href={data.continueLearning.type === 'bootcamp'
-                  ? ROUTES.LEARN_BOOTCAMP_SESSION(data.continueLearning.id, data.continueLearning.sessionId)
-                  : ROUTES.LEARN_COURSE_SESSION(data.continueLearning.id, data.continueLearning.sessionId)
+                href={data.continueLearning.sessionId
+                  ? (data.continueLearning.type === 'bootcamp'
+                      ? ROUTES.LEARN_BOOTCAMP_SESSION(data.continueLearning.id, data.continueLearning.sessionId)
+                      : ROUTES.LEARN_COURSE_SESSION(data.continueLearning.id, data.continueLearning.sessionId))
+                  : (data.continueLearning.type === 'bootcamp'
+                      ? ROUTES.LEARN_BOOTCAMP(data.continueLearning.id)
+                      : ROUTES.LEARN_COURSE(data.continueLearning.id))
                 }
                 style={{ textDecoration: 'none', display: 'block' }}
               >
