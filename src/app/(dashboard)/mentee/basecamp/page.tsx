@@ -57,9 +57,8 @@ export default function BasecampPage() {
     <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-6)' }}>
 
       {/* ── Header ──────────────────────────────────────────── */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 'var(--space-6)', flexWrap: 'wrap' }}>
+      <div className="basecamp-header-container" style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 'var(--space-6)', flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)' }}>
-
           <div>
             <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-primary)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 3 }}>
               {BADGE_LABELS[user?.badgeLevel || 'METRO_ROOKIE']}
@@ -71,15 +70,15 @@ export default function BasecampPage() {
         </div>
 
         {/* XP & Streak */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-6)' }}>
-          <div style={{ textAlign: 'right' }}>
+        <div className="basecamp-xp-container" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-6)' }}>
+          <div style={{ textAlign: 'right', width: '100%' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 5, justifyContent: 'flex-end', marginBottom: 6 }}>
               <Flame size={13} color="var(--color-streak)" />
               <span style={{ fontSize: '13px', color: 'var(--color-text-secondary)', fontWeight: 500 }}>
                 {user?.currentStreak || 0} hari streak
               </span>
             </div>
-            <div style={{ width: 200 }}>
+            <div className="basecamp-xp-bar" style={{ width: 200 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: 6 }}>
                 <span style={{ color: 'var(--color-text-tertiary)' }}>XP</span>
                 <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>

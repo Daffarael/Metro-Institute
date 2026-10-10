@@ -1265,4 +1265,14 @@ input[type="number"] {
   .grid-cols-2, .grid-cols-3, .grid-cols-4, .grid-sidebar-left, .grid-question-order {
     grid-template-columns: 1fr;
   }
+  .basecamp-header-container {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+  .basecamp-xp-container {
+    width: 100%;
+  }
+  .basecamp-xp-bar {
+    width: 100% !important;
+  }
 }
