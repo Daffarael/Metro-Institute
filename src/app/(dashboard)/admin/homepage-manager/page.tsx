@@ -418,7 +418,7 @@ export default function AdminHomepageManagerPage() {
 
 
 
-      <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', gap: 24, alignItems: 'start' }}>
+      <div className="grid-sidebar-left" style={{ display: 'grid', gap: 24, alignItems: 'start' }}>
         {/* â”€â”€ Left column (nav + save card) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <div style={{ position: 'sticky', top: 80, display: 'flex', flexDirection: 'column', gap: 10 }}>
           {/* Nav card */}
@@ -596,7 +596,7 @@ export default function AdminHomepageManagerPage() {
                           onChange={v => updatePortfolioItem(idx, 'media', v)}
                         />
                       </div>
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                      <div className="grid-cols-2" style={{ display: 'grid', gap: 12 }}>
                         <div>
                           <FieldLabel label="Judul Karya" />
                           <TextInput value={item.title} onChange={v => updatePortfolioItem(idx, 'title', v)} placeholder="Contoh: E-Commerce Platform" />

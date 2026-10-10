@@ -97,7 +97,7 @@ export default function ProfilePage() {
       </div>
 
       {/* Stats row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 'var(--space-4)', marginBottom: 'var(--space-5)' }}>
+      <div className="grid-cols-3" style={{ display: 'grid', gap: 'var(--space-4)', marginBottom: 'var(--space-5)' }}>
         {[
           { value: profile.totalXp.toLocaleString(), label: 'Total XP' },
           { value: profile.currentStreak, label: 'Streak Saat Ini' },

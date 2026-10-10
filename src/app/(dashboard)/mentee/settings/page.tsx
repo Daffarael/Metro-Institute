@@ -179,7 +179,7 @@ export default function SettingsPage() {
           <div className="card card-body">
             <h2 style={{ fontSize: 'var(--text-base)', fontWeight: 700, marginBottom: 'var(--space-5)' }}>Informasi Pribadi</h2>
             <form onSubmit={handleProfile((d) => saveProfileMutation.mutate(d))} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)' }}>
+              <div className="grid-cols-2" style={{ display: 'grid', gap: 'var(--space-4)' }}>
                 <div className="form-group">
                   <label className="form-label" htmlFor="s-name">Nama Lengkap</label>
                   <div className="input-wrapper">

@@ -90,7 +90,7 @@ function ScheduleModal({ bootcampId, schedule, onClose }: {
             <input {...register('title')} style={inputStyle} placeholder="Contoh: Sesi 1 (Pengenalan Design Thinking)" />
             {errors.title && <p style={{ color: 'var(--color-error)', fontSize: 'var(--text-xs)', marginTop: 3 }}>{errors.title.message}</p>}
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-4)' }}>
+          <div className="grid-cols-2" style={{ display: 'grid', gap: 'var(--space-4)' }}>
             <div>
               <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Jadwal (Tanggal & Jam) <span style={{ color: 'var(--color-error)' }}>*</span></label>
               <input type="datetime-local" {...register('scheduledAt')} style={inputStyle} />

@@ -109,7 +109,7 @@ export default function ChallengeDetailPage() {
               </div>
 
               {/* Stats */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 'var(--space-3)', marginBottom: 'var(--space-6)' }}>
+              <div className="grid-cols-3" style={{ display: 'grid', gap: 'var(--space-3)', marginBottom: 'var(--space-6)' }}>
                 {[
                   { label: 'Benar', value: result.correct, color: 'var(--color-primary)' },
                   { label: 'Salah', value: result.totalQuestions - result.correct, color: '#EF4444' },

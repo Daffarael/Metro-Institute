@@ -168,7 +168,7 @@ function VoucherModal({ voucher, onClose }: { voucher?: Voucher; onClose: () => 
           </div>
 
           {/* Tipe + Nilai diskon */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+          <div className="grid-cols-2" style={{ display: 'grid', gap: '20px' }}>
             <div>
               <label style={labelStyle}>Tipe Diskon <span style={{color: 'var(--color-error)'}}>*</span></label>
               <Controller
@@ -204,7 +204,7 @@ function VoucherModal({ voucher, onClose }: { voucher?: Voucher; onClose: () => 
           </div>
 
           {/* Kuota + Produk */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+          <div className="grid-cols-2" style={{ display: 'grid', gap: '20px' }}>
             <div>
               <label style={labelStyle}>Maks Penggunaan <span style={{color: 'var(--color-error)'}}>*</span></label>
               <input type="number" {...register('maxUses', { valueAsNumber: true })} 
@@ -237,7 +237,7 @@ function VoucherModal({ voucher, onClose }: { voucher?: Voucher; onClose: () => 
           </div>
 
           {/* Masa Berlaku */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+          <div className="grid-cols-2" style={{ display: 'grid', gap: '20px' }}>
             <div>
               <label style={labelStyle}>Mulai Berlaku <span style={{color: 'var(--color-error)'}}>*</span></label>
               <input type="date" {...register('validFrom')} 

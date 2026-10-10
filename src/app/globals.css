@@ -1235,11 +1235,34 @@ input[type="number"] {
 .detail-layout-grid {
   grid-template-columns: 1fr 320px;
 }
+
+/* ==========================================================================
+   Generic Responsive Grids
+   ========================================================================== */
+.grid-cols-2 {
+  grid-template-columns: 1fr 1fr;
+}
+.grid-cols-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+.grid-cols-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+.grid-sidebar-left {
+  grid-template-columns: 320px 1fr;
+}
+.grid-question-order {
+  grid-template-columns: 1fr 100px;
+}
+
 @media (max-width: 900px) {
   .basecamp-grid {
     grid-template-columns: 1fr;
   }
   .detail-layout-grid {
+    grid-template-columns: 1fr;
+  }
+  .grid-cols-2, .grid-cols-3, .grid-cols-4, .grid-sidebar-left, .grid-question-order {
     grid-template-columns: 1fr;
   }
 }

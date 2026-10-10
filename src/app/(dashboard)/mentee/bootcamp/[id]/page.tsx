@@ -251,7 +251,7 @@ export default function BootcampDetailPage() {
                 {data.outcomes?.length > 0 && (
                   <div>
                     <h2 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: 12 }}>Yang akan kamu pelajari</h2>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 16px' }}>
+                    <div className="grid-cols-2" style={{ display: 'grid', gap: '8px 16px' }}>
                       {data.outcomes.map((outcome: string, i: number) => (
                         <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: '13.5px', color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>
                           <CheckCircle2 size={14} color="var(--color-primary)" style={{ flexShrink: 0, marginTop: 3 }} />

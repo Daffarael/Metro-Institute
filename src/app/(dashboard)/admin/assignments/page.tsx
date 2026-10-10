@@ -35,7 +35,7 @@ export default function AdminAssignmentDesk() {
       <h1 style={{ fontSize: 'var(--text-2xl)', fontWeight: 700, marginBottom: 20 }}>Meja Penilaian (Assignment Desk)</h1>
       <p style={{ color: 'var(--color-text-secondary)', marginBottom: 30 }}>Berikan nilai dan ulasan untuk tugas yang dikumpulkan oleh Mentee.</p>
 
-      <div style={{ display: 'grid', gridTemplateColumns: selectedAssignment ? '1fr 1fr' : '1fr', gap: 24, alignItems: 'start' }}>
+      <div className={selectedAssignment ? "grid-cols-2" : ""} style={{ display: 'grid', gridTemplateColumns: selectedAssignment ? '' : '1fr', gap: 24, alignItems: 'start' }}>
         
         {/* LIST TABLE */}
         <div style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-xl)', overflow: 'hidden' }}>

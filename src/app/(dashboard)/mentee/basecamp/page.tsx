@@ -387,7 +387,7 @@ function BasecampSkeleton() {
           <div className="skeleton" style={{ height: 24, width: 200, borderRadius: 6 }} />
         </div>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 'var(--space-5)' }}>
+      <div className="basecamp-grid" style={{ display: 'grid', gap: 'var(--space-5)' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-5)' }}>
           <div className="skeleton" style={{ height: 200, borderRadius: 12 }} />
           <div style={{ display: 'flex', gap: 16 }}>

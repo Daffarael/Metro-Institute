@@ -105,7 +105,7 @@ export default function XpActivityPage() {
 
       {/* Summary cards */}
       {data && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 'var(--space-4)', marginBottom: 'var(--space-6)' }}>
+        <div className="grid-cols-3" style={{ display: 'grid', gap: 'var(--space-4)', marginBottom: 'var(--space-6)' }}>
           {[
             { label: 'Total XP',      value: data.totalXp,    color: 'var(--color-text-primary)' },
             { label: 'Bulan Ini',     value: data.thisMonth,  color: 'var(--color-text-primary)' },

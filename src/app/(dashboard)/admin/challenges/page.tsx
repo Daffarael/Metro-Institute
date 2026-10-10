@@ -197,7 +197,7 @@ return (
             {errors.description && <p style={{ color: 'var(--color-error)', fontSize: '12px', marginTop: 6, fontWeight: 500 }}>{errors.description.message}</p>}
           </div>
           
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+          <div className="grid-cols-2" style={{ display: 'grid', gap: '20px' }}>
             <div>
               <label style={labelStyle}>Tipe Challenge <span style={{color: 'var(--color-error)'}}>*</span></label>
               <Controller

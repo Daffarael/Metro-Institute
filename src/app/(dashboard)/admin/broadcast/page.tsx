@@ -94,7 +94,7 @@ export default function AdminBroadcastPage() {
           <div style={{ fontWeight: 700, fontSize: '15px', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: 10, color: 'var(--color-text-primary)' }}>
             Target Penerima <span style={{ color: 'var(--color-text-tertiary)', fontWeight: 500, fontSize: '13px' }}>(Opsional)</span>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+          <div className="grid-cols-2" style={{ display: 'grid', gap: '24px' }}>
             <div>
               <label style={labelStyle}>Berdasarkan Field</label>
               <CleanCombobox

@@ -118,7 +118,7 @@ export default function AdminDashboardPage() {
     return (
       <div>
         <AdminPageHeader title="Dashboard" description="Overview aktivitas Metro Institute" />
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 'var(--space-4)', marginBottom: 'var(--space-6)' }}>
+        <div className="grid-cols-4" style={{ display: 'grid', gap: 'var(--space-4)', marginBottom: 'var(--space-6)' }}>
           {Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="skeleton" style={{ height: 110, borderRadius: 12 }} />
           ))}
@@ -166,9 +166,8 @@ export default function AdminDashboardPage() {
       />
 
       {/* ── Section A: KPI Cards (4 kolom) ────────────────────── */}
-      <div style={{
+      <div className="grid-cols-4" style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(4, 1fr)',
         gap: 'var(--space-5)',
         marginBottom: 'var(--space-6)',
       }}>
@@ -197,7 +196,7 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* ── Section B+E: Mentee chart + Distribusi Transaksi ─────── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-5)', marginBottom: 'var(--space-5)' }}>
+      <div className="grid-cols-2" style={{ display: 'grid', gap: 'var(--space-5)', marginBottom: 'var(--space-5)' }}>
 
         {/* Section B - Mentee Baru 7 Hari */}
         <div className="card" style={{ padding: 'var(--space-5)', boxShadow: '0 1px 2px rgba(0,0,0,0.03)', border: 'none' }}>
@@ -297,7 +296,7 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* ── Section D: Top Products ────────────────────────────── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-5)' }}>
+      <div className="grid-cols-2" style={{ display: 'grid', gap: 'var(--space-5)' }}>
         {/* Top Mini Course */}
         <div className="card" style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.03)', border: 'none' }}>
           <div style={{ padding: 'var(--space-5)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

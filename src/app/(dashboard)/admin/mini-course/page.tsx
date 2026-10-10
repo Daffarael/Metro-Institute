@@ -201,7 +201,7 @@ function CourseModal({ course, onClose }: { course?: MiniCourse; onClose: () => 
             />
             {errors.descLong && <p style={{ fontSize: '12px', color: 'var(--color-error)', marginTop: 6, fontWeight: 500 }}>{errors.descLong.message}</p>}
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+          <div className="grid-cols-2" style={{ display: 'grid', gap: '20px' }}>
             <div>
               <label style={labelStyle}>Bidang <span style={{color: 'var(--color-error)'}}>*</span></label>
               <Controller

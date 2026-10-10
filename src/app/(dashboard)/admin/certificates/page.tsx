@@ -94,7 +94,7 @@ export default function AdminCertificatesPage() {
       </div>
 
       {/* Stats cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 'var(--space-4)', marginBottom: 'var(--space-5)' }}>
+      <div className="grid-cols-3" style={{ display: 'grid', gap: 'var(--space-4)', marginBottom: 'var(--space-5)' }}>
         {[
           { label: 'Total Sertifikat', value: (pagination?.total ?? 0).toLocaleString() },
           { label: 'Sertifikat Bootcamp', value: items.filter(c => c.productType === 'BOOTCAMP').length },

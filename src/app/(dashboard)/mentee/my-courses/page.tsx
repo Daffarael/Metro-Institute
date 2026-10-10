@@ -368,7 +368,7 @@ function CourseCard({ course }: { course: EnrolledCourse }) {
         </div>
 
         {/* Actions */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+        <div className="grid-cols-2" style={{ display: 'grid', gap: 8 }}>
           <Link href={href} style={{ 
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             padding: '8px 12px', borderRadius: 'var(--radius-md)',

@@ -199,7 +199,7 @@ export default function CertificateTemplateEditor() {
         }
       />
 
-      <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '24px', alignItems: 'start' }}>
+      <div className="grid-sidebar-left" style={{ display: 'grid', gap: '24px', alignItems: 'start' }}>
         {/* Sidebar Settings */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '20px', padding: '24px' }}>
@@ -312,7 +312,7 @@ export default function CertificateTemplateEditor() {
                     </button>
                   </div>
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div className="grid-cols-2" style={{ display: 'grid', gap: '16px' }}>
                   {items.find(i => i.id === selectedItem)?.type === 'image' ? (
                     <>
                       <div>
@@ -386,7 +386,7 @@ export default function CertificateTemplateEditor() {
                     </>
                   )}
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '8px' }}>
+                <div className="grid-cols-2" style={{ display: 'grid', gap: '8px', marginTop: '8px' }}>
                   <button 
                     onClick={() => {
                       setItems(prev => prev.filter(i => i.id !== selectedItem))

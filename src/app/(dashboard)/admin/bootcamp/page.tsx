@@ -207,7 +207,7 @@ function BootcampModal({
             />
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: isEdit ? '1fr 1fr' : '1fr', gap: '20px' }}>
+          <div className={isEdit ? "grid-cols-2" : ""} style={{ display: 'grid', gridTemplateColumns: isEdit ? '' : '1fr', gap: '20px' }}>
             {isEdit && (
               <div>
                 <label style={labelStyle}>Status</label>
@@ -248,7 +248,7 @@ function BootcampModal({
             {errors.fields && <p style={{ fontSize: '12px', color: 'var(--color-error)', marginTop: 6, fontWeight: 500 }}>{errors.fields.message}</p>}
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+          <div className="grid-cols-2" style={{ display: 'grid', gap: '20px' }}>
             <div>
               <label style={labelStyle}>Buka Pembelian <span style={{color: 'var(--color-error)'}}>*</span></label>
               <input type="date" {...register('purchaseOpenAt')} style={inputStyleClean} 

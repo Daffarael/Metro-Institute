@@ -97,7 +97,7 @@ export default function MiniCourseStatsPage() {
       />
 
       {/* KPI cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 'var(--space-4)', marginBottom: 'var(--space-6)' }}>
+      <div className="grid-cols-4" style={{ display: 'grid', gap: 'var(--space-4)', marginBottom: 'var(--space-6)' }}>
         {[
           { label: 'Total Siswa', value: totalEnrollments.toLocaleString() },
           { label: 'Total Revenue', value: formatRupiah(totalRevenue) },

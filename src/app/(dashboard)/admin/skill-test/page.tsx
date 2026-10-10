@@ -146,9 +146,8 @@ function QuestionCard({
         </p>
 
         {/* Options */}
-        <div style={{
+        <div className="grid-cols-2" style={{
           display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
           gap: '3px 32px',
         }}>
           {q.options.map((o, i) => (
@@ -344,7 +343,7 @@ function QuestionModal({
           style={{ padding: '0 32px 32px', display: 'flex', flexDirection: 'column', gap: 20 }}
         >
           {/* Question + order */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px', gap: 16 }}>
+          <div className="grid-question-order" style={{ display: 'grid', gap: 16 }}>
             <div>
               <label style={labelStyle}>Pertanyaan <span style={{ color: 'var(--color-error)' }}>*</span></label>
               <textarea
