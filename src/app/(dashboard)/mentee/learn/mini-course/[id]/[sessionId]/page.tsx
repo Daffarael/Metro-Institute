@@ -142,26 +142,26 @@ export default function CourseLearningPlayerPage() {
   const { course, chapters, currentSession, prevSessionId, nextSessionId } = data
 
   return (
-    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: '#f8fafc' }}>
+    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: '#0f172a' }}>
       {/* -- Top Header --------------------------------------- */}
       <header style={{
-        background: '#fff',
-        borderBottom: '1px solid #e2e8f0',
+        background: '#0f172a',
+        borderBottom: '1px solid #1e293b',
         height: 64, padding: '0 24px',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0,
         zIndex: 10,
       }}>
-        <Link href={ROUTES.COURSE_DETAIL(courseId)} style={{
+        <Link href={ROUTES.LEARN_COURSE(courseId)} style={{
           display: 'flex', alignItems: 'center', gap: 12,
-          color: '#334155', textDecoration: 'none', fontSize: '15px', fontWeight: 600,
+          color: '#e2e8f0', textDecoration: 'none', fontSize: '15px', fontWeight: 600,
           transition: 'color 0.2s',
         }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--color-primary)')}
-          onMouseLeave={(e) => (e.currentTarget.style.color = '#334155')}
+          onMouseEnter={(e) => (e.currentTarget.style.color = '#fff')}
+          onMouseLeave={(e) => (e.currentTarget.style.color = '#e2e8f0')}
         >
           <div style={{
-            width: 32, height: 32, borderRadius: '50%', background: '#f1f5f9',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b'
+            width: 32, height: 32, borderRadius: '50%', background: 'rgba(255,255,255,0.1)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
           }}>
             <ChevronLeft size={18} />
           </div>
@@ -169,26 +169,11 @@ export default function CourseLearningPlayerPage() {
         </Link>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-          {data.progress === 100 && (
-            <Link href="/mentee/certificates" style={{
-              background: 'linear-gradient(135deg, #f59e0b, #d97706)',
-              color: '#fff', fontSize: '13px', fontWeight: 600, padding: '8px 16px',
-              borderRadius: 20, display: 'flex', alignItems: 'center', gap: 6,
-              textDecoration: 'none', boxShadow: '0 4px 12px rgba(245, 158, 11, 0.2)',
-              transition: 'transform 0.2s'
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-            >
-              <Award size={16} /> Klaim Sertifikat
-            </Link>
-          )}
-
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, width: 200 }}>
-            <div style={{ flex: 1, height: 8, background: '#e2e8f0', borderRadius: 4, overflow: 'hidden' }}>
-              <div style={{ height: '100%', background: 'var(--color-primary)', width: `${data.progress}%`, transition: 'width 0.5s ease' }} />
+            <div style={{ flex: 1, height: 6, background: '#1e293b', borderRadius: 3, overflow: 'hidden' }}>
+              <div style={{ height: '100%', background: 'var(--color-primary)', width: \%, transition: 'width 0.5s ease' }} />
             </div>
-            <span style={{ fontSize: '13px', fontWeight: 600, color: '#475569', whiteSpace: 'nowrap' }}>
+            <span style={{ fontSize: '13px', fontWeight: 600, color: '#94a3b8', whiteSpace: 'nowrap' }}>
               {data.progress}% Selesai
             </span>
           </div>
@@ -209,147 +194,37 @@ export default function CourseLearningPlayerPage() {
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         
         {/* Left Side: Video & Content */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#fff', overflow: 'hidden' }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: 'var(--color-bg)', overflow: 'hidden' }}>
           
           {/* Video Player */}
           {currentSession.type === 'VIDEO' && currentSession.videoUrl ? (
             <div style={{
               background: '#000', width: '100%', flexShrink: 0,
               display: 'flex', justifyContent: 'center', alignItems: 'center',
-              zIndex: 5,
+              boxShadow: '0 10px 30px rgba(0,0,0,0.1)', zIndex: 5,
             }}>
-              <div style={{ width: '100%', maxWidth: '700px', aspectRatio: '16/9', maxHeight: '40vh' }}>
+              <div style={{ width: '100%', maxWidth: '1200px', aspectRatio: '16/9', maxHeight: '65vh' }}>
                 {(() => {
-                  const url = currentSession.videoUrl;
-                  const isDrive = url.includes('drive.google.com');
-                  let drivePreviewUrl = '';
-                  let youtubeEmbedUrl = '';
-
-                  if (isDrive) {
-                    const match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-                    if (match) {
-                      drivePreviewUrl = `https://drive.google.com/file/d/${match[1]}/preview`;
-                    } else if (url.includes('id=')) {
-                      const urlParams = new URLSearchParams(url.substring(url.indexOf('?')));
-                      const id = urlParams.get('id');
-                      if (id) {
-                        drivePreviewUrl = `https://drive.google.com/file/d/${id}/preview`;
-                      }
-                    }
-                    if (!drivePreviewUrl) drivePreviewUrl = url;
-                  } else if (url.includes('youtu.be/')) {
-                    const id = url.split('youtu.be/')[1].split('?')[0];
-                    youtubeEmbedUrl = `https://www.youtube.com/embed/${id}?rel=0&modestbranding=1&fs=1`;
-                  } else if (url.includes('youtube.com/watch')) {
-                    const id = new URLSearchParams(url.substring(url.indexOf('?'))).get('v');
-                    if (id) youtubeEmbedUrl = `https://www.youtube.com/embed/${id}?rel=0&modestbranding=1&fs=1`;
-                  }
-
-                  if (isDrive) {
-                    return (
-                      <iframe
-                        src={drivePreviewUrl}
-                        width="100%"
-                        height="100%"
-                        style={{ border: 'none' }}
-                        allow="autoplay; fullscreen"
-                        onLoad={() => {
-                          // Karena iframe tidak bisa mendeteksi durasi, asumsikan selesai setelah beberapa saat
-                          setTimeout(() => {
-                            if (!completeTriggerRef.current && !isCompleted && !data?.currentSession.isCompleted) {
-                              completeTriggerRef.current = true;
-                              completeMutation.mutate();
-                            }
-                          }, 5000);
-                        }}
-                      />
-                    );
-                  }
-
-                  if (youtubeEmbedUrl) {
-                    return (
-                      <iframe
-                        src={youtubeEmbedUrl}
-                        width="100%"
-                        height="100%"
-                        style={{ border: 'none' }}
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                        onLoad={() => {
-                          setTimeout(() => {
-                            if (!completeTriggerRef.current && !isCompleted && !data?.currentSession.isCompleted) {
-                              completeTriggerRef.current = true;
-                              completeMutation.mutate();
-                            }
-                          }, 5000);
-                        }}
-                      />
-                    );
-                  }
-
                   const Player = ReactPlayer as any;
                   return (
                     <Player
                       ref={playerRef as any}
-                      url={url}
+                      url={currentSession.videoUrl}
                       width="100%" height="100%"
                       controls
                       onProgress={handleProgress as any}
                       onEnded={() => { if (!completeTriggerRef.current) { completeTriggerRef.current = true; completeMutation.mutate() } }}
-                      config={{
-                        youtube: { playerVars: { origin: typeof window !== 'undefined' ? window.location.origin : '' } },
-                        file: { attributes: { controlsList: 'nodownload' } }
-                      } as any}
+                      config={{ file: { attributes: { controlsList: 'nodownload' } } } as any}
                     />
                   );
                 })()}
               </div>
             </div>
-          ) : (currentSession.type === 'QUIZ' || currentSession.type === 'ASSIGNMENT') && currentSession.quizOptions && currentSession.quizOptions.length > 0 ? (
-            <InteractiveQuiz 
-              quizOptions={currentSession.quizOptions} 
-              isCompleted={currentSession.isCompleted || isCompleted} 
-              onComplete={() => completeMutation.mutate()} 
-            />
-          ) : currentSession.type === 'QUIZ' ? (
-            <div style={{
-              background: '#f8fafc', width: '100%', padding: '60px 20px',
-              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-              borderBottom: '1px solid #e2e8f0'
-            }}>
-              <div style={{
-                width: 64, height: 64, borderRadius: 16, background: 'rgba(16, 185, 129, 0.1)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16
-              }}>
-                <FileText size={32} color="var(--color-primary)" />
-              </div>
-              <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#1e293b', marginBottom: 8 }}>Sesi Kuis</h2>
-              <p style={{ color: '#475569', fontSize: '14px', maxWidth: 400, textAlign: 'center' }}>
-                Belum ada soal untuk kuis ini.
-              </p>
-            </div>
-          ) : currentSession.type === 'ASSIGNMENT' ? (
-            <div style={{
-              background: '#f8fafc', width: '100%', padding: '60px 20px',
-              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-              borderBottom: '1px solid #e2e8f0'
-            }}>
-              <div style={{
-                width: 64, height: 64, borderRadius: 16, background: 'rgba(16, 185, 129, 0.1)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16
-              }}>
-                <FileText size={32} color="var(--color-primary)" />
-              </div>
-              <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#1e293b', marginBottom: 8 }}>Sesi Tugas</h2>
-              <p style={{ color: '#475569', fontSize: '14px', maxWidth: 400, textAlign: 'center' }}>
-                Silakan lihat instruksi tugas dan kerjakan. Tandai sebagai selesai jika Anda sudah menyelesaikannya.
-              </p>
-            </div>
           ) : (
             <div style={{
-              background: '#f8fafc', width: '100%', padding: '60px 20px',
+              background: '#0f172a', width: '100%', padding: '60px 20px',
               display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-              borderBottom: '1px solid #e2e8f0'
+              borderBottom: '1px solid #1e293b'
             }}>
               <div style={{
                 width: 64, height: 64, borderRadius: 16, background: 'rgba(16, 185, 129, 0.1)',
@@ -357,22 +232,10 @@ export default function CourseLearningPlayerPage() {
               }}>
                 <BookOpen size={32} color="var(--color-primary)" />
               </div>
-              <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#1e293b', marginBottom: 8 }}>Sesi Materi Teks</h2>
-              <p style={{ color: '#475569', fontSize: '14px', maxWidth: 400, textAlign: 'center', marginBottom: 24 }}>
-                Silakan pelajari materi untuk sesi ini melalui tautan di bawah.
+              <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#fff', marginBottom: 8 }}>Sesi Teks / Tugas</h2>
+              <p style={{ color: '#94a3b8', fontSize: '14px', maxWidth: 400, textAlign: 'center' }}>
+                Pelajari materi di bawah ini dan tandai sebagai selesai jika Anda sudah memahaminya.
               </p>
-              {currentSession.materials && currentSession.materials.length > 0 && (
-                 <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-                   {currentSession.materials.map((mat: any) => (
-                     <a key={mat.url} href={mat.url} target="_blank" rel="noreferrer" style={{
-                       padding: '12px 24px', background: 'var(--color-primary)', color: 'white', 
-                       borderRadius: 8, textDecoration: 'none', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8
-                     }}>
-                       <Download size={18} /> Unduh / Buka Materi
-                     </a>
-                   ))}
-                 </div>
-              )}
             </div>
           )}
 
@@ -382,12 +245,12 @@ export default function CourseLearningPlayerPage() {
               {/* Header Info */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 32 }}>
                 <div>
-                  <h1 style={{ fontSize: '28px', fontWeight: 800, color: '#0f172a', marginBottom: 12, lineHeight: 1.3 }}>
+                  <h1 style={{ fontSize: '28px', fontWeight: 800, color: 'var(--color-text-primary)', marginBottom: 12, lineHeight: 1.3 }}>
                     {currentSession.title}
                   </h1>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
                     {currentSession.videoDuration && (
-                      <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '14px', fontWeight: 500, color: '#64748b' }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '14px', fontWeight: 500, color: 'var(--color-text-secondary)' }}>
                         <Clock size={16} /> {formatDuration(currentSession.videoDuration)}
                       </span>
                     )}
@@ -414,166 +277,189 @@ export default function CourseLearningPlayerPage() {
                 )}
               </div>
 
-              <div style={{ marginBottom: 32 }}>
-                <CardTabs
-                  items={[
-                    { id: 'overview', label: 'Ringkasan' },
-                    { id: 'notes', label: 'Catatan' },
-                    { id: 'qna', label: 'Tanya Jawab' },
-                    // Materi tab only if it's explicitly a TEXT/MATERI session
-                    ...(currentSession.type === 'TEXT' ? [{ id: 'materials', label: 'Materi' }] : [])
-                  ]}
-                  activeId={activeTab}
-                  onChange={(id) => setActiveTab(id as typeof activeTab)}
-                >
-                  {activeTab === 'overview' && (
-                    <div>
-                      <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', marginBottom: 16 }}>Tentang Sesi Ini</h2>
-                      <p style={{ color: '#475569', lineHeight: 1.7, fontSize: '15px' }}>
-                        {currentSession.assignmentDescription || "Sesi ini akan membahas materi secara mendalam sesuai kurikulum yang telah disusun. Pastikan Anda menyimak dengan baik."}
-                      </p>
-                    </div>
-                  )}
+              {/* Tabs Container */}
+              <div style={{
+                display: 'flex', gap: 8, marginBottom: 32, padding: 4,
+                background: 'var(--color-surface)', borderRadius: 16, border: '1px solid var(--color-border-subtle)',
+                width: 'max-content'
+              }}>
+                {[
+                  { id: 'overview', label: 'Ringkasan', icon: BookOpen },
+                  { id: 'notes', label: 'Catatan', icon: StickyNote },
+                  { id: 'qna', label: 'Tanya Jawab', icon: MessageSquare },
+                  { id: 'materials', label: 'Materi', icon: FileText },
+                ].map((tab) => {
+                  const isActive = activeTab === tab.id
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id as typeof activeTab)}
+                      style={{
+                        padding: '10px 20px', borderRadius: 12,
+                        border: 'none', cursor: 'pointer', fontSize: '14px', fontWeight: 600,
+                        display: 'flex', alignItems: 'center', gap: 8,
+                        background: isActive ? '#fff' : 'transparent',
+                        color: isActive ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)',
+                        boxShadow: isActive ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      <tab.icon size={16} color={isActive ? 'var(--color-primary)' : 'currentColor'} />
+                      {tab.label}
+                    </button>
+                  )
+                })}
+              </div>
 
-                  {activeTab === 'notes' && (
-                    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                      <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
-                        <input
-                          value={note} onChange={(e) => setNote(e.target.value)}
-                          placeholder="Tulis catatan penting dari sesi ini..."
-                          style={{
-                            flex: 1, padding: '14px 20px', borderRadius: 12,
-                            border: '1px solid #e2e8f0', background: '#fff',
-                            fontSize: '15px', color: '#0f172a'
-                          }}
-                          onKeyDown={(e) => e.key === 'Enter' && addNoteMutation.mutate(note)}
-                        />
-                        <button
-                          onClick={() => addNoteMutation.mutate(note)} disabled={addNoteMutation.isPending || !note.trim()}
-                          style={{
-                            padding: '0 24px', borderRadius: 12, border: 'none',
-                            background: 'var(--color-primary)', color: '#fff', fontWeight: 600,
-                            cursor: note.trim() ? 'pointer' : 'not-allowed', opacity: note.trim() ? 1 : 0.6,
-                            display: 'flex', alignItems: 'center', gap: 8
-                          }}
-                        >
-                          <Plus size={18} /> Simpan
-                        </button>
-                      </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                        {(notes as Array<{ id: string; content: string; timestamp: number }>).map((n) => (
-                          <div key={n.id} style={{
-                            padding: '16px 20px', border: '1px solid #e2e8f0',
-                            borderRadius: 12, background: '#f8fafc', display: 'flex', alignItems: 'flex-start', gap: 16
+              {/* Tab Content */}
+              <div style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border-subtle)', borderRadius: 24, padding: 32, minHeight: 400 }}>
+                {activeTab === 'overview' && (
+                  <div>
+                    <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: 16 }}>Tentang Sesi Ini</h2>
+                    <p style={{ color: 'var(--color-text-secondary)', lineHeight: 1.7, fontSize: '15px' }}>
+                      {currentSession.assignmentDescription || "Sesi ini akan membahas materi secara mendalam sesuai kurikulum yang telah disusun. Pastikan Anda menyimak dengan baik."}
+                    </p>
+                  </div>
+                )}
+
+                {activeTab === 'notes' && (
+                  <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                    <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
+                      <input
+                        value={note} onChange={(e) => setNote(e.target.value)}
+                        placeholder="Tulis catatan penting dari sesi ini..."
+                        style={{
+                          flex: 1, padding: '14px 20px', borderRadius: 12,
+                          border: '1px solid var(--color-border)', background: 'var(--color-bg)',
+                          fontSize: '15px', color: 'var(--color-text-primary)'
+                        }}
+                        onKeyDown={(e) => e.key === 'Enter' && addNoteMutation.mutate()}
+                      />
+                      <button
+                        onClick={() => addNoteMutation.mutate()} disabled={addNoteMutation.isPending || !note.trim()}
+                        style={{
+                          padding: '0 24px', borderRadius: 12, border: 'none',
+                          background: 'var(--color-primary)', color: '#fff', fontWeight: 600,
+                          cursor: note.trim() ? 'pointer' : 'not-allowed', opacity: note.trim() ? 1 : 0.6,
+                          display: 'flex', alignItems: 'center', gap: 8
+                        }}
+                      >
+                        <Plus size={18} /> Simpan
+                      </button>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                      {(notes as Array<{ id: string; content: string; timestamp: number }>).map((n) => (
+                        <div key={n.id} style={{
+                          padding: '16px 20px', border: '1px solid var(--color-border-subtle)',
+                          borderRadius: 16, background: 'var(--color-bg)', display: 'flex', alignItems: 'flex-start', gap: 16
+                        }}>
+                          <div style={{
+                            padding: '4px 10px', background: 'rgba(16, 185, 129, 0.1)', color: 'var(--color-primary)',
+                            borderRadius: 8, fontSize: '12px', fontWeight: 700, fontFamily: 'monospace'
                           }}>
-                            <div style={{
-                              padding: '4px 10px', background: 'rgba(16, 185, 129, 0.1)', color: 'var(--color-primary)',
-                              borderRadius: 6, fontSize: '12px', fontWeight: 700, fontFamily: 'monospace'
-                            }}>
-                              {formatDuration(n.timestamp)}
-                            </div>
-                            <p style={{ flex: 1, margin: 0, color: '#475569', fontSize: '15px', lineHeight: 1.6 }}>{n.content}</p>
+                            {formatDuration(n.timestamp)}
                           </div>
-                        ))}
-                        {notes.length === 0 && (
-                          <div style={{ textAlign: 'center', padding: '40px 0', color: '#94a3b8' }}>
-                            <StickyNote size={48} opacity={0.2} style={{ margin: '0 auto 16px' }} />
-                            <p>Belum ada catatan.</p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {activeTab === 'qna' && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-                      <div style={{ display: 'flex', gap: 12 }}>
-                        <input
-                          value={qnaMessage} onChange={(e) => setQnaMessage(e.target.value)}
-                          placeholder="Ada pertanyaan? Tanyakan di sini..."
-                          style={{
-                            flex: 1, padding: '14px 20px', borderRadius: 12,
-                            border: '1px solid #e2e8f0', background: '#fff',
-                            fontSize: '15px', color: '#0f172a'
-                          }}
-                          onKeyDown={(e) => e.key === 'Enter' && sendQnaMutation.mutate(qnaMessage)}
-                        />
-                        <button
-                          onClick={() => sendQnaMutation.mutate(qnaMessage)} disabled={sendQnaMutation.isPending || !qnaMessage.trim()}
-                          style={{
-                            padding: '0 24px', borderRadius: 12, border: 'none',
-                            background: 'var(--color-primary)', color: '#fff', fontWeight: 600,
-                            cursor: qnaMessage.trim() ? 'pointer' : 'not-allowed', opacity: qnaMessage.trim() ? 1 : 0.6,
-                            display: 'flex', alignItems: 'center', gap: 8
-                          }}
-                        >
-                          <Send size={18} /> Kirim
-                        </button>
-                      </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                        {(qnaMessages as Array<{ id: string; content: string; user: { name: string }; createdAt: string }>).map((msg) => (
-                          <div key={msg.id} style={{ padding: '20px', border: '1px solid #e2e8f0', borderRadius: 12, background: '#f8fafc' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
-                              <div style={{
-                                width: 36, height: 36, borderRadius: '50%', background: '#e2e8f0',
-                                display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 700, color: '#475569'
-                              }}>
-                                {msg.user.name[0]}
-                              </div>
-                              <div>
-                                <div style={{ fontSize: '14px', fontWeight: 600, color: '#0f172a' }}>{msg.user.name}</div>
-                                <div style={{ fontSize: '12px', color: '#64748b' }}>{new Date(msg.createdAt).toLocaleString('id-ID')}</div>
-                              </div>
-                            </div>
-                            <p style={{ fontSize: '15px', color: '#334155', lineHeight: 1.6 }}>{msg.content}</p>
-                          </div>
-                        ))}
-                        {qnaMessages.length === 0 && (
-                          <div style={{ textAlign: 'center', padding: '40px 0', color: '#94a3b8' }}>
-                            <MessageSquare size={48} opacity={0.2} style={{ margin: '0 auto 16px' }} />
-                            <p>Jadilah yang pertama bertanya!</p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {activeTab === 'materials' && currentSession.type === 'TEXT' && (
-                    <div>
-                      <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', marginBottom: 20 }}>Materi Pendukung</h2>
-                      {currentSession.materials && currentSession.materials.length > 0 ? (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                          {currentSession.materials.map((mat: any) => (
-                            <a
-                              key={mat.url} href={mat.url} target="_blank" rel="noopener noreferrer"
-                              style={{
-                                display: 'flex', alignItems: 'center', gap: 16,
-                                padding: '16px 20px', border: '1px solid #e2e8f0',
-                                borderRadius: 12, textDecoration: 'none', background: '#fff',
-                                color: '#0f172a', transition: 'all 0.2s',
-                              }}
-                              onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-primary)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.05)' }}
-                              onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.boxShadow = 'none' }}
-                            >
-                              <div style={{ width: 40, height: 40, borderRadius: 10, background: 'rgba(16, 185, 129, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <FileText size={20} color="var(--color-primary)" />
-                              </div>
-                              <span style={{ flex: 1, fontSize: '15px', fontWeight: 600 }}>{mat.name}</span>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--color-primary)', fontSize: '13px', fontWeight: 600 }}>
-                                <Download size={16} /> Unduh
-                              </div>
-                            </a>
-                          ))}
+                          <p style={{ flex: 1, margin: 0, color: 'var(--color-text-secondary)', fontSize: '15px', lineHeight: 1.6 }}>{n.content}</p>
                         </div>
-                      ) : (
-                        <div style={{ textAlign: 'center', padding: '40px 0', color: '#94a3b8' }}>
-                          <FileText size={48} opacity={0.2} style={{ margin: '0 auto 16px' }} />
-                          <p>Tidak ada materi tambahan untuk sesi ini.</p>
+                      ))}
+                      {notes.length === 0 && (
+                        <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--color-text-tertiary)' }}>
+                          <StickyNote size={48} opacity={0.2} style={{ margin: '0 auto 16px' }} />
+                          <p>Belum ada catatan.</p>
                         </div>
                       )}
                     </div>
-                  )}
-                </CardTabs>
+                  </div>
+                )}
+
+                {activeTab === 'qna' && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+                    <div style={{ display: 'flex', gap: 12 }}>
+                      <input
+                        value={qnaMessage} onChange={(e) => setQnaMessage(e.target.value)}
+                        placeholder="Ada pertanyaan? Tanyakan di sini..."
+                        style={{
+                          flex: 1, padding: '14px 20px', borderRadius: 12,
+                          border: '1px solid var(--color-border)', background: 'var(--color-bg)',
+                          fontSize: '15px'
+                        }}
+                        onKeyDown={(e) => e.key === 'Enter' && addQnaMutation.mutate()}
+                      />
+                      <button
+                        onClick={() => addQnaMutation.mutate()} disabled={addQnaMutation.isPending || !qnaMessage.trim()}
+                        style={{
+                          padding: '0 24px', borderRadius: 12, border: 'none',
+                          background: '#1e293b', color: '#fff', fontWeight: 600,
+                          cursor: qnaMessage.trim() ? 'pointer' : 'not-allowed', opacity: qnaMessage.trim() ? 1 : 0.6,
+                          display: 'flex', alignItems: 'center', gap: 8
+                        }}
+                      >
+                        <Send size={18} /> Kirim
+                      </button>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                      {(qnaMessages as Array<{ id: string; content: string; user: { name: string }; createdAt: string }>).map((msg) => (
+                        <div key={msg.id} style={{ padding: '20px', border: '1px solid var(--color-border-subtle)', borderRadius: 16, background: 'var(--color-bg)' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+                            <div style={{
+                              width: 36, height: 36, borderRadius: '50%', background: '#e2e8f0',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 700, color: '#475569'
+                            }}>
+                              {msg.user.name[0]}
+                            </div>
+                            <div>
+                              <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-text-primary)' }}>{msg.user.name}</div>
+                              <div style={{ fontSize: '12px', color: 'var(--color-text-tertiary)' }}>{new Date(msg.createdAt).toLocaleString('id-ID')}</div>
+                            </div>
+                          </div>
+                          <p style={{ fontSize: '15px', color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>{msg.content}</p>
+                        </div>
+                      ))}
+                      {qnaMessages.length === 0 && (
+                        <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--color-text-tertiary)' }}>
+                          <MessageSquare size={48} opacity={0.2} style={{ margin: '0 auto 16px' }} />
+                          <p>Jadilah yang pertama bertanya!</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'materials' && (
+                  <div>
+                    <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: 20 }}>Materi Pendukung</h2>
+                    {currentSession.materials && currentSession.materials.length > 0 ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                        {currentSession.materials.map((mat) => (
+                          <a
+                            key={mat.url} href={mat.url} target="_blank" rel="noopener noreferrer"
+                            style={{
+                              display: 'flex', alignItems: 'center', gap: 16,
+                              padding: '16px 20px', border: '1px solid var(--color-border-subtle)',
+                              borderRadius: 16, textDecoration: 'none', background: 'var(--color-bg)',
+                              color: 'var(--color-text-primary)', transition: 'all 0.2s',
+                            }}
+                            onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-primary)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.05)' }}
+                            onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-border-subtle)'; e.currentTarget.style.boxShadow = 'none' }}
+                          >
+                            <div style={{ width: 40, height: 40, borderRadius: 10, background: 'rgba(16, 185, 129, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              <FileText size={20} color="var(--color-primary)" />
+                            </div>
+                            <span style={{ flex: 1, fontSize: '15px', fontWeight: 600 }}>{mat.name}</span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--color-primary)', fontSize: '13px', fontWeight: 600 }}>
+                              <Download size={16} /> Unduh
+                            </div>
+                          </a>
+                        ))}
+                      </div>
+                    ) : (
+                      <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--color-text-tertiary)' }}>
+                        <FileText size={48} opacity={0.2} style={{ margin: '0 auto 16px' }} />
+                        <p>Tidak ada materi tambahan untuk sesi ini.</p>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -582,27 +468,27 @@ export default function CourseLearningPlayerPage() {
         {/* Right Side: Curriculum Sidebar */}
         <div style={{
           width: 360, background: '#fff',
-          borderLeft: '1px solid #e2e8f0',
+          borderLeft: '1px solid var(--color-border)',
           display: 'flex', flexDirection: 'column', flexShrink: 0,
           boxShadow: '-4px 0 24px rgba(0,0,0,0.02)', zIndex: 10
         }}>
-          <div style={{ padding: '24px', borderBottom: '1px solid #e2e8f0' }}>
-            <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>Kurikulum Kelas</h3>
+          <div style={{ padding: '24px', borderBottom: '1px solid var(--color-border-subtle)' }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--color-text-primary)' }}>Kurikulum Kelas</h3>
             <div style={{ marginTop: 16 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 500 }}>Progres Belajar</span>
+                <span style={{ fontSize: '13px', color: 'var(--color-text-secondary)', fontWeight: 500 }}>Progres Belajar</span>
                 <span style={{ fontSize: '13px', color: 'var(--color-primary)', fontWeight: 700 }}>{data.progress}%</span>
               </div>
-              <div style={{ height: 6, background: '#f1f5f9', borderRadius: 3, overflow: 'hidden' }}>
-                <div style={{ height: '100%', background: 'var(--color-primary)', width: `${data.progress}%`, transition: 'width 0.5s ease' }} />
+              <div style={{ height: 6, background: 'var(--color-bg)', borderRadius: 3, overflow: 'hidden' }}>
+                <div style={{ height: '100%', background: 'var(--color-primary)', width: \%, transition: 'width 0.5s ease' }} />
               </div>
             </div>
           </div>
 
           <div style={{ flex: 1, overflow: 'auto', padding: '16px 0' }}>
-            {chapters.map((chapter: any, idx: number) => {
+            {chapters.map((chapter, idx) => {
               const isOpen = expandedChapters.has(String(idx))
-              const completedCount = chapter.sessions.filter((s: any) => s.isCompleted).length
+              const completedCount = chapter.sessions.filter((s) => s.isCompleted).length
               return (
                 <div key={chapter.id} style={{ marginBottom: 8 }}>
                   <button
@@ -616,29 +502,29 @@ export default function CourseLearningPlayerPage() {
                       padding: '16px 24px', background: 'transparent', border: 'none', cursor: 'pointer',
                       transition: 'background 0.2s'
                     }}
-                    onMouseEnter={(e) => e.currentTarget.style.background = '#f8fafc'}
+                    onMouseEnter={(e) => e.currentTarget.style.background = 'var(--color-bg)'}
                     onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                   >
                     <div style={{ textAlign: 'left', flex: 1, paddingRight: 16 }}>
-                      <div style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>
+                      <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: 4 }}>
                         {chapter.title}
                       </div>
-                      <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 500 }}>
+                      <div style={{ fontSize: '12px', color: 'var(--color-text-tertiary)', fontWeight: 500 }}>
                         {completedCount}/{chapter.sessions.length} Sesi Selesai
                       </div>
                     </div>
                     <div style={{
-                      width: 28, height: 28, borderRadius: '50%', background: '#f1f5f9',
+                      width: 28, height: 28, borderRadius: '50%', background: 'var(--color-bg)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
                     }}>
-                      <ChevronDown size={16} color="#64748b"
+                      <ChevronDown size={16} color="var(--color-text-secondary)"
                         style={{ transform: isOpen ? 'rotate(-180deg)' : 'rotate(0deg)', transition: 'transform 0.3s' }} />
                     </div>
                   </button>
                   
                   {isOpen && (
                     <div style={{ padding: '8px 16px' }}>
-                      {chapter.sessions.map((sess: any, sIdx: number) => {
+                      {chapter.sessions.map((sess, sIdx) => {
                         const isActive = sess.id === sessionId
                         return (
                           <Link
@@ -652,7 +538,7 @@ export default function CourseLearningPlayerPage() {
                               border: isActive ? '1px solid rgba(16, 185, 129, 0.2)' : '1px solid transparent',
                               transition: 'all 0.2s'
                             }}
-                            onMouseEnter={(e) => { if(!isActive) e.currentTarget.style.background = '#f8fafc' }}
+                            onMouseEnter={(e) => { if(!isActive) e.currentTarget.style.background = 'var(--color-bg)' }}
                             onMouseLeave={(e) => { if(!isActive) e.currentTarget.style.background = 'transparent' }}
                           >
                             <div style={{ marginTop: 2 }}>
@@ -664,13 +550,13 @@ export default function CourseLearningPlayerPage() {
                             <div style={{ flex: 1 }}>
                               <div style={{
                                 fontSize: '13px', fontWeight: isActive ? 700 : 500,
-                                color: isActive ? 'var(--color-primary)' : '#475569',
+                                color: isActive ? 'var(--color-primary)' : 'var(--color-text-secondary)',
                                 lineHeight: 1.4, marginBottom: 4
                               }}>
                                 {sIdx + 1}. {sess.title}
                               </div>
                               {sess.videoDuration && (
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '11px', color: '#94a3b8', fontWeight: 500 }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: '11px', color: 'var(--color-text-tertiary)', fontWeight: 500 }}>
                                   <Clock size={12} /> {formatDuration(sess.videoDuration)}
                                 </div>
                               )}
@@ -687,169 +573,6 @@ export default function CourseLearningPlayerPage() {
         </div>
 
       </div>
-    </div>
-  )
-}
-
-function InteractiveQuiz({ quizOptions, onComplete, isCompleted }: { quizOptions: any[], onComplete: () => void, isCompleted: boolean }) {
-  const [currentQIdx, setCurrentQIdx] = useState(0)
-  const [answers, setAnswers] = useState<Record<string, string>>({})
-  const [showResult, setShowResult] = useState(false)
-  const [score, setScore] = useState(0)
-  const [isStarted, setIsStarted] = useState(false)
-  
-  useEffect(() => {
-    setCurrentQIdx(0)
-    setAnswers({})
-    setShowResult(false)
-    setIsStarted(false)
-  }, [quizOptions])
-
-  if (!quizOptions || quizOptions.length === 0) return null
-
-  const currentQ = quizOptions[currentQIdx]
-  const totalQ = quizOptions.length
-  const answeredCount = Object.keys(answers).length
-
-  const handleSubmit = () => {
-    let correct = 0
-    quizOptions.forEach(q => {
-      const correctOpt = q.options.find((o: any) => o.isCorrect)
-      if (correctOpt && answers[q.id] === correctOpt.id) correct++
-    })
-    setScore(Math.round((correct / totalQ) * 100))
-    setShowResult(true)
-    if (!isCompleted) {
-      onComplete()
-    }
-  }
-
-  if (showResult) {
-    return (
-       <div style={{ background: '#f8fafc', padding: '60px 20px', borderBottom: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }} className="animate-fade-in">
-          <div style={{
-            width: 120, height: 120, borderRadius: '50%', margin: '0 auto 24px',
-            background: `conic-gradient(var(--color-primary) ${score * 3.6}deg, var(--color-border) 0deg)`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <div style={{ width: 96, height: 96, borderRadius: '50%', background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
-              <div style={{ fontSize: '24px', fontWeight: 800, color: 'var(--color-primary)' }}>{score}%</div>
-              <div style={{ fontSize: '10px', color: 'var(--color-text-tertiary)' }}>Skor</div>
-            </div>
-          </div>
-          <h2 style={{ fontSize: '24px', fontWeight: 800, marginBottom: 8, color: '#0f172a' }}>Kuis Selesai!</h2>
-          <p style={{ color: '#475569', marginBottom: 24 }}>Jawaban Anda telah tersimpan dan sesi ditandai selesai.</p>
-          <motion.button 
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => { setShowResult(false); setCurrentQIdx(0); setAnswers({}); setIsStarted(false); }} 
-            style={{ padding: '10px 24px', borderRadius: 12, border: '1px solid var(--color-border)', background: '#fff', cursor: 'pointer', fontWeight: 600, fontSize: '14px', color: '#334155', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}
-          >
-            Coba Lagi Kuis
-          </motion.button>
-       </div>
-    )
-  }
-
-  if (!isStarted) {
-    return (
-      <div style={{ background: '#f8fafc', padding: '60px 20px', borderBottom: '1px solid #e2e8f0', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }} className="animate-fade-in">
-        <div style={{
-          width: 80, height: 80, borderRadius: 20, background: 'rgba(16, 185, 129, 0.1)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24
-        }}>
-          <FileText size={40} color="var(--color-primary)" />
-        </div>
-        <h2 style={{ fontSize: '24px', fontWeight: 800, marginBottom: 12, color: '#0f172a' }}>Siap untuk mulai kuis?</h2>
-        <p style={{ color: '#475569', marginBottom: 32, textAlign: 'center', maxWidth: 400, lineHeight: 1.6 }}>
-          Kuis ini terdiri dari {totalQ} pertanyaan. Pastikan Anda sudah memahami materi dengan baik sebelum memulai.
-        </p>
-        <motion.button 
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={() => setIsStarted(true)} 
-          style={{ padding: '14px 32px', borderRadius: 12, border: 'none', background: 'var(--color-primary)', color: '#fff', cursor: 'pointer', fontWeight: 600, fontSize: '15px', boxShadow: '0 4px 12px rgba(16,185,129,0.3)' }}
-        >
-          Mulai Kuis
-        </motion.button>
-      </div>
-    )
-  }
-
-  return (
-    <div style={{ background: '#f8fafc', padding: '40px 20px', borderBottom: '1px solid #e2e8f0', width: '100%' }} className="animate-fade-in">
-       <div style={{ maxWidth: 680, margin: '0 auto' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-            <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a' }}>Kuis Interaktif</h3>
-            <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-primary)' }}>
-               {currentQIdx + 1} <span style={{ color: '#94a3b8', fontWeight: 500 }}>/ {totalQ}</span>
-            </div>
-          </div>
-          
-          <div style={{ height: 6, background: 'var(--color-border)', borderRadius: 3, marginBottom: 32, overflow: 'hidden' }}>
-            <div style={{ height: '100%', background: 'var(--color-primary)', width: `${(answeredCount / totalQ) * 100}%`, transition: 'width 0.3s' }} />
-          </div>
-
-          <div style={{ background: '#fff', borderRadius: 16, padding: '32px 24px', border: '1px solid var(--color-border)', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
-             <p style={{ fontSize: '16px', fontWeight: 500, lineHeight: 1.6, marginBottom: 32, color: '#1e293b' }}>{currentQ.question}</p>
-             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-               {currentQ.options.map((opt: any, idx: number) => {
-                 const isSelected = answers[currentQ.id] === opt.id
-                 return (
-                   <motion.button
-                     whileHover={{ scale: 1.01 }}
-                     whileTap={{ scale: 0.99 }}
-                     key={opt.id}
-                     onClick={() => setAnswers(p => ({ ...p, [currentQ.id]: opt.id }))}
-                     style={{
-                       padding: '16px 20px', borderRadius: 12, border: `2px solid ${isSelected ? 'var(--color-primary)' : 'var(--color-border)'}`,
-                       background: isSelected ? 'rgba(16,185,129,0.05)' : '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 16, textAlign: 'left',
-                       transition: 'all 0.2s ease-in-out', outline: 'none'
-                     }}
-                   >
-                     <div style={{ width: 28, height: 28, borderRadius: '50%', border: `2px solid ${isSelected ? 'var(--color-primary)' : '#cbd5e1'}`, background: isSelected ? 'var(--color-primary)' : '#fff', color: isSelected ? '#fff' : '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: 700, flexShrink: 0, transition: 'all 0.2s' }}>
-                        {String.fromCharCode(65 + idx)}
-                     </div>
-                     <span style={{ fontSize: '15px', fontWeight: isSelected ? 600 : 500, color: isSelected ? '#0f172a' : '#334155' }}>{opt.text}</span>
-                   </motion.button>
-                 )
-               })}
-             </div>
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 24 }}>
-             <motion.button
-               whileHover={currentQIdx === 0 ? {} : { scale: 1.02 }}
-               whileTap={currentQIdx === 0 ? {} : { scale: 0.98 }}
-               onClick={() => setCurrentQIdx(i => Math.max(0, i - 1))}
-               disabled={currentQIdx === 0}
-               style={{ padding: '12px 24px', borderRadius: 12, border: '1px solid var(--color-border)', background: '#fff', fontWeight: 600, fontSize: '14px', cursor: currentQIdx === 0 ? 'not-allowed' : 'pointer', opacity: currentQIdx === 0 ? 0.5 : 1, color: '#334155', transition: 'all 0.2s' }}
-             >
-               Kembali
-             </motion.button>
-             
-             {currentQIdx === totalQ - 1 ? (
-               <motion.button
-                 whileHover={answeredCount < totalQ ? {} : { scale: 1.02 }}
-                 whileTap={answeredCount < totalQ ? {} : { scale: 0.98 }}
-                 onClick={handleSubmit}
-                 disabled={answeredCount < totalQ}
-                 style={{ padding: '12px 24px', borderRadius: 12, border: 'none', background: 'var(--color-primary)', color: '#fff', fontWeight: 600, fontSize: '14px', cursor: answeredCount < totalQ ? 'not-allowed' : 'pointer', opacity: answeredCount < totalQ ? 0.5 : 1, transition: 'all 0.2s', boxShadow: answeredCount < totalQ ? 'none' : '0 4px 12px rgba(16,185,129,0.3)' }}
-               >
-                 Selesaikan Kuis
-               </motion.button>
-             ) : (
-               <motion.button
-                 whileHover={{ scale: 1.02 }}
-                 whileTap={{ scale: 0.98 }}
-                 onClick={() => setCurrentQIdx(i => Math.min(totalQ - 1, i + 1))}
-                 style={{ padding: '12px 24px', borderRadius: 12, border: 'none', background: 'var(--color-primary)', color: '#fff', fontWeight: 600, fontSize: '14px', cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 4px 12px rgba(16,185,129,0.3)' }}
-               >
-                 Selanjutnya
-               </motion.button>
-             )}
-          </div>
-       </div>
     </div>
   )
 }

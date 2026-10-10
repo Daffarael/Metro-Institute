@@ -13,7 +13,7 @@ export default function MenteeLayout({ children }: { children: React.ReactNode }
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768)
+      setIsMobile(window.innerWidth <= 900)
     }
     handleResize()
     window.addEventListener('resize', handleResize)
