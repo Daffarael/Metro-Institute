@@ -16,7 +16,7 @@ import api from '@/lib/axios'
 import { ROUTES, formatDuration } from '@/lib/utils'
 import { CardTabs } from '@/components/ui/AnimatedTabs'
 
-const ReactPlayer = dynamic(() => import('react-player'), { ssr: false })
+import ReactPlayer from 'react-player'
 
 interface Session {
   id: string; title: string; type: string; videoUrl?: string
@@ -52,6 +52,11 @@ export default function CourseLearningPlayerPage() {
   const [qnaMessage, setQnaMessage] = useState('')
   const playerRef = useRef<unknown>(null)
   const completeTriggerRef = useRef(false)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const { data, isLoading } = useQuery<LearningData>({
     queryKey: ['learn-course', courseId, sessionId],
@@ -204,19 +209,16 @@ export default function CourseLearningPlayerPage() {
               boxShadow: '0 10px 30px rgba(0,0,0,0.1)', zIndex: 5,
             }}>
               <div style={{ width: '100%', maxWidth: '1200px', aspectRatio: '16/9', maxHeight: '65vh' }}>
-                {(() => {
-                  const Player = ReactPlayer as any;
-                  return (
-                    <Player
-                      ref={playerRef as any}
-                      url={currentSession.videoUrl}
-                      width="100%" height="100%"
-                      controls
-                      onProgress={handleProgress as any}
-                      onEnded={() => { if (!completeTriggerRef.current) { completeTriggerRef.current = true; completeMutation.mutate() } }}
-                    />
-                  );
-                })()}
+                {mounted && (
+                  <ReactPlayer
+                    ref={playerRef as any}
+                    url={currentSession.videoUrl}
+                    width="100%" height="100%"
+                    controls
+                    onProgress={handleProgress as any}
+                    onEnded={() => { if (!completeTriggerRef.current) { completeTriggerRef.current = true; completeMutation.mutate() } }}
+                  />
+                )}
               </div>
             </div>
           ) : (
