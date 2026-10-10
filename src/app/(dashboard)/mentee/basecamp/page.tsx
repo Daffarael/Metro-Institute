@@ -71,8 +71,8 @@ export default function BasecampPage() {
 
         {/* XP & Streak */}
         <div className="basecamp-xp-container" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-6)' }}>
-          <div style={{ textAlign: 'right', width: '100%' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5, justifyContent: 'flex-end', marginBottom: 6 }}>
+          <div className="basecamp-xp-inner" style={{ textAlign: 'right', width: '100%' }}>
+            <div className="basecamp-streak" style={{ display: 'flex', alignItems: 'center', gap: 5, justifyContent: 'flex-end', marginBottom: 6 }}>
               <Flame size={13} color="var(--color-streak)" />
               <span style={{ fontSize: '13px', color: 'var(--color-text-secondary)', fontWeight: 500 }}>
                 {user?.currentStreak || 0} hari streak
@@ -88,7 +88,7 @@ export default function BasecampPage() {
               <div style={{ height: 4, borderRadius: 2, background: 'var(--color-border)', overflow: 'hidden' }}>
                 <div style={{ height: '100%', width: `${progressPct}%`, background: 'var(--color-primary)', borderRadius: 2, transition: 'width 0.4s ease' }} />
               </div>
-              <div style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 5, textAlign: 'right' }}>
+              <div className="basecamp-next-badge" style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 5, textAlign: 'right' }}>
                 Menuju <strong style={{ color: 'var(--color-text-secondary)', fontWeight: 600 }}>{BADGE_LABELS['METRO_EXPLORER']}</strong>
               </div>
             </div>

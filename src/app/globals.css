@@ -1267,12 +1267,22 @@ input[type="number"] {
   }
   .basecamp-header-container {
     flex-direction: column;
-    align-items: stretch !important;
+    align-items: flex-start !important;
   }
   .basecamp-xp-container {
     width: 100%;
   }
+  .basecamp-xp-inner {
+    text-align: left !important;
+  }
+  .basecamp-streak {
+    justify-content: flex-start !important;
+  }
+  .basecamp-next-badge {
+    text-align: left !important;
+  }
   .basecamp-xp-bar {
     width: 100% !important;
+    max-width: 320px;
   }
 }
