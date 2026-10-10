@@ -420,7 +420,7 @@ export default function AdminHomepageManagerPage() {
 
       <div className="grid-sidebar-left" style={{ display: 'grid', gap: 24, alignItems: 'start' }}>
         {/* â”€â”€ Left column (nav + save card) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-        <div style={{ position: 'sticky', top: 80, display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div className="homepage-manager-sidebar" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {/* Nav card */}
           <div style={{
             background: '#fff', border: '1px solid var(--color-border)',

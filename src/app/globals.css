@@ -1254,6 +1254,10 @@ input[type="number"] {
 .grid-question-order {
   grid-template-columns: 1fr 100px;
 }
+.homepage-manager-sidebar {
+  position: sticky;
+  top: 80px;
+}
 
 @media (max-width: 900px) {
   .basecamp-grid {
@@ -1300,5 +1304,8 @@ input[type="number"] {
   }
   .course-card-mobile {
     width: 100% !important;
+  }
+  .homepage-manager-sidebar {
+    position: static;
   }
 }
