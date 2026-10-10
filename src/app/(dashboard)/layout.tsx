@@ -1,5 +1,5 @@
 import Script from 'next/script'
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter, Reggae_One, Geist } from 'next/font/google'
 import '../globals.css'
 import { Providers } from '@/components/providers'
@@ -21,6 +21,12 @@ const reggaeOne = Reggae_One({
   variable: '--font-reggae-one',
   display: 'swap',
 })
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+}
 
 export const metadata: Metadata = {
   title: {

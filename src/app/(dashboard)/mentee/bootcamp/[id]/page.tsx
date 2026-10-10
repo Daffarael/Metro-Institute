@@ -88,7 +88,7 @@ export default function BootcampDetailPage() {
   if (isLoading) return (
     <div style={{ maxWidth: 960, margin: '0 auto' }}>
       <div className="skeleton" style={{ height: 300, borderRadius: 16, marginBottom: 'var(--space-6)' }} />
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 'var(--space-6)' }}>
+      <div className="detail-layout-grid" style={{ display: 'grid', gap: 'var(--space-6)' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
           {Array.from({ length: 4 }).map((_, i) => <div key={i} className="skeleton" style={{ height: 80, borderRadius: 12 }} />)}
         </div>
@@ -105,7 +105,7 @@ export default function BootcampDetailPage() {
   return (
     <div style={{ maxWidth: 1100, margin: '0 auto' }} className="animate-fade-in">
       {/* Main layout */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 48 }}>
+      <div className="detail-layout-grid" style={{ display: 'grid', gap: 48 }}>
         
         {/* ── LEFT ──────────────────────────────────────── */}
         <div>

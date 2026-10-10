@@ -115,7 +115,7 @@ export default function CourseDetailPage() {
 
   return (
     <div style={{ maxWidth: 1100, margin: '0 auto' }} className="animate-fade-in">
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 48 }}>
+      <div className="detail-layout-grid" style={{ display: 'grid', gap: 48 }}>
 
         {/* ── LEFT ──────────────────────────────────────── */}
         <div>
@@ -509,7 +509,7 @@ export default function CourseDetailPage() {
 
 function CourseDetailSkeleton() {
   return (
-    <div style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 320px', gap: 48 }}>
+    <div className="detail-layout-grid" style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gap: 48 }}>
       <div>
         <div className="skeleton" style={{ height: 13, width: 220, marginBottom: 24, borderRadius: 4 }} />
         <div className="skeleton" style={{ height: 36, width: '75%', marginBottom: 12, borderRadius: 6 }} />

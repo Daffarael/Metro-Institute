@@ -98,7 +98,7 @@ export default function BasecampPage() {
       </div>
 
       {/* ── Main Grid ───────────────────────────────────────── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: 'var(--space-5)', alignItems: 'start' }}>
+      <div className="basecamp-grid" style={{ display: 'grid', gap: 'var(--space-5)', alignItems: 'start' }}>
 
         {/* Left Column */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-5)' }}>
@@ -168,7 +168,7 @@ export default function BasecampPage() {
                     Eksplorasi Bootcamp atau Mini Course untuk memulai perjalanan belajarmu.
                   </div>
                 </div>
-                <div style={{ display: 'flex', gap: 'var(--space-3)', marginTop: 'var(--space-2)' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 'var(--space-3)', marginTop: 'var(--space-2)' }}>
                   <Link href={ROUTES.BOOTCAMP_LIST} style={{ textDecoration: 'none' }}>
                     <motion.div
                       whileHover={{ scale: 1.02 }}

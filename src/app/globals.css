@@ -1225,3 +1225,21 @@ input[type="number"] {
     @apply font-sans;
   }
 }
+
+/* ==========================================================================
+   Responsive Grid Basecamp
+   ========================================================================== */
+.basecamp-grid {
+  grid-template-columns: 1fr 300px;
+}
+.detail-layout-grid {
+  grid-template-columns: 1fr 320px;
+}
+@media (max-width: 900px) {
+  .basecamp-grid {
+    grid-template-columns: 1fr;
+  }
+  .detail-layout-grid {
+    grid-template-columns: 1fr;
+  }
+}

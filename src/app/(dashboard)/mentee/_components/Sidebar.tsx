@@ -45,14 +45,27 @@ const branchItems = [
   },
 ]
 
-export function Sidebar({ isCollapsed, toggleCollapse }: { isCollapsed?: boolean, toggleCollapse?: () => void }) {
+export function Sidebar({ 
+  isCollapsed, 
+  toggleCollapse, 
+  isMobile,
+  isMobileOpen,
+  setIsMobileOpen
+}: { 
+  isCollapsed?: boolean, 
+  toggleCollapse?: () => void,
+  isMobile?: boolean,
+  isMobileOpen?: boolean,
+  setIsMobileOpen?: (val: boolean) => void
+}) {
   const pathname = usePathname()
   const { user, logout } = useAuthStore()
   const router = useRouter()
   const [isHovered, setIsHovered] = useState(false)
 
   // Sidebar terbuka jika tidak dalam mode collapsed ATAU sedang di-hover
-  const open = !isCollapsed || isHovered
+  // Pada mobile, sidebar terbuka HANYA jika isMobileOpen bernilai true
+  const open = isMobile ? isMobileOpen : (!isCollapsed || isHovered)
 
   const handleLogout = async () => {
     try {
@@ -76,18 +89,28 @@ export function Sidebar({ isCollapsed, toggleCollapse }: { isCollapsed?: boolean
   return (
     <motion.aside
       className="dashboard-sidebar"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      animate={{ width: open ? 240 : 80 }}
+      onMouseEnter={() => !isMobile && setIsHovered(true)}
+      onMouseLeave={() => !isMobile && setIsHovered(false)}
+      animate={{ 
+        width: isMobile ? 240 : (open ? 240 : 80),
+        x: isMobile ? (isMobileOpen ? 0 : -240) : 0
+      }}
       transition={{ duration: 0.3, ease: 'easeInOut' }}
       style={{
         background: 'var(--color-surface)',
-        borderRight: '1px solid rgba(0,0,0,0.04)', // Lebih subtle
+        borderRight: '1px solid rgba(0,0,0,0.04)',
         display: 'flex',
         flexDirection: 'column',
         padding: 'var(--space-6) 0 var(--space-4)',
         overflow: 'hidden',
-        flexShrink: 0
+        flexShrink: 0,
+        ...(isMobile ? {
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          bottom: 0,
+          zIndex: 100,
+        } : {})
       }}
     >
       {/* Header / Logo */}
@@ -99,7 +122,7 @@ export function Sidebar({ isCollapsed, toggleCollapse }: { isCollapsed?: boolean
         width: 240, // Paksa lebar 240px agar konten tidak jumping saat sidebar mengecil
         boxSizing: 'border-box'
       }}>
-        <Link href={ROUTES.BASECAMP} style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', textDecoration: 'none', flex: 1, minWidth: 0 }}>
+        <Link onClick={() => isMobile && setIsMobileOpen?.(false)} href={ROUTES.BASECAMP} style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', textDecoration: 'none', flex: 1, minWidth: 0 }}>
           <div style={{
             width: 44, height: 44,
             borderRadius: 'var(--radius-md)', overflow: 'hidden',
@@ -180,6 +203,7 @@ export function Sidebar({ isCollapsed, toggleCollapse }: { isCollapsed?: boolean
                 window.open('https://discord.com', '_blank')
               } else {
                 router.push(value)
+                if (isMobile) setIsMobileOpen?.(false)
               }
             }}
             color="var(--color-text-primary)"
@@ -266,10 +290,10 @@ export function Sidebar({ isCollapsed, toggleCollapse }: { isCollapsed?: boolean
               </div>
               
               <div style={{ display: 'flex', gap: '4px', flexShrink: 0 }}>
-                <Link href={ROUTES.SETTINGS} title="Pengaturan" style={{ color: 'var(--color-text-tertiary)', padding: '6px', borderRadius: 'var(--radius-md)' }} onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-text-primary)'; e.currentTarget.style.background = 'var(--color-bg)'; }} onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--color-text-tertiary)'; e.currentTarget.style.background = 'transparent'; }}>
+                <Link onClick={() => isMobile && setIsMobileOpen?.(false)} href={ROUTES.SETTINGS} title="Pengaturan" style={{ color: 'var(--color-text-tertiary)', padding: '6px', borderRadius: 'var(--radius-md)' }} onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-text-primary)'; e.currentTarget.style.background = 'var(--color-bg)'; }} onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--color-text-tertiary)'; e.currentTarget.style.background = 'transparent'; }}>
                   <Settings size={16} />
                 </Link>
-                <button onClick={handleLogout} title="Keluar" style={{ color: 'var(--color-text-tertiary)', padding: '6px', background: 'transparent', border: 'none', cursor: 'pointer', borderRadius: 'var(--radius-md)' }} onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-error)'; e.currentTarget.style.background = 'var(--color-error-light)'; }} onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--color-text-tertiary)'; e.currentTarget.style.background = 'transparent'; }}>
+                <button onClick={() => { if (isMobile) setIsMobileOpen?.(false); handleLogout(); }} title="Keluar" style={{ color: 'var(--color-text-tertiary)', padding: '6px', background: 'transparent', border: 'none', cursor: 'pointer', borderRadius: 'var(--radius-md)' }} onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--color-error)'; e.currentTarget.style.background = 'var(--color-error-light)'; }} onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--color-text-tertiary)'; e.currentTarget.style.background = 'transparent'; }}>
                   <LogOut size={16} />
                 </button>
               </div>

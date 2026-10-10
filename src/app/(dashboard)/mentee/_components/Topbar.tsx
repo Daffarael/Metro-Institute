@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
-import { Bell, Search } from 'lucide-react'
+import { Bell, Search, Menu } from 'lucide-react'
 import { AppleSpotlight } from '@/components/ui/AppleSpotlight'
 import { useAuthStore } from '@/stores/auth.store'
 import { useNotifStore } from '@/stores/auth.store'
@@ -10,9 +10,11 @@ import { ROUTES, getInitials } from '@/lib/utils'
 
 interface TopbarProps {
   title?: string
+  onMenuClick?: () => void
+  isMobile?: boolean
 }
 
-export function Topbar({ title }: TopbarProps) {
+export function Topbar({ title, onMenuClick, isMobile }: TopbarProps) {
   const { user } = useAuthStore()
   const { unreadCount } = useNotifStore()
   const [isSearchOpen, setIsSearchOpen] = useState(false)
@@ -25,10 +27,18 @@ export function Topbar({ title }: TopbarProps) {
         borderBottom: '1px solid var(--color-border)',
         display: 'flex',
         alignItems: 'center',
-        padding: '0 var(--space-6)',
+        padding: isMobile ? '0 var(--space-4)' : '0 var(--space-6)',
         gap: 'var(--space-4)',
       }}
     >
+      {isMobile && (
+        <button 
+          onClick={onMenuClick}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-primary)' }}
+        >
+          <Menu size={24} />
+        </button>
+      )}
       {title && (
         <h2 style={{ fontSize: 'var(--text-lg)', fontWeight: 700, color: 'var(--color-text-primary)' }}>
           {title}
