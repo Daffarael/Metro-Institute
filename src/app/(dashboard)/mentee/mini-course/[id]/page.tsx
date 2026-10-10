@@ -60,10 +60,25 @@ export default function CourseDetailPage() {
   const [openChapters, setOpenChapters] = useState<Set<string>>(new Set(['0']))
   const [isWishlisted, setIsWishlisted] = useState(false)
   const [activeTab, setActiveTab] = useState<'overview' | 'curriculum' | 'reviews'>('overview')
+  const [reviewRating, setReviewRating] = useState<number>(0)
+  const [reviewContent, setReviewContent] = useState('')
 
   const { data: course, isLoading, refetch } = useQuery<CourseDetail>({
     queryKey: ['course-detail', id],
     queryFn: () => api.get(`/courses/${id}`).then((r) => r.data.data),
+  })
+
+  const submitReviewMutation = useMutation({
+    mutationFn: () => api.post(`/courses/${id}/reviews`, { rating: reviewRating, content: reviewContent }),
+    onSuccess: () => {
+      toast.success('Ulasan berhasil dikirim!')
+      setReviewRating(0)
+      setReviewContent('')
+      refetch()
+    },
+    onError: (err: any) => {
+      toast.error(err.response?.data?.message || 'Gagal mengirim ulasan')
+    }
   })
 
   useEffect(() => { if (course) setIsWishlisted(course.isWishlisted) }, [course])
@@ -317,6 +332,52 @@ export default function CourseDetailPage() {
 
             {activeTab === 'reviews' && (
               <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+                {course.isEnrolled && (
+                  <div style={{ padding: '20px', border: '1px solid var(--color-border-subtle)', borderRadius: 10, background: 'var(--color-surface)' }}>
+                    <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: 12 }}>Berikan Ulasan Anda</h3>
+                    <div style={{ display: 'flex', gap: 4, marginBottom: 16 }}>
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star 
+                          key={star} 
+                          size={24} 
+                          strokeWidth={1.5}
+                          color={star <= reviewRating ? '#F59E0B' : 'var(--color-border)'} 
+                          fill={star <= reviewRating ? '#F59E0B' : 'none'} 
+                          style={{ cursor: 'pointer', transition: 'all 0.2s' }}
+                          onClick={() => setReviewRating(star)}
+                        />
+                      ))}
+                    </div>
+                    <textarea 
+                      value={reviewContent}
+                      onChange={(e) => setReviewContent(e.target.value)}
+                      placeholder="Bagaimana pengalaman Anda belajar di kursus ini?"
+                      style={{ 
+                        width: '100%', minHeight: 80, padding: 12, borderRadius: 8, 
+                        border: '1px solid var(--color-border-subtle)', background: 'var(--color-bg)',
+                        color: 'var(--color-text-primary)', fontSize: '14px', marginBottom: 16,
+                        fontFamily: 'inherit', resize: 'vertical'
+                      }}
+                    />
+                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                      <motion.button
+                        whileHover={!submitReviewMutation.isPending && reviewRating > 0 ? { scale: 1.02 } : {}}
+                        whileTap={!submitReviewMutation.isPending && reviewRating > 0 ? { scale: 0.98 } : {}}
+                        onClick={() => submitReviewMutation.mutate()}
+                        disabled={submitReviewMutation.isPending || reviewRating === 0}
+                        style={{
+                          padding: '10px 20px', background: 'var(--color-primary)', color: '#fff',
+                          border: 'none', borderRadius: 8, fontWeight: 600, fontSize: '13px',
+                          cursor: submitReviewMutation.isPending || reviewRating === 0 ? 'not-allowed' : 'pointer',
+                          opacity: submitReviewMutation.isPending || reviewRating === 0 ? 0.6 : 1,
+                        }}
+                      >
+                        {submitReviewMutation.isPending ? 'Mengirim...' : 'Kirim Ulasan'}
+                      </motion.button>
+                    </div>
+                  </div>
+                )}
+
                 {course.reviews.length === 0 ? (
                   <div className="empty-state" style={{ padding: '40px 0', textAlign: 'center', border: '1px solid var(--color-border-subtle)', borderRadius: 10 }}>
                     <p style={{ color: 'var(--color-text-tertiary)', fontSize: 14 }}>Belum ada ulasan</p>
