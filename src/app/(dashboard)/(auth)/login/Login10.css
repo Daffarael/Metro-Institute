@@ -411,6 +411,10 @@
   display: none;
 }
 
+.login-10 .mobile-logo {
+  display: none;
+}
+
 /* ─── Mobile responsive ─── */
 @media (max-width: 640px) {
   .login-10 {
@@ -480,4 +484,13 @@
     text-decoration: underline;
     margin-left: 4px;
   }
+  
+  .login-10 .mobile-logo {
+    display: block;
+    height: 48px;
+    width: auto;
+    object-fit: contain;
+    margin: 0 auto 16px auto;
+  }
 }
+

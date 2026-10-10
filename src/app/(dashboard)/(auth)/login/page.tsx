@@ -152,6 +152,7 @@ export default function LoginPage() {
         </div>
 
         <div className="form register">
+          <img src="/logo-metro-clean.png" alt="Metro Institute" className="mobile-logo" />
           <h2>Sign Up</h2>
           <form onSubmit={handleSignupSubmit(onSignup)}>
             
@@ -216,6 +217,7 @@ export default function LoginPage() {
         </div>
 
         <div className="form login">
+          <img src="/logo-metro-clean.png" alt="Metro Institute" className="mobile-logo" />
           <h2>Login</h2>
           <form onSubmit={handleLoginSubmit(onLogin)}>
             
