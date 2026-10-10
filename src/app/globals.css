@@ -1285,4 +1285,20 @@ input[type="number"] {
     width: 100% !important;
     max-width: 320px;
   }
+  
+  .basecamp-buttons {
+    flex-direction: column;
+    width: 100%;
+  }
+  .basecamp-buttons > a {
+    width: 100%;
+  }
+  
+  .course-list-mobile {
+    flex-direction: column !important;
+    overflow-x: hidden !important;
+  }
+  .course-card-mobile {
+    width: 100% !important;
+  }
 }

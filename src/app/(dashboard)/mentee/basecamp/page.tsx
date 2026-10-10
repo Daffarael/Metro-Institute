@@ -167,7 +167,7 @@ export default function BasecampPage() {
                     Eksplorasi Bootcamp atau Mini Course untuk memulai perjalanan belajarmu.
                   </div>
                 </div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 'var(--space-3)', marginTop: 'var(--space-2)' }}>
+                <div className="basecamp-buttons" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 'var(--space-3)', marginTop: 'var(--space-2)' }}>
                   <Link href={ROUTES.BOOTCAMP_LIST} style={{ textDecoration: 'none' }}>
                     <motion.div
                       whileHover={{ scale: 1.02 }}
@@ -211,11 +211,12 @@ export default function BasecampPage() {
                   Lihat semua <ArrowRight size={12} />
                 </Link>
               </div>
-              <div style={{ display: 'flex', gap: 'var(--space-4)', overflowX: 'auto', padding: 'var(--space-4) var(--space-5)' }} className="hide-scrollbar">
+              <div className="course-list-mobile hide-scrollbar" style={{ display: 'flex', gap: 'var(--space-4)', overflowX: 'auto', padding: 'var(--space-4) var(--space-5)' }}>
                 {data.activeCourses.map((course) => (
                   <Link
                     key={course.id}
                     href={course.type === 'bootcamp' ? ROUTES.LEARN_BOOTCAMP(course.id) : ROUTES.LEARN_COURSE(course.id)}
+                    className="course-card-mobile"
                     style={{ textDecoration: 'none', flexShrink: 0, width: 220 }}
                   >
                     <div style={{ border: '1px solid var(--color-border-subtle)', borderRadius: 'var(--radius-lg)', overflow: 'hidden', transition: 'box-shadow 0.2s ease' }}
