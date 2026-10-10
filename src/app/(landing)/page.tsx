@@ -7,6 +7,7 @@ export interface FeaturedBootcamp {
   id: string
   title: string
   shortDescription: string
+  description: string | null
   field: string
   price: number
   thumbnailUrl: string | null

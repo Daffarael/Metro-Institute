@@ -80,7 +80,7 @@ export default function LandingPageClient({
   const mappedBootcamps = featuredBootcamps.map(b => ({
     type: 'BOOTCAMP',
     title: b.title,
-    description: b.shortDescription || 'Bootcamp komprehensif untuk tingkatkan skill kamu.',
+    description: b.description || b.shortDescription || 'Bootcamp komprehensif untuk tingkatkan skill kamu.',
     thumbnailUrl: b.thumbnailUrl,
     points: b.outcomes?.length ? b.outcomes.slice(0, 4) : ['Live Session Interaktif', 'Materi Terstruktur', 'Sertifikat Kelulusan', 'Praktik Langsung'],
     link: `/login?redirect=/mentee/bootcamp/${b.id}`,

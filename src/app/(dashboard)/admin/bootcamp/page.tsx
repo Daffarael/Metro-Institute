@@ -37,7 +37,6 @@ const bootcampSchema = z.object({
   status:          z.enum(['DRAFT', 'PUBLISHED', 'OPEN', 'CLOSED']),
   certificateTemplateId: z.string().optional().nullable(),
   thumbnailUrl:    z.string().optional().nullable(),
-  shortDescription: z.string().max(160, 'Maksimal 160 karakter').optional().nullable(),
 })
 
 type BootcampForm = z.infer<typeof bootcampSchema>
@@ -48,7 +47,6 @@ interface Bootcamp {
   price: number; purchaseOpenAt: string; purchaseCloseAt: string
   startDate: string; endDate: string; thumbnailUrl?: string
   certificateTemplateId?: string
-  shortDescription?: string
   isFeatured?: boolean
   _count?: { registrations: number }
 }
@@ -94,7 +92,6 @@ function BootcampModal({
       status:          (bootcamp?.status as any) ?? 'DRAFT',
       certificateTemplateId: bootcamp?.certificateTemplateId ?? null,
       thumbnailUrl:    bootcamp?.thumbnailUrl ?? '',
-      shortDescription: bootcamp?.shortDescription ?? '',
     },
   })
 
@@ -208,18 +205,6 @@ function BootcampModal({
                 <ImageUpload value={field.value} onChange={field.onChange} />
               )}
             />
-          </div>
-
-          <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 8 }}>
-              <label style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-secondary)' }}>Deskripsi Singkat <span style={{color: 'var(--color-error)'}}>*</span></label>
-              <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', fontWeight: 500 }}>Max 160 karakter</span>
-            </div>
-            <textarea {...register('shortDescription')} rows={2} style={{ ...inputStyleClean, resize: 'vertical' }} placeholder="Deskripsi singkat yang menarik..." 
-              onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
-              onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
-            />
-            {errors.shortDescription && <p style={{ fontSize: '12px', color: 'var(--color-error)', marginTop: 6, fontWeight: 500 }}>{errors.shortDescription.message}</p>}
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: isEdit ? '1fr 1fr' : '1fr', gap: '20px' }}>
