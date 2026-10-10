@@ -22,6 +22,7 @@ function VerifyEmailContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const email = searchParams.get('email')
+  const redirectUrl = searchParams.get('redirect')
 
   const [value, setValue] = React.useState("")
   const [isComplete, setIsComplete] = React.useState(false)
@@ -45,7 +46,11 @@ function VerifyEmailContent() {
       
       // Give a tiny moment for the success animation to be seen
       setTimeout(() => {
-        router.replace(ROUTES.LOGIN)
+        if (redirectUrl) {
+          router.replace(`${ROUTES.LOGIN}?redirect=${encodeURIComponent(redirectUrl)}`)
+        } else {
+          router.replace(ROUTES.LOGIN)
+        }
       }, 1000)
     } catch (err: any) {
       toast.error(err?.response?.data?.message || 'Kode OTP salah atau sudah kedaluwarsa')

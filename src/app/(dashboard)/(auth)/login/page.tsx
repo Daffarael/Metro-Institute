@@ -107,7 +107,12 @@ export default function LoginPage() {
     try {
       await authService.register({ ...data })
       toast.success('Pendaftaran berhasil! Silakan periksa email Anda untuk kode OTP.')
-      router.push(`/verify-email?email=${encodeURIComponent(data.email)}`)
+      
+      const nextUrl = new URLSearchParams()
+      nextUrl.set('email', data.email)
+      if (redirectUrl) nextUrl.set('redirect', redirectUrl)
+        
+      router.push(`/verify-email?${nextUrl.toString()}`)
     } catch (err: any) {
       const data = err?.response?.data
       if (data?.errors && data.errors.length > 0) {
