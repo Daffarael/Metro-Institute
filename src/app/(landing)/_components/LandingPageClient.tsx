@@ -80,7 +80,7 @@ export default function LandingPageClient({
   const mappedBootcamps = featuredBootcamps.map(b => ({
     type: 'BOOTCAMP',
     title: b.title,
-    description: `Dibimbing oleh ${b.mentorName || 'Mentor Berpengalaman'}. Status: ${BATCH_BADGE[b.batchStatus]?.label || 'Tutup'}`,
+    description: `Mentor: ${b.mentorName || 'Mentor Berpengalaman'} • Status: ${BATCH_BADGE[b.batchStatus]?.label || 'Tutup'} • Harga: ${formatPrice(b.price)}`,
     thumbnailUrl: b.thumbnailUrl,
     link: `/login`, // or you could point to detail, but for now fallback to login
   }))
@@ -88,7 +88,7 @@ export default function LandingPageClient({
   const mappedCourses = featuredCourses.map(c => ({
     type: 'MINI COURSE',
     title: c.title,
-    description: `Mini Course: ${FIELD_LABEL[c.field] || c.field}. Diikuti oleh ${c.enrollmentCount} siswa.`,
+    description: `Kategori: ${FIELD_LABEL[c.field] || c.field} • Harga: ${formatPrice(c.price)}`,
     thumbnailUrl: c.thumbnailUrl,
     link: `/login`, 
   }))
