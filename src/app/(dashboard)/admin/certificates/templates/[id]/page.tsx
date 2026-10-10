@@ -436,11 +436,11 @@ export default function CertificateTemplateEditor() {
             </div>
           </div>
           
-          <div style={{ padding: '32px', display: 'flex', justifyContent: 'center', background: '#f8fafc', minHeight: 650, position: 'relative' }}>
+          <div style={{ padding: '32px', background: '#f8fafc', minHeight: 650, position: 'relative', overflowX: 'auto' }}>
             <div 
               ref={containerRef}
               style={{ 
-                width: 800, height: 600, background: bgImage ? `url(${bgImage}) center/cover` : '#ffffff', 
+                width: 800, height: 600, minWidth: 800, minHeight: 600, margin: '0 auto', background: bgImage ? `url(${bgImage}) center/cover` : '#ffffff', 
                 position: 'relative', boxShadow: '0 10px 40px -10px rgba(0,0,0,0.1)',
                 border: bgImage ? 'none' : '2px dashed #cbd5e1', overflow: 'hidden',
                 borderRadius: '4px'
