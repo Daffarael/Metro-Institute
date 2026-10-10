@@ -488,9 +488,13 @@
   .login-10 .mobile-logo {
     display: block;
     height: 48px;
-    width: auto;
-    object-fit: contain;
+    width: 100%;
     margin: 0 auto 16px auto;
+    background-color: #272737;
+    -webkit-mask: url(/logo-metro-clean.png) no-repeat center;
+    mask: url(/logo-metro-clean.png) no-repeat center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
   }
 }
 
