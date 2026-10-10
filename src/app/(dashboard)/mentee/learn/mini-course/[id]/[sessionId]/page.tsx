@@ -16,7 +16,7 @@ import api from '@/lib/axios'
 import { ROUTES, formatDuration } from '@/lib/utils'
 import { CardTabs } from '@/components/ui/AnimatedTabs'
 
-const ReactPlayer = dynamic(() => import('react-player'), { ssr: false })
+const ReactPlayer = dynamic(() => import('react-player/lazy'), { ssr: false })
 
 interface Session {
   id: string; title: string; type: string; videoUrl?: string
@@ -214,7 +214,6 @@ export default function CourseLearningPlayerPage() {
                       controls
                       onProgress={handleProgress as any}
                       onEnded={() => { if (!completeTriggerRef.current) { completeTriggerRef.current = true; completeMutation.mutate() } }}
-                      config={{ file: { attributes: { controlsList: 'nodownload' } } } as any}
                     />
                   );
                 })()}
