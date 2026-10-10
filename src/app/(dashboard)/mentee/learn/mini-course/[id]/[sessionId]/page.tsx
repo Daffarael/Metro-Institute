@@ -171,7 +171,7 @@ export default function CourseLearningPlayerPage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, width: 200 }}>
             <div style={{ flex: 1, height: 6, background: '#1e293b', borderRadius: 3, overflow: 'hidden' }}>
-              <div style={{ height: '100%', background: 'var(--color-primary)', width: \%, transition: 'width 0.5s ease' }} />
+              <div style={{ height: '100%', background: 'var(--color-primary)', width: `${data.progress}%`, transition: 'width 0.5s ease' }} />
             </div>
             <span style={{ fontSize: '13px', fontWeight: 600, color: '#94a3b8', whiteSpace: 'nowrap' }}>
               {data.progress}% Selesai
@@ -480,7 +480,7 @@ export default function CourseLearningPlayerPage() {
                 <span style={{ fontSize: '13px', color: 'var(--color-primary)', fontWeight: 700 }}>{data.progress}%</span>
               </div>
               <div style={{ height: 6, background: 'var(--color-bg)', borderRadius: 3, overflow: 'hidden' }}>
-                <div style={{ height: '100%', background: 'var(--color-primary)', width: \%, transition: 'width 0.5s ease' }} />
+                <div style={{ height: '100%', background: 'var(--color-primary)', width: `${data.progress}%`, transition: 'width 0.5s ease' }} />
               </div>
             </div>
           </div>
