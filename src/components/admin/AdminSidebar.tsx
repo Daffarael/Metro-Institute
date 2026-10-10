@@ -58,14 +58,27 @@ const branchItems = [
   }
 ]
 
-export default function AdminSidebar({ isCollapsed, toggleCollapse }: { isCollapsed?: boolean, toggleCollapse?: () => void }) {
+export default function AdminSidebar({ 
+  isCollapsed, 
+  toggleCollapse,
+  isMobile,
+  isMobileOpen,
+  setIsMobileOpen
+}: { 
+  isCollapsed?: boolean, 
+  toggleCollapse?: () => void,
+  isMobile?: boolean,
+  isMobileOpen?: boolean,
+  setIsMobileOpen?: (val: boolean) => void
+}) {
   const pathname = usePathname()
   const { user, logout } = useAuthStore()
   const router = useRouter()
   const [isHovered, setIsHovered] = useState(false)
 
   // Sidebar terbuka jika tidak dalam mode collapsed ATAU sedang di-hover
-  const open = !isCollapsed || isHovered
+  // Pada mobile, sidebar terbuka HANYA jika isMobileOpen bernilai true
+  const open = isMobile ? isMobileOpen : (!isCollapsed || isHovered)
 
   const handleLogout = async () => {
     try {
@@ -79,9 +92,12 @@ export default function AdminSidebar({ isCollapsed, toggleCollapse }: { isCollap
   return (
     <motion.aside
       className="dashboard-sidebar"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      animate={{ width: open ? 240 : 80 }}
+      onMouseEnter={() => !isMobile && setIsHovered(true)}
+      onMouseLeave={() => !isMobile && setIsHovered(false)}
+      animate={{ 
+        width: isMobile ? 240 : (open ? 240 : 80),
+        x: isMobile ? (isMobileOpen ? 0 : -240) : 0
+      }}
       transition={{ duration: 0.3, ease: 'easeInOut' }}
       style={{
         background: 'var(--color-surface)',
@@ -91,7 +107,13 @@ export default function AdminSidebar({ isCollapsed, toggleCollapse }: { isCollap
         padding: 'var(--space-6) 0 var(--space-4)',
         overflow: 'hidden',
         flexShrink: 0,
-        height: '100vh',
+        ...(isMobile ? {
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          bottom: 0,
+          zIndex: 100,
+        } : { height: '100vh' })
       }}
     >
       {/* Header / Logo */}
@@ -103,7 +125,7 @@ export default function AdminSidebar({ isCollapsed, toggleCollapse }: { isCollap
         width: 240,
         boxSizing: 'border-box'
       }}>
-        <Link href="/admin/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', textDecoration: 'none', flex: 1, minWidth: 0 }}>
+        <Link onClick={() => isMobile && setIsMobileOpen?.(false)} href="/admin/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', textDecoration: 'none', flex: 1, minWidth: 0 }}>
           <div style={{
             width: 44, height: 44,
             borderRadius: 'var(--radius-md)', overflow: 'hidden',
@@ -181,6 +203,7 @@ export default function AdminSidebar({ isCollapsed, toggleCollapse }: { isCollap
             onToggle={() => {}}
             onSelect={(value: any) => {
               router.push(value)
+              if (isMobile && setIsMobileOpen) setIsMobileOpen(false)
             }}
             color="var(--color-text-primary)"
             accentColor="var(--color-primary)"
