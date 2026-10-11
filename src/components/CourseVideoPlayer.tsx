@@ -119,7 +119,23 @@ export default function CourseVideoPlayer({
     )
   }
 
-  // 1. YouTube Player (Clean embed with official YouTube controls & Click Blocker for "Watch on YouTube")
+  // 1. Bunny Stream Player (Official Embedded Video Player)
+  const isBunny = url && (url.includes('iframe.mediadelivery.net') || url.includes('b-cdn.net'))
+  if (isBunny) {
+    return (
+      <iframe
+        key={url}
+        src={url}
+        title={title}
+        loading="lazy"
+        style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
+        allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
+        allowFullScreen
+      />
+    )
+  }
+
+  // 2. YouTube Player (Clean embed with official YouTube controls & Click Blocker for "Watch on YouTube")
   if (ytId) {
     return (
       <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>

@@ -11,6 +11,7 @@ import api from '@/lib/axios'
 import { useAuthStore } from '@/stores/auth.store'
 import { getInitials, FIELD_LABELS } from '@/lib/utils'
 import { motion } from 'motion/react'
+import AvatarCropModal from '@/components/ui/AvatarCropModal'
 
 const profileSchema = z.object({
   name: z.string().min(2, 'Minimal 2 karakter').max(80),
@@ -40,8 +41,9 @@ export default function SettingsPage() {
   const [showCurrentPw, setShowCurrentPw] = useState(false)
   const [showNewPw, setShowNewPw] = useState(false)
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
-  const [photoFile, setPhotoFile] = useState<File | null>(null)
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false)
+  const [cropImageSrc, setCropImageSrc] = useState<string | null>(null)
+  const [isCropModalOpen, setIsCropModalOpen] = useState(false)
 
   const { register: regProfile, handleSubmit: handleProfile, formState: { errors: profileErrors, isSubmitting: isSavingProfile } } = useForm<ProfileForm>({
     resolver: zodResolver(profileSchema),
@@ -84,26 +86,29 @@ export default function SettingsPage() {
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-    if (file.size > 5 * 1024 * 1024) { toast.error('Ukuran foto maksimal 5MB'); return }
-    setPhotoFile(file)
+    if (file.size > 10 * 1024 * 1024) { toast.error('Ukuran foto maksimal 10MB'); return }
     const reader = new FileReader()
-    reader.onload = () => setPhotoPreview(reader.result as string)
+    reader.onload = () => {
+      setCropImageSrc(reader.result as string)
+      setIsCropModalOpen(true)
+    }
     reader.readAsDataURL(file)
+    e.target.value = ''
   }
 
-  const handlePhotoUpload = async () => {
-    if (!photoFile) return
+  const handleCropConfirm = async (croppedBlob: Blob) => {
     setIsUploadingPhoto(true)
     const fd = new FormData()
-    fd.append('photo', photoFile)
+    fd.append('photo', croppedBlob, 'profile.jpg')
     try {
       const res = await api.post('/users/me/photo', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
       setUser({ ...user!, photoUrl: res.data.data.photoUrl })
-      setPhotoPreview(null)
-      setPhotoFile(null)
+      setPhotoPreview(URL.createObjectURL(croppedBlob))
+      setIsCropModalOpen(false)
+      setCropImageSrc(null)
       toast.success(`Foto profil diperbarui${res.data.xpEarned ? ` +${res.data.xpEarned} XP!` : ''}`)
     } catch {
-      toast.error('Gagal mengunggah foto')
+      toast.error('Gagal mengunggah foto profil')
     } finally {
       setIsUploadingPhoto(false)
     }
@@ -140,7 +145,15 @@ export default function SettingsPage() {
             <h2 style={{ fontSize: 'var(--text-base)', fontWeight: 700, marginBottom: 'var(--space-4)' }}>Foto Profil</h2>
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-6)' }}>
               <div style={{ position: 'relative' }}>
-                <div className="avatar" style={{ width: 80, height: 80, fontSize: 28 }}>
+                <div
+                  className="avatar"
+                  onClick={() => fileInputRef.current?.click()}
+                  style={{
+                    width: 80, height: 80, fontSize: 28, cursor: 'pointer',
+                    position: 'relative', overflow: 'hidden', border: '2px solid rgba(1, 133, 86, 0.15)',
+                  }}
+                  title="Klik untuk memilih foto"
+                >
                   {photoPreview ? (
                     <img src={photoPreview} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   ) : user?.photoUrl ? (
@@ -153,23 +166,18 @@ export default function SettingsPage() {
               <div>
                 <input ref={fileInputRef} type="file" accept="image/*" onChange={handlePhotoChange} style={{ display: 'none' }} />
                 <div style={{ display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
-                  <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => fileInputRef.current?.click()} className="btn btn-secondary btn-sm" style={{ fontWeight: 600 }}>
-                    Pilih Foto
+                  <motion.button
+                    type="button"
+                    whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                    onClick={() => fileInputRef.current?.click()}
+                    className="btn btn-secondary btn-sm"
+                    style={{ fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                  >
+                    <Camera size={14} /> Pilih Foto
                   </motion.button>
-                  {photoFile && (
-                    <motion.button
-                      whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-                      onClick={handlePhotoUpload}
-                      disabled={isUploadingPhoto}
-                      className="btn btn-primary btn-sm"
-                    >
-                      {isUploadingPhoto ? <Loader2 size={14} className="animate-spin" /> : null}
-                      {isUploadingPhoto ? 'Mengupload...' : 'Simpan Foto'}
-                    </motion.button>
-                  )}
                 </div>
                 <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-tertiary)', marginTop: 'var(--space-2)' }}>
-                  JPG, PNG. Maks 5MB. Foto pertama = +20 XP
+                  JPG, PNG. Sesuaikan posisi & perbesar foto agar pas di dalam lingkaran profil.
                 </p>
               </div>
             </div>
@@ -306,6 +314,18 @@ export default function SettingsPage() {
           <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)' }}>Fitur ini akan segera tersedia.</p>
         </div>
       )}
+
+      {/* Avatar Circular Crop Modal */}
+      <AvatarCropModal
+        isOpen={isCropModalOpen}
+        imageSrc={cropImageSrc}
+        onClose={() => {
+          setIsCropModalOpen(false)
+          setCropImageSrc(null)
+        }}
+        onConfirm={handleCropConfirm}
+        isUploading={isUploadingPhoto}
+      />
     </div>
   )
 }

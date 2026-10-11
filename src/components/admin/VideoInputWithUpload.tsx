@@ -1,7 +1,8 @@
 'use client'
 
 import React, { useState, useRef, useCallback } from 'react'
-import { Upload, Link as LinkIcon, Film, CheckCircle2, X, Loader2, AlertCircle } from 'lucide-react'
+import { Upload, Link as LinkIcon, Film, CheckCircle2, X, Loader2, PlayCircle, ShieldCheck } from 'lucide-react'
+import * as tus from 'tus-js-client'
 import api from '@/lib/axios'
 import { toast } from 'sonner'
 
@@ -11,14 +12,20 @@ interface VideoInputWithUploadProps {
 }
 
 export default function VideoInputWithUpload({ value, onChange }: VideoInputWithUploadProps) {
+  const isBunnyUrl = value && (value.includes('iframe.mediadelivery.net') || value.includes('b-cdn.net'))
+  const isYouTubeUrl = value && (value.includes('youtu.be') || value.includes('youtube.com'))
+  const isDirectVideoUrl = value && (value.includes('/uploads/') || value.includes('cloudinary') || value.match(/\.(mp4|webm|mov)$/i))
+
   const [mode, setMode] = useState<'upload' | 'url'>(
-    value && !value.includes('/uploads/') && !value.includes('cloudinary') ? 'url' : 'upload'
+    value && !isBunnyUrl && !isDirectVideoUrl ? 'url' : 'upload'
   )
   const [isDragging, setIsDragging] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [fileName, setFileName] = useState<string>('')
+  
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const tusUploadRef = useRef<tus.Upload | null>(null)
 
   const handleUpload = async (file: File) => {
     if (!file) return
@@ -29,9 +36,9 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
       return
     }
 
-    // Validate size (100MB)
-    if (file.size > 100 * 1024 * 1024) {
-      toast.error('Ukuran video maksimal 100MB')
+    // Validate size (maks 2GB untuk Bunny Stream)
+    if (file.size > 2 * 1024 * 1024 * 1024) {
+      toast.error('Ukuran video maksimal 2GB')
       return
     }
 
@@ -40,31 +47,71 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
     setUploadProgress(0)
 
     try {
-      const formData = new FormData()
-      formData.append('file', file)
+      // 1. Dapatkan izin & tanda tangan upload dari server backend (Bunny Stream Tus token)
+      const sanitizedTitle = file.name.replace(/\.[^/.]+$/, '').trim() || `Video-${Date.now()}`
+      const response = await api.post('/admin/bunny/create-upload', {
+        title: sanitizedTitle,
+      })
 
-      const response = await api.post('/admin/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-        onUploadProgress: (progressEvent) => {
-          if (progressEvent.total) {
-            const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+      if (!response.data?.success || !response.data?.data) {
+        throw new Error('Gagal menginisialisasi sesi upload ke Bunny Stream')
+      }
+
+      const { videoId, libraryId, expirationTime, signature, embedUrl } = response.data.data
+
+      // 2. Direct Upload dari browser ke server Bunny Stream menggunakan Tus Protocol (0% beban server Railway!)
+      const upload = new tus.Upload(file, {
+        endpoint: 'https://video.bunnycdn.com/tusupload',
+        retryDelays: [0, 3000, 5000, 10000, 20000],
+        headers: {
+          AuthorizationSignature: signature,
+          AuthorizationExpire: String(expirationTime),
+          VideoId: videoId,
+          LibraryId: String(libraryId),
+        },
+        metadata: {
+          filetype: file.type || 'video/mp4',
+          title: sanitizedTitle,
+        },
+        onError: (error) => {
+          console.error('Bunny Tus upload error:', error)
+          toast.error(`Gagal upload video: ${error.message || 'Koneksi terputus'}`)
+          setIsUploading(false)
+          tusUploadRef.current = null
+        },
+        onProgress: (bytesUploaded, bytesTotal) => {
+          if (bytesTotal > 0) {
+            const percent = Math.round((bytesUploaded / bytesTotal) * 100)
             setUploadProgress(percent)
           }
         },
+        onSuccess: () => {
+          setIsUploading(false)
+          setUploadProgress(100)
+          tusUploadRef.current = null
+          onChange(embedUrl)
+          toast.success('Video berhasil diunggah ke Bunny Stream! 🎉')
+        },
       })
 
-      if (response.data?.url) {
-        onChange(response.data.url)
-        toast.success('Video berhasil diunggah! 🎉')
-      } else {
-        throw new Error('Gagal mendapatkan URL video dari server')
-      }
+      tusUploadRef.current = upload
+      upload.start()
     } catch (err: any) {
       console.error('Upload error:', err)
-      toast.error(err.response?.data?.message || 'Gagal mengunggah video. Silakan coba lagi.')
-    } finally {
+      toast.error(err.response?.data?.message || err.message || 'Gagal memulai upload video. Silakan coba lagi.')
       setIsUploading(false)
     }
+  }
+
+  const handleCancelUpload = () => {
+    if (tusUploadRef.current) {
+      tusUploadRef.current.abort()
+      tusUploadRef.current = null
+    }
+    setIsUploading(false)
+    setUploadProgress(0)
+    setFileName('')
+    toast.info('Upload dibatalkan')
   }
 
   const handleDrop = useCallback((e: React.DragEvent) => {
@@ -89,9 +136,6 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
     setIsDragging(false)
   }, [])
 
-  const isYouTube = value && (value.includes('youtu.be') || value.includes('youtube.com'))
-  const isDirectVideo = value && (value.includes('/uploads/') || value.includes('cloudinary') || value.match(/\.(mp4|webm|mov)$/i))
-
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
       {/* Mode Switcher Tabs */}
@@ -113,7 +157,7 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
             transition: 'all 0.15s'
           }}
         >
-          <Upload size={14} /> Upload File Video (Drag & Drop)
+          <Upload size={14} /> Upload Video (Bunny Stream)
         </button>
 
         <button
@@ -146,7 +190,7 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
             style={{ display: 'none' }}
           />
 
-          {value && isDirectVideo && !isUploading ? (
+          {value && !isUploading ? (
             /* Uploaded State */
             <div style={{
               padding: '14px 16px', borderRadius: 'var(--radius-md)',
@@ -160,14 +204,14 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
                     background: 'rgba(16, 185, 129, 0.15)', color: '#10b981',
                     display: 'flex', alignItems: 'center', justifyContent: 'center'
                   }}>
-                    <Film size={18} />
+                    {isBunnyUrl ? <ShieldCheck size={18} /> : <Film size={18} />}
                   </div>
                   <div>
                     <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-primary)' }}>
-                      {fileName || 'Video Terunggah'}
+                      {fileName || (isBunnyUrl ? 'Video Bunny Stream Aktif' : 'Video Terunggah')}
                     </div>
                     <div style={{ fontSize: '11px', color: '#10b981', display: 'flex', alignItems: 'center', gap: 4 }}>
-                      <CheckCircle2 size={12} /> File video aktif
+                      <CheckCircle2 size={12} /> {isBunnyUrl ? 'Tersimpan di Bunny Stream (Anti-Bocor)' : 'File video aktif'}
                     </div>
                   </div>
                 </div>
@@ -194,15 +238,30 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
                       fontSize: '11px', fontWeight: 600, color: '#ef4444',
                       cursor: 'pointer', display: 'flex', alignItems: 'center'
                     }}
+                    title="Hapus video"
                   >
                     <X size={14} />
                   </button>
                 </div>
               </div>
 
-              {/* Mini Preview */}
-              <div style={{ maxHeight: 140, borderRadius: 8, overflow: 'hidden', background: '#000' }}>
-                <video src={value} controls style={{ width: '100%', maxHeight: 140, display: 'block' }} />
+              {/* Video Preview */}
+              <div style={{ width: '100%', height: 160, borderRadius: 8, overflow: 'hidden', background: '#000', position: 'relative' }}>
+                {isBunnyUrl ? (
+                  <iframe
+                    src={value}
+                    loading="lazy"
+                    style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
+                    allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
+                    allowFullScreen
+                  />
+                ) : isDirectVideoUrl ? (
+                  <video src={value} controls style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }} />
+                ) : (
+                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '12px' }}>
+                    <PlayCircle size={24} style={{ marginRight: 6 }} /> Video siap diputar
+                  </div>
+                )}
               </div>
             </div>
           ) : (
@@ -215,7 +274,7 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
               style={{
                 border: `2px dashed ${isDragging ? 'var(--color-primary)' : 'var(--color-border)'}`,
                 borderRadius: 'var(--radius-lg)',
-                padding: '24px 16px',
+                padding: '26px 16px',
                 textAlign: 'center',
                 background: isDragging ? 'rgba(16, 185, 129, 0.05)' : 'var(--color-bg)',
                 cursor: isUploading ? 'not-allowed' : 'pointer',
@@ -227,11 +286,28 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
                   <Loader2 size={32} className="animate-spin" color="var(--color-primary)" />
                   <div>
                     <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-primary)' }}>
-                      Mengunggah video... {uploadProgress}%
+                      Mengunggah ke Bunny Stream... {uploadProgress}%
                     </div>
-                    <div style={{ width: 180, height: 6, background: 'var(--color-border)', borderRadius: 3, margin: '8px auto 0', overflow: 'hidden' }}>
+                    <div style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 2 }}>
+                      Upload langsung dari browser (aman & cepat)
+                    </div>
+                    <div style={{ width: 200, height: 6, background: 'var(--color-border)', borderRadius: 3, margin: '10px auto 6px', overflow: 'hidden' }}>
                       <div style={{ width: `${uploadProgress}%`, height: '100%', background: 'var(--color-primary)', transition: 'width 0.2s' }} />
                     </div>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleCancelUpload()
+                      }}
+                      style={{
+                        marginTop: 4, background: 'none', border: 'none',
+                        color: 'var(--color-error)', fontSize: '11px', fontWeight: 600,
+                        cursor: 'pointer', textDecoration: 'underline'
+                      }}
+                    >
+                      Batalkan Upload
+                    </button>
                   </div>
                 </div>
               ) : (
@@ -252,7 +328,7 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
                     </span>
                   </div>
                   <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)' }}>
-                    Mendukung MP4, WebM, MOV, MKV (Maks. 100MB)
+                    Mendukung MP4, WebM, MOV, MKV (Maks. 2GB — Powered by Bunny Stream)
                   </span>
                 </div>
               )}
@@ -269,7 +345,7 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
               type="text"
               value={value}
               onChange={(e) => onChange(e.target.value)}
-              placeholder="Contoh: https://www.youtube.com/watch?v=... atau https://youtu.be/..."
+              placeholder="Contoh: https://iframe.mediadelivery.net/embed/... atau https://youtu.be/..."
               style={{
                 width: '100%', padding: '10px 14px', borderRadius: 'var(--radius-md)',
                 border: '1px solid var(--color-border)', fontSize: 'var(--text-sm)',
@@ -290,10 +366,18 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
             )}
           </div>
 
-          {/* Helper Badge */}
+          {/* Helper Badges */}
           {value && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '11px' }}>
-              {isYouTube ? (
+              {isBunnyUrl ? (
+                <span style={{
+                  padding: '3px 8px', borderRadius: 4,
+                  background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', fontWeight: 600,
+                  display: 'inline-flex', alignItems: 'center', gap: 4
+                }}>
+                  <ShieldCheck size={12} /> Bunny Stream terdeteksi (Player Anti-Bocor Aktif)
+                </span>
+              ) : isYouTubeUrl ? (
                 <span style={{
                   padding: '3px 8px', borderRadius: 4,
                   background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', fontWeight: 600,
@@ -301,7 +385,7 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
                 }}>
                   <Film size={12} /> YouTube terdeteksi (Click Blocker otomatis aktif)
                 </span>
-              ) : isDirectVideo ? (
+              ) : isDirectVideoUrl ? (
                 <span style={{
                   padding: '3px 8px', borderRadius: 4,
                   background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', fontWeight: 600,
@@ -311,7 +395,7 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
                 </span>
               ) : (
                 <span style={{ color: 'var(--color-text-tertiary)' }}>
-                  Format link didukung (YouTube, Vimeo, atau link video langsung)
+                  Format link didukung (Bunny Stream, YouTube, Vimeo, atau MP4 langsung)
                 </span>
               )}
             </div>
