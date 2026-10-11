@@ -53,7 +53,7 @@ function AddSessionModal({ courseId, editSession, onClose }: { courseId: string;
 
   const mutation = useMutation({
     mutationFn: () => {
-      const payload = { ...form, quizOptions: (form.type === 'QUIZ' || form.type === 'ASSIGNMENT') ? quizOptions : null }
+      const payload: any = { ...form, quizOptions: (form.type as any) === 'QUIZ' ? quizOptions : null }
       if (editSession) {
         return api.put(`/admin/courses/sessions/${editSession.id}`, payload)
       } else {
@@ -213,14 +213,94 @@ return (
               </div>
             </div>
           )}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <input type="checkbox" id="preview" checked={form.isPreview} onChange={e => f('isPreview', e.target.checked)} style={{ width: 16, height: 16 }} />
-            <label htmlFor="preview" style={{ fontSize: 'var(--text-sm)', cursor: 'pointer' }}>Preview gratis (bisa ditonton tanpa beli)</label>
+          {/* Clean Preview Toggle Card */}
+          <div
+            onClick={() => f('isPreview', !form.isPreview)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '12px 14px',
+              borderRadius: '12px',
+              border: `1px solid ${form.isPreview ? 'rgba(16,185,129,0.3)' : '#e4e4e7'}`,
+              background: form.isPreview ? 'rgba(16,185,129,0.04)' : '#fafafa',
+              cursor: 'pointer',
+              transition: 'all 0.15s ease',
+              userSelect: 'none',
+              marginTop: 6
+            }}
+          >
+            <div>
+              <div style={{ fontSize: '13px', fontWeight: 600, color: '#18181b' }}>
+                Preview Gratis
+              </div>
+              <div style={{ fontSize: '11px', color: '#71717a', marginTop: 1 }}>
+                Izinkan sesi ini ditonton calon mentee tanpa harus membeli kursus
+              </div>
+            </div>
+
+            {/* iOS style clean toggle switch */}
+            <div style={{
+              width: 38,
+              height: 22,
+              borderRadius: 12,
+              background: form.isPreview ? 'var(--color-primary)' : '#d4d4d8',
+              padding: 2,
+              transition: 'background 0.2s ease',
+              display: 'flex',
+              alignItems: 'center',
+              flexShrink: 0
+            }}>
+              <div style={{
+                width: 18,
+                height: 18,
+                borderRadius: '50%',
+                background: '#ffffff',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                transform: form.isPreview ? 'translateX(16px)' : 'translateX(0)',
+                transition: 'transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)'
+              }} />
+            </div>
           </div>
         </div>
-        <div style={{ display: 'flex', gap: 'var(--space-3)', justifyContent: 'flex-end', marginTop: 'var(--space-5)' }}>
-          <button onClick={onClose} style={{ padding: '8px 16px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', background: 'transparent', cursor: 'pointer', fontSize: 'var(--text-sm)' }}>Batal</button>
-          <button disabled={!form.title.trim() || mutation.isPending} onClick={() => mutation.mutate()} style={{ padding: '8px 16px', borderRadius: 'var(--radius-md)', border: 'none', background: 'var(--color-primary)', color: '#fff', fontWeight: 700, cursor: 'pointer', fontSize: 'var(--text-sm)', opacity: !form.title.trim() ? 0.5 : 1 }}>
+
+        {/* Modal Action Buttons */}
+        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 20, paddingTop: 16, borderTop: '1px solid #f4f4f5' }}>
+          <button
+            type="button"
+            onClick={onClose}
+            style={{
+              padding: '9px 18px',
+              borderRadius: '10px',
+              border: '1px solid #e4e4e7',
+              background: '#ffffff',
+              color: '#3f3f46',
+              fontSize: '13px',
+              fontWeight: 500,
+              cursor: 'pointer',
+              transition: 'all 0.15s ease'
+            }}
+          >
+            Batal
+          </button>
+          <button
+            type="button"
+            disabled={!form.title.trim() || mutation.isPending}
+            onClick={() => mutation.mutate()}
+            style={{
+              padding: '9px 20px',
+              borderRadius: '10px',
+              border: 'none',
+              background: 'var(--color-primary)',
+              color: '#ffffff',
+              fontSize: '13px',
+              fontWeight: 600,
+              cursor: (!form.title.trim() || mutation.isPending) ? 'not-allowed' : 'pointer',
+              opacity: (!form.title.trim() || mutation.isPending) ? 0.6 : 1,
+              boxShadow: '0 1px 2px rgba(0,0,0,0.06)',
+              transition: 'all 0.15s ease'
+            }}
+          >
             {mutation.isPending ? 'Menyimpan...' : (editSession ? 'Simpan Perubahan' : 'Tambah Sesi')}
           </button>
         </div>
