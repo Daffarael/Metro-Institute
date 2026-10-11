@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useRef, useCallback } from 'react'
-import { Upload, Link as LinkIcon, Film, Check, X, Loader2, Play, ExternalLink } from 'lucide-react'
+import { Upload, Link as LinkIcon, Film, Check, X, Loader2, Play, AlertCircle } from 'lucide-react'
 import * as tus from 'tus-js-client'
 import api from '@/lib/axios'
 import { toast } from 'sonner'
@@ -12,7 +12,7 @@ interface VideoInputWithUploadProps {
 }
 
 export default function VideoInputWithUpload({ value, onChange }: VideoInputWithUploadProps) {
-  const isBunnyUrl = value && (value.includes('iframe.mediadelivery.net') || value.includes('b-cdn.net'))
+  const isBunnyUrl = value && (value.includes('iframe.mediadelivery.net') || value.includes('b-cdn.net') || value.includes('bunnycdn'))
   const isYouTubeUrl = value && (value.includes('youtu.be') || value.includes('youtube.com'))
   const isDirectVideoUrl = value && (value.includes('/uploads/') || value.includes('cloudinary') || value.match(/\.(mp4|webm|mov)$/i))
 
@@ -52,7 +52,7 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
       })
 
       if (!response.data?.success || !response.data?.data) {
-        throw new Error('Gagal menyiapkan sesi upload')
+        throw new Error('Gagal menyiapkan sesi upload ke Bunny Stream')
       }
 
       const { videoId, libraryId, expirationTime, signature, embedUrl } = response.data.data
@@ -86,7 +86,7 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
           setUploadProgress(100)
           tusUploadRef.current = null
           onChange(embedUrl)
-          toast.success('Video berhasil diunggah')
+          toast.success('Video berhasil diunggah ke Bunny Stream')
         },
       })
 
@@ -115,6 +115,15 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
     setIsDragging(false)
     if (e.dataTransfer.files?.[0]) handleUpload(e.dataTransfer.files[0])
   }, [])
+
+  const handleUrlChange = (newUrl: string) => {
+    const trimmed = newUrl.trim()
+    if (trimmed.includes('youtu.be') || trimmed.includes('youtube.com')) {
+      toast.error('Tautan YouTube tidak diizinkan. Silakan unggah video atau gunakan Bunny Stream.')
+      return
+    }
+    onChange(trimmed)
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -189,8 +198,8 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
             /* Clean Active File Card */
             <div style={{
               borderRadius: '12px',
-              border: '1px solid #e4e4e7',
-              background: '#fafafa',
+              border: `1px solid ${isYouTubeUrl ? 'rgba(239, 68, 68, 0.3)' : '#e4e4e7'}`,
+              background: isYouTubeUrl ? '#fef2f2' : '#fafafa',
               overflow: 'hidden'
             }}>
               <div style={{
@@ -205,52 +214,66 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
                     width: 32,
                     height: 32,
                     borderRadius: '8px',
-                    background: 'var(--color-primary-xlight)',
-                    color: 'var(--color-primary)',
+                    background: isYouTubeUrl ? 'rgba(239, 68, 68, 0.1)' : 'var(--color-primary-xlight)',
+                    color: isYouTubeUrl ? '#ef4444' : 'var(--color-primary)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexShrink: 0
                   }}>
-                    <Film size={15} />
+                    {isYouTubeUrl ? <AlertCircle size={15} /> : <Film size={15} />}
                   </div>
                   <div style={{ minWidth: 0 }}>
                     <div style={{
                       fontSize: '13px',
                       fontWeight: 600,
-                      color: '#18181b',
+                      color: isYouTubeUrl ? '#dc2626' : '#18181b',
                       whiteSpace: 'nowrap',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis'
                     }}>
-                      {fileName || 'Video Terpasang'}
+                      {isYouTubeUrl ? 'Tautan YouTube (Tidak Didukung)' : (fileName || 'Video Terpasang')}
                     </div>
-                    <div style={{ fontSize: '11px', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', gap: 4 }}>
-                      <Check size={11} strokeWidth={2.5} /> Video aktif & siap diputar
+                    <div style={{
+                      fontSize: '11px',
+                      color: isYouTubeUrl ? '#ef4444' : 'var(--color-primary)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 4
+                    }}>
+                      {isYouTubeUrl ? (
+                        'Harap ganti dengan video Bunny Stream'
+                      ) : (
+                        <>
+                          <Check size={11} strokeWidth={2.5} /> Video aktif & siap diputar
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
-                  <button
-                    type="button"
-                    onClick={() => setShowPreview(!showPreview)}
-                    style={{
-                      padding: '5px 10px',
-                      borderRadius: '6px',
-                      border: '1px solid #e4e4e7',
-                      background: '#fff',
-                      fontSize: '11px',
-                      fontWeight: 500,
-                      color: '#3f3f46',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 4
-                    }}
-                  >
-                    <Play size={11} /> {showPreview ? 'Tutup' : 'Preview'}
-                  </button>
+                  {!isYouTubeUrl && (
+                    <button
+                      type="button"
+                      onClick={() => setShowPreview(!showPreview)}
+                      style={{
+                        padding: '5px 10px',
+                        borderRadius: '6px',
+                        border: '1px solid #e4e4e7',
+                        background: '#fff',
+                        fontSize: '11px',
+                        fontWeight: 500,
+                        color: '#3f3f46',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 4
+                      }}
+                    >
+                      <Play size={11} /> {showPreview ? 'Tutup' : 'Preview'}
+                    </button>
+                  )}
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
@@ -286,7 +309,7 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
               </div>
 
               {/* Collapsible Clean Preview */}
-              {showPreview && (
+              {showPreview && !isYouTubeUrl && (
                 <div style={{ borderTop: '1px solid #e4e4e7', background: '#000', aspectRatio: '16/9', maxHeight: 220 }}>
                   {isBunnyUrl ? (
                     <iframe
@@ -296,10 +319,8 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
                       allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
                       allowFullScreen
                     />
-                  ) : isDirectVideoUrl ? (
-                    <video src={value} controls style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                   ) : (
-                    <iframe src={value} style={{ width: '100%', height: '100%', border: 'none' }} allowFullScreen />
+                    <video src={value} controls style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                   )}
                 </div>
               )}
@@ -382,8 +403,8 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
             <input
               type="text"
               value={value}
-              onChange={(e) => onChange(e.target.value)}
-              placeholder="Tempel tautan video (https://...)"
+              onChange={(e) => handleUrlChange(e.target.value)}
+              placeholder="Tempel tautan Bunny Stream (https://iframe.mediadelivery.net/...)"
               style={{
                 width: '100%',
                 padding: '9px 36px 9px 12px',
@@ -419,14 +440,6 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
               </button>
             )}
           </div>
-
-          {/* Clean Subtle Indicator */}
-          {value && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: '11px', color: 'var(--color-primary)' }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--color-primary)' }} />
-              Tautan video siap digunakan
-            </div>
-          )}
         </div>
       )}
     </div>

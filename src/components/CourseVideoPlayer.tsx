@@ -9,33 +9,12 @@ interface CourseVideoPlayerProps {
   onEnded?: () => void
 }
 
-declare global {
-  interface Window {
-    YT?: any
-    onYouTubeIframeAPIReady?: () => void
-  }
-}
-
-function getYouTubeId(url: string): string | null {
-  if (!url) return null
-  const regExp = /(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/|live\/))([\w-]{11})/
-  const match = url.match(regExp)
-  return match ? match[1] : null
-}
-
-function getVimeoId(url: string): string | null {
-  if (!url) return null
-  const match = url.match(/vimeo\.com\/(?:video\/)?(\d+)/)
-  return match ? match[1] : null
-}
-
 export default function CourseVideoPlayer({
   url,
   title = 'Course Video',
   onProgress,
   onEnded,
 }: CourseVideoPlayerProps) {
-  const iframeRef = useRef<HTMLIFrameElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const [mounted, setMounted] = useState(false)
 
@@ -43,73 +22,31 @@ export default function CourseVideoPlayer({
     setMounted(true)
   }, [])
 
-  const ytId = getYouTubeId(url)
-  const vimeoId = getVimeoId(url)
+  const isBunny = url && (url.includes('iframe.mediadelivery.net') || url.includes('b-cdn.net') || url.includes('bunnycdn'))
 
+  // Listen to Bunny Stream Player postMessage events
   useEffect(() => {
-    if (!mounted || !ytId || !iframeRef.current) return
+    if (!mounted || !isBunny) return
 
-    let player: any = null
-    let progressInterval: any = null
-
-    const attachYT = () => {
-      if (!window.YT || !window.YT.Player || !iframeRef.current) return
+    const handleMessage = (event: MessageEvent) => {
       try {
-        player = new window.YT.Player(iframeRef.current, {
-          events: {
-            onStateChange: (event: any) => {
-              // 1 = PLAYING
-              if (event.data === 1) {
-                if (progressInterval) clearInterval(progressInterval)
-                progressInterval = setInterval(() => {
-                  try {
-                    if (player && typeof player.getCurrentTime === 'function' && typeof player.getDuration === 'function') {
-                      const current = player.getCurrentTime()
-                      const duration = player.getDuration()
-                      if (duration > 0) {
-                        onProgress?.({ playedSeconds: current, played: current / duration })
-                      }
-                    }
-                  } catch {}
-                }, 1000)
-              } else {
-                if (progressInterval) clearInterval(progressInterval)
-              }
-              // 0 = ENDED
-              if (event.data === 0) {
-                onEnded?.()
-              }
-            },
-          },
-        })
-      } catch (err) {
-        console.warn('YT Player init skipped or failed:', err)
-      }
+        const data = typeof event.data === 'string' ? JSON.parse(event.data) : event.data
+        if (data?.event === 'timeupdate' || data?.type === 'timeupdate') {
+          const current = data.currentTime || data.seconds || 0
+          const duration = data.duration || 1
+          if (duration > 0) {
+            onProgress?.({ playedSeconds: current, played: current / duration })
+          }
+        }
+        if (data?.event === 'ended' || data?.type === 'ended') {
+          onEnded?.()
+        }
+      } catch {}
     }
 
-    if (window.YT && window.YT.Player) {
-      attachYT()
-    } else {
-      const prev = window.onYouTubeIframeAPIReady
-      window.onYouTubeIframeAPIReady = () => {
-        prev?.()
-        attachYT()
-      }
-      if (!document.getElementById('yt-iframe-api')) {
-        const script = document.createElement('script')
-        script.id = 'yt-iframe-api'
-        script.src = 'https://www.youtube.com/iframe_api'
-        document.body.appendChild(script)
-      }
-    }
-
-    return () => {
-      if (progressInterval) clearInterval(progressInterval)
-      if (player && typeof player.destroy === 'function') {
-        try { player.destroy() } catch {}
-      }
-    }
-  }, [mounted, ytId, onProgress, onEnded])
+    window.addEventListener('message', handleMessage)
+    return () => window.removeEventListener('message', handleMessage)
+  }, [mounted, isBunny, onProgress, onEnded])
 
   if (!mounted) {
     return (
@@ -119,8 +56,7 @@ export default function CourseVideoPlayer({
     )
   }
 
-  // 1. Bunny Stream Player (Official Embedded Video Player)
-  const isBunny = url && (url.includes('iframe.mediadelivery.net') || url.includes('b-cdn.net'))
+  // 1. Official Bunny Stream Player (Dedicated & Anti-Theft)
   if (isBunny) {
     return (
       <iframe
@@ -135,58 +71,7 @@ export default function CourseVideoPlayer({
     )
   }
 
-  // 2. YouTube Player (Clean embed with official YouTube controls & Click Blocker for "Watch on YouTube")
-  if (ytId) {
-    return (
-      <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
-        <iframe
-          ref={iframeRef}
-          key={ytId}
-          src={`https://www.youtube-nocookie.com/embed/${ytId}?enablejsapi=1&rel=0&modestbranding=1&playsinline=1`}
-          title={title}
-          style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowFullScreen
-        />
-        {/* Click Blocker: Menutupi tombol "Watch on YouTube" di pojok kiri bawah agar tidak bisa diklik */}
-        <div
-          title="Metro Institute"
-          onClick={(e) => {
-            e.preventDefault()
-            e.stopPropagation()
-          }}
-          onContextMenu={(e) => e.preventDefault()}
-          style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            width: '190px',
-            height: '56px',
-            zIndex: 20,
-            cursor: 'default',
-            background: 'transparent',
-            pointerEvents: 'auto',
-          }}
-        />
-      </div>
-    )
-  }
-
-  // 2. Vimeo Player
-  if (vimeoId) {
-    return (
-      <iframe
-        key={vimeoId}
-        src={`https://player.vimeo.com/video/${vimeoId}?autoplay=0`}
-        title={title}
-        style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
-        allow="autoplay; fullscreen; picture-in-picture"
-        allowFullScreen
-      />
-    )
-  }
-
-  // 3. Direct HTML5 Video (.mp4, .webm, etc.)
+  // 2. Direct HTML5 Video (.mp4, .webm, etc.)
   return (
     <video
       ref={videoRef}
