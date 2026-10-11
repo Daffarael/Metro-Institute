@@ -29,6 +29,7 @@ const miniCourseSchema = z.object({
   descShort:   z.string().max(160, 'Maks 160 karakter'),
   descLong:    z.string().min(20, 'Minimal 20 karakter'),
   field:       z.enum(['UI_UX', 'FRONTEND', 'BACKEND', 'MOBILE'], { error: () => ({ message: 'Pilih bidang' }) }),
+  level:       z.enum(['BEGINNER', 'ELEMENTARY', 'INTERMEDIATE', 'ADVANCED'], { error: () => ({ message: 'Pilih level' }) }).default('BEGINNER'),
   price:       z.number().min(0),
   accessDays:  z.number().min(1).max(365000),
   totalDuration: z.number().min(1),
@@ -40,7 +41,7 @@ type CourseForm = z.infer<typeof miniCourseSchema>
 
 // ─── Types ─────────────────────────────────────────────────
 interface MiniCourse {
-  id: string; title: string; field: string; price: number
+  id: string; title: string; field: string; level?: string; price: number
   accessDays: number; totalDuration: number; status: string
   descShort?: string; rating?: number
   certificateTemplateId?: string
@@ -52,6 +53,14 @@ interface Filters { field?: string; status?: string; search?: string; page: numb
 
 const FIELD_OPTS = ['UI_UX', 'FRONTEND', 'BACKEND', 'MOBILE'] as const
 const FIELD_LABELS: Record<string, string> = { UI_UX: 'UI/UX', FRONTEND: 'Frontend', BACKEND: 'Backend', MOBILE: 'Mobile' }
+
+const LEVEL_OPTS = ['BEGINNER', 'ELEMENTARY', 'INTERMEDIATE', 'ADVANCED'] as const
+const LEVEL_LABELS: Record<string, string> = {
+  BEGINNER: 'Beginner',
+  ELEMENTARY: 'Elementary',
+  INTERMEDIATE: 'Intermediate',
+  ADVANCED: 'Advanced',
+}
 
 const inputStyle: React.CSSProperties = {
   width: '100%', padding: '8px 12px', borderRadius: 'var(--radius-md)',
@@ -79,6 +88,7 @@ function CourseModal({ course, onClose }: { course?: MiniCourse; onClose: () => 
       descShort:     (course as any)?.shortDescription ?? '',
       descLong:      (course as any)?.description ?? '',
       field:         course?.field ?? ('' as any),
+      level:         (course?.level ?? (course as any)?.level ?? 'BEGINNER') as any,
       price:         course?.price ?? 0,
       accessDays:    (course as any)?.accessDays ?? 36500,
       totalDuration: course?.totalDuration ?? 60,
@@ -219,6 +229,25 @@ function CourseModal({ course, onClose }: { course?: MiniCourse; onClose: () => 
               />
               {errors.field && <p style={{ color: 'var(--color-error)', fontSize: '12px', marginTop: 4, fontWeight: 500 }}>{errors.field.message}</p>}
             </div>
+            <div>
+              <label style={labelStyle}>Tingkat Kesulitan (Level) <span style={{color: 'var(--color-error)'}}>*</span></label>
+              <Controller
+                control={control}
+                name="level"
+                render={({ field }) => (
+                  <CleanCombobox 
+                    options={LEVEL_OPTS.map(l => ({ value: l, label: LEVEL_LABELS[l] }))} 
+                    value={field.value as string} 
+                    onChange={field.onChange} 
+                    placeholder="Pilih Level"
+                    width="100%"
+                  />
+                )}
+              />
+              {errors.level && <p style={{ color: 'var(--color-error)', fontSize: '12px', marginTop: 4, fontWeight: 500 }}>{errors.level.message}</p>}
+            </div>
+          </div>
+          <div className="grid-cols-2" style={{ display: 'grid', gap: '20px' }}>
             <div>
               <label style={labelStyle}>Harga (Rp) <span style={{color: 'var(--color-error)'}}>*</span></label>
               <input type="number" {...register('price', { valueAsNumber: true })} style={inputStyleClean} min={0} placeholder="149000" 
@@ -457,7 +486,16 @@ export default function AdminMiniCoursePage() {
                       {c.descShort && <div style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.descShort}</div>}
                     </td>
                     <td style={{ padding: 'var(--space-3) var(--space-4)' }}>
-                      <span style={{ fontSize: '11px', fontWeight: 600, padding: '2px 8px', borderRadius: 'var(--radius-full)', background: 'var(--color-primary-light)', color: 'var(--color-primary)' }}>{FIELD_LABELS[c.field] ?? c.field}</span>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'flex-start' }}>
+                        <span style={{ fontSize: '11px', fontWeight: 600, padding: '2px 8px', borderRadius: 'var(--radius-full)', background: 'var(--color-primary-light)', color: 'var(--color-primary)' }}>
+                          {FIELD_LABELS[c.field] ?? c.field}
+                        </span>
+                        {c.level && (
+                          <span style={{ fontSize: '10px', fontWeight: 600, color: 'var(--color-text-secondary)', background: 'var(--color-bg)', border: '1px solid var(--color-border)', padding: '1px 6px', borderRadius: 4 }}>
+                            {LEVEL_LABELS[c.level] ?? c.level}
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td style={{ padding: 'var(--space-3) var(--space-4)', fontWeight: 700 }}>{c.price === 0 ? 'Gratis' : formatRupiah(c.price)}</td>
                     <td style={{ padding: 'var(--space-3) var(--space-4)', color: 'var(--color-text-secondary)' }}>{c.accessDays > 10000 ? 'Seumur Hidup' : `${c.accessDays} hari`}</td>
