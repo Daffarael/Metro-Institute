@@ -16,7 +16,7 @@ import api from '@/lib/axios'
 import { ROUTES, formatDuration } from '@/lib/utils'
 import { CardTabs } from '@/components/ui/AnimatedTabs'
 
-const ReactPlayer = dynamic(() => import('react-player'), { ssr: false })
+import CourseVideoPlayer from '@/components/CourseVideoPlayer'
 
 interface Session {
   id: string; title: string; type: string; videoUrl?: string
@@ -209,16 +209,17 @@ export default function CourseLearningPlayerPage() {
               boxShadow: '0 10px 30px rgba(0,0,0,0.1)', zIndex: 5,
             }}>
               <div style={{ width: '100%', maxWidth: '1200px', aspectRatio: '16/9', maxHeight: '65vh' }}>
-                {mounted && (
-                  <ReactPlayer
-                    ref={playerRef as any}
-                    url={currentSession.videoUrl}
-                    width="100%" height="100%"
-                    controls
-                    onProgress={handleProgress as any}
-                    onEnded={() => { if (!completeTriggerRef.current) { completeTriggerRef.current = true; completeMutation.mutate() } }}
-                  />
-                )}
+                <CourseVideoPlayer
+                  url={currentSession.videoUrl}
+                  title={currentSession.title}
+                  onProgress={handleProgress}
+                  onEnded={() => {
+                    if (!completeTriggerRef.current && !currentSession.isCompleted && !isCompleted) {
+                      completeTriggerRef.current = true
+                      completeMutation.mutate()
+                    }
+                  }}
+                />
               </div>
             </div>
           ) : (
@@ -260,7 +261,7 @@ export default function CourseLearningPlayerPage() {
                     </span>
                   </div>
                 </div>
-                {!(currentSession.isCompleted || isCompleted) && currentSession.type !== 'VIDEO' && (
+                {!(currentSession.isCompleted || isCompleted) && (
                   <button
                     onClick={() => completeMutation.mutate()}
                     disabled={completeMutation.isPending}
