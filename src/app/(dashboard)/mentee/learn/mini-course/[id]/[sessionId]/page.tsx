@@ -419,74 +419,31 @@ export default function CourseLearningPlayerPage() {
               </div>
             </div>
 
-            {/* Tabs & Tab Content */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              {/* Tabs Switcher */}
-              <div style={{
-                display: 'flex',
-                gap: 6,
-                padding: 4,
-                background: '#f1f5f9',
-                borderRadius: 14,
-                border: '1px solid #e2e8f0',
-                width: 'fit-content'
-              }}>
-                {[
-                  { id: 'overview', label: 'Ringkasan', icon: BookOpen },
-                  { id: 'notes', label: 'Catatan', icon: StickyNote },
-                  { id: 'qna', label: 'Tanya Jawab', icon: MessageSquare },
-                  { id: 'materials', label: 'Materi', icon: FileText },
-                ].map((tab) => {
-                  const isActive = activeTab === tab.id
-                  return (
-                    <button
-                      key={tab.id}
-                      onClick={() => setActiveTab(tab.id as typeof activeTab)}
-                      style={{
-                        padding: '8px 18px',
-                        borderRadius: 10,
-                        border: 'none',
-                        cursor: 'pointer',
-                        fontSize: '13px',
-                        fontWeight: isActive ? 700 : 600,
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 8,
-                        background: isActive ? '#ffffff' : 'transparent',
-                        color: isActive ? '#0f172a' : '#64748b',
-                        boxShadow: isActive ? '0 1px 3px rgba(0,0,0,0.06)' : 'none',
-                        transition: 'all 0.15s'
-                      }}
-                    >
-                      <tab.icon size={15} color={isActive ? 'var(--color-primary)' : '#64748b'} />
-                      {tab.label}
-                    </button>
-                  )
-                })}
-              </div>
-
-              {/* Tab Content Card */}
-              <div style={{
-                background: '#ffffff',
-                border: '1px solid #e2e8f0',
-                borderRadius: 20,
-                padding: '28px 32px',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
-                minHeight: 320
-              }}>
+            {/* CardTabs — browser-tab style like bootcamp */}
+            <CardTabs
+              items={[
+                { id: 'overview', label: 'Ringkasan', icon: BookOpen },
+                { id: 'notes', label: 'Catatan', icon: StickyNote },
+                { id: 'qna', label: 'Tanya Jawab', icon: MessageSquare },
+                { id: 'materials', label: 'Materi', icon: FileText },
+              ]}
+              activeId={activeTab}
+              onChange={(id) => setActiveTab(id as typeof activeTab)}
+            >
+              <div style={{ minHeight: 280 }}>
                 {activeTab === 'overview' && (
-                  <div>
-                    <h3 style={{ fontSize: '17px', fontWeight: 700, color: '#0f172a', marginBottom: 14 }}>
+                  <div className="animate-fade-in">
+                    <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#0f172a', marginBottom: 12 }}>
                       Tentang Sesi Ini
                     </h3>
-                    <p style={{ color: '#475569', lineHeight: 1.75, fontSize: '15px', margin: 0 }}>
+                    <p style={{ color: '#475569', lineHeight: 1.75, fontSize: '14.5px', margin: 0 }}>
                       {currentSession.assignmentDescription || "Sesi ini akan membahas materi secara mendalam sesuai kurikulum yang telah disusun. Pastikan Anda menyimak dengan baik."}
                     </p>
                   </div>
                 )}
 
                 {activeTab === 'notes' && (
-                  <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                  <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                     <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
                       <input
                         value={note} onChange={(e) => setNote(e.target.value)}
@@ -536,7 +493,7 @@ export default function CourseLearningPlayerPage() {
                 )}
 
                 {activeTab === 'qna' && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+                  <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
                     <div style={{ display: 'flex', gap: 12 }}>
                       <input
                         value={qnaMessage} onChange={(e) => setQnaMessage(e.target.value)}
@@ -589,8 +546,8 @@ export default function CourseLearningPlayerPage() {
                 )}
 
                 {activeTab === 'materials' && (
-                  <div>
-                    <h3 style={{ fontSize: '17px', fontWeight: 700, color: '#0f172a', marginBottom: 16 }}>Materi Pendukung</h3>
+                  <div className="animate-fade-in">
+                    <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#0f172a', marginBottom: 16 }}>Materi Pendukung</h3>
                     {currentSession.materials && currentSession.materials.length > 0 ? (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                         {currentSession.materials.map((mat) => (
@@ -624,7 +581,7 @@ export default function CourseLearningPlayerPage() {
                   </div>
                 )}
               </div>
-            </div>
+            </CardTabs>
           </div>
         </div>
 

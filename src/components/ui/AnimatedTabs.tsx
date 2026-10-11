@@ -417,7 +417,7 @@ export default Tabs
 
 // ── CardTabs (browser-tab style, like reference image) ────────────────────────
 export interface CardTabsProps {
-  items: { id: string; label: string }[]
+  items: { id: string; label: string; icon?: React.ComponentType<{ size?: number; color?: string }> }[]
   activeId: string
   onChange: (id: string) => void
   children: ReactNode
@@ -475,7 +475,7 @@ export function CardTabs({ items, activeId, onChange, children }: CardTabsProps)
         <motion.div
           aria-hidden
           animate={reduced ? false : {
-            left: plateau.x + 6,  // account for padding
+            left: plateau.x,
             width: plateau.width,
             opacity: plateau.ready ? 1 : 0,
           }}
@@ -497,6 +497,7 @@ export function CardTabs({ items, activeId, onChange, children }: CardTabsProps)
 
         {items.map((item, index) => {
           const selected = item.id === activeId
+          const Icon = item.icon
           return (
             <button
               key={item.id}
@@ -533,10 +534,12 @@ export function CardTabs({ items, activeId, onChange, children }: CardTabsProps)
               }}
             >
               <span style={{ display: 'grid', placeItems: 'center' }}>
-                <span style={{ visibility: 'hidden', fontWeight: 700, gridColumn: 1, gridRow: 1 }} aria-hidden>
+                <span style={{ visibility: 'hidden', fontWeight: 700, gridColumn: 1, gridRow: 1, display: 'inline-flex', alignItems: 'center', gap: 7 }} aria-hidden>
+                  {Icon && <Icon size={15} />}
                   {item.label}
                 </span>
-                <span style={{ gridColumn: 1, gridRow: 1, fontWeight: selected ? 700 : 500 }}>
+                <span style={{ gridColumn: 1, gridRow: 1, fontWeight: selected ? 700 : 500, display: 'inline-flex', alignItems: 'center', gap: 7 }}>
+                  {Icon && <Icon size={15} color={selected ? 'var(--color-primary)' : '#64748b'} />}
                   {item.label}
                 </span>
               </span>
