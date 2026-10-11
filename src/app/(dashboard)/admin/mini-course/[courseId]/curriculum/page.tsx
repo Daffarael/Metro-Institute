@@ -213,7 +213,7 @@ return (
               </div>
             </div>
           )}
-          {/* Clean Preview Toggle Card */}
+          {/* Clean Neutral Preview Toggle Card */}
           <div
             onClick={() => f('isPreview', !form.isPreview)}
             style={{
@@ -221,30 +221,32 @@ return (
               alignItems: 'center',
               justifyContent: 'space-between',
               padding: '12px 14px',
-              borderRadius: '12px',
-              border: `1px solid ${form.isPreview ? 'rgba(16,185,129,0.3)' : '#e4e4e7'}`,
-              background: form.isPreview ? 'rgba(16,185,129,0.04)' : '#fafafa',
+              borderRadius: '10px',
+              border: '1px solid #e5e7eb',
+              background: '#ffffff',
               cursor: 'pointer',
               transition: 'all 0.15s ease',
               userSelect: 'none',
               marginTop: 6
             }}
+            onMouseEnter={e => e.currentTarget.style.borderColor = '#d1d5db'}
+            onMouseLeave={e => e.currentTarget.style.borderColor = '#e5e7eb'}
           >
             <div>
-              <div style={{ fontSize: '13px', fontWeight: 600, color: '#18181b' }}>
+              <div style={{ fontSize: '13px', fontWeight: 600, color: '#111827' }}>
                 Preview Gratis
               </div>
-              <div style={{ fontSize: '11px', color: '#71717a', marginTop: 1 }}>
+              <div style={{ fontSize: '11px', color: '#6b7280', marginTop: 1 }}>
                 Izinkan sesi ini ditonton calon mentee tanpa harus membeli kursus
               </div>
             </div>
 
-            {/* iOS style clean toggle switch */}
+            {/* Clean iOS style toggle switch */}
             <div style={{
               width: 38,
               height: 22,
               borderRadius: 12,
-              background: form.isPreview ? 'var(--color-primary)' : '#d4d4d8',
+              background: form.isPreview ? '#10b981' : '#e5e7eb',
               padding: 2,
               transition: 'background 0.2s ease',
               display: 'flex',
@@ -256,7 +258,7 @@ return (
                 height: 18,
                 borderRadius: '50%',
                 background: '#ffffff',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.15)',
                 transform: form.isPreview ? 'translateX(16px)' : 'translateX(0)',
                 transition: 'transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)'
               }} />
@@ -264,21 +266,29 @@ return (
           </div>
         </div>
 
-        {/* Modal Action Buttons */}
-        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 20, paddingTop: 16, borderTop: '1px solid #f4f4f5' }}>
+        {/* Clean Modal Action Buttons */}
+        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 20, paddingTop: 16, borderTop: '1px solid #f3f4f6' }}>
           <button
             type="button"
             onClick={onClose}
             style={{
-              padding: '9px 18px',
-              borderRadius: '10px',
-              border: '1px solid #e4e4e7',
+              padding: '8px 16px',
+              borderRadius: '8px',
+              border: '1px solid #e5e7eb',
               background: '#ffffff',
-              color: '#3f3f46',
+              color: '#4b5563',
               fontSize: '13px',
               fontWeight: 500,
               cursor: 'pointer',
               transition: 'all 0.15s ease'
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = '#f9fafb'
+              e.currentTarget.style.color = '#111827'
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = '#ffffff'
+              e.currentTarget.style.color = '#4b5563'
             }}
           >
             Batal
@@ -288,17 +298,26 @@ return (
             disabled={!form.title.trim() || mutation.isPending}
             onClick={() => mutation.mutate()}
             style={{
-              padding: '9px 20px',
-              borderRadius: '10px',
+              padding: '8px 18px',
+              borderRadius: '8px',
               border: 'none',
-              background: 'var(--color-primary)',
+              background: (!form.title.trim() || mutation.isPending) ? '#9ca3af' : '#10b981',
               color: '#ffffff',
               fontSize: '13px',
               fontWeight: 600,
               cursor: (!form.title.trim() || mutation.isPending) ? 'not-allowed' : 'pointer',
-              opacity: (!form.title.trim() || mutation.isPending) ? 0.6 : 1,
-              boxShadow: '0 1px 2px rgba(0,0,0,0.06)',
+              boxShadow: (!form.title.trim() || mutation.isPending) ? 'none' : '0 1px 2px rgba(16, 185, 129, 0.2)',
               transition: 'all 0.15s ease'
+            }}
+            onMouseEnter={e => {
+              if (form.title.trim() && !mutation.isPending) {
+                e.currentTarget.style.background = '#059669'
+              }
+            }}
+            onMouseLeave={e => {
+              if (form.title.trim() && !mutation.isPending) {
+                e.currentTarget.style.background = '#10b981'
+              }
             }}
           >
             {mutation.isPending ? 'Menyimpan...' : (editSession ? 'Simpan Perubahan' : 'Tambah Sesi')}
