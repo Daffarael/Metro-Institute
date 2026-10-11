@@ -86,7 +86,7 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
           setUploadProgress(100)
           tusUploadRef.current = null
           onChange(embedUrl)
-          toast.success('Video berhasil diunggah ke Bunny Stream')
+          toast.success('Video berhasil diunggah')
         },
       })
 
@@ -227,23 +227,17 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
                       overflow: 'hidden',
                       textOverflow: 'ellipsis'
                     }}>
-                      {isYouTubeUrl ? 'Video Sesi (Tautan Lama)' : (fileName || 'Video Bunny Stream Terpasang')}
+                      {isYouTubeUrl ? 'Video Sesi (Tautan Lama)' : (fileName || 'Video Pembelajaran')}
                     </div>
-                    <div style={{
-                      fontSize: '11px',
-                      color: isYouTubeUrl ? '#6b7280' : 'var(--color-primary)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 4
-                    }}>
-                      {isYouTubeUrl ? (
-                        'Format lama • Silakan hapus atau ganti dengan video baru'
-                      ) : (
-                        <>
-                          <Check size={11} strokeWidth={2.5} /> Video aktif & siap diputar
-                        </>
-                      )}
-                    </div>
+                    {isYouTubeUrl && (
+                      <div style={{
+                        fontSize: '11px',
+                        color: '#6b7280',
+                        marginTop: 2
+                      }}>
+                        Format lama • Silakan hapus atau ganti dengan video baru
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -415,7 +409,7 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
               type="text"
               value={value}
               onChange={(e) => handleUrlChange(e.target.value)}
-              placeholder="Tempel tautan Bunny Stream (https://iframe.mediadelivery.net/...)"
+              placeholder="Tempel tautan embed video (https://...)"
               style={{
                 width: '100%',
                 padding: '9px 36px 9px 12px',
@@ -470,7 +464,7 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
                 <span style={{ fontWeight: 600, color: '#111827', display: 'inline', marginRight: 4 }}>
                   Tautan belum didukung:
                 </span>
-                Format YouTube tidak digunakan demi keamanan materi. Harap gunakan tautan Bunny Stream atau unggah file pada tab <strong>Upload File</strong>.
+                Format YouTube tidak digunakan demi keamanan materi. Harap unggah file pada tab <strong>Upload File</strong> atau tempel tautan video yang valid.
               </div>
               <button
                 type="button"

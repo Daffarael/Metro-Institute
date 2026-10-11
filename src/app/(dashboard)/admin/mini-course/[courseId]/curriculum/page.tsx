@@ -54,7 +54,7 @@ function AddSessionModal({ courseId, editSession, onClose }: { courseId: string;
   const mutation = useMutation({
     mutationFn: () => {
       if (form.type === 'VIDEO' && form.videoUrl && (form.videoUrl.includes('youtube.com') || form.videoUrl.includes('youtu.be'))) {
-        throw new Error('Harap hapus atau ganti tautan YouTube dengan video Bunny Stream sebelum menyimpan.')
+        throw new Error('Harap hapus atau ganti tautan YouTube dengan video baru sebelum menyimpan.')
       }
       const payload: any = { ...form, quizOptions: (form.type as any) === 'QUIZ' ? quizOptions : null }
       if (editSession) {
