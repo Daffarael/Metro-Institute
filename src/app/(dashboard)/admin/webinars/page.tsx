@@ -249,7 +249,7 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
               <label style={labelStyle}>Role & Perusahaan</label>
               <input
                 {...register('speakerRole')}
-                placeholder="Contoh: Senior Frontend Lead di Tokopedia"
+                placeholder="Contoh: Tech Lead"
                 style={inputStyleClean}
                 onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
                 onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
