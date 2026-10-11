@@ -147,38 +147,48 @@ export default function CourseLearningPlayerPage() {
   const { course, chapters, currentSession, prevSessionId, nextSessionId } = data
 
   return (
-    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: '#0f172a' }}>
+    <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: '#f8fafc' }}>
       {/* -- Top Header --------------------------------------- */}
       <header style={{
-        background: '#0f172a',
-        borderBottom: '1px solid #1e293b',
+        background: '#ffffff',
+        borderBottom: '1px solid #e2e8f0',
         height: 64, padding: '0 24px',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0,
         zIndex: 10,
+        boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
       }}>
         <Link href={ROUTES.COURSE_DETAIL(courseId)} style={{
           display: 'flex', alignItems: 'center', gap: 12,
-          color: '#e2e8f0', textDecoration: 'none', fontSize: '15px', fontWeight: 600,
-          transition: 'color 0.2s',
-        }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = '#fff')}
-          onMouseLeave={(e) => (e.currentTarget.style.color = '#e2e8f0')}
-        >
+          color: '#0f172a', textDecoration: 'none',
+          transition: 'all 0.15s',
+        }}>
           <div style={{
-            width: 32, height: 32, borderRadius: '50%', background: 'rgba(255,255,255,0.1)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center'
-          }}>
+            width: 36, height: 36, borderRadius: 10, background: '#f1f5f9',
+            border: '1px solid #e2e8f0',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: '#475569', transition: 'all 0.15s',
+          }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = '#e2e8f0'; e.currentTarget.style.color = '#0f172a' }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = '#f1f5f9'; e.currentTarget.style.color = '#475569' }}
+          >
             <ChevronLeft size={18} />
           </div>
-          <span className="truncate" style={{ maxWidth: 300 }}>{course.title}</span>
+          <div>
+            <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-primary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              Mini Course
+            </div>
+            <div className="truncate" style={{ maxWidth: 360, fontSize: '15px', fontWeight: 700, color: '#0f172a', lineHeight: 1.2 }}>
+              {course.title}
+            </div>
+          </div>
         </Link>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, width: 200 }}>
-            <div style={{ flex: 1, height: 6, background: '#1e293b', borderRadius: 3, overflow: 'hidden' }}>
-              <div style={{ height: '100%', background: 'var(--color-primary)', width: `${data.progress}%`, transition: 'width 0.5s ease' }} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, width: 220 }}>
+            <div style={{ flex: 1, height: 7, background: '#e2e8f0', borderRadius: 4, overflow: 'hidden' }}>
+              <div style={{ height: '100%', background: 'linear-gradient(90deg, #10b981, #059669)', width: `${data.progress}%`, transition: 'width 0.5s ease', borderRadius: 4 }} />
             </div>
-            <span style={{ fontSize: '13px', fontWeight: 600, color: '#94a3b8', whiteSpace: 'nowrap' }}>
+            <span style={{ fontSize: '13px', fontWeight: 700, color: '#475569', whiteSpace: 'nowrap' }}>
               {data.progress}% Selesai
             </span>
           </div>
@@ -186,10 +196,11 @@ export default function CourseLearningPlayerPage() {
           {(currentSession.isCompleted || isCompleted) && (
             <div style={{
               display: 'flex', alignItems: 'center', gap: 6,
-              padding: '6px 12px', background: 'rgba(16, 185, 129, 0.1)',
-              color: '#10b981', borderRadius: 20, fontSize: '13px', fontWeight: 600
+              padding: '6px 14px', background: '#ecfdf5',
+              border: '1px solid #a7f3d0',
+              color: '#059669', borderRadius: 20, fontSize: '12px', fontWeight: 700
             }}>
-              <CheckCircle2 size={16} /> Selesai
+              <CheckCircle2 size={15} /> Selesai
             </div>
           )}
         </div>
@@ -204,9 +215,9 @@ export default function CourseLearningPlayerPage() {
           {/* Video Player */}
           {currentSession.type === 'VIDEO' && currentSession.videoUrl ? (
             <div style={{
-              background: '#000', width: '100%', flexShrink: 0,
+              background: '#0a0f1d', width: '100%', flexShrink: 0,
               display: 'flex', justifyContent: 'center', alignItems: 'center',
-              boxShadow: '0 10px 30px rgba(0,0,0,0.1)', zIndex: 5,
+              boxShadow: '0 4px 20px rgba(0,0,0,0.08)', zIndex: 5,
             }}>
               <div style={{ width: '100%', maxWidth: '1200px', aspectRatio: '16/9', maxHeight: '65vh' }}>
                 <CourseVideoPlayer
@@ -224,9 +235,9 @@ export default function CourseLearningPlayerPage() {
             </div>
           ) : (
             <div style={{
-              background: '#0f172a', width: '100%', padding: '60px 20px',
+              background: '#ffffff', width: '100%', padding: '60px 20px',
               display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-              borderBottom: '1px solid #1e293b'
+              borderBottom: '1px solid #e2e8f0'
             }}>
               <div style={{
                 width: 64, height: 64, borderRadius: 16, background: 'rgba(16, 185, 129, 0.1)',
@@ -234,8 +245,8 @@ export default function CourseLearningPlayerPage() {
               }}>
                 <BookOpen size={32} color="var(--color-primary)" />
               </div>
-              <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#fff', marginBottom: 8 }}>Sesi Teks / Tugas</h2>
-              <p style={{ color: '#94a3b8', fontSize: '14px', maxWidth: 400, textAlign: 'center' }}>
+              <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#0f172a', marginBottom: 8 }}>Sesi Teks / Tugas</h2>
+              <p style={{ color: '#64748b', fontSize: '14px', maxWidth: 400, textAlign: 'center' }}>
                 Pelajari materi di bawah ini dan tandai sebagai selesai jika Anda sudah memahaminya.
               </p>
             </div>
