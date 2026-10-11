@@ -75,7 +75,7 @@ const labelStyle: React.CSSProperties = {
 }
 const inputStyleClean: React.CSSProperties = {
   width: '100%', padding: '12px 16px', borderRadius: '12px',
-  border: '1px solid rgba(0,0,0,0.08)', background: '#f9fafb',
+  border: '1px solid rgba(0,0,0,0.06)', background: '#f9fafb',
   fontSize: '14px', color: 'var(--color-text-primary)', outline: 'none',
   transition: 'all 0.2s ease', boxSizing: 'border-box',
 }
@@ -146,52 +146,67 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
   })
 
   return (
-    <div style={{
-      position: 'fixed', inset: 0, zIndex: 9999,
-      background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(6px)',
-      display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px',
-    }}>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3, ease: 'easeInOut' }}
+      style={{
+        position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)',
+        zIndex: 'var(--z-modal)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
+        padding: '40px 16px', overflowY: 'auto'
+      }}
+      onClick={e => { if (e.target === e.currentTarget) onClose() }}
+    >
       <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 15 }}
+        initial={{ opacity: 0, scale: 0.94, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: 15 }}
+        exit={{ opacity: 0, scale: 0.94, y: 10 }}
+        transition={{ type: 'spring', damping: 28, stiffness: 300, mass: 0.8 }}
         style={{
-          background: '#ffffff', borderRadius: 24,
-          boxShadow: '0 25px 50px -12px rgba(0,0,0,0.18)',
-          width: '100%', maxWidth: 680, maxHeight: '90vh',
-          display: 'flex', flexDirection: 'column', overflow: 'hidden',
+          background: '#ffffff', borderRadius: '24px',
+          boxShadow: '0 24px 48px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.06)',
+          width: '100%', maxWidth: 640, margin: 'auto',
         }}
       >
-        {/* Header */}
+        <style dangerouslySetInnerHTML={{__html: `
+          input[type="date"]::-webkit-calendar-picker-indicator,
+          input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            opacity: 0.6;
+            transition: 0.2s;
+          }
+          input[type="date"]::-webkit-calendar-picker-indicator:hover,
+          input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover {
+            opacity: 1;
+          }
+        `}} />
+
+        {/* Modal Header */}
         <div style={{
-          padding: '24px 28px', borderBottom: '1px solid #f1f5f9',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0,
+          padding: '32px 32px 16px',
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         }}>
-          <div>
-            <h2 style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a', margin: '0 0 2px' }}>
-              {isEdit ? 'Edit Webinar & Workshop' : 'Buat Webinar Baru'}
-            </h2>
-            <p style={{ fontSize: '13px', color: '#64748b', margin: 0 }}>
-              Isi informasi sesi webinar/workshop untuk dipublikasikan.
-            </p>
-          </div>
+          <h2 style={{ fontSize: '24px', fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--color-text-primary)' }}>
+            {isEdit ? 'Edit Webinar & Workshop' : 'Buat Webinar Baru'}
+          </h2>
           <button
+            type="button"
             onClick={onClose}
             style={{
-              border: 'none', background: '#f8fafc', width: 36, height: 36, borderRadius: '50%',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-              color: '#64748b',
+              background: 'rgba(0,0,0,0.04)', border: 'none', cursor: 'pointer',
+              color: 'var(--color-text-tertiary)', width: 36, height: 36, borderRadius: 18,
+              display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s',
             }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.08)')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'rgba(0,0,0,0.04)')}
           >
-            <X size={18} />
+            <X size={18} strokeWidth={2.5} />
           </button>
         </div>
 
-        {/* Scrollable Form Body */}
-        <form
-          onSubmit={handleSubmit(d => mutation.mutate(d))}
-          style={{ flex: 1, overflowY: 'auto', padding: '28px', display: 'flex', flexDirection: 'column', gap: 20 }}
-        >
+        {/* Form Body */}
+        <form onSubmit={handleSubmit(d => mutation.mutate(d))} style={{ padding: '0 32px 24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {/* Banner Poster */}
           <div>
             <label style={labelStyle}>Banner Poster Webinar</label>
@@ -206,25 +221,29 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
 
           {/* Title */}
           <div>
-            <label style={labelStyle}>Judul Webinar <span style={{ color: '#ef4444' }}>*</span></label>
+            <label style={labelStyle}>Judul Webinar <span style={{ color: 'var(--color-error)' }}>*</span></label>
             <input
               {...register('title')}
               placeholder="Contoh: Mastering Next.js 15 & Server Components"
               style={inputStyleClean}
+              onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
+              onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
             />
-            {errors.title && <p style={{ fontSize: '12px', color: '#ef4444', marginTop: 4 }}>{errors.title.message}</p>}
+            {errors.title && <p style={{ fontSize: '12px', color: 'var(--color-error)', marginTop: 6, fontWeight: 500 }}>{errors.title.message}</p>}
           </div>
 
           {/* Speaker Info Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             <div>
-              <label style={labelStyle}>Nama Pembicara / Speaker <span style={{ color: '#ef4444' }}>*</span></label>
+              <label style={labelStyle}>Nama Pembicara / Speaker <span style={{ color: 'var(--color-error)' }}>*</span></label>
               <input
                 {...register('speakerName')}
                 placeholder="Contoh: Alex Pratama"
                 style={inputStyleClean}
+                onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
+                onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
               />
-              {errors.speakerName && <p style={{ fontSize: '12px', color: '#ef4444', marginTop: 4 }}>{errors.speakerName.message}</p>}
+              {errors.speakerName && <p style={{ fontSize: '12px', color: 'var(--color-error)', marginTop: 6, fontWeight: 500 }}>{errors.speakerName.message}</p>}
             </div>
             <div>
               <label style={labelStyle}>Role & Perusahaan</label>
@@ -232,14 +251,16 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
                 {...register('speakerRole')}
                 placeholder="Contoh: Senior Frontend Lead di Tokopedia"
                 style={inputStyleClean}
+                onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
+                onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
               />
             </div>
           </div>
 
           {/* Field & Price */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             <div>
-              <label style={labelStyle}>Bidang <span style={{ color: '#ef4444' }}>*</span></label>
+              <label style={labelStyle}>Bidang <span style={{ color: 'var(--color-error)' }}>*</span></label>
               <Controller
                 control={control}
                 name="field"
@@ -250,56 +271,66 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
                     onChange={field.onChange}
                     placeholder="Pilih Bidang"
                     width="100%"
+                    direction="down"
+                    style={{ ...inputStyleClean, padding: '12px 16px', background: '#fff' }}
                   />
                 )}
               />
             </div>
             <div>
-              <label style={labelStyle}>Harga Tiket (Rp) <span style={{ color: '#ef4444' }}>*</span></label>
+              <label style={labelStyle}>Harga Tiket (Rp) <span style={{ color: 'var(--color-error)' }}>*</span></label>
               <input
                 type="number"
                 {...register('price', { valueAsNumber: true })}
-                placeholder="0 (Gratis)"
+                placeholder="0"
                 min={0}
                 style={inputStyleClean}
+                onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
+                onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
               />
-              <span style={{ fontSize: '11px', color: '#94a3b8', marginTop: 3, display: 'block' }}>
+              <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 4, display: 'block' }}>
                 Masukkan 0 jika webinar diselenggarakan gratis.
               </span>
             </div>
           </div>
 
           {/* Schedule & Duration */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: 16 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '16px' }}>
             <div>
-              <label style={labelStyle}>Tanggal & Waktu Pelaksanaan <span style={{ color: '#ef4444' }}>*</span></label>
+              <label style={labelStyle}>Tanggal & Waktu Pelaksanaan <span style={{ color: 'var(--color-error)' }}>*</span></label>
               <input
                 type="datetime-local"
                 {...register('scheduledAt')}
                 style={inputStyleClean}
+                onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
+                onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
               />
-              {errors.scheduledAt && <p style={{ fontSize: '12px', color: '#ef4444', marginTop: 4 }}>{errors.scheduledAt.message}</p>}
+              {errors.scheduledAt && <p style={{ fontSize: '12px', color: 'var(--color-error)', marginTop: 6, fontWeight: 500 }}>{errors.scheduledAt.message}</p>}
             </div>
             <div>
-              <label style={labelStyle}>Durasi (menit) <span style={{ color: '#ef4444' }}>*</span></label>
+              <label style={labelStyle}>Durasi (menit) <span style={{ color: 'var(--color-error)' }}>*</span></label>
               <input
                 type="number"
                 {...register('duration', { valueAsNumber: true })}
                 min={1}
                 placeholder="90"
                 style={inputStyleClean}
+                onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
+                onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
               />
             </div>
           </div>
 
           {/* Meeting Link & Quota */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 0.6fr', gap: 16 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 0.6fr', gap: '16px' }}>
             <div>
               <label style={labelStyle}>Link Room (Zoom / Google Meet)</label>
               <input
                 {...register('meetingUrl')}
                 placeholder="https://meet.google.com/... atau Zoom link"
                 style={inputStyleClean}
+                onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
+                onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
               />
             </div>
             <div>
@@ -307,29 +338,33 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
               <input
                 type="number"
                 {...register('quota', { setValueAs: v => (v === '' ? null : Number(v)) })}
-                placeholder="Kosongkan jika tak terbatas"
+                placeholder="Tak terbatas"
                 min={1}
                 style={inputStyleClean}
+                onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
+                onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
               />
             </div>
           </div>
 
           {/* Description */}
           <div>
-            <label style={labelStyle}>Deskripsi Sesi <span style={{ color: '#ef4444' }}>*</span></label>
+            <label style={labelStyle}>Deskripsi Sesi <span style={{ color: 'var(--color-error)' }}>*</span></label>
             <textarea
               {...register('description')}
               rows={4}
               placeholder="Jelaskan poin-poin materi dan apa yang akan dipelajari dalam sesi ini..."
               style={{ ...inputStyleClean, resize: 'vertical' }}
+              onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
+              onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
             />
-            {errors.description && <p style={{ fontSize: '12px', color: '#ef4444', marginTop: 4 }}>{errors.description.message}</p>}
+            {errors.description && <p style={{ fontSize: '12px', color: 'var(--color-error)', marginTop: 6, fontWeight: 500 }}>{errors.description.message}</p>}
           </div>
 
           {/* Status & Template Sertifikat */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             <div>
-              <label style={labelStyle}>Status Publikasi <span style={{ color: '#ef4444' }}>*</span></label>
+              <label style={labelStyle}>Status Publikasi <span style={{ color: 'var(--color-error)' }}>*</span></label>
               <Controller
                 control={control}
                 name="status"
@@ -343,6 +378,8 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
                     onChange={field.onChange}
                     placeholder="Pilih Status"
                     width="100%"
+                    direction="down"
+                    style={{ ...inputStyleClean, padding: '12px 16px', background: '#fff' }}
                   />
                 )}
               />
@@ -362,6 +399,8 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
                     onChange={val => field.onChange(val === '' ? null : val)}
                     placeholder="Pilih Template"
                     width="100%"
+                    direction="down"
+                    style={{ ...inputStyleClean, padding: '12px 16px', background: '#fff' }}
                   />
                 )}
               />
@@ -369,14 +408,18 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
           </div>
 
           {/* Footer Submit */}
-          <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', paddingTop: 16, borderTop: '1px solid #f1f5f9' }}>
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', paddingTop: '16px' }}>
             <button
               type="button"
               onClick={onClose}
               style={{
-                padding: '11px 22px', borderRadius: 10, border: '1px solid #e2e8f0',
-                background: '#fff', fontSize: '13.5px', fontWeight: 600, cursor: 'pointer', color: '#64748b',
+                padding: '12px 24px', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.08)',
+                background: '#fff', fontSize: '14px', fontWeight: 600, cursor: 'pointer',
+                color: 'var(--color-text-secondary)', transition: 'all 0.2s',
+                boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
               }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.color = 'var(--color-text-primary)' }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = 'var(--color-text-secondary)' }}
             >
               Batal
             </button>
@@ -384,17 +427,19 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
               type="submit"
               disabled={mutation.isPending}
               style={{
-                padding: '11px 24px', borderRadius: 10, border: 'none',
-                background: 'var(--color-primary)', color: '#fff', fontSize: '13.5px', fontWeight: 700,
-                cursor: 'pointer', opacity: mutation.isPending ? 0.6 : 1,
+                padding: '12px 24px', borderRadius: '12px', border: 'none',
+                background: 'var(--color-primary)', color: '#fff', fontSize: '14px', fontWeight: 600,
+                cursor: 'pointer', opacity: mutation.isPending ? 0.7 : 1, transition: 'all 0.2s',
               }}
+              onMouseEnter={e => { if (!mutation.isPending) e.currentTarget.style.filter = 'brightness(1.1)' }}
+              onMouseLeave={e => { e.currentTarget.style.filter = 'brightness(1)' }}
             >
               {mutation.isPending ? 'Menyimpan...' : (isEdit ? 'Simpan Perubahan' : 'Buat Webinar')}
             </button>
           </div>
         </form>
       </motion.div>
-    </div>
+    </motion.div>
   )
 }
 
