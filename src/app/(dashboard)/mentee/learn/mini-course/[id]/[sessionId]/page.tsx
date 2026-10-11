@@ -210,16 +210,21 @@ export default function CourseLearningPlayerPage() {
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         
         {/* Left Side: Video & Content */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: 'var(--color-bg)', overflow: 'hidden' }}>
-          
-          {/* Video Player */}
-          {currentSession.type === 'VIDEO' && currentSession.videoUrl ? (
-            <div style={{
-              background: '#0a0f1d', width: '100%', flexShrink: 0,
-              display: 'flex', justifyContent: 'center', alignItems: 'center',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.08)', zIndex: 5,
-            }}>
-              <div style={{ width: '100%', maxWidth: '1200px', aspectRatio: '16/9', maxHeight: '65vh' }}>
+        <div style={{ flex: 1, overflowY: 'auto', background: '#f8fafc' }}>
+          <div style={{ maxWidth: 1040, margin: '0 auto', padding: '28px 32px 64px', display: 'flex', flexDirection: 'column', gap: 24 }}>
+            
+            {/* Video Player Card */}
+            {currentSession.type === 'VIDEO' && currentSession.videoUrl ? (
+              <div style={{
+                width: '100%',
+                aspectRatio: '16/9',
+                borderRadius: 20,
+                overflow: 'hidden',
+                background: '#000',
+                border: '1px solid rgba(0,0,0,0.08)',
+                boxShadow: '0 16px 40px -12px rgba(0,0,0,0.14), 0 0 1px rgba(0,0,0,0.15)',
+                position: 'relative'
+              }}>
                 <CourseVideoPlayer
                   url={currentSession.videoUrl}
                   title={currentSession.title}
@@ -232,69 +237,199 @@ export default function CourseLearningPlayerPage() {
                   }}
                 />
               </div>
-            </div>
-          ) : (
-            <div style={{
-              background: '#ffffff', width: '100%', padding: '60px 20px',
-              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-              borderBottom: '1px solid #e2e8f0'
-            }}>
+            ) : (
               <div style={{
-                width: 64, height: 64, borderRadius: 16, background: 'rgba(16, 185, 129, 0.1)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16
+                background: '#ffffff',
+                borderRadius: 20,
+                padding: '48px 24px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                border: '1px solid #e2e8f0',
+                boxShadow: '0 4px 16px rgba(0,0,0,0.03)'
               }}>
-                <BookOpen size={32} color="var(--color-primary)" />
+                <div style={{
+                  width: 56,
+                  height: 56,
+                  borderRadius: 14,
+                  background: 'rgba(16, 185, 129, 0.1)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: 14
+                }}>
+                  <BookOpen size={28} color="var(--color-primary)" />
+                </div>
+                <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', marginBottom: 6 }}>
+                  Sesi Teks / Tugas
+                </h2>
+                <p style={{ color: '#64748b', fontSize: '14px', maxWidth: 440, textAlign: 'center', margin: 0 }}>
+                  Pelajari materi di bawah ini secara saksama dan tandai sebagai selesai jika Anda sudah memahaminya.
+                </p>
               </div>
-              <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#0f172a', marginBottom: 8 }}>Sesi Teks / Tugas</h2>
-              <p style={{ color: '#64748b', fontSize: '14px', maxWidth: 400, textAlign: 'center' }}>
-                Pelajari materi di bawah ini dan tandai sebagai selesai jika Anda sudah memahaminya.
-              </p>
-            </div>
-          )}
+            )}
 
-          {/* Content Area */}
-          <div style={{ flex: 1, overflow: 'auto', padding: '32px 0' }}>
-            <div style={{ maxWidth: 900, margin: '0 auto', padding: '0 32px' }}>
-              {/* Header Info */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 32 }}>
+            {/* Session Info Header & Quick Actions */}
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 16,
+              background: '#ffffff',
+              padding: '24px 28px',
+              borderRadius: 20,
+              border: '1px solid #e2e8f0',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
                 <div>
-                  <h1 style={{ fontSize: '28px', fontWeight: 800, color: 'var(--color-text-primary)', marginBottom: 12, lineHeight: 1.3 }}>
-                    {currentSession.title}
-                  </h1>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 8 }}>
+                    <span style={{
+                      padding: '4px 10px',
+                      borderRadius: 8,
+                      background: 'rgba(16, 185, 129, 0.1)',
+                      color: 'var(--color-primary)',
+                      fontSize: '12px',
+                      fontWeight: 700,
+                      letterSpacing: '0.02em'
+                    }}>
+                      Sesi {currentSession.orderIndex || 1}
+                    </span>
+
                     {currentSession.videoDuration && (
-                      <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '14px', fontWeight: 500, color: 'var(--color-text-secondary)' }}>
-                        <Clock size={16} /> {formatDuration(currentSession.videoDuration)}
+                      <span style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 5,
+                        padding: '4px 10px',
+                        borderRadius: 8,
+                        background: '#f8fafc',
+                        border: '1px solid #e2e8f0',
+                        fontSize: '12px',
+                        fontWeight: 600,
+                        color: '#64748b'
+                      }}>
+                        <Clock size={13} color="#94a3b8" /> {formatDuration(currentSession.videoDuration)}
                       </span>
                     )}
-                    <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '14px', fontWeight: 600, color: '#eab308' }}>
-                      <Zap size={16} /> +{currentSession.xpReward} XP
+
+                    <span style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 4,
+                      padding: '4px 10px',
+                      borderRadius: 8,
+                      background: '#fef3c7',
+                      fontSize: '12px',
+                      fontWeight: 700,
+                      color: '#b45309'
+                    }}>
+                      <Zap size={13} fill="#f59e0b" color="#f59e0b" /> +{currentSession.xpReward} XP
                     </span>
                   </div>
-                </div>
-                {!(currentSession.isCompleted || isCompleted) && (
-                  <button
-                    onClick={() => completeMutation.mutate()}
-                    disabled={completeMutation.isPending}
-                    style={{
-                      padding: '12px 24px', background: 'var(--color-primary)', color: '#fff',
-                      border: 'none', borderRadius: 12, fontWeight: 700, fontSize: '14px',
-                      display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer',
-                      transition: 'all 0.2s', boxShadow: '0 4px 12px rgba(16, 185, 129, 0.2)'
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
-                    onMouseLeave={(e) => e.currentTarget.style.transform = 'none'}
-                  >
-                    {completeMutation.isPending ? <Loader2 size={16} className="animate-spin" /> : <><CheckCircle2 size={18} /> Tandai Selesai</>}
-                  </button>
-                )}
-              </div>
 
-              {/* Tabs Container */}
+                  <h1 style={{
+                    fontSize: '24px',
+                    fontWeight: 800,
+                    color: '#0f172a',
+                    margin: 0,
+                    lineHeight: 1.3,
+                    letterSpacing: '-0.02em'
+                  }}>
+                    {currentSession.title}
+                  </h1>
+                </div>
+
+                {/* Right: Actions (Nav Prev/Next + Complete) */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                  {prevSessionId && (
+                    <Link
+                      href={ROUTES.LEARN_COURSE_SESSION(courseId, prevSessionId)}
+                      style={{
+                        padding: '9px 15px',
+                        borderRadius: 10,
+                        background: '#f8fafc',
+                        border: '1px solid #e2e8f0',
+                        color: '#475569',
+                        fontSize: '13px',
+                        fontWeight: 600,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        textDecoration: 'none',
+                        transition: 'all 0.15s'
+                      }}
+                    >
+                      <ChevronLeft size={16} /> Sebelumnya
+                    </Link>
+                  )}
+
+                  {nextSessionId && (
+                    <Link
+                      href={ROUTES.LEARN_COURSE_SESSION(courseId, nextSessionId)}
+                      style={{
+                        padding: '9px 15px',
+                        borderRadius: 10,
+                        background: '#f8fafc',
+                        border: '1px solid #e2e8f0',
+                        color: '#475569',
+                        fontSize: '13px',
+                        fontWeight: 600,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        textDecoration: 'none',
+                        transition: 'all 0.15s'
+                      }}
+                    >
+                      Selanjutnya <ChevronRight size={16} />
+                    </Link>
+                  )}
+
+                  {!(currentSession.isCompleted || isCompleted) && (
+                    <button
+                      onClick={() => completeMutation.mutate()}
+                      disabled={completeMutation.isPending}
+                      style={{
+                        padding: '9px 18px',
+                        background: 'var(--color-primary)',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: 10,
+                        fontWeight: 700,
+                        fontSize: '13px',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        cursor: 'pointer',
+                        transition: 'all 0.15s',
+                        boxShadow: '0 2px 8px rgba(16, 185, 129, 0.25)'
+                      }}
+                    >
+                      {completeMutation.isPending ? (
+                        <Loader2 size={16} className="animate-spin" />
+                      ) : (
+                        <>
+                          <CheckCircle2 size={16} /> Tandai Selesai
+                        </>
+                      )}
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Tabs & Tab Content */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              {/* Tabs Switcher */}
               <div style={{
-                display: 'flex', gap: 8, marginBottom: 32, padding: 4,
-                background: 'var(--color-surface)', borderRadius: 16, border: '1px solid var(--color-border-subtle)',
-                width: 'max-content'
+                display: 'flex',
+                gap: 6,
+                padding: 4,
+                background: '#f1f5f9',
+                borderRadius: 14,
+                border: '1px solid #e2e8f0',
+                width: 'fit-content'
               }}>
                 {[
                   { id: 'overview', label: 'Ringkasan', icon: BookOpen },
@@ -308,28 +443,43 @@ export default function CourseLearningPlayerPage() {
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id as typeof activeTab)}
                       style={{
-                        padding: '10px 20px', borderRadius: 12,
-                        border: 'none', cursor: 'pointer', fontSize: '14px', fontWeight: 600,
-                        display: 'flex', alignItems: 'center', gap: 8,
-                        background: isActive ? '#fff' : 'transparent',
-                        color: isActive ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)',
-                        boxShadow: isActive ? '0 2px 8px rgba(0,0,0,0.06)' : 'none',
-                        transition: 'all 0.2s'
+                        padding: '8px 18px',
+                        borderRadius: 10,
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontSize: '13px',
+                        fontWeight: isActive ? 700 : 600,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 8,
+                        background: isActive ? '#ffffff' : 'transparent',
+                        color: isActive ? '#0f172a' : '#64748b',
+                        boxShadow: isActive ? '0 1px 3px rgba(0,0,0,0.06)' : 'none',
+                        transition: 'all 0.15s'
                       }}
                     >
-                      <tab.icon size={16} color={isActive ? 'var(--color-primary)' : 'currentColor'} />
+                      <tab.icon size={15} color={isActive ? 'var(--color-primary)' : '#64748b'} />
                       {tab.label}
                     </button>
                   )
                 })}
               </div>
 
-              {/* Tab Content */}
-              <div style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border-subtle)', borderRadius: 24, padding: 32, minHeight: 400 }}>
+              {/* Tab Content Card */}
+              <div style={{
+                background: '#ffffff',
+                border: '1px solid #e2e8f0',
+                borderRadius: 20,
+                padding: '28px 32px',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+                minHeight: 320
+              }}>
                 {activeTab === 'overview' && (
                   <div>
-                    <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: 16 }}>Tentang Sesi Ini</h2>
-                    <p style={{ color: 'var(--color-text-secondary)', lineHeight: 1.7, fontSize: '15px' }}>
+                    <h3 style={{ fontSize: '17px', fontWeight: 700, color: '#0f172a', marginBottom: 14 }}>
+                      Tentang Sesi Ini
+                    </h3>
+                    <p style={{ color: '#475569', lineHeight: 1.75, fontSize: '15px', margin: 0 }}>
                       {currentSession.assignmentDescription || "Sesi ini akan membahas materi secara mendalam sesuai kurikulum yang telah disusun. Pastikan Anda menyimak dengan baik."}
                     </p>
                   </div>
@@ -342,43 +492,43 @@ export default function CourseLearningPlayerPage() {
                         value={note} onChange={(e) => setNote(e.target.value)}
                         placeholder="Tulis catatan penting dari sesi ini..."
                         style={{
-                          flex: 1, padding: '14px 20px', borderRadius: 12,
-                          border: '1px solid var(--color-border)', background: 'var(--color-bg)',
-                          fontSize: '15px', color: 'var(--color-text-primary)'
+                          flex: 1, padding: '12px 18px', borderRadius: 10,
+                          border: '1px solid #e2e8f0', background: '#f8fafc',
+                          fontSize: '14px', color: '#0f172a', outline: 'none'
                         }}
                         onKeyDown={(e) => e.key === 'Enter' && addNoteMutation.mutate()}
                       />
                       <button
                         onClick={() => addNoteMutation.mutate()} disabled={addNoteMutation.isPending || !note.trim()}
                         style={{
-                          padding: '0 24px', borderRadius: 12, border: 'none',
-                          background: 'var(--color-primary)', color: '#fff', fontWeight: 600,
+                          padding: '0 20px', borderRadius: 10, border: 'none',
+                          background: 'var(--color-primary)', color: '#fff', fontWeight: 600, fontSize: '13px',
                           cursor: note.trim() ? 'pointer' : 'not-allowed', opacity: note.trim() ? 1 : 0.6,
-                          display: 'flex', alignItems: 'center', gap: 8
+                          display: 'flex', alignItems: 'center', gap: 6
                         }}
                       >
-                        <Plus size={18} /> Simpan
+                        <Plus size={16} /> Simpan
                       </button>
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                       {(notes as Array<{ id: string; content: string; timestamp: number }>).map((n) => (
                         <div key={n.id} style={{
-                          padding: '16px 20px', border: '1px solid var(--color-border-subtle)',
-                          borderRadius: 16, background: 'var(--color-bg)', display: 'flex', alignItems: 'flex-start', gap: 16
+                          padding: '14px 18px', border: '1px solid #e2e8f0',
+                          borderRadius: 12, background: '#f8fafc', display: 'flex', alignItems: 'flex-start', gap: 14
                         }}>
                           <div style={{
-                            padding: '4px 10px', background: 'rgba(16, 185, 129, 0.1)', color: 'var(--color-primary)',
-                            borderRadius: 8, fontSize: '12px', fontWeight: 700, fontFamily: 'monospace'
+                            padding: '3px 8px', background: 'rgba(16, 185, 129, 0.1)', color: 'var(--color-primary)',
+                            borderRadius: 6, fontSize: '11px', fontWeight: 700, fontFamily: 'monospace'
                           }}>
                             {formatDuration(n.timestamp)}
                           </div>
-                          <p style={{ flex: 1, margin: 0, color: 'var(--color-text-secondary)', fontSize: '15px', lineHeight: 1.6 }}>{n.content}</p>
+                          <p style={{ flex: 1, margin: 0, color: '#334155', fontSize: '14px', lineHeight: 1.5 }}>{n.content}</p>
                         </div>
                       ))}
                       {notes.length === 0 && (
-                        <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--color-text-tertiary)' }}>
-                          <StickyNote size={48} opacity={0.2} style={{ margin: '0 auto 16px' }} />
-                          <p>Belum ada catatan.</p>
+                        <div style={{ textAlign: 'center', padding: '40px 0', color: '#94a3b8' }}>
+                          <StickyNote size={40} opacity={0.3} style={{ margin: '0 auto 12px' }} />
+                          <p style={{ fontSize: '14px', margin: 0 }}>Belum ada catatan untuk sesi ini.</p>
                         </div>
                       )}
                     </div>
@@ -386,52 +536,52 @@ export default function CourseLearningPlayerPage() {
                 )}
 
                 {activeTab === 'qna' && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
                     <div style={{ display: 'flex', gap: 12 }}>
                       <input
                         value={qnaMessage} onChange={(e) => setQnaMessage(e.target.value)}
-                        placeholder="Ada pertanyaan? Tanyakan di sini..."
+                        placeholder="Ada pertanyaan seputar materi? Tanyakan di sini..."
                         style={{
-                          flex: 1, padding: '14px 20px', borderRadius: 12,
-                          border: '1px solid var(--color-border)', background: 'var(--color-bg)',
-                          fontSize: '15px'
+                          flex: 1, padding: '12px 18px', borderRadius: 10,
+                          border: '1px solid #e2e8f0', background: '#f8fafc',
+                          fontSize: '14px', color: '#0f172a', outline: 'none'
                         }}
-                        onKeyDown={(e) => e.key === 'Enter' && addQnaMutation.mutate()}
+                        onKeyDown={(e) => e.key === 'Enter' && sendQnaMutation.mutate()}
                       />
                       <button
-                        onClick={() => addQnaMutation.mutate()} disabled={addQnaMutation.isPending || !qnaMessage.trim()}
+                        onClick={() => sendQnaMutation.mutate()} disabled={sendQnaMutation.isPending || !qnaMessage.trim()}
                         style={{
-                          padding: '0 24px', borderRadius: 12, border: 'none',
-                          background: '#1e293b', color: '#fff', fontWeight: 600,
+                          padding: '0 20px', borderRadius: 10, border: 'none',
+                          background: '#0f172a', color: '#fff', fontWeight: 600, fontSize: '13px',
                           cursor: qnaMessage.trim() ? 'pointer' : 'not-allowed', opacity: qnaMessage.trim() ? 1 : 0.6,
-                          display: 'flex', alignItems: 'center', gap: 8
+                          display: 'flex', alignItems: 'center', gap: 6
                         }}
                       >
-                        <Send size={18} /> Kirim
+                        <Send size={16} /> Kirim
                       </button>
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                       {(qnaMessages as Array<{ id: string; content: string; user: { name: string }; createdAt: string }>).map((msg) => (
-                        <div key={msg.id} style={{ padding: '20px', border: '1px solid var(--color-border-subtle)', borderRadius: 16, background: 'var(--color-bg)' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+                        <div key={msg.id} style={{ padding: '16px 20px', border: '1px solid #e2e8f0', borderRadius: 14, background: '#f8fafc' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
                             <div style={{
-                              width: 36, height: 36, borderRadius: '50%', background: '#e2e8f0',
-                              display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 700, color: '#475569'
+                              width: 32, height: 32, borderRadius: '50%', background: '#e2e8f0',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: 700, color: '#334155'
                             }}>
                               {msg.user.name[0]}
                             </div>
                             <div>
-                              <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-text-primary)' }}>{msg.user.name}</div>
-                              <div style={{ fontSize: '12px', color: 'var(--color-text-tertiary)' }}>{new Date(msg.createdAt).toLocaleString('id-ID')}</div>
+                              <div style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a' }}>{msg.user.name}</div>
+                              <div style={{ fontSize: '11px', color: '#94a3b8' }}>{new Date(msg.createdAt).toLocaleString('id-ID')}</div>
                             </div>
                           </div>
-                          <p style={{ fontSize: '15px', color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>{msg.content}</p>
+                          <p style={{ fontSize: '14px', color: '#334155', lineHeight: 1.6, margin: 0 }}>{msg.content}</p>
                         </div>
                       ))}
                       {qnaMessages.length === 0 && (
-                        <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--color-text-tertiary)' }}>
-                          <MessageSquare size={48} opacity={0.2} style={{ margin: '0 auto 16px' }} />
-                          <p>Jadilah yang pertama bertanya!</p>
+                        <div style={{ textAlign: 'center', padding: '40px 0', color: '#94a3b8' }}>
+                          <MessageSquare size={40} opacity={0.3} style={{ margin: '0 auto 12px' }} />
+                          <p style={{ fontSize: '14px', margin: 0 }}>Jadilah yang pertama bertanya!</p>
                         </div>
                       )}
                     </div>
@@ -440,35 +590,35 @@ export default function CourseLearningPlayerPage() {
 
                 {activeTab === 'materials' && (
                   <div>
-                    <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: 20 }}>Materi Pendukung</h2>
+                    <h3 style={{ fontSize: '17px', fontWeight: 700, color: '#0f172a', marginBottom: 16 }}>Materi Pendukung</h3>
                     {currentSession.materials && currentSession.materials.length > 0 ? (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                         {currentSession.materials.map((mat) => (
                           <a
                             key={mat.url} href={mat.url} target="_blank" rel="noopener noreferrer"
                             style={{
-                              display: 'flex', alignItems: 'center', gap: 16,
-                              padding: '16px 20px', border: '1px solid var(--color-border-subtle)',
-                              borderRadius: 16, textDecoration: 'none', background: 'var(--color-bg)',
-                              color: 'var(--color-text-primary)', transition: 'all 0.2s',
+                              display: 'flex', alignItems: 'center', gap: 14,
+                              padding: '14px 18px', border: '1px solid #e2e8f0',
+                              borderRadius: 14, textDecoration: 'none', background: '#f8fafc',
+                              color: '#0f172a', transition: 'all 0.15s',
                             }}
-                            onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-primary)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.05)' }}
-                            onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--color-border-subtle)'; e.currentTarget.style.boxShadow = 'none' }}
+                            onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-primary)'; e.currentTarget.style.background = '#ffffff' }}
+                            onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.background = '#f8fafc' }}
                           >
-                            <div style={{ width: 40, height: 40, borderRadius: 10, background: 'rgba(16, 185, 129, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                              <FileText size={20} color="var(--color-primary)" />
+                            <div style={{ width: 36, height: 36, borderRadius: 8, background: 'rgba(16, 185, 129, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              <FileText size={18} color="var(--color-primary)" />
                             </div>
-                            <span style={{ flex: 1, fontSize: '15px', fontWeight: 600 }}>{mat.name}</span>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--color-primary)', fontSize: '13px', fontWeight: 600 }}>
-                              <Download size={16} /> Unduh
+                            <span style={{ flex: 1, fontSize: '14px', fontWeight: 600 }}>{mat.name}</span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-primary)', fontSize: '13px', fontWeight: 600 }}>
+                              <Download size={15} /> Unduh
                             </div>
                           </a>
                         ))}
                       </div>
                     ) : (
-                      <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--color-text-tertiary)' }}>
-                        <FileText size={48} opacity={0.2} style={{ margin: '0 auto 16px' }} />
-                        <p>Tidak ada materi tambahan untuk sesi ini.</p>
+                      <div style={{ textAlign: 'center', padding: '40px 0', color: '#94a3b8' }}>
+                        <FileText size={40} opacity={0.3} style={{ margin: '0 auto 12px' }} />
+                        <p style={{ fontSize: '14px', margin: 0 }}>Tidak ada materi tambahan untuk sesi ini.</p>
                       </div>
                     )}
                   </div>
