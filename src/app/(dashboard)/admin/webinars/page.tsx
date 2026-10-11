@@ -387,7 +387,6 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
                 padding: '11px 24px', borderRadius: 10, border: 'none',
                 background: 'var(--color-primary)', color: '#fff', fontSize: '13.5px', fontWeight: 700,
                 cursor: 'pointer', opacity: mutation.isPending ? 0.6 : 1,
-                boxShadow: '0 4px 12px rgba(16, 185, 129, 0.25)',
               }}
             >
               {mutation.isPending ? 'Menyimpan...' : (isEdit ? 'Simpan Perubahan' : 'Buat Webinar')}
@@ -446,13 +445,13 @@ export default function AdminWebinarsPage() {
         description="Kelola jadwal webinar live, narasumber, link streaming, dan peserta terdaftar."
         action={
           <button
+            suppressHydrationWarning
             onClick={() => setModal('new')}
             style={{
-              display: 'flex', alignItems: 'center', gap: 7,
-              padding: '9px 18px', borderRadius: '10px',
-              background: 'var(--color-primary)', color: '#ffffff',
-              border: 'none', fontSize: '13.5px', fontWeight: 700, cursor: 'pointer',
-              boxShadow: '0 4px 12px rgba(16, 185, 129, 0.25)',
+              display: 'flex', alignItems: 'center', gap: 6,
+              padding: '9px 16px', borderRadius: 'var(--radius-md)',
+              background: 'var(--color-primary)', color: '#fff',
+              border: 'none', fontSize: 'var(--text-sm)', fontWeight: 700, cursor: 'pointer',
             }}
           >
             <Plus size={16} /> Buat Webinar

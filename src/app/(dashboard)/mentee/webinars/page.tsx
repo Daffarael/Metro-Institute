@@ -472,9 +472,9 @@ export default function MenteeWebinarsPage() {
                       onClick={() => handleRegisterOrPay(selectedWebinar)}
                       disabled={registerMutation.isPending}
                       style={{
-                        padding: '10px 24px', borderRadius: 10, background: 'var(--color-primary)',
+                        padding: '10px 24px', borderRadius: 'var(--radius-md)', background: 'var(--color-primary)',
                         color: '#fff', border: 'none', fontWeight: 600, fontSize: '13px',
-                        cursor: 'pointer', boxShadow: '0 2px 6px rgba(1, 133, 86, 0.25)',
+                        cursor: 'pointer',
                       }}
                     >
                       {registerMutation.isPending ? 'Memproses...' : selectedWebinar.price === 0 ? 'Daftar Sekarang (Gratis)' : 'Beli Tiket'}
