@@ -149,17 +149,27 @@ export default function MenteeWebinarsPage() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-6)', maxWidth: 1240, margin: '0 auto' }}>
       {/* ── Page Header ────────────────────────────────────── */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+          <h1 style={{ fontSize: 'var(--text-2xl)', fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--color-text-primary)' }}>
+            Webinar & Workshop
+          </h1>
           <span style={{
-            fontSize: '11px', fontWeight: 700, padding: '3px 9px', borderRadius: 20,
-            background: 'rgba(1, 133, 86, 0.1)', color: 'var(--color-primary)', textTransform: 'uppercase', letterSpacing: '0.04em',
+            display: 'inline-flex', alignItems: 'center', gap: 6,
+            padding: '2px 9px', borderRadius: 9999,
+            background: 'rgba(1, 133, 86, 0.06)',
+            border: '1px solid rgba(1, 133, 86, 0.18)',
+            color: 'var(--color-primary)',
+            fontSize: '11px', fontWeight: 600,
+            letterSpacing: '0.01em',
           }}>
+            <span style={{
+              width: 6, height: 6, borderRadius: '50%',
+              background: 'var(--color-primary)',
+              boxShadow: '0 0 0 2px rgba(1, 133, 86, 0.2)',
+            }} />
             Live Learning
           </span>
         </div>
-        <h1 style={{ fontSize: 'var(--text-2xl)', fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--color-text-primary)' }}>
-          Webinar & Workshop
-        </h1>
         <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', maxWidth: 680, lineHeight: 1.5 }}>
           Ikuti sesi interaktif live streaming bersama mentor dan pakar industri teknologi. Diskusikan studi kasus nyata, tren terkini, dan tanyakan langsung kendalamu.
         </p>

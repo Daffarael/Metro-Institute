@@ -117,9 +117,10 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
 
   const mutation = useMutation({
     mutationFn: (data: WebinarForm) => {
+      const { status, ...rest } = data
       const payload = {
-        ...data,
-        isPublished: data.status === 'PUBLISHED',
+        ...rest,
+        isPublished: status === 'PUBLISHED',
       }
       return isEdit
         ? api.patch(`/admin/webinars/${webinar!.id}`, payload).then(r => r.data)
