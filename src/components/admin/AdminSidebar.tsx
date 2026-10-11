@@ -96,8 +96,8 @@ export default function AdminSidebar({
       onMouseEnter={() => !isMobile && setIsHovered(true)}
       onMouseLeave={() => !isMobile && setIsHovered(false)}
       animate={{ 
-        width: isMobile ? 256 : (open ? 256 : 80),
-        x: isMobile ? (isMobileOpen ? 0 : -256) : 0
+        width: isMobile ? 248 : (open ? 248 : 80),
+        x: isMobile ? (isMobileOpen ? 0 : -248) : 0
       }}
       transition={{ duration: 0.3, ease: 'easeInOut' }}
       style={{
@@ -123,7 +123,7 @@ export default function AdminSidebar({
         marginBottom: 'var(--space-8)', 
         display: 'flex', 
         alignItems: 'center',
-        width: 256,
+        width: 248,
         boxSizing: 'border-box'
       }}>
         <Link onClick={() => isMobile && setIsMobileOpen?.(false)} href="/admin/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', textDecoration: 'none', flex: 1, minWidth: 0 }}>
@@ -191,7 +191,7 @@ export default function AdminSidebar({
           transition={{ duration: 0.2 }}
           style={{ 
             gridArea: '1 / 1', 
-            width: 256, 
+            width: 248, 
             pointerEvents: open ? 'auto' : 'none', 
             padding: '0 var(--space-2)',
             zIndex: open ? 2 : 1
@@ -209,7 +209,7 @@ export default function AdminSidebar({
             color="var(--color-text-primary)"
             accentColor="var(--color-primary)"
             lineColor="var(--color-border)"
-            width={236}
+            width={232}
             rowHeight={36}
             indent={32}
             trunk={12}
@@ -260,7 +260,7 @@ export default function AdminSidebar({
         {user && (
           <div style={{ 
             display: 'flex', alignItems: 'center', gap: 'var(--space-3)',
-            width: 224, // Paksa lebar tetap (256 - 32px padding) agar tidak snap
+            width: 216, // Paksa lebar tetap (248 - 32px padding) agar tidak snap
             boxSizing: 'border-box'
           }}>
             <div className="avatar avatar-sm" style={{ flexShrink: 0, width: 36, height: 36, border: '1px solid var(--color-border)', background: 'var(--color-bg)' }}>
