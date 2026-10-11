@@ -29,6 +29,12 @@ interface BasecampData {
     id: string; title: string; type: 'bootcamp' | 'mini-course'
     price: number; field: string; level: string; thumbnail?: string; rating: number
   }>
+  dailyMissions?: {
+    hasPhoto: boolean
+    watchedVideo: boolean
+    didChallenge: boolean
+    allCompleted: boolean
+  }
   missionComplete: boolean
   nextBadgeXp: number
   nextBadgeLevel: string
@@ -294,14 +300,36 @@ export default function BasecampPage() {
             </div>
             <div style={{ padding: 'var(--space-3) var(--space-5)', display: 'flex', flexDirection: 'column' }}>
               {!user?.photoUrl && (
-                <MissionItem title="Pasang Foto Profil" xp={20} done={false} link={ROUTES.SETTINGS} />
+                <MissionItem title="Pasang Foto Profil" xp={20} done={Boolean(data?.dailyMissions?.hasPhoto)} link={ROUTES.SETTINGS} />
               )}
-              <MissionItem title="Tonton 1 materi video" xp={5}  done={false} />
-              <MissionItem title="Kerjakan 1 challenge"  xp={10} done={false} />
+              <MissionItem
+                title="Tonton 1 materi video"
+                xp={5}
+                done={Boolean(data?.dailyMissions?.watchedVideo)}
+                link={data?.continueLearning?.sessionId
+                  ? (data.continueLearning.type === 'bootcamp'
+                      ? ROUTES.LEARN_BOOTCAMP_SESSION(data.continueLearning.id, data.continueLearning.sessionId)
+                      : ROUTES.LEARN_COURSE_SESSION(data.continueLearning.id, data.continueLearning.sessionId))
+                  : ROUTES.COURSES}
+              />
+              <MissionItem
+                title="Kerjakan 1 challenge"
+                xp={10}
+                done={Boolean(data?.dailyMissions?.didChallenge)}
+                link={ROUTES.CHALLENGES}
+              />
             </div>
             <div style={{ padding: 'var(--space-3) var(--space-5)', borderTop: '1px solid var(--color-border-subtle)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '12px', color: 'var(--color-text-tertiary)' }}>Selesaikan semua misi</span>
-              <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--color-primary)' }}>+15 XP</span>
+              <span style={{ fontSize: '12px', color: 'var(--color-text-tertiary)' }}>
+                {data?.dailyMissions?.allCompleted ? 'Semua misi hari ini selesai! 🎉' : 'Selesaikan semua misi'}
+              </span>
+              <span style={{
+                fontSize: '12px',
+                fontWeight: 700,
+                color: data?.dailyMissions?.allCompleted ? 'var(--color-success)' : 'var(--color-primary)'
+              }}>
+                {data?.dailyMissions?.allCompleted ? 'Selesai' : '+15 XP'}
+              </span>
             </div>
           </div>
 

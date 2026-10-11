@@ -203,6 +203,28 @@ export default function CourseLearningPlayerPage() {
               <CheckCircle2 size={15} /> Selesai
             </div>
           )}
+
+          {data.progress === 100 && (
+            <Link
+              href={ROUTES.CERTIFICATES}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 7,
+                padding: '7px 16px',
+                background: 'var(--color-primary)',
+                color: '#ffffff',
+                borderRadius: 20,
+                fontSize: '12.5px',
+                fontWeight: 700,
+                textDecoration: 'none',
+                boxShadow: '0 2px 10px rgba(16, 185, 129, 0.28)',
+                transition: 'all 0.15s ease',
+              }}
+            >
+              <Award size={15} /> Lihat Sertifikat
+            </Link>
+          )}
         </div>
       </header>
 
@@ -213,6 +235,67 @@ export default function CourseLearningPlayerPage() {
         <div style={{ flex: 1, overflowY: 'auto', background: '#f8fafc' }}>
           <div style={{ maxWidth: 1040, margin: '0 auto', padding: '28px 32px 64px', display: 'flex', flexDirection: 'column', gap: 24 }}>
             
+            {/* Celebration Banner when 100% Complete */}
+            {data.progress === 100 && (
+              <div style={{
+                background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(5, 150, 105, 0.03) 100%)',
+                border: '1px solid rgba(16, 185, 129, 0.25)',
+                borderRadius: 20,
+                padding: '20px 24px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: 16,
+                flexWrap: 'wrap',
+                boxShadow: '0 4px 16px rgba(16, 185, 129, 0.06)',
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                  <div style={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: 14,
+                    background: 'var(--color-primary)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#ffffff',
+                    flexShrink: 0,
+                    boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)',
+                  }}>
+                    <Award size={26} />
+                  </div>
+                  <div>
+                    <h3 style={{ fontSize: '16px', fontWeight: 800, color: '#065f46', margin: '0 0 3px', letterSpacing: '-0.01em' }}>
+                      Selamat! Anda Telah Menyelesaikan Kelas Ini 🎉
+                    </h3>
+                    <p style={{ fontSize: '13px', color: '#047857', margin: 0, lineHeight: 1.4 }}>
+                      Sertifikat kelulusan Anda sudah resmi diterbitkan oleh Metro Institute dan siap diunduh.
+                    </p>
+                  </div>
+                </div>
+
+                <Link
+                  href={ROUTES.CERTIFICATES}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 8,
+                    padding: '10px 20px',
+                    borderRadius: 10,
+                    background: 'var(--color-primary)',
+                    color: '#ffffff',
+                    fontSize: '13.5px',
+                    fontWeight: 700,
+                    textDecoration: 'none',
+                    boxShadow: '0 2px 8px rgba(16, 185, 129, 0.25)',
+                    transition: 'all 0.15s ease',
+                  }}
+                >
+                  <Award size={16} /> Klaim & Unduh Sertifikat
+                </Link>
+              </div>
+            )}
+
             {/* Player / Content Card */}
             {currentSession.type === 'VIDEO' && currentSession.videoUrl ? (
               <div style={{
@@ -892,33 +975,58 @@ function InteractiveQuiz({
             : 'Jawaban Anda telah tersimpan. Anda dapat mengulang kuis untuk meningkatkan pemahaman Anda.'}
         </p>
 
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={() => {
-            setShowResult(false)
-            setCurrentQIdx(0)
-            setAnswers({})
-            setIsStarted(false)
-          }}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 8,
-            padding: '11px 24px',
-            borderRadius: 8,
-            border: '1px solid #e2e8f0',
-            background: '#f8fafc',
-            cursor: 'pointer',
-            fontWeight: 700,
-            fontSize: '13.5px',
-            color: '#334155',
-            transition: 'all 0.15s ease',
-          }}
-        >
-          <RotateCcw size={15} strokeWidth={2} /> Coba Lagi Kuis
-        </motion.button>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, flexWrap: 'wrap' }}>
+          {isPassed && (
+            <Link
+              href={ROUTES.CERTIFICATES}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
+                padding: '11px 24px',
+                borderRadius: 8,
+                background: 'var(--color-primary)',
+                color: '#ffffff',
+                textDecoration: 'none',
+                fontWeight: 700,
+                fontSize: '13.5px',
+                boxShadow: '0 4px 12px rgba(16, 185, 129, 0.25)',
+                transition: 'all 0.15s ease',
+              }}
+            >
+              <Award size={16} /> Klaim & Lihat Sertifikat
+            </Link>
+          )}
+
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => {
+              setShowResult(false)
+              setCurrentQIdx(0)
+              setAnswers({})
+              setIsStarted(false)
+            }}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8,
+              padding: '11px 20px',
+              borderRadius: 8,
+              border: '1px solid #e2e8f0',
+              background: '#f8fafc',
+              cursor: 'pointer',
+              fontWeight: 600,
+              fontSize: '13px',
+              color: '#475569',
+              transition: 'all 0.15s ease',
+            }}
+          >
+            <RotateCcw size={14} strokeWidth={2} /> Coba Lagi Kuis
+          </motion.button>
+        </div>
       </div>
     )
   }
