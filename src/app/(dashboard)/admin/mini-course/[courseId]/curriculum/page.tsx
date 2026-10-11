@@ -246,7 +246,7 @@ return (
               width: 38,
               height: 22,
               borderRadius: 12,
-              background: form.isPreview ? '#10b981' : '#e5e7eb',
+              background: form.isPreview ? 'var(--color-primary)' : '#e5e7eb',
               padding: 2,
               transition: 'background 0.2s ease',
               display: 'flex',
@@ -301,22 +301,22 @@ return (
               padding: '8px 18px',
               borderRadius: '8px',
               border: 'none',
-              background: (!form.title.trim() || mutation.isPending) ? '#9ca3af' : '#10b981',
+              background: (!form.title.trim() || mutation.isPending) ? '#9ca3af' : 'var(--color-primary)',
               color: '#ffffff',
               fontSize: '13px',
               fontWeight: 600,
               cursor: (!form.title.trim() || mutation.isPending) ? 'not-allowed' : 'pointer',
-              boxShadow: (!form.title.trim() || mutation.isPending) ? 'none' : '0 1px 2px rgba(16, 185, 129, 0.2)',
+              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
               transition: 'all 0.15s ease'
             }}
             onMouseEnter={e => {
               if (form.title.trim() && !mutation.isPending) {
-                e.currentTarget.style.background = '#059669'
+                e.currentTarget.style.background = 'var(--color-primary-dark)'
               }
             }}
             onMouseLeave={e => {
               if (form.title.trim() && !mutation.isPending) {
-                e.currentTarget.style.background = '#10b981'
+                e.currentTarget.style.background = 'var(--color-primary)'
               }
             }}
           >

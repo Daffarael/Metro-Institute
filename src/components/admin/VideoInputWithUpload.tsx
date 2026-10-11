@@ -205,8 +205,8 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
                     width: 32,
                     height: 32,
                     borderRadius: '8px',
-                    background: '#ecfdf5',
-                    color: '#059669',
+                    background: 'var(--color-primary-xlight)',
+                    color: 'var(--color-primary)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -225,7 +225,7 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
                     }}>
                       {fileName || 'Video Terpasang'}
                     </div>
-                    <div style={{ fontSize: '11px', color: '#059669', display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <div style={{ fontSize: '11px', color: 'var(--color-primary)', display: 'flex', alignItems: 'center', gap: 4 }}>
                       <Check size={11} strokeWidth={2.5} /> Video aktif & siap diputar
                     </div>
                   </div>
@@ -312,24 +312,24 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
               onDragLeave={() => setIsDragging(false)}
               onClick={() => !isUploading && fileInputRef.current?.click()}
               style={{
-                border: `1px dashed ${isDragging ? '#10b981' : '#d4d4d8'}`,
+                border: `1px dashed ${isDragging ? 'var(--color-primary)' : '#d4d4d8'}`,
                 borderRadius: '12px',
                 padding: '18px 16px',
                 textAlign: 'center',
-                background: isDragging ? '#f0fdf4' : '#fafafa',
+                background: isDragging ? 'var(--color-primary-xlight)' : '#fafafa',
                 cursor: isUploading ? 'default' : 'pointer',
                 transition: 'all 0.15s ease',
               }}
             >
               {isUploading ? (
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
-                  <Loader2 size={24} className="animate-spin" color="#10b981" />
+                  <Loader2 size={24} className="animate-spin" color="var(--color-primary)" />
                   <div>
                     <div style={{ fontSize: '13px', fontWeight: 600, color: '#18181b' }}>
                       Mengunggah video... {uploadProgress}%
                     </div>
                     <div style={{ width: 160, height: 4, background: '#e4e4e7', borderRadius: 2, margin: '8px auto 6px', overflow: 'hidden' }}>
-                      <div style={{ width: `${uploadProgress}%`, height: '100%', background: '#10b981', transition: 'width 0.2s' }} />
+                      <div style={{ width: `${uploadProgress}%`, height: '100%', background: 'var(--color-primary)', transition: 'width 0.2s' }} />
                     </div>
                     <button
                       type="button"
@@ -395,7 +395,7 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
                 outline: 'none',
                 transition: 'border-color 0.15s ease'
               }}
-              onFocus={(e) => e.target.style.borderColor = '#10b981'}
+              onFocus={(e) => e.target.style.borderColor = 'var(--color-primary)'}
               onBlur={(e) => e.target.style.borderColor = '#e4e4e7'}
             />
             {value && (
@@ -422,8 +422,8 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
 
           {/* Clean Subtle Indicator */}
           {value && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: '11px', color: '#059669' }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981' }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: '11px', color: 'var(--color-primary)' }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--color-primary)' }} />
               Tautan video siap digunakan
             </div>
           )}
