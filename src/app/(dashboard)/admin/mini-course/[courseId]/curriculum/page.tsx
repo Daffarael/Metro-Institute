@@ -53,6 +53,9 @@ function AddSessionModal({ courseId, editSession, onClose }: { courseId: string;
 
   const mutation = useMutation({
     mutationFn: () => {
+      if (form.type === 'VIDEO' && form.videoUrl && (form.videoUrl.includes('youtube.com') || form.videoUrl.includes('youtu.be'))) {
+        throw new Error('Harap hapus atau ganti tautan YouTube dengan video Bunny Stream sebelum menyimpan.')
+      }
       const payload: any = { ...form, quizOptions: (form.type as any) === 'QUIZ' ? quizOptions : null }
       if (editSession) {
         return api.put(`/admin/courses/sessions/${editSession.id}`, payload)
@@ -65,7 +68,7 @@ function AddSessionModal({ courseId, editSession, onClose }: { courseId: string;
       qc.invalidateQueries({ queryKey: ['admin', 'course', courseId, 'curriculum']})
       onClose()
     },
-    onError: () => toast.error(editSession ? 'Gagal memperbarui sesi.' : 'Gagal menambah sesi.'),
+    onError: (err: any) => toast.error(err?.message || (editSession ? 'Gagal memperbarui sesi.' : 'Gagal menambah sesi.')),
   })
 
   const f = (key: keyof typeof form, val: any) => setForm(p => ({ ...p, [key]: val }))

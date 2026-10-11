@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useRef, useCallback } from 'react'
-import { Upload, Link as LinkIcon, Film, Check, X, Loader2, Play, AlertCircle } from 'lucide-react'
+import { Upload, Link as LinkIcon, Film, Check, X, Loader2, Play, Trash2, Info } from 'lucide-react'
 import * as tus from 'tus-js-client'
 import api from '@/lib/axios'
 import { toast } from 'sonner'
@@ -117,12 +117,7 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
   }, [])
 
   const handleUrlChange = (newUrl: string) => {
-    const trimmed = newUrl.trim()
-    if (trimmed.includes('youtu.be') || trimmed.includes('youtube.com')) {
-      toast.error('Tautan YouTube tidak diizinkan. Silakan unggah video atau gunakan Bunny Stream.')
-      return
-    }
-    onChange(trimmed)
+    onChange(newUrl)
   }
 
   return (
@@ -195,11 +190,11 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
           />
 
           {value && !isUploading ? (
-            /* Clean Active File Card */
+            /* Active Video Card */
             <div style={{
-              borderRadius: '12px',
-              border: `1px solid ${isYouTubeUrl ? 'rgba(239, 68, 68, 0.3)' : '#e4e4e7'}`,
-              background: isYouTubeUrl ? '#fef2f2' : '#fafafa',
+              borderRadius: '10px',
+              border: '1px solid #e5e7eb',
+              background: '#f9fafb',
               overflow: 'hidden'
             }}>
               <div style={{
@@ -214,35 +209,35 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
                     width: 32,
                     height: 32,
                     borderRadius: '8px',
-                    background: isYouTubeUrl ? 'rgba(239, 68, 68, 0.1)' : 'var(--color-primary-xlight)',
-                    color: isYouTubeUrl ? '#ef4444' : 'var(--color-primary)',
+                    background: isYouTubeUrl ? '#f3f4f6' : 'rgba(1, 133, 86, 0.08)',
+                    color: isYouTubeUrl ? '#6b7280' : 'var(--color-primary)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     flexShrink: 0
                   }}>
-                    {isYouTubeUrl ? <AlertCircle size={15} /> : <Film size={15} />}
+                    <Film size={15} />
                   </div>
                   <div style={{ minWidth: 0 }}>
                     <div style={{
                       fontSize: '13px',
                       fontWeight: 600,
-                      color: isYouTubeUrl ? '#dc2626' : '#18181b',
+                      color: '#111827',
                       whiteSpace: 'nowrap',
                       overflow: 'hidden',
                       textOverflow: 'ellipsis'
                     }}>
-                      {isYouTubeUrl ? 'Tautan YouTube (Tidak Didukung)' : (fileName || 'Video Terpasang')}
+                      {isYouTubeUrl ? 'Video Sesi (Tautan Lama)' : (fileName || 'Video Bunny Stream Terpasang')}
                     </div>
                     <div style={{
                       fontSize: '11px',
-                      color: isYouTubeUrl ? '#ef4444' : 'var(--color-primary)',
+                      color: isYouTubeUrl ? '#6b7280' : 'var(--color-primary)',
                       display: 'flex',
                       alignItems: 'center',
                       gap: 4
                     }}>
                       {isYouTubeUrl ? (
-                        'Harap ganti dengan video Bunny Stream'
+                        'Format lama • Silakan hapus atau ganti dengan video baru'
                       ) : (
                         <>
                           <Check size={11} strokeWidth={2.5} /> Video aktif & siap diputar
@@ -260,11 +255,11 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
                       style={{
                         padding: '5px 10px',
                         borderRadius: '6px',
-                        border: '1px solid #e4e4e7',
-                        background: '#fff',
+                        border: '1px solid #e5e7eb',
+                        background: '#ffffff',
                         fontSize: '11px',
                         fontWeight: 500,
-                        color: '#3f3f46',
+                        color: '#374151',
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
@@ -280,11 +275,11 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
                     style={{
                       padding: '5px 10px',
                       borderRadius: '6px',
-                      border: '1px solid #e4e4e7',
-                      background: '#fff',
+                      border: '1px solid #e5e7eb',
+                      background: '#ffffff',
                       fontSize: '11px',
                       fontWeight: 500,
-                      color: '#3f3f46',
+                      color: '#374151',
                       cursor: 'pointer'
                     }}
                   >
@@ -294,23 +289,39 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
                     type="button"
                     onClick={() => { onChange(''); setFileName(''); setShowPreview(false) }}
                     style={{
-                      padding: '5px 8px',
+                      padding: '5px 10px',
                       borderRadius: '6px',
-                      border: 'none',
-                      background: 'rgba(239, 68, 68, 0.08)',
-                      color: '#dc2626',
-                      cursor: 'pointer'
+                      border: '1px solid #e5e7eb',
+                      background: '#ffffff',
+                      color: '#6b7280',
+                      fontSize: '11px',
+                      fontWeight: 500,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 4,
+                      transition: 'all 0.15s ease'
                     }}
-                    title="Hapus video"
+                    onMouseEnter={e => {
+                      e.currentTarget.style.borderColor = '#fee2e2'
+                      e.currentTarget.style.background = '#fef2f2'
+                      e.currentTarget.style.color = '#ef4444'
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.borderColor = '#e5e7eb'
+                      e.currentTarget.style.background = '#ffffff'
+                      e.currentTarget.style.color = '#6b7280'
+                    }}
+                    title="Hapus video ini"
                   >
-                    <X size={13} />
+                    <Trash2 size={12} /> Hapus
                   </button>
                 </div>
               </div>
 
               {/* Collapsible Clean Preview */}
               {showPreview && !isYouTubeUrl && (
-                <div style={{ borderTop: '1px solid #e4e4e7', background: '#000', aspectRatio: '16/9', maxHeight: 220 }}>
+                <div style={{ borderTop: '1px solid #e5e7eb', background: '#000000', aspectRatio: '16/9', maxHeight: 220 }}>
                   {isBunnyUrl ? (
                     <iframe
                       src={value}
@@ -334,8 +345,8 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
               onClick={() => !isUploading && fileInputRef.current?.click()}
               style={{
                 border: `1px dashed ${isDragging ? 'var(--color-primary)' : '#d4d4d8'}`,
-                borderRadius: '12px',
-                padding: '18px 16px',
+                borderRadius: '10px',
+                padding: '20px 16px',
                 textAlign: 'center',
                 background: isDragging ? 'var(--color-primary-xlight)' : '#fafafa',
                 cursor: isUploading ? 'default' : 'pointer',
@@ -408,8 +419,8 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
               style={{
                 width: '100%',
                 padding: '9px 36px 9px 12px',
-                borderRadius: '10px',
-                border: '1px solid #e4e4e7',
+                borderRadius: '8px',
+                border: '1px solid #e5e7eb',
                 fontSize: '13px',
                 background: '#ffffff',
                 color: '#18181b',
@@ -417,7 +428,7 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
                 transition: 'border-color 0.15s ease'
               }}
               onFocus={(e) => e.target.style.borderColor = 'var(--color-primary)'}
-              onBlur={(e) => e.target.style.borderColor = '#e4e4e7'}
+              onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
             />
             {value && (
               <button
@@ -431,15 +442,65 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
                   background: 'none',
                   border: 'none',
                   cursor: 'pointer',
-                  color: '#a1a1aa',
+                  color: '#9ca3af',
                   display: 'flex',
                   alignItems: 'center'
                 }}
+                title="Hapus tautan"
               >
                 <X size={14} />
               </button>
             )}
           </div>
+
+          {/* Clean, professional, subtle notice if an unsupported YouTube link is in URL input */}
+          {isYouTubeUrl && (
+            <div style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: 8,
+              padding: '9px 12px',
+              borderRadius: '8px',
+              background: '#f9fafb',
+              border: '1px solid #e5e7eb',
+              marginTop: 4
+            }}>
+              <Info size={14} style={{ color: '#6b7280', marginTop: 2, flexShrink: 0 }} />
+              <div style={{ flex: 1, fontSize: '12px', color: '#4b5563', lineHeight: 1.45 }}>
+                <span style={{ fontWeight: 600, color: '#111827', display: 'inline', marginRight: 4 }}>
+                  Tautan belum didukung:
+                </span>
+                Format YouTube tidak digunakan demi keamanan materi. Harap gunakan tautan Bunny Stream atau unggah file pada tab <strong>Upload File</strong>.
+              </div>
+              <button
+                type="button"
+                onClick={() => onChange('')}
+                style={{
+                  padding: '3px 8px',
+                  borderRadius: '5px',
+                  border: '1px solid #e5e7eb',
+                  background: '#ffffff',
+                  color: '#6b7280',
+                  fontSize: '11px',
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap'
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.borderColor = '#fee2e2'
+                  e.currentTarget.style.color = '#ef4444'
+                  e.currentTarget.style.background = '#fef2f2'
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.borderColor = '#e5e7eb'
+                  e.currentTarget.style.color = '#6b7280'
+                  e.currentTarget.style.background = '#ffffff'
+                }}
+              >
+                Hapus
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>
