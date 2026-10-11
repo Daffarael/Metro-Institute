@@ -208,6 +208,7 @@ export default function MenteeWebinarsPage() {
             value={field}
             onChange={setField}
             placeholder="Semua Bidang"
+            allowClear={false}
             width={180}
           />
 
@@ -216,6 +217,7 @@ export default function MenteeWebinarsPage() {
             value={scheduleStatus}
             onChange={setScheduleStatus}
             placeholder="Semua Jadwal"
+            allowClear={false}
             width={170}
           />
         </div>

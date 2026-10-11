@@ -524,7 +524,8 @@ export default function AdminWebinarsPage() {
           ]}
           value={field}
           onChange={val => { setField(val); setPage(1) }}
-          placeholder="Pilih Bidang"
+          placeholder="Semua Bidang"
+          allowClear={false}
           width={180}
         />
 
@@ -536,7 +537,8 @@ export default function AdminWebinarsPage() {
           ]}
           value={status}
           onChange={val => { setStatus(val); setPage(1) }}
-          placeholder="Pilih Status"
+          placeholder="Semua Status"
+          allowClear={false}
           width={160}
         />
       </div>

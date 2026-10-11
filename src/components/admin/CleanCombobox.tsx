@@ -50,10 +50,12 @@ export default function CleanCombobox({
     setIsOpen(false)
   }
 
+  const isPlaceholder = !selectedOption || selectedOption.value === '' || selectedOption.value === 'ALL'
+
   return (
     <div ref={containerRef} style={{ position: 'relative', width, minWidth: 160 }}>
 
-      {/* Trigger â€” button biasa, bukan div+input */}
+      {/* Trigger — button biasa, bukan div+input */}
       <button
         type="button"
         onClick={() => setIsOpen(o => !o)}
@@ -76,7 +78,7 @@ export default function CleanCombobox({
       >
         <span style={{
           fontSize: 'var(--text-sm)',
-          color: (selectedOption && selectedOption.value !== '') ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)',
+          color: isPlaceholder ? 'var(--color-text-tertiary)' : 'var(--color-text-primary)',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',
@@ -98,7 +100,7 @@ export default function CleanCombobox({
         </div>
       </button>
 
-      {/* Dropdown â€” AnimatePresence to prevent prop jumping (flicker) on close */}
+      {/* Dropdown — AnimatePresence to prevent prop jumping (flicker) on close */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -123,7 +125,7 @@ export default function CleanCombobox({
           >
             <div style={{ padding: '4px', maxHeight: '320px', overflowY: 'auto' }}>
               {/* Hapus pilihan */}
-              {allowClear && value && (
+              {allowClear && value && value !== 'ALL' && (
                 <ClearDropdownItem onClick={() => handleSelect('')} />
               )}
 
