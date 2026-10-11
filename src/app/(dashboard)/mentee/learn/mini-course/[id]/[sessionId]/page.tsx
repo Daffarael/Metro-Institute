@@ -794,36 +794,37 @@ function InteractiveQuiz({
   if (totalQ === 0) {
     return (
       <div
+        className="animate-fade-in"
         style={{
           background: '#ffffff',
-          borderRadius: 20,
-          padding: '48px 24px',
+          borderRadius: 16,
+          padding: '40px 24px',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
           border: '1px solid #e2e8f0',
-          boxShadow: '0 4px 16px rgba(0,0,0,0.03)',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
         }}
       >
         <div
           style={{
-            width: 56,
-            height: 56,
-            borderRadius: 14,
-            background: 'rgba(16, 185, 129, 0.1)',
+            width: 48,
+            height: 48,
+            borderRadius: 12,
+            background: 'rgba(16, 185, 129, 0.08)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             marginBottom: 14,
           }}
         >
-          <HelpCircle size={28} color="var(--color-primary)" />
+          <HelpCircle size={24} color="var(--color-primary)" strokeWidth={1.8} />
         </div>
-        <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', marginBottom: 6 }}>
+        <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', marginBottom: 4, letterSpacing: '-0.01em' }}>
           Kuis: {title}
         </h2>
-        <p style={{ color: '#64748b', fontSize: '14px', maxWidth: 440, textAlign: 'center', margin: 0 }}>
+        <p style={{ color: '#64748b', fontSize: '14px', maxWidth: 420, textAlign: 'center', margin: 0 }}>
           Belum ada pertanyaan yang disediakan untuk kuis ini.
         </p>
       </div>
@@ -838,10 +839,10 @@ function InteractiveQuiz({
         className="animate-fade-in"
         style={{
           background: '#ffffff',
-          borderRadius: 20,
+          borderRadius: 16,
           border: '1px solid #e2e8f0',
-          padding: '48px 32px',
-          boxShadow: '0 4px 16px rgba(0,0,0,0.03)',
+          padding: '44px 32px',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -851,21 +852,20 @@ function InteractiveQuiz({
         {/* Score Ring */}
         <div
           style={{
-            width: 120,
-            height: 120,
+            width: 110,
+            height: 110,
             borderRadius: '50%',
             background: `conic-gradient(var(--color-primary) ${score * 3.6}deg, #e2e8f0 0deg)`,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            marginBottom: 20,
-            boxShadow: '0 8px 24px rgba(16, 185, 129, 0.15)',
+            marginBottom: 18,
           }}
         >
           <div
             style={{
-              width: 96,
-              height: 96,
+              width: 88,
+              height: 88,
               borderRadius: '50%',
               background: '#ffffff',
               display: 'flex',
@@ -874,7 +874,7 @@ function InteractiveQuiz({
               justifyContent: 'center',
             }}
           >
-            <span style={{ fontSize: '26px', fontWeight: 800, color: 'var(--color-primary)' }}>
+            <span style={{ fontSize: '24px', fontWeight: 800, color: 'var(--color-primary)' }}>
               {score}%
             </span>
             <span style={{ fontSize: '11px', fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase' }}>
@@ -883,16 +883,18 @@ function InteractiveQuiz({
           </div>
         </div>
 
-        <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#0f172a', marginBottom: 8 }}>
+        <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#0f172a', marginBottom: 6 }}>
           {isPassed ? 'Kuis Selesai! 🎉' : 'Kuis Telah Selesai'}
         </h2>
-        <p style={{ color: '#64748b', fontSize: '14.5px', maxWidth: 460, lineHeight: 1.6, marginBottom: 28 }}>
+        <p style={{ color: '#64748b', fontSize: '14px', maxWidth: 440, lineHeight: 1.6, marginBottom: 24, margin: '0 auto 24px' }}>
           {isPassed
             ? 'Selamat! Pemahaman Anda terhadap materi sangat baik. Sesi ini telah ditandai selesai.'
             : 'Jawaban Anda telah tersimpan. Anda dapat mengulang kuis untuk meningkatkan pemahaman Anda.'}
         </p>
 
-        <button
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
           onClick={() => {
             setShowResult(false)
             setCurrentQIdx(0)
@@ -900,47 +902,38 @@ function InteractiveQuiz({
             setIsStarted(false)
           }}
           style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
             padding: '11px 24px',
-            borderRadius: 12,
+            borderRadius: 8,
             border: '1px solid #e2e8f0',
             background: '#f8fafc',
             cursor: 'pointer',
             fontWeight: 700,
             fontSize: '13.5px',
             color: '#334155',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 8,
-            transition: 'all 0.15s',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = '#ffffff'
-            e.currentTarget.style.borderColor = 'var(--color-primary)'
-            e.currentTarget.style.color = 'var(--color-primary)'
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = '#f8fafc'
-            e.currentTarget.style.borderColor = '#e2e8f0'
-            e.currentTarget.style.color = '#334155'
+            transition: 'all 0.15s ease',
           }}
         >
-          <RotateCcw size={16} /> Coba Lagi Kuis
-        </button>
+          <RotateCcw size={15} strokeWidth={2} /> Coba Lagi Kuis
+        </motion.button>
       </div>
     )
   }
 
-  // 3. Start Screen state (!isStarted)
+  // 3. Start Screen state (!isStarted) - CLEAN & BUTTON MATCHES "Lanjut Belajar"
   if (!isStarted) {
     return (
       <div
         className="animate-fade-in"
         style={{
           background: '#ffffff',
-          borderRadius: 20,
+          borderRadius: 16,
           border: '1px solid #e2e8f0',
-          padding: '52px 32px',
-          boxShadow: '0 4px 16px rgba(0,0,0,0.03)',
+          padding: '40px 24px',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -949,24 +942,24 @@ function InteractiveQuiz({
       >
         <div
           style={{
-            width: 72,
-            height: 72,
-            borderRadius: 20,
-            background: 'rgba(16, 185, 129, 0.1)',
+            width: 48,
+            height: 48,
+            borderRadius: 12,
+            background: 'rgba(16, 185, 129, 0.08)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            marginBottom: 20,
+            marginBottom: 16,
             color: 'var(--color-primary)',
           }}
         >
-          <HelpCircle size={36} />
+          <HelpCircle size={24} strokeWidth={1.8} />
         </div>
 
-        <h2 style={{ fontSize: '22px', fontWeight: 800, color: '#0f172a', marginBottom: 8 }}>
+        <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#0f172a', marginBottom: 6, letterSpacing: '-0.01em' }}>
           Siap untuk Mulai Kuis?
         </h2>
-        <p style={{ color: '#64748b', fontSize: '14.5px', maxWidth: 460, lineHeight: 1.6, marginBottom: 24 }}>
+        <p style={{ color: '#64748b', fontSize: '14px', maxWidth: 440, lineHeight: 1.6, margin: '0 auto 16px' }}>
           Kuis ini terdiri dari <strong style={{ color: '#0f172a' }}>{totalQ} pertanyaan</strong>. Pastikan Anda sudah memahami materi sesi ini sebelum memulai.
         </p>
 
@@ -976,72 +969,66 @@ function InteractiveQuiz({
               display: 'inline-flex',
               alignItems: 'center',
               gap: 6,
-              padding: '6px 14px',
+              padding: '4px 12px',
               background: '#ecfdf5',
               border: '1px solid #a7f3d0',
               color: '#059669',
-              borderRadius: 20,
-              fontSize: '12.5px',
-              fontWeight: 700,
-              marginBottom: 24,
+              borderRadius: 6,
+              fontSize: '12px',
+              fontWeight: 600,
+              marginBottom: 18,
             }}
           >
-            <CheckCircle2 size={15} /> Kuis Sudah Pernah Dikerjakan
+            <CheckCircle2 size={13} strokeWidth={2.5} /> Kuis Sudah Pernah Dikerjakan
           </div>
         )}
 
-        <button
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
           onClick={() => setIsStarted(true)}
           style={{
-            padding: '13px 36px',
-            borderRadius: 14,
-            border: 'none',
-            background: 'var(--color-primary)',
-            color: '#fff',
-            cursor: 'pointer',
-            fontWeight: 700,
-            fontSize: '15px',
             display: 'inline-flex',
             alignItems: 'center',
-            gap: 10,
-            boxShadow: '0 4px 14px rgba(16, 185, 129, 0.3)',
-            transition: 'all 0.15s ease',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'translateY(-2px)'
-            e.currentTarget.style.boxShadow = '0 6px 20px rgba(16, 185, 129, 0.4)'
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'none'
-            e.currentTarget.style.boxShadow = '0 4px 14px rgba(16, 185, 129, 0.3)'
+            justifyContent: 'center',
+            gap: 8,
+            padding: '12px 28px',
+            background: 'var(--color-primary)',
+            color: '#fff',
+            border: 'none',
+            borderRadius: 8,
+            fontWeight: 700,
+            fontSize: '14px',
+            cursor: 'pointer',
           }}
         >
-          <PlayCircle size={18} /> {isCompleted ? 'Kerjakan Ulang Kuis' : 'Mulai Kuis'}
-        </button>
+          <PlayCircle size={16} strokeWidth={2} />
+          {isCompleted ? 'Kerjakan Ulang Kuis' : 'Mulai Kuis'}
+        </motion.button>
       </div>
     )
   }
 
-  // 4. Questions state
+  // 4. Questions state - Clean layout
   return (
     <div
       className="animate-fade-in"
       style={{
         background: '#ffffff',
-        borderRadius: 20,
+        borderRadius: 16,
         border: '1px solid #e2e8f0',
-        padding: '32px 36px',
-        boxShadow: '0 4px 16px rgba(0,0,0,0.03)',
+        padding: '32px 32px',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
       }}
     >
       <div style={{ maxWidth: 720, margin: '0 auto' }}>
         {/* Header Question counter & Answered */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span
               style={{
-                padding: '3px 10px',
-                borderRadius: 8,
+                padding: '3px 9px',
+                borderRadius: 6,
                 background: 'rgba(16, 185, 129, 0.1)',
                 color: 'var(--color-primary)',
                 fontSize: '12px',
@@ -1061,10 +1048,10 @@ function InteractiveQuiz({
         {/* Progress Bar */}
         <div
           style={{
-            height: 6,
+            height: 5,
             background: '#f1f5f9',
             borderRadius: 3,
-            marginBottom: 28,
+            marginBottom: 24,
             overflow: 'hidden',
           }}
         >
@@ -1083,15 +1070,15 @@ function InteractiveQuiz({
         <div
           style={{
             background: '#f8fafc',
-            borderRadius: 14,
-            padding: '22px 24px',
+            borderRadius: 10,
+            padding: '20px 22px',
             border: '1px solid #e2e8f0',
-            marginBottom: 20,
+            marginBottom: 18,
           }}
         >
           <p
             style={{
-              fontSize: '16px',
+              fontSize: '15.5px',
               fontWeight: 600,
               lineHeight: 1.6,
               color: '#0f172a',
@@ -1103,7 +1090,7 @@ function InteractiveQuiz({
         </div>
 
         {/* Options */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 28 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
           {currentQ.options.map((opt, idx) => {
             const isSelected = answers[currentQ.id] === opt.id
             return (
@@ -1111,14 +1098,14 @@ function InteractiveQuiz({
                 key={opt.id}
                 onClick={() => setAnswers((prev) => ({ ...prev, [currentQ.id]: opt.id }))}
                 style={{
-                  padding: '14px 18px',
-                  borderRadius: 12,
+                  padding: '13px 16px',
+                  borderRadius: 8,
                   border: isSelected ? '2px solid var(--color-primary)' : '1px solid #e2e8f0',
                   background: isSelected ? 'rgba(16, 185, 129, 0.05)' : '#ffffff',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 14,
+                  gap: 12,
                   textAlign: 'left',
                   transition: 'all 0.15s ease',
                   outline: 'none',
@@ -1138,16 +1125,16 @@ function InteractiveQuiz({
               >
                 <div
                   style={{
-                    width: 28,
-                    height: 28,
-                    borderRadius: '50%',
+                    width: 26,
+                    height: 26,
+                    borderRadius: 6,
                     border: isSelected ? '2px solid var(--color-primary)' : '1px solid #cbd5e1',
                     background: isSelected ? 'var(--color-primary)' : '#f8fafc',
                     color: isSelected ? '#ffffff' : '#64748b',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: '12.5px',
+                    fontSize: '12px',
                     fontWeight: 700,
                     flexShrink: 0,
                   }}
@@ -1156,7 +1143,7 @@ function InteractiveQuiz({
                 </div>
                 <span
                   style={{
-                    fontSize: '14.5px',
+                    fontSize: '14px',
                     fontWeight: isSelected ? 600 : 500,
                     color: isSelected ? '#0f172a' : '#334155',
                     flex: 1,
@@ -1169,14 +1156,16 @@ function InteractiveQuiz({
           })}
         </div>
 
-        {/* Navigation buttons */}
+        {/* Navigation buttons with Lanjut Belajar styling */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <button
+          <motion.button
+            whileHover={currentQIdx > 0 ? { scale: 1.02 } : {}}
+            whileTap={currentQIdx > 0 ? { scale: 0.98 } : {}}
             onClick={() => setCurrentQIdx((i) => Math.max(0, i - 1))}
             disabled={currentQIdx === 0}
             style={{
-              padding: '10px 20px',
-              borderRadius: 10,
+              padding: '9px 18px',
+              borderRadius: 8,
               border: '1px solid #e2e8f0',
               background: '#f8fafc',
               fontWeight: 600,
@@ -1190,49 +1179,54 @@ function InteractiveQuiz({
             }}
           >
             <ChevronLeft size={16} /> Sebelumnya
-          </button>
+          </motion.button>
 
           {currentQIdx === totalQ - 1 ? (
-            <button
+            <motion.button
+              whileHover={answeredCount === totalQ ? { scale: 1.02 } : {}}
+              whileTap={answeredCount === totalQ ? { scale: 0.98 } : {}}
               onClick={handleSubmit}
               disabled={answeredCount < totalQ}
               style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
                 padding: '10px 24px',
-                borderRadius: 10,
+                borderRadius: 8,
                 border: 'none',
                 background: 'var(--color-primary)',
                 color: '#fff',
                 fontWeight: 700,
-                fontSize: '13px',
+                fontSize: '13.5px',
                 cursor: answeredCount < totalQ ? 'not-allowed' : 'pointer',
                 opacity: answeredCount < totalQ ? 0.5 : 1,
-                boxShadow: answeredCount < totalQ ? 'none' : '0 2px 10px rgba(16, 185, 129, 0.3)',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
               }}
             >
-              <CheckCircle2 size={16} /> Selesaikan Kuis
-            </button>
+              <CheckCircle2 size={16} strokeWidth={2} /> Selesaikan Kuis
+            </motion.button>
           ) : (
-            <button
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => setCurrentQIdx((i) => Math.min(totalQ - 1, i + 1))}
               style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
                 padding: '10px 22px',
-                borderRadius: 10,
+                borderRadius: 8,
                 border: 'none',
                 background: '#0f172a',
                 color: '#fff',
                 fontWeight: 700,
-                fontSize: '13px',
+                fontSize: '13.5px',
                 cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
               }}
             >
               Selanjutnya <ChevronRight size={16} />
-            </button>
+            </motion.button>
           )}
         </div>
       </div>
