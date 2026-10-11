@@ -27,7 +27,6 @@ const webinarSchema = z.object({
   description:      z.string().min(10, 'Minimal 10 karakter'),
   speakerName:      z.string().min(2, 'Nama pembicara wajib diisi'),
   speakerRole:      z.string().optional().nullable(),
-  field:            z.enum(['UI_UX', 'FRONTEND', 'BACKEND', 'MOBILE']),
   price:            z.number().min(0),
   scheduledAt:      z.string().min(1, 'Jadwal wajib diisi'),
   duration:         z.number().min(1, 'Minimal 1 menit'),
@@ -47,7 +46,7 @@ interface WebinarItem {
   shortDescription?: string
   speakerName: string
   speakerRole?: string
-  field: string
+  field?: string
   price: number
   bannerUrl?: string
   scheduledAt: string
@@ -59,14 +58,6 @@ interface WebinarItem {
   isFeatured: boolean
   certificateTemplateId?: string
   _count?: { registrations: number }
-}
-
-const FIELD_OPTS = ['UI_UX', 'FRONTEND', 'BACKEND', 'MOBILE'] as const
-const FIELD_LABELS: Record<string, string> = {
-  UI_UX: 'UI/UX Design',
-  FRONTEND: 'Frontend Development',
-  BACKEND: 'Backend Development',
-  MOBILE: 'Mobile Development',
 }
 
 const labelStyle: React.CSSProperties = {
@@ -112,7 +103,6 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
       description:      webinar?.description ?? '',
       speakerName:      webinar?.speakerName ?? '',
       speakerRole:      webinar?.speakerRole ?? '',
-      field:            (webinar?.field as any) ?? 'FRONTEND',
       price:            webinar?.price ?? 0,
       scheduledAt:      defaultDate,
       duration:         webinar?.duration ?? 90,
@@ -257,43 +247,6 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
             </div>
           </div>
 
-          {/* Field & Price */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-            <div>
-              <label style={labelStyle}>Bidang <span style={{ color: 'var(--color-error)' }}>*</span></label>
-              <Controller
-                control={control}
-                name="field"
-                render={({ field }) => (
-                  <CleanCombobox
-                    options={FIELD_OPTS.map(f => ({ value: f, label: FIELD_LABELS[f] }))}
-                    value={field.value}
-                    onChange={field.onChange}
-                    placeholder="Pilih Bidang"
-                    width="100%"
-                    direction="down"
-                    style={{ ...inputStyleClean, padding: '12px 16px', background: '#fff' }}
-                  />
-                )}
-              />
-            </div>
-            <div>
-              <label style={labelStyle}>Harga Tiket (Rp) <span style={{ color: 'var(--color-error)' }}>*</span></label>
-              <input
-                type="number"
-                {...register('price', { valueAsNumber: true })}
-                placeholder="0"
-                min={0}
-                style={inputStyleClean}
-                onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
-                onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
-              />
-              <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 4, display: 'block' }}>
-                Masukkan 0 jika webinar diselenggarakan gratis.
-              </span>
-            </div>
-          </div>
-
           {/* Schedule & Duration */}
           <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '16px' }}>
             <div>
@@ -321,20 +274,25 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
             </div>
           </div>
 
-          {/* Meeting Link & Quota */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 0.6fr', gap: '16px' }}>
+          {/* Price & Quota */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             <div>
-              <label style={labelStyle}>Link Room (Zoom / Google Meet)</label>
+              <label style={labelStyle}>Harga Tiket (Rp) <span style={{ color: 'var(--color-error)' }}>*</span></label>
               <input
-                {...register('meetingUrl')}
-                placeholder="https://meet.google.com/... atau Zoom link"
+                type="number"
+                {...register('price', { valueAsNumber: true })}
+                placeholder="0"
+                min={0}
                 style={inputStyleClean}
                 onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
                 onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
               />
+              <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 4, display: 'block' }}>
+                Masukkan 0 jika webinar diselenggarakan gratis.
+              </span>
             </div>
             <div>
-              <label style={labelStyle}>Batas Kuota</label>
+              <label style={labelStyle}>Batas Kuota Peserta</label>
               <input
                 type="number"
                 {...register('quota', { setValueAs: v => (v === '' ? null : Number(v)) })}
@@ -344,7 +302,22 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
                 onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
                 onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
               />
+              <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 4, display: 'block' }}>
+                Kosongkan jika kuota tidak dibatasi.
+              </span>
             </div>
+          </div>
+
+          {/* Meeting Link */}
+          <div>
+            <label style={labelStyle}>Link Room (Zoom / Google Meet)</label>
+            <input
+              {...register('meetingUrl')}
+              placeholder="https://meet.google.com/... atau Zoom link"
+              style={inputStyleClean}
+              onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
+              onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
+            />
           </div>
 
           {/* Description */}
@@ -446,7 +419,6 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
 // ─── Main Admin Webinars Page ──────────────────────────────
 export default function AdminWebinarsPage() {
   const [search, setSearch] = useState('')
-  const [field, setField] = useState('')
   const [status, setStatus] = useState('')
   const [page, setPage] = useState(1)
   const [modal, setModal] = useState<WebinarItem | 'new' | null>(null)
@@ -455,13 +427,12 @@ export default function AdminWebinarsPage() {
   const qc = useQueryClient()
 
   const { data, isLoading } = useQuery({
-    queryKey: ['admin', 'webinars', { search, field, status, page }],
+    queryKey: ['admin', 'webinars', { search, status, page }],
     placeholderData: keepPreviousData,
     queryFn: () =>
       api.get('/admin/webinars', {
         params: {
           search: search || undefined,
-          field: field || undefined,
           status: status || undefined,
           page,
           limit: 10,
@@ -519,14 +490,6 @@ export default function AdminWebinarsPage() {
         />
 
         <CleanCombobox
-          value={field}
-          onChange={val => { setField(val); setPage(1) }}
-          placeholder="Semua Bidang"
-          options={FIELD_OPTS.map(f => ({ value: f, label: FIELD_LABELS[f] }))}
-          width={180}
-        />
-
-        <CleanCombobox
           value={status}
           onChange={val => { setStatus(val); setPage(1) }}
           placeholder="Semua Status"
@@ -554,7 +517,7 @@ export default function AdminWebinarsPage() {
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
             <thead>
               <tr style={{ background: 'var(--color-bg)', borderBottom: '1px solid var(--color-border)' }}>
-                {['#', 'Webinar & Speaker', 'Jadwal & Waktu', 'Bidang', 'Harga', 'Pendaftar', 'Status', 'Aksi'].map(h => (
+                {['#', 'Webinar & Speaker', 'Jadwal & Waktu', 'Harga', 'Pendaftar', 'Status', 'Aksi'].map(h => (
                   <th key={h} style={{ padding: '12px 18px', fontSize: '12px', fontWeight: 600, color: 'var(--color-text-tertiary)', whiteSpace: 'nowrap' }}>
                     {h}
                   </th>
@@ -591,16 +554,6 @@ export default function AdminWebinarsPage() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: '11px', color: '#94a3b8', marginTop: 2 }}>
                       <Clock size={12} color="#94a3b8" /> {w.duration} menit
                     </div>
-                  </td>
-
-                  {/* Field */}
-                  <td style={{ padding: '14px 18px', whiteSpace: 'nowrap' }}>
-                    <span style={{
-                      fontSize: '11px', fontWeight: 600, padding: '3px 8px', borderRadius: 20,
-                      background: 'rgba(16, 185, 129, 0.08)', color: 'var(--color-primary)',
-                    }}>
-                      {FIELD_LABELS[w.field] ?? w.field}
-                    </span>
                   </td>
 
                   {/* Price */}

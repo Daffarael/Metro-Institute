@@ -9,7 +9,7 @@ import {
   BookOpen, ChevronRight
 } from 'lucide-react'
 import api from '@/lib/axios'
-import { formatDate, formatRupiah, FIELD_LABELS } from '@/lib/utils'
+import { formatDate, formatRupiah } from '@/lib/utils'
 import CleanCombobox from '@/components/admin/CleanCombobox'
 import AdminEmptyState from '@/components/admin/AdminEmptyState'
 import { SlidingTabs } from '@/components/ui/SlidingTabs'
@@ -25,7 +25,7 @@ interface WebinarItem {
   speakerName: string
   speakerRole?: string
   speakerAvatarUrl?: string
-  field: string
+  field?: string
   price: number
   bannerUrl?: string
   scheduledAt: string
@@ -40,13 +40,6 @@ interface WebinarItem {
   _count?: { registrations: number }
 }
 
-const FIELD_OPTIONS = [
-  { value: 'UI_UX', label: FIELD_LABELS['UI_UX'] },
-  { value: 'FRONTEND', label: FIELD_LABELS['FRONTEND'] },
-  { value: 'BACKEND', label: FIELD_LABELS['BACKEND'] },
-  { value: 'MOBILE', label: FIELD_LABELS['MOBILE'] },
-]
-
 const SCHEDULE_OPTIONS = [
   { value: 'UPCOMING', label: 'Akan Datang' },
   { value: 'PAST', label: 'Selesai' },
@@ -60,7 +53,6 @@ export default function MenteeWebinarsPage() {
   const [activeTab, setActiveTab] = useState<'ALL' | 'MY'>('ALL')
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
-  const [field, setField] = useState('')
   const [scheduleStatus, setScheduleStatus] = useState('')
   const [selectedWebinar, setSelectedWebinar] = useState<WebinarItem | null>(null)
 
@@ -71,12 +63,11 @@ export default function MenteeWebinarsPage() {
 
   // Query: All published webinars
   const { data: allWebinars = [], isLoading: loadingAll } = useQuery<WebinarItem[]>({
-    queryKey: ['webinars', { search: debouncedSearch, field, status: scheduleStatus }],
+    queryKey: ['webinars', { search: debouncedSearch, status: scheduleStatus }],
     queryFn: () =>
       api.get('/webinars', {
         params: {
           search: debouncedSearch || undefined,
-          field: field || undefined,
           status: scheduleStatus,
         },
       }).then(r => r.data.data),
@@ -202,14 +193,6 @@ export default function MenteeWebinarsPage() {
           </div>
 
           <CleanCombobox
-            options={FIELD_OPTIONS}
-            value={field}
-            onChange={setField}
-            placeholder="Semua Bidang"
-            width={180}
-          />
-
-          <CleanCombobox
             options={SCHEDULE_OPTIONS}
             value={scheduleStatus}
             onChange={setScheduleStatus}
@@ -322,25 +305,16 @@ export default function MenteeWebinarsPage() {
                   <X size={16} />
                 </button>
 
-                <div style={{
-                  position: 'absolute', bottom: 12, left: 14,
-                  display: 'flex', gap: 6, alignItems: 'center',
-                }}>
-                  <span style={{
-                    fontSize: '11px', fontWeight: 700, padding: '3px 8px', borderRadius: 20,
-                    background: 'rgba(255,255,255,0.9)', color: '#0f172a',
-                  }}>
-                    {FIELD_LABELS[selectedWebinar.field] ?? selectedWebinar.field}
-                  </span>
-                  {selectedWebinar.isRegistered && (
+                {selectedWebinar.isRegistered && (
+                  <div style={{ position: 'absolute', bottom: 12, left: 14 }}>
                     <span style={{
                       fontSize: '11px', fontWeight: 700, padding: '3px 8px', borderRadius: 20,
                       background: '#059669', color: '#fff',
                     }}>
                       Terdaftar ✅
                     </span>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
 
               {/* Modal Body */}
@@ -550,22 +524,16 @@ function WebinarCard({
         )}
 
         {/* Top Badges */}
-        <div style={{ position: 'absolute', top: 10, left: 10, display: 'flex', gap: 6 }}>
-          <span style={{
-            fontSize: '11px', fontWeight: 700, padding: '3px 8px', borderRadius: 20,
-            background: 'rgba(255,255,255,0.92)', color: '#0f172a', backdropFilter: 'blur(4px)',
-          }}>
-            {FIELD_LABELS[webinar.field] ?? webinar.field}
-          </span>
-          {webinar.isRegistered && (
+        {webinar.isRegistered && (
+          <div style={{ position: 'absolute', top: 10, left: 10 }}>
             <span style={{
               fontSize: '11px', fontWeight: 700, padding: '3px 8px', borderRadius: 20,
               background: '#059669', color: '#fff',
             }}>
               Terdaftar ✅
             </span>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Price Tag top right */}
         <div style={{
