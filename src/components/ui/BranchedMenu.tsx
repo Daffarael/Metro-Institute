@@ -184,10 +184,10 @@ export default function BranchedMenu({
                 onMouseLeave={() => setHoveredValue(null)}
               >
                 {isHovered && !leafActive && (
-                  <motion.div layoutId="branched-menu-hover-pill" style={{ position: 'absolute', inset: '2px 8px 2px -8px', background: 'rgba(128, 128, 128, 0.1)', borderRadius: 'var(--radius-md)', zIndex: 0 }} transition={{ type: 'spring', bounce: 0, duration: 0.2 }} />
+                  <motion.div layoutId="branched-menu-hover-pill" style={{ position: 'absolute', inset: '2px -8px 2px -8px', background: 'rgba(128, 128, 128, 0.1)', borderRadius: 'var(--radius-md)', zIndex: 0 }} transition={{ type: 'spring', bounce: 0, duration: 0.2 }} />
                 )}
                 {leafActive && (
-                  <motion.div layoutId="branched-menu-active-pill" style={{ position: 'absolute', inset: '2px 8px 2px -8px', background: 'var(--bm-accent)', borderRadius: 'var(--radius-md)', zIndex: 0 }} transition={{ type: 'spring', bounce: 0, duration: 0.3 }} />
+                  <motion.div layoutId="branched-menu-active-pill" style={{ position: 'absolute', inset: '2px -8px 2px -8px', background: 'var(--bm-accent)', borderRadius: 'var(--radius-md)', zIndex: 0 }} transition={{ type: 'spring', bounce: 0, duration: 0.3 }} />
                 )}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, position: 'relative', zIndex: 1 }}>
                   {item.icon ? (
@@ -261,7 +261,7 @@ export default function BranchedMenu({
                               layoutId="branched-menu-hover-pill"
                               style={{
                                 position: 'absolute',
-                                inset: '2px 8px 2px calc(var(--bm-indent) - 4px)',
+                                inset: '2px -8px 2px calc(var(--bm-indent) - 4px)',
                                 background: 'rgba(128, 128, 128, 0.1)',
                                 borderRadius: 'var(--radius-md)',
                                 zIndex: 0
@@ -276,7 +276,7 @@ export default function BranchedMenu({
                               layoutId="branched-menu-active-pill"
                               style={{
                                 position: 'absolute',
-                                inset: '2px 8px 2px calc(var(--bm-indent) - 4px)',
+                                inset: '2px -8px 2px calc(var(--bm-indent) - 4px)',
                                 background: 'var(--bm-accent)',
                                 borderRadius: 'var(--radius-md)',
                                 zIndex: 0
