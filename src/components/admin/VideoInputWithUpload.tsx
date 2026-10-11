@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useRef, useCallback } from 'react'
-import { Upload, Link as LinkIcon, Film, CheckCircle2, X, Loader2, PlayCircle, ShieldCheck } from 'lucide-react'
+import { Upload, Link as LinkIcon, Film, Check, X, Loader2, Play, ExternalLink } from 'lucide-react'
 import * as tus from 'tus-js-client'
 import api from '@/lib/axios'
 import { toast } from 'sonner'
@@ -23,20 +23,19 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
   const [isUploading, setIsUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [fileName, setFileName] = useState<string>('')
-  
+  const [showPreview, setShowPreview] = useState(false)
+
   const fileInputRef = useRef<HTMLInputElement>(null)
   const tusUploadRef = useRef<tus.Upload | null>(null)
 
   const handleUpload = async (file: File) => {
     if (!file) return
 
-    // Validate video type
     if (!file.type.startsWith('video/') && !file.name.match(/\.(mp4|webm|mov|mkv)$/i)) {
-      toast.error('File harus berupa video (MP4, WebM, MOV, MKV)')
+      toast.error('Pilih file berformat video (MP4, WebM, MOV)')
       return
     }
 
-    // Validate size (maks 2GB untuk Bunny Stream)
     if (file.size > 2 * 1024 * 1024 * 1024) {
       toast.error('Ukuran video maksimal 2GB')
       return
@@ -47,22 +46,20 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
     setUploadProgress(0)
 
     try {
-      // 1. Dapatkan izin & tanda tangan upload dari server backend (Bunny Stream Tus token)
       const sanitizedTitle = file.name.replace(/\.[^/.]+$/, '').trim() || `Video-${Date.now()}`
       const response = await api.post('/admin/bunny/create-upload', {
         title: sanitizedTitle,
       })
 
       if (!response.data?.success || !response.data?.data) {
-        throw new Error('Gagal menginisialisasi sesi upload ke Bunny Stream')
+        throw new Error('Gagal menyiapkan sesi upload')
       }
 
       const { videoId, libraryId, expirationTime, signature, embedUrl } = response.data.data
 
-      // 2. Direct Upload dari browser ke server Bunny Stream menggunakan Tus Protocol (0% beban server Railway!)
       const upload = new tus.Upload(file, {
         endpoint: 'https://video.bunnycdn.com/tusupload',
-        retryDelays: [0, 3000, 5000, 10000, 20000],
+        retryDelays: [0, 2000, 5000, 10000],
         headers: {
           AuthorizationSignature: signature,
           AuthorizationExpire: String(expirationTime),
@@ -74,15 +71,14 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
           title: sanitizedTitle,
         },
         onError: (error) => {
-          console.error('Bunny Tus upload error:', error)
-          toast.error(`Gagal upload video: ${error.message || 'Koneksi terputus'}`)
+          console.error('Tus error:', error)
+          toast.error(`Upload gagal: ${error.message || 'Koneksi terputus'}`)
           setIsUploading(false)
           tusUploadRef.current = null
         },
         onProgress: (bytesUploaded, bytesTotal) => {
           if (bytesTotal > 0) {
-            const percent = Math.round((bytesUploaded / bytesTotal) * 100)
-            setUploadProgress(percent)
+            setUploadProgress(Math.round((bytesUploaded / bytesTotal) * 100))
           }
         },
         onSuccess: () => {
@@ -90,7 +86,7 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
           setUploadProgress(100)
           tusUploadRef.current = null
           onChange(embedUrl)
-          toast.success('Video berhasil diunggah ke Bunny Stream! 🎉')
+          toast.success('Video berhasil diunggah')
         },
       })
 
@@ -98,7 +94,7 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
       upload.start()
     } catch (err: any) {
       console.error('Upload error:', err)
-      toast.error(err.response?.data?.message || err.message || 'Gagal memulai upload video. Silakan coba lagi.')
+      toast.error(err.response?.data?.message || err.message || 'Gagal memulai upload')
       setIsUploading(false)
     }
   }
@@ -111,73 +107,72 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
     setIsUploading(false)
     setUploadProgress(0)
     setFileName('')
-    toast.info('Upload dibatalkan')
   }
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
     setIsDragging(false)
-
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      handleUpload(e.dataTransfer.files[0])
-    }
-  }, [])
-
-  const handleDragOver = useCallback((e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setIsDragging(true)
-  }, [])
-
-  const handleDragLeave = useCallback((e: React.DragEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    setIsDragging(false)
+    if (e.dataTransfer.files?.[0]) handleUpload(e.dataTransfer.files[0])
   }, [])
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-      {/* Mode Switcher Tabs */}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      {/* Sleek Segmented Switcher */}
       <div style={{
-        display: 'flex', gap: 4, padding: 3,
-        background: 'var(--color-bg)', borderRadius: 10,
-        border: '1px solid var(--color-border)', width: 'fit-content'
+        display: 'inline-flex',
+        padding: '3px',
+        background: '#f4f4f5',
+        borderRadius: '10px',
+        width: 'fit-content',
+        border: '1px solid rgba(0,0,0,0.04)'
       }}>
         <button
           type="button"
           onClick={() => setMode('upload')}
           style={{
-            padding: '6px 14px', borderRadius: 8, border: 'none',
-            fontSize: '12px', fontWeight: 600, cursor: 'pointer',
-            display: 'flex', alignItems: 'center', gap: 6,
-            background: mode === 'upload' ? 'var(--color-surface)' : 'transparent',
-            color: mode === 'upload' ? 'var(--color-primary)' : 'var(--color-text-secondary)',
-            boxShadow: mode === 'upload' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
-            transition: 'all 0.15s'
+            padding: '5px 12px',
+            borderRadius: '7px',
+            border: 'none',
+            fontSize: '12px',
+            fontWeight: 500,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 5,
+            background: mode === 'upload' ? '#ffffff' : 'transparent',
+            color: mode === 'upload' ? '#111827' : '#71717a',
+            boxShadow: mode === 'upload' ? '0 1px 3px rgba(0,0,0,0.06)' : 'none',
+            transition: 'all 0.15s ease'
           }}
         >
-          <Upload size={14} /> Upload Video (Bunny Stream)
+          <Upload size={13} /> Upload File
         </button>
 
         <button
           type="button"
           onClick={() => setMode('url')}
           style={{
-            padding: '6px 14px', borderRadius: 8, border: 'none',
-            fontSize: '12px', fontWeight: 600, cursor: 'pointer',
-            display: 'flex', alignItems: 'center', gap: 6,
-            background: mode === 'url' ? 'var(--color-surface)' : 'transparent',
-            color: mode === 'url' ? 'var(--color-primary)' : 'var(--color-text-secondary)',
-            boxShadow: mode === 'url' ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
-            transition: 'all 0.15s'
+            padding: '5px 12px',
+            borderRadius: '7px',
+            border: 'none',
+            fontSize: '12px',
+            fontWeight: 500,
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 5,
+            background: mode === 'url' ? '#ffffff' : 'transparent',
+            color: mode === 'url' ? '#111827' : '#71717a',
+            boxShadow: mode === 'url' ? '0 1px 3px rgba(0,0,0,0.06)' : 'none',
+            transition: 'all 0.15s ease'
           }}
         >
-          <LinkIcon size={14} /> Masukkan Link / URL
+          <LinkIcon size={13} /> Link / URL
         </button>
       </div>
 
-      {/* 1. Upload File Mode */}
+      {/* 1. UPLOAD FILE MODE */}
       {mode === 'upload' && (
         <div>
           <input
@@ -191,39 +186,82 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
           />
 
           {value && !isUploading ? (
-            /* Uploaded State */
+            /* Clean Active File Card */
             <div style={{
-              padding: '14px 16px', borderRadius: 'var(--radius-md)',
-              background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.25)',
-              display: 'flex', flexDirection: 'column', gap: 10
+              borderRadius: '12px',
+              border: '1px solid #e4e4e7',
+              background: '#fafafa',
+              overflow: 'hidden'
             }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{
+                padding: '10px 14px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: 12
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
                   <div style={{
-                    width: 34, height: 34, borderRadius: 8,
-                    background: 'rgba(16, 185, 129, 0.15)', color: '#10b981',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center'
+                    width: 32,
+                    height: 32,
+                    borderRadius: '8px',
+                    background: '#ecfdf5',
+                    color: '#059669',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0
                   }}>
-                    {isBunnyUrl ? <ShieldCheck size={18} /> : <Film size={18} />}
+                    <Film size={15} />
                   </div>
-                  <div>
-                    <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-primary)' }}>
-                      {fileName || (isBunnyUrl ? 'Video Bunny Stream Aktif' : 'Video Terunggah')}
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{
+                      fontSize: '13px',
+                      fontWeight: 600,
+                      color: '#18181b',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
+                    }}>
+                      {fileName || 'Video Terpasang'}
                     </div>
-                    <div style={{ fontSize: '11px', color: '#10b981', display: 'flex', alignItems: 'center', gap: 4 }}>
-                      <CheckCircle2 size={12} /> {isBunnyUrl ? 'Tersimpan di Bunny Stream (Anti-Bocor)' : 'File video aktif'}
+                    <div style={{ fontSize: '11px', color: '#059669', display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <Check size={11} strokeWidth={2.5} /> Video aktif & siap diputar
                     </div>
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: 6 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+                  <button
+                    type="button"
+                    onClick={() => setShowPreview(!showPreview)}
+                    style={{
+                      padding: '5px 10px',
+                      borderRadius: '6px',
+                      border: '1px solid #e4e4e7',
+                      background: '#fff',
+                      fontSize: '11px',
+                      fontWeight: 500,
+                      color: '#3f3f46',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 4
+                    }}
+                  >
+                    <Play size={11} /> {showPreview ? 'Tutup' : 'Preview'}
+                  </button>
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
                     style={{
-                      padding: '5px 10px', borderRadius: 6,
-                      background: 'var(--color-surface)', border: '1px solid var(--color-border)',
-                      fontSize: '11px', fontWeight: 600, color: 'var(--color-text-secondary)',
+                      padding: '5px 10px',
+                      borderRadius: '6px',
+                      border: '1px solid #e4e4e7',
+                      background: '#fff',
+                      fontSize: '11px',
+                      fontWeight: 500,
+                      color: '#3f3f46',
                       cursor: 'pointer'
                     }}
                   >
@@ -231,104 +269,104 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
                   </button>
                   <button
                     type="button"
-                    onClick={() => { onChange(''); setFileName('') }}
+                    onClick={() => { onChange(''); setFileName(''); setShowPreview(false) }}
                     style={{
-                      padding: '5px 8px', borderRadius: 6,
-                      background: 'rgba(239, 68, 68, 0.1)', border: 'none',
-                      fontSize: '11px', fontWeight: 600, color: '#ef4444',
-                      cursor: 'pointer', display: 'flex', alignItems: 'center'
+                      padding: '5px 8px',
+                      borderRadius: '6px',
+                      border: 'none',
+                      background: 'rgba(239, 68, 68, 0.08)',
+                      color: '#dc2626',
+                      cursor: 'pointer'
                     }}
                     title="Hapus video"
                   >
-                    <X size={14} />
+                    <X size={13} />
                   </button>
                 </div>
               </div>
 
-              {/* Video Preview */}
-              <div style={{ width: '100%', height: 160, borderRadius: 8, overflow: 'hidden', background: '#000', position: 'relative' }}>
-                {isBunnyUrl ? (
-                  <iframe
-                    src={value}
-                    loading="lazy"
-                    style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
-                    allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
-                    allowFullScreen
-                  />
-                ) : isDirectVideoUrl ? (
-                  <video src={value} controls style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }} />
-                ) : (
-                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '12px' }}>
-                    <PlayCircle size={24} style={{ marginRight: 6 }} /> Video siap diputar
-                  </div>
-                )}
-              </div>
+              {/* Collapsible Clean Preview */}
+              {showPreview && (
+                <div style={{ borderTop: '1px solid #e4e4e7', background: '#000', aspectRatio: '16/9', maxHeight: 220 }}>
+                  {isBunnyUrl ? (
+                    <iframe
+                      src={value}
+                      loading="lazy"
+                      style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
+                      allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
+                      allowFullScreen
+                    />
+                  ) : isDirectVideoUrl ? (
+                    <video src={value} controls style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                  ) : (
+                    <iframe src={value} style={{ width: '100%', height: '100%', border: 'none' }} allowFullScreen />
+                  )}
+                </div>
+              )}
             </div>
           ) : (
-            /* Drag and Drop Zone */
+            /* Sleek Minimal Dropzone */
             <div
               onDrop={handleDrop}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
+              onDragOver={(e) => { e.preventDefault(); setIsDragging(true) }}
+              onDragLeave={() => setIsDragging(false)}
               onClick={() => !isUploading && fileInputRef.current?.click()}
               style={{
-                border: `2px dashed ${isDragging ? 'var(--color-primary)' : 'var(--color-border)'}`,
-                borderRadius: 'var(--radius-lg)',
-                padding: '26px 16px',
+                border: `1px dashed ${isDragging ? '#10b981' : '#d4d4d8'}`,
+                borderRadius: '12px',
+                padding: '18px 16px',
                 textAlign: 'center',
-                background: isDragging ? 'rgba(16, 185, 129, 0.05)' : 'var(--color-bg)',
-                cursor: isUploading ? 'not-allowed' : 'pointer',
-                transition: 'all 0.2s',
+                background: isDragging ? '#f0fdf4' : '#fafafa',
+                cursor: isUploading ? 'default' : 'pointer',
+                transition: 'all 0.15s ease',
               }}
             >
               {isUploading ? (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
-                  <Loader2 size={32} className="animate-spin" color="var(--color-primary)" />
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+                  <Loader2 size={24} className="animate-spin" color="#10b981" />
                   <div>
-                    <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-primary)' }}>
-                      Mengunggah ke Bunny Stream... {uploadProgress}%
+                    <div style={{ fontSize: '13px', fontWeight: 600, color: '#18181b' }}>
+                      Mengunggah video... {uploadProgress}%
                     </div>
-                    <div style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 2 }}>
-                      Upload langsung dari browser (aman & cepat)
-                    </div>
-                    <div style={{ width: 200, height: 6, background: 'var(--color-border)', borderRadius: 3, margin: '10px auto 6px', overflow: 'hidden' }}>
-                      <div style={{ width: `${uploadProgress}%`, height: '100%', background: 'var(--color-primary)', transition: 'width 0.2s' }} />
+                    <div style={{ width: 160, height: 4, background: '#e4e4e7', borderRadius: 2, margin: '8px auto 6px', overflow: 'hidden' }}>
+                      <div style={{ width: `${uploadProgress}%`, height: '100%', background: '#10b981', transition: 'width 0.2s' }} />
                     </div>
                     <button
                       type="button"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleCancelUpload()
-                      }}
+                      onClick={(e) => { e.stopPropagation(); handleCancelUpload() }}
                       style={{
-                        marginTop: 4, background: 'none', border: 'none',
-                        color: 'var(--color-error)', fontSize: '11px', fontWeight: 600,
-                        cursor: 'pointer', textDecoration: 'underline'
+                        background: 'none', border: 'none',
+                        color: '#ef4444', fontSize: '11px', fontWeight: 500,
+                        cursor: 'pointer'
                       }}
                     >
-                      Batalkan Upload
+                      Batalkan
                     </button>
                   </div>
                 </div>
               ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
                   <div style={{
-                    width: 44, height: 44, borderRadius: 12,
-                    background: 'rgba(16, 185, 129, 0.1)', color: 'var(--color-primary)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center'
+                    width: 34,
+                    height: 34,
+                    borderRadius: '50%',
+                    background: '#ffffff',
+                    border: '1px solid #e4e4e7',
+                    color: '#71717a',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.04)'
                   }}>
-                    <Upload size={22} />
+                    <Upload size={15} />
                   </div>
                   <div>
-                    <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-primary)' }}>
-                      Tarik & lepas file video di sini,
-                    </span>{' '}
-                    <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-primary)' }}>
-                      atau telusuri
+                    <span style={{ fontSize: '13px', fontWeight: 500, color: '#27272a' }}>
+                      Pilih video atau seret ke sini
                     </span>
                   </div>
-                  <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)' }}>
-                    Mendukung MP4, WebM, MOV, MKV (Maks. 2GB — Powered by Bunny Stream)
+                  <span style={{ fontSize: '11px', color: '#a1a1aa' }}>
+                    MP4, WebM, MOV (Maks. 2GB)
                   </span>
                 </div>
               )}
@@ -337,7 +375,7 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
         </div>
       )}
 
-      {/* 2. URL Input Mode */}
+      {/* 2. URL INPUT MODE */}
       {mode === 'url' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           <div style={{ position: 'relative' }}>
@@ -345,59 +383,52 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
               type="text"
               value={value}
               onChange={(e) => onChange(e.target.value)}
-              placeholder="Contoh: https://iframe.mediadelivery.net/embed/... atau https://youtu.be/..."
+              placeholder="Tempel link video (Bunny, YouTube, Vimeo, dll)..."
               style={{
-                width: '100%', padding: '10px 14px', borderRadius: 'var(--radius-md)',
-                border: '1px solid var(--color-border)', fontSize: 'var(--text-sm)',
-                background: 'var(--color-surface)', color: 'var(--color-text-primary)', outline: 'none',
+                width: '100%',
+                padding: '9px 36px 9px 12px',
+                borderRadius: '10px',
+                border: '1px solid #e4e4e7',
+                fontSize: '13px',
+                background: '#ffffff',
+                color: '#18181b',
+                outline: 'none',
+                transition: 'border-color 0.15s ease'
               }}
+              onFocus={(e) => e.target.style.borderColor = '#10b981'}
+              onBlur={(e) => e.target.style.borderColor = '#e4e4e7'}
             />
             {value && (
               <button
                 type="button"
                 onClick={() => onChange('')}
                 style={{
-                  position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)',
-                  background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-text-tertiary)'
+                  position: 'absolute',
+                  right: 10,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: '#a1a1aa',
+                  display: 'flex',
+                  alignItems: 'center'
                 }}
               >
-                <X size={16} />
+                <X size={14} />
               </button>
             )}
           </div>
 
-          {/* Helper Badges */}
+          {/* Clean Subtle Indicator */}
           {value && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '11px' }}>
-              {isBunnyUrl ? (
-                <span style={{
-                  padding: '3px 8px', borderRadius: 4,
-                  background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', fontWeight: 600,
-                  display: 'inline-flex', alignItems: 'center', gap: 4
-                }}>
-                  <ShieldCheck size={12} /> Bunny Stream terdeteksi (Player Anti-Bocor Aktif)
-                </span>
-              ) : isYouTubeUrl ? (
-                <span style={{
-                  padding: '3px 8px', borderRadius: 4,
-                  background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', fontWeight: 600,
-                  display: 'inline-flex', alignItems: 'center', gap: 4
-                }}>
-                  <Film size={12} /> YouTube terdeteksi (Click Blocker otomatis aktif)
-                </span>
-              ) : isDirectVideoUrl ? (
-                <span style={{
-                  padding: '3px 8px', borderRadius: 4,
-                  background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', fontWeight: 600,
-                  display: 'inline-flex', alignItems: 'center', gap: 4
-                }}>
-                  <CheckCircle2 size={12} /> File video langsung terdeteksi
-                </span>
-              ) : (
-                <span style={{ color: 'var(--color-text-tertiary)' }}>
-                  Format link didukung (Bunny Stream, YouTube, Vimeo, atau MP4 langsung)
-                </span>
-              )}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: '11px', color: '#71717a' }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981' }} />
+              {isBunnyUrl
+                ? 'Tautan video aman terdeteksi'
+                : isYouTubeUrl
+                ? 'Tautan YouTube terdeteksi'
+                : 'Tautan video terdeteksi'}
             </div>
           )}
         </div>
