@@ -286,9 +286,20 @@ export default function AdminWebinarParticipantsPage() {
                       onClick={() => setDeleteTarget(p)}
                       title="Keluarkan dari webinar"
                       style={{
-                        width: 28, height: 28, borderRadius: 6, border: '1px solid #fee2e2',
-                        background: '#fff', color: '#ef4444', cursor: 'pointer',
+                        width: 28, height: 28, borderRadius: 'var(--radius-md)', border: '1px solid #fee2e2',
+                        background: '#fff', color: '#ef4444', cursor: 'pointer', transition: 'all 0.15s',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                      }}
+                      onMouseEnter={e => {
+                        e.currentTarget.style.background = '#fef2f2'
+                        e.currentTarget.style.color = '#dc2626'
+                        e.currentTarget.style.borderColor = '#fca5a5'
+                      }}
+                      onMouseLeave={e => {
+                        e.currentTarget.style.background = '#fff'
+                        e.currentTarget.style.color = '#ef4444'
+                        e.currentTarget.style.borderColor = '#fee2e2'
                       }}
                     >
                       <Trash2 size={13} />
