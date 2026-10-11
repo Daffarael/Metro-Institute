@@ -16,7 +16,7 @@ import api from '@/lib/axios'
 import { ROUTES, formatDuration } from '@/lib/utils'
 import { CardTabs } from '@/components/ui/AnimatedTabs'
 
-import ReactPlayer from 'react-player'
+const ReactPlayer = dynamic(() => import('react-player/lazy'), { ssr: false })
 
 interface Session {
   id: string; title: string; type: string; videoUrl?: string
