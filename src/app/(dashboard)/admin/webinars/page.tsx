@@ -446,8 +446,8 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
 // ─── Main Admin Webinars Page ──────────────────────────────
 export default function AdminWebinarsPage() {
   const [search, setSearch] = useState('')
-  const [field, setField] = useState('ALL')
-  const [status, setStatus] = useState('ALL')
+  const [field, setField] = useState('')
+  const [status, setStatus] = useState('')
   const [page, setPage] = useState(1)
   const [modal, setModal] = useState<WebinarItem | 'new' | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<WebinarItem | null>(null)
@@ -461,8 +461,8 @@ export default function AdminWebinarsPage() {
       api.get('/admin/webinars', {
         params: {
           search: search || undefined,
-          field: field === 'ALL' ? undefined : field,
-          status: status === 'ALL' ? undefined : status,
+          field: field || undefined,
+          status: status || undefined,
           page,
           limit: 10,
         },
@@ -504,42 +504,37 @@ export default function AdminWebinarsPage() {
         }
       />
 
-      {/* Filter Row */}
-      <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
+      {/* Filter bar */}
+      <div style={{ display: 'flex', gap: 'var(--space-3)', marginBottom: 'var(--space-4)', flexWrap: 'wrap' }}>
         <input
+          suppressHydrationWarning
           value={search}
           onChange={e => { setSearch(e.target.value); setPage(1) }}
           placeholder="Cari webinar atau pembicara..."
           style={{
-            padding: '9px 14px', borderRadius: 10, border: '1px solid rgba(0,0,0,0.08)',
-            background: 'var(--color-surface)', fontSize: '13px', outline: 'none',
-            minWidth: 260, flex: 1, maxWidth: 340,
+            padding: '8px 12px', borderRadius: 'var(--radius-md)', background: 'var(--color-surface)',
+            fontSize: 'var(--text-sm)', color: 'var(--color-text-primary)', outline: 'none', border: 'none',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.04)', minWidth: 260, width: 'auto', flex: 1, maxWidth: 300,
           }}
         />
 
         <CleanCombobox
-          options={[
-            { value: 'ALL', label: 'Semua Bidang' },
-            ...FIELD_OPTS.map(f => ({ value: f, label: FIELD_LABELS[f] })),
-          ]}
           value={field}
           onChange={val => { setField(val); setPage(1) }}
           placeholder="Semua Bidang"
-          allowClear={false}
+          options={FIELD_OPTS.map(f => ({ value: f, label: FIELD_LABELS[f] }))}
           width={180}
         />
 
         <CleanCombobox
-          options={[
-            { value: 'ALL', label: 'Semua Status' },
-            { value: 'PUBLISHED', label: 'Published' },
-            { value: 'DRAFT', label: 'Draft' },
-          ]}
           value={status}
           onChange={val => { setStatus(val); setPage(1) }}
           placeholder="Semua Status"
-          allowClear={false}
-          width={160}
+          options={[
+            { value: 'PUBLISHED', label: 'Published' },
+            { value: 'DRAFT', label: 'Draft' },
+          ]}
+          width={180}
         />
       </div>
 

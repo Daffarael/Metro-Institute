@@ -41,7 +41,6 @@ interface WebinarItem {
 }
 
 const FIELD_OPTIONS = [
-  { value: '', label: 'Semua Bidang' },
   { value: 'UI_UX', label: FIELD_LABELS['UI_UX'] },
   { value: 'FRONTEND', label: FIELD_LABELS['FRONTEND'] },
   { value: 'BACKEND', label: FIELD_LABELS['BACKEND'] },
@@ -49,7 +48,6 @@ const FIELD_OPTIONS = [
 ]
 
 const SCHEDULE_OPTIONS = [
-  { value: 'ALL', label: 'Semua Jadwal' },
   { value: 'UPCOMING', label: 'Akan Datang' },
   { value: 'PAST', label: 'Selesai' },
 ]
@@ -63,7 +61,7 @@ export default function MenteeWebinarsPage() {
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [field, setField] = useState('')
-  const [scheduleStatus, setScheduleStatus] = useState('ALL')
+  const [scheduleStatus, setScheduleStatus] = useState('')
   const [selectedWebinar, setSelectedWebinar] = useState<WebinarItem | null>(null)
 
   useEffect(() => {
@@ -208,7 +206,6 @@ export default function MenteeWebinarsPage() {
             value={field}
             onChange={setField}
             placeholder="Semua Bidang"
-            allowClear={false}
             width={180}
           />
 
@@ -217,7 +214,6 @@ export default function MenteeWebinarsPage() {
             value={scheduleStatus}
             onChange={setScheduleStatus}
             placeholder="Semua Jadwal"
-            allowClear={false}
             width={170}
           />
         </div>
