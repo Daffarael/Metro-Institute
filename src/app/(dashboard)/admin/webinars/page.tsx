@@ -503,7 +503,7 @@ export default function AdminWebinarsPage() {
 
       {/* Data Table */}
       {isLoading ? (
-        <AdminTableSkeleton rows={6} cols={6} />
+        <AdminTableSkeleton rows={6} cols={8} />
       ) : items.length === 0 ? (
         <AdminEmptyState
           type={search ? 'no-results' : 'empty'}
@@ -517,7 +517,7 @@ export default function AdminWebinarsPage() {
           <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
             <thead>
               <tr style={{ background: 'var(--color-bg)', borderBottom: '1px solid var(--color-border)' }}>
-                {['#', 'Webinar & Speaker', 'Jadwal & Waktu', 'Harga', 'Pendaftar', 'Status', 'Aksi'].map(h => (
+                {['#', 'Webinar', 'Speaker', 'Jadwal & Waktu', 'Harga', 'Pendaftar', 'Status', 'Aksi'].map(h => (
                   <th key={h} style={{ padding: '12px 18px', fontSize: '12px', fontWeight: 600, color: 'var(--color-text-tertiary)', whiteSpace: 'nowrap' }}>
                     {h}
                   </th>
@@ -536,14 +536,23 @@ export default function AdminWebinarsPage() {
                     {(pagination.page - 1) * pagination.limit + idx + 1}
                   </td>
 
-                  {/* Title & Speaker */}
-                  <td style={{ padding: '14px 18px', maxWidth: 280 }}>
-                    <div style={{ fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: 3, lineHeight: 1.3 }}>
+                  {/* Title */}
+                  <td style={{ padding: '14px 18px', maxWidth: 260 }}>
+                    <div style={{ fontWeight: 700, color: 'var(--color-text-primary)', lineHeight: 1.35 }}>
                       {w.title}
                     </div>
-                    <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
-                      🎙️ {w.speakerName} {w.speakerRole ? `• ${w.speakerRole}` : ''}
+                  </td>
+
+                  {/* Speaker */}
+                  <td style={{ padding: '14px 18px', maxWidth: 220 }}>
+                    <div style={{ fontWeight: 600, color: 'var(--color-text-primary)', fontSize: '13px', display: 'flex', alignItems: 'center', gap: 5 }}>
+                      <span style={{ fontSize: '14px' }}>🎙️</span> {w.speakerName}
                     </div>
+                    {w.speakerRole && (
+                      <div style={{ fontSize: '12px', color: 'var(--color-text-tertiary)', marginTop: 2 }}>
+                        {w.speakerRole}
+                      </div>
+                    )}
                   </td>
 
                   {/* Schedule */}
