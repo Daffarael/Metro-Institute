@@ -119,18 +119,40 @@ export default function CourseVideoPlayer({
     )
   }
 
-  // 1. YouTube Player (Clean embed with official YouTube controls & fallback to API)
+  // 1. YouTube Player (Clean embed with official YouTube controls & Click Blocker for "Watch on YouTube")
   if (ytId) {
     return (
-      <iframe
-        ref={iframeRef}
-        key={ytId}
-        src={`https://www.youtube-nocookie.com/embed/${ytId}?enablejsapi=1&rel=0&modestbranding=1&playsinline=1`}
-        title={title}
-        style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        allowFullScreen
-      />
+      <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
+        <iframe
+          ref={iframeRef}
+          key={ytId}
+          src={`https://www.youtube-nocookie.com/embed/${ytId}?enablejsapi=1&rel=0&modestbranding=1&playsinline=1`}
+          title={title}
+          style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
+        />
+        {/* Click Blocker: Menutupi tombol "Watch on YouTube" di pojok kiri bawah agar tidak bisa diklik */}
+        <div
+          title="Metro Institute"
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+          }}
+          onContextMenu={(e) => e.preventDefault()}
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            width: '190px',
+            height: '56px',
+            zIndex: 20,
+            cursor: 'default',
+            background: 'transparent',
+            pointerEvents: 'auto',
+          }}
+        />
+      </div>
     )
   }
 

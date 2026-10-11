@@ -13,6 +13,7 @@ import AdminPageHeader from '@/components/admin/AdminPageHeader'
 import AdminTableSkeleton from '@/components/admin/AdminTableSkeleton'
 import AdminConfirmModal from '@/components/admin/AdminConfirmModal'
 import CleanCombobox from '@/components/admin/CleanCombobox'
+import VideoInputWithUpload from '@/components/admin/VideoInputWithUpload'
 import { toast } from 'sonner'
 
 interface CourseSession {
@@ -117,8 +118,13 @@ return (
           </div>
           {form.type === 'VIDEO' && (
             <div>
-              <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 4 }}>URL Video</label>
-              <input value={form.videoUrl} onChange={e => f('videoUrl', e.target.value)} placeholder="https://..." style={inputStyle} />
+              <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>
+                Konten Video Pembelajaran <span style={{ color: 'var(--color-error)' }}>*</span>
+              </label>
+              <VideoInputWithUpload
+                value={form.videoUrl}
+                onChange={(url) => f('videoUrl', url)}
+              />
             </div>
           )}
           {form.type === 'MATERIAL' && (
