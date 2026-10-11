@@ -29,10 +29,26 @@ export interface FeaturedCourse {
   tags: string[]
 }
 
+export interface FeaturedWebinar {
+  id: string
+  title: string
+  shortDescription?: string | null
+  description: string | null
+  field: string
+  price: number
+  bannerUrl: string | null
+  speakerName: string
+  speakerRole?: string | null
+  scheduledAt: string
+  duration: number
+  isFeatured: boolean
+}
+
 interface HomepageData {
   config: Record<string, string>
   featuredBootcamps: FeaturedBootcamp[]
   featuredCourses: FeaturedCourse[]
+  featuredWebinars: FeaturedWebinar[]
   stats: {
     totalMentees: number
     totalCertificates: number
@@ -46,6 +62,7 @@ async function getHomepageData(): Promise<HomepageData> {
     config: {},
     featuredBootcamps: [],
     featuredCourses: [],
+    featuredWebinars: [],
     stats: { totalMentees: 0, totalCertificates: 0, totalCourses: 0 },
   }
   try {
@@ -62,12 +79,13 @@ async function getHomepageData(): Promise<HomepageData> {
 }
 
 export default async function LandingPage() {
-  const { config, featuredBootcamps, featuredCourses, stats } = await getHomepageData()
+  const { config, featuredBootcamps, featuredCourses, featuredWebinars, stats } = await getHomepageData()
   return (
     <LandingPageClient
       config={config}
       featuredBootcamps={featuredBootcamps}
       featuredCourses={featuredCourses}
+      featuredWebinars={featuredWebinars}
       stats={stats}
     />
   )

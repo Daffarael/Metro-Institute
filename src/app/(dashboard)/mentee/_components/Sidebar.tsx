@@ -5,7 +5,7 @@ import { motion } from 'motion/react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
-  Home, Compass, Tent, GraduationCap, Zap, Trophy,
+  Home, Compass, Tent, Video, GraduationCap, Zap, Trophy,
   Star, ScrollText, CreditCard, MessageCircle, Settings,
   LogOut, Flame, Menu
 } from 'lucide-react'
@@ -25,6 +25,7 @@ const branchItems = [
     children: [
       { value: ROUTES.COURSE_LIST, label: 'Mini Course', icon: Compass },
       { value: ROUTES.BOOTCAMP_LIST, label: 'Bootcamp', icon: Tent },
+      { value: ROUTES.WEBINAR_LIST, label: 'Webinar', icon: Video },
       { value: ROUTES.MY_COURSES, label: 'Kelas Saya', icon: GraduationCap },
     ]
   },

@@ -19,12 +19,13 @@ import { AnimatedNavFramer } from "@/components/ui/animated-nav-framer";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import LandingEbookSection from './LandingEbookSection'
 
-import type { FeaturedBootcamp, FeaturedCourse } from '../page'
+import type { FeaturedBootcamp, FeaturedCourse, FeaturedWebinar } from '../page'
 
 interface LandingPageProps {
   config?: Record<string, string>
   featuredBootcamps?: FeaturedBootcamp[]
   featuredCourses?: FeaturedCourse[]
+  featuredWebinars?: FeaturedWebinar[]
   stats?: { totalMentees: number; totalCertificates: number; totalCourses: number }
 }
 
@@ -54,6 +55,7 @@ export default function LandingPageClient({
   config = {},
   featuredBootcamps = [],
   featuredCourses   = [],
+  featuredWebinars  = [],
   stats,
 }: LandingPageProps = {}) {
   const heroBackgroundImage = config['hero_background_url'] || DEFAULT_BG
@@ -95,7 +97,35 @@ export default function LandingPageClient({
     link: `/login?redirect=/mentee/mini-course/${c.id}`, 
   }))
 
-  const allProgramItems = [...mappedBootcamps, ...mappedCourses]
+  const mappedWebinars = featuredWebinars.map(w => ({
+    type: 'WEBINAR',
+    title: w.title,
+    description: w.shortDescription || (w.description ? w.description.slice(0, 160) + '...' : 'Sesi live webinar dan workshop interaktif bersama praktisi.'),
+    thumbnailUrl: w.bannerUrl,
+    points: [
+      `🎙️ Speaker: ${w.speakerName}${w.speakerRole ? ` (${w.speakerRole})` : ''}`,
+      'Live Session & Q&A Interaktif',
+      'E-Sertifikat Kehadiran',
+      w.price === 0 ? 'Gratis Registrasi' : formatPrice(w.price),
+    ],
+    link: `/login?redirect=/mentee/webinars`,
+  }))
+
+  const fallbackWebinars = mappedWebinars.length === 0 ? [{
+    type: 'WEBINAR',
+    title: 'Metro Tech Talk & Live Workshop',
+    description: 'Sesi webinar & workshop interaktif berkala bersama praktisi industri teknologi ternama.',
+    thumbnailUrl: null,
+    points: [
+      'Live Coding & Bedah Kasus Nyata',
+      'Diskusi Interaktif & Sesi Q&A',
+      'Materi & Rekaman Sesi',
+      'E-Sertifikat Digital Resmi',
+    ],
+    link: '/login?redirect=/mentee/webinars',
+  }] : []
+
+  const allProgramItems = [...mappedBootcamps, ...mappedCourses, ...mappedWebinars, ...fallbackWebinars]
   const activeProducts = allProgramItems.filter(p => p.type === activeTab)
   
   useEffect(() => { setCarouselIndex(0) }, [activeTab])
@@ -341,9 +371,14 @@ export default function LandingPageClient({
                       <motion.div
                         key={`${activeTab}-${carouselIndex}`}
                         custom={carouselDir}
-                        initial={(dir) => ({ opacity: 0, x: dir * 60 })}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={(dir) => ({ opacity: 0, x: dir * -60 })}
+                        variants={{
+                          enter: (dir: number) => ({ opacity: 0, x: dir * 60 }),
+                          center: { opacity: 1, x: 0 },
+                          exit: (dir: number) => ({ opacity: 0, x: dir * -60 }),
+                        }}
+                        initial="enter"
+                        animate="center"
+                        exit="exit"
                         transition={{ duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] }}
                         className="flex flex-col items-center justify-center w-full h-full py-16 md:py-24 px-6 md:px-12"
                       >

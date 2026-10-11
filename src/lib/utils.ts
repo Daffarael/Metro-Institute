@@ -32,6 +32,8 @@ export const ROUTES = {
   BOOTCAMP_DETAIL: (id: string) => `/mentee/bootcamp/${id}`,
   COURSE_LIST: '/mentee/mini-course',
   COURSE_DETAIL: (id: string) => `/mentee/mini-course/${id}`,
+  WEBINAR_LIST: '/mentee/webinars',
+  WEBINAR_DETAIL: (id: string) => `/mentee/webinars/${id}`,
 
   // Checkout
   CHECKOUT: (type: 'bootcamp' | 'mini-course', id: string) =>
@@ -59,6 +61,7 @@ export const ROUTES = {
   ADMIN_MENTEES: '/admin/mentees',
   ADMIN_BOOTCAMP: '/admin/bootcamp',
   ADMIN_COURSE: '/admin/mini-course',
+  ADMIN_WEBINARS: '/admin/webinars',
   ADMIN_ASSIGNMENTS: '/admin/assignments',
   ADMIN_CHALLENGES: '/admin/challenges',
   ADMIN_TRANSACTIONS: '/admin/transactions',

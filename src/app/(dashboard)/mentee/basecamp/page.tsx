@@ -310,7 +310,7 @@ export default function BasecampPage() {
                   ? (data.continueLearning.type === 'bootcamp'
                       ? ROUTES.LEARN_BOOTCAMP_SESSION(data.continueLearning.id, data.continueLearning.sessionId)
                       : ROUTES.LEARN_COURSE_SESSION(data.continueLearning.id, data.continueLearning.sessionId))
-                  : ROUTES.COURSES}
+                  : ROUTES.COURSE_LIST}
               />
               <MissionItem
                 title="Kerjakan 1 challenge"

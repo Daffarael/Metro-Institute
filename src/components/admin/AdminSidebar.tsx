@@ -6,7 +6,7 @@ import { motion } from 'motion/react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import {
-  LayoutDashboard, Tent, BookOpen, Zap, ClipboardCheck,
+  LayoutDashboard, Tent, BookOpen, Video, Zap, ClipboardCheck,
   FlaskConical, Users, CreditCard, Ticket, Megaphone,
   Mail, MessageSquare, Star, ScrollText, Home, Settings,
   LogOut, Flame
@@ -27,6 +27,7 @@ const branchItems = [
     children: [
       { value: '/admin/bootcamp', label: 'Bootcamp', icon: Tent },
       { value: '/admin/mini-course', label: 'Mini Course', icon: BookOpen },
+      { value: '/admin/webinars', label: 'Webinar & Workshop', icon: Video },
       { value: '/admin/challenges', label: 'Challenge Bank', icon: Zap },
       { value: '/admin/assignments', label: 'Penilaian Tugas', icon: ClipboardCheck },
       { value: '/admin/skill-test', label: 'Soal Skill Test', icon: FlaskConical },
