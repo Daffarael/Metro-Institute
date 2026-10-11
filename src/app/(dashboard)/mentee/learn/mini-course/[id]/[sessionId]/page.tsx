@@ -969,17 +969,17 @@ function InteractiveQuiz({
               display: 'inline-flex',
               alignItems: 'center',
               gap: 6,
-              padding: '4px 12px',
-              background: '#ecfdf5',
-              border: '1px solid #a7f3d0',
-              color: '#059669',
-              borderRadius: 6,
-              fontSize: '12px',
+              padding: '5px 12px',
+              background: '#f8fafc',
+              border: '1px solid #e2e8f0',
+              color: '#475569',
+              borderRadius: 8,
+              fontSize: '12.5px',
               fontWeight: 600,
-              marginBottom: 18,
+              marginBottom: 20,
             }}
           >
-            <CheckCircle2 size={13} strokeWidth={2.5} /> Kuis Sudah Pernah Dikerjakan
+            <CheckCircle2 size={14} color="var(--color-primary)" strokeWidth={2} /> Kuis Sudah Pernah Dikerjakan
           </div>
         )}
 
