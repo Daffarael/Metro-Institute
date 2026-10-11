@@ -472,7 +472,7 @@ export default function BootcampDetailPage() {
 
               {/* CTA */}
               {data.isEnrolled ? (
-                new Date(data.startDate) <= new Date() ? (
+                (!data.batchStartDate || new Date(data.batchStartDate) <= new Date()) ? (
                   <Link href={data.chapters?.[0]?.sessions?.[0] ? ROUTES.LEARN_BOOTCAMP_SESSION(id, data.chapters[0].sessions[0].id) : '#'} style={{ textDecoration: 'none', display: 'block' }}>
                     <motion.div
                       whileHover={{ scale: 1.02 }}
