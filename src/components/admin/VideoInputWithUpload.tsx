@@ -383,7 +383,7 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
               type="text"
               value={value}
               onChange={(e) => onChange(e.target.value)}
-              placeholder="Tempel link video (Bunny, YouTube, Vimeo, dll)..."
+              placeholder="Tempel tautan video (https://...)"
               style={{
                 width: '100%',
                 padding: '9px 36px 9px 12px',
@@ -422,13 +422,9 @@ export default function VideoInputWithUpload({ value, onChange }: VideoInputWith
 
           {/* Clean Subtle Indicator */}
           {value && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: '11px', color: '#71717a' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: '11px', color: '#059669' }}>
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981' }} />
-              {isBunnyUrl
-                ? 'Tautan video aman terdeteksi'
-                : isYouTubeUrl
-                ? 'Tautan YouTube terdeteksi'
-                : 'Tautan video terdeteksi'}
+              Tautan video siap digunakan
             </div>
           )}
         </div>
