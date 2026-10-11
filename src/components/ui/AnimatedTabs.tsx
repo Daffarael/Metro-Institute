@@ -451,10 +451,11 @@ export function CardTabs({ items, activeId, onChange, children }: CardTabsProps)
 
   return (
     <div style={{
-      border: '1px solid var(--color-border-subtle)',
-      borderRadius: 12,
+      border: '1px solid #e2e8f0',
+      borderRadius: 14,
       overflow: 'hidden',
-      background: 'var(--color-surface)',
+      background: '#ffffff',
+      boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
     }}>
       {/* Tab row */}
       <div
@@ -466,8 +467,8 @@ export function CardTabs({ items, activeId, onChange, children }: CardTabsProps)
           alignItems: 'flex-end',
           gap: 2,
           padding: '6px 6px 0',
-          background: 'color-mix(in srgb, var(--color-border) 18%, var(--color-bg))',
-          borderBottom: '1px solid var(--color-border-subtle)',
+          background: '#e2e8f0',
+          borderBottom: '1px solid #cbd5e1',
         }}
       >
         {/* Sliding card indicator */}
@@ -484,10 +485,11 @@ export function CardTabs({ items, activeId, onChange, children }: CardTabsProps)
             position: 'absolute',
             top: 6,
             height: plateau.height,
-            background: 'var(--color-surface)',
+            background: '#ffffff',
             borderRadius: '8px 8px 0 0',
-            border: '1px solid var(--color-border-subtle)',
-            borderBottom: '1px solid var(--color-surface)',  // merge with content below
+            border: '1px solid #cbd5e1',
+            borderBottom: '1px solid #ffffff',  // merge with content below
+            boxShadow: '0 -1px 3px rgba(0,0,0,0.03)',
             pointerEvents: 'none',
             zIndex: 0,
           }}
@@ -507,22 +509,34 @@ export function CardTabs({ items, activeId, onChange, children }: CardTabsProps)
               style={{
                 position: 'relative',
                 zIndex: 1,
-                padding: '8px 16px',
+                padding: '9px 18px',
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
-                fontSize: 'var(--text-sm)',
+                fontSize: '13.5px',
                 outline: 'none',
                 borderRadius: '8px 8px 0 0',
-                color: selected ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)',
-                transition: 'color 0.15s ease',
+                color: selected ? '#0f172a' : '#475569',
+                transition: 'all 0.15s ease',
+              }}
+              onMouseEnter={(e) => {
+                if (!selected) {
+                  e.currentTarget.style.color = '#0f172a'
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.45)'
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!selected) {
+                  e.currentTarget.style.color = '#475569'
+                  e.currentTarget.style.background = 'none'
+                }
               }}
             >
               <span style={{ display: 'grid', placeItems: 'center' }}>
-                <span style={{ visibility: 'hidden', fontWeight: 600, gridColumn: 1, gridRow: 1 }} aria-hidden>
+                <span style={{ visibility: 'hidden', fontWeight: 700, gridColumn: 1, gridRow: 1 }} aria-hidden>
                   {item.label}
                 </span>
-                <span style={{ gridColumn: 1, gridRow: 1, fontWeight: selected ? 600 : 400 }}>
+                <span style={{ gridColumn: 1, gridRow: 1, fontWeight: selected ? 700 : 500 }}>
                   {item.label}
                 </span>
               </span>
@@ -532,7 +546,7 @@ export function CardTabs({ items, activeId, onChange, children }: CardTabsProps)
       </div>
 
       {/* Content */}
-      <div style={{ padding: '20px 24px' }}>
+      <div style={{ padding: '24px 28px' }}>
         {children}
       </div>
     </div>
