@@ -348,53 +348,80 @@ export default function MenteeWebinarDetailPage() {
 
                 {webinar.isRegistered ? (
                   <div style={{
-                    padding: '18px 20px', borderRadius: 12,
-                    background: 'rgba(1, 133, 86, 0.05)',
-                    border: '1px solid rgba(1, 133, 86, 0.2)',
-                    display: 'flex', flexDirection: 'column', gap: 10,
+                    padding: '20px', borderRadius: 12,
+                    background: 'var(--color-bg)', border: '1px solid var(--color-border-subtle)',
+                    display: 'flex', flexDirection: 'column', gap: 12,
                   }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <CheckCircle2 size={18} color="var(--color-primary)" />
-                      <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--color-primary)', margin: 0 }}>
-                        Akses Live Room Kamu
-                      </h3>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <div style={{
+                        width: 32, height: 32, borderRadius: 8,
+                        background: 'rgba(1, 133, 86, 0.08)', color: 'var(--color-primary)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                      }}>
+                        <CheckCircle2 size={18} strokeWidth={2} />
+                      </div>
+                      <div>
+                        <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>
+                          Akses Live Room Kamu
+                        </h3>
+                        <p style={{ fontSize: '12.5px', color: 'var(--color-text-tertiary)', margin: '2px 0 0' }}>
+                          Sesi interaktif via Zoom / Google Meet
+                        </p>
+                      </div>
                     </div>
+
                     {webinar.meetingUrl ? (
                       <div>
-                        <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', margin: '0 0 12px' }}>
-                          Ruang sesi webinar telah siap. Silakan klik tombol di bawah untuk bergabung.
+                        <p style={{ fontSize: '13.5px', color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: '0 0 16px' }}>
+                          Ruang sesi webinar telah siap. Silakan klik tombol di bawah untuk langsung bergabung ke ruang sesi.
                         </p>
                         <a
                           href={webinar.meetingUrl}
                           target="_blank"
                           rel="noreferrer"
-                          style={{
-                            display: 'inline-flex', alignItems: 'center', gap: 8,
-                            padding: '10px 18px', borderRadius: 8,
-                            background: 'var(--color-primary)', color: '#fff',
-                            textDecoration: 'none', fontWeight: 700, fontSize: '13px',
-                          }}
+                          style={{ textDecoration: 'none', display: 'inline-block' }}
                         >
-                          <Video size={15} /> Buka Ruang Sesi Sekarang <ExternalLink size={14} />
+                          <motion.div
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            style={{
+                              display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                              padding: '12px 24px', borderRadius: 8,
+                              background: 'var(--color-primary)', color: '#fff',
+                              fontWeight: 700, fontSize: '14px', cursor: 'pointer',
+                            }}
+                          >
+                            <PlayCircle size={16} strokeWidth={2} /> Buka Ruang Sesi Sekarang
+                          </motion.div>
                         </a>
                       </div>
                     ) : (
-                      <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', margin: 0 }}>
-                        Tautan Live Room (Zoom / GMeet) akan aktif di halaman ini 30 menit sebelum webinar dimulai. Pastikan kamu hadir tepat waktu!
+                      <p style={{ fontSize: '13.5px', color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: 0 }}>
+                        Tautan Live Room (Zoom / GMeet) akan aktif otomatis di halaman ini 30 menit sebelum webinar dimulai. Pastikan kamu hadir tepat waktu!
                       </p>
                     )}
                   </div>
                 ) : (
                   <div style={{
-                    padding: '16px 20px', borderRadius: 12,
+                    padding: '20px', borderRadius: 12,
                     background: 'var(--color-bg)', border: '1px solid var(--color-border-subtle)',
-                    fontSize: '13px', color: 'var(--color-text-secondary)',
+                    display: 'flex', alignItems: 'center', gap: 14,
                   }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--color-text-primary)', fontWeight: 600, marginBottom: 4 }}>
-                      <Lock size={15} color="var(--color-text-tertiary)" />
-                      Tautan Live Room Terkunci
+                    <div style={{
+                      width: 36, height: 36, borderRadius: 8,
+                      background: 'var(--color-surface)', border: '1px solid var(--color-border-subtle)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                    }}>
+                      <Lock size={16} color="var(--color-text-tertiary)" strokeWidth={2} />
                     </div>
-                    Daftarkan diri kamu pada webinar ini untuk mendapatkan akses tautan live room dan sertifikat.
+                    <div>
+                      <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+                        Tautan Live Room Terkunci
+                      </div>
+                      <div style={{ fontSize: '13px', color: 'var(--color-text-secondary)', marginTop: 2, lineHeight: 1.5 }}>
+                        Daftarkan diri kamu pada webinar ini untuk mendapatkan akses tautan live room dan sertifikat.
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
