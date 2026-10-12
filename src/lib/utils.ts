@@ -128,6 +128,7 @@ export function formatDuration(seconds: number): string {
 // ── Date Formatters ────────────────────────────────────────
 export function formatDate(dateStr: string): string {
   return new Intl.DateTimeFormat('id-ID', {
+    timeZone: 'Asia/Jakarta',
     day: 'numeric',
     month: 'long',
     year: 'numeric',
@@ -136,6 +137,7 @@ export function formatDate(dateStr: string): string {
 
 export function formatDateShort(dateStr: string): string {
   return new Intl.DateTimeFormat('id-ID', {
+    timeZone: 'Asia/Jakarta',
     day: 'numeric',
     month: 'short',
     year: 'numeric',

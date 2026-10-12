@@ -37,6 +37,7 @@ interface WebinarDetail {
   isRegistered?: boolean
   attended?: boolean
   isEnded?: boolean
+  benefits?: string[]
   _count?: { registrations: number }
   liveStatus?: 'UPCOMING' | 'LIVE' | 'ENDED'
   openTime?: string
@@ -189,6 +190,7 @@ export default function MenteeWebinarDetailPage() {
 
   const formatTimeOnly = (date: Date) => {
     return new Intl.DateTimeFormat('id-ID', {
+      timeZone: 'Asia/Jakarta',
       hour: '2-digit',
       minute: '2-digit',
       hour12: false,
@@ -368,12 +370,12 @@ export default function MenteeWebinarDetailPage() {
                 <div>
                   <h2 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: 12 }}>Yang akan kamu dapatkan</h2>
                   <div className="grid-cols-2" style={{ display: 'grid', gap: '8px 16px' }}>
-                    {[
+                    {(webinar.benefits && webinar.benefits.length > 0 ? webinar.benefits : [
                       'Sertifikat Digital Resmi Metro Institute',
                       'Sesi Tanya Jawab Langsung Bersama Narasumber',
                       'Wawasan & Studi Kasus Praktik Nyata Industri',
                       'Akses Jejaring & Diskusi Bersama Komunitas',
-                    ].map((outcome, i) => (
+                    ]).map((outcome, i) => (
                       <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: '13.5px', color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>
                         <CheckCircle2 size={14} color="var(--color-primary)" style={{ flexShrink: 0, marginTop: 3 }} />
                         <span>{outcome}</span>

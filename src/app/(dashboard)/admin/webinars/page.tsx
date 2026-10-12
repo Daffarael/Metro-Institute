@@ -36,6 +36,7 @@ const webinarSchema = z.object({
   status:           z.enum(['DRAFT', 'PUBLISHED']),
   certificateTemplateId: z.string().optional().nullable(),
   bannerUrl:        z.string().optional().nullable(),
+  benefits:         z.array(z.string()).optional(),
 })
 type WebinarForm = z.infer<typeof webinarSchema>
 
@@ -58,6 +59,7 @@ interface WebinarItem {
   isFeatured: boolean
   isEnded?: boolean
   certificateTemplateId?: string
+  benefits?: string[]
   _count?: { registrations: number }
 }
 
@@ -91,21 +93,50 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
     staleTime: 5 * 60 * 1000,
   })
 
-  // Helper to format Date/ISO string to "YYYY-MM-DDTHH:mm" in local timezone for <input type="datetime-local">
+  // Helper to format Date/ISO string to "YYYY-MM-DDTHH:mm" in local WIB timezone for <input type="datetime-local">
   const toLocalDatetimeValue = (dateVal: string | Date | number) => {
     const d = new Date(dateVal)
+    const wibStr = d.toLocaleString('en-US', { timeZone: 'Asia/Jakarta' })
+    const wibTime = new Date(wibStr)
     const pad = (n: number) => String(n).padStart(2, '0')
-    const year = d.getFullYear()
-    const month = pad(d.getMonth() + 1)
-    const day = pad(d.getDate())
-    const hours = pad(d.getHours())
-    const minutes = pad(d.getMinutes())
+    const year = wibTime.getFullYear()
+    const month = pad(wibTime.getMonth() + 1)
+    const day = pad(wibTime.getDate())
+    const hours = pad(wibTime.getHours())
+    const minutes = pad(wibTime.getMinutes())
     return `${year}-${month}-${day}T${hours}:${minutes}`
   }
 
   const defaultDate = webinar?.scheduledAt
     ? toLocalDatetimeValue(webinar.scheduledAt)
     : toLocalDatetimeValue(Date.now() + 86400000)
+
+  const [benefitsList, setBenefitsList] = useState<string[]>(
+    webinar?.benefits && Array.isArray(webinar.benefits) && webinar.benefits.length > 0
+      ? webinar.benefits
+      : [
+          'Sertifikat Digital Resmi Metro Institute',
+          'Sesi Tanya Jawab Langsung Bersama Narasumber',
+          'Wawasan & Studi Kasus Praktik Nyata Industri',
+          'Akses Jejaring & Diskusi Bersama Komunitas',
+        ]
+  )
+  const [benefitInput, setBenefitInput] = useState('')
+
+  const handleAddBenefit = () => {
+    const trimmed = benefitInput.trim()
+    if (!trimmed) return
+    if (benefitsList.includes(trimmed)) {
+      toast.info('Poin benefit ini sudah ada dalam daftar.')
+      return
+    }
+    setBenefitsList([...benefitsList, trimmed])
+    setBenefitInput('')
+  }
+
+  const handleRemoveBenefit = (index: number) => {
+    setBenefitsList(benefitsList.filter((_, i) => i !== index))
+  }
 
   const { register, handleSubmit, control, formState: { errors } } = useForm<WebinarForm>({
     resolver: zodResolver(webinarSchema) as any,
@@ -139,6 +170,7 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
 
       const payload = {
         ...rest,
+        benefits: benefitsList,
         scheduledAt: scheduledAtIso,
         meetingUrl: sanitizeUrl(rest.meetingUrl),
         recordingUrl: sanitizeUrl(rest.recordingUrl),
@@ -355,6 +387,97 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
               onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
             />
             {errors.description && <p style={{ fontSize: '12px', color: 'var(--color-error)', marginTop: 6, fontWeight: 500 }}>{errors.description.message}</p>}
+          </div>
+
+          {/* Yang Akan Kamu Dapatkan (Benefits / Fasilitas) */}
+          <div style={{
+            padding: '16px', borderRadius: '16px',
+            background: '#f9fafb', border: '1px solid rgba(0,0,0,0.06)',
+            display: 'flex', flexDirection: 'column', gap: 12,
+          }}>
+            <div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label style={{ ...labelStyle, marginBottom: 2 }}>
+                  Yang Akan Kamu Dapatkan (Benefits / Fasilitas)
+                </label>
+                <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', fontWeight: 600 }}>
+                  {benefitsList.length} poin aktif
+                </span>
+              </div>
+              <p style={{ fontSize: '12px', color: 'var(--color-text-tertiary)', margin: 0 }}>
+                Poin-poin keuntungan materi/fasilitas yang ditampilkan di halaman detail webinar peserta.
+              </p>
+            </div>
+
+            {/* Input row untuk menambah benefit baru */}
+            <div style={{ display: 'flex', gap: 8 }}>
+              <input
+                type="text"
+                value={benefitInput}
+                onChange={e => setBenefitInput(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault()
+                    handleAddBenefit()
+                  }
+                }}
+                placeholder="Ketik keuntungan baru, lalu tekan Enter atau klik Tambah..."
+                style={{ ...inputStyleClean, background: '#fff', flex: 1, padding: '10px 14px', fontSize: '13px' }}
+              />
+              <button
+                type="button"
+                onClick={handleAddBenefit}
+                style={{
+                  padding: '10px 16px', borderRadius: '10px',
+                  background: 'var(--color-primary)', color: '#fff',
+                  border: 'none', fontWeight: 600, fontSize: '13px',
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6,
+                  flexShrink: 0,
+                }}
+              >
+                <Plus size={15} strokeWidth={2.5} /> Tambah
+              </button>
+            </div>
+
+            {/* List Poin Benefits */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 4 }}>
+              {benefitsList.map((item, index) => (
+                <div
+                  key={index}
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    padding: '8px 12px', borderRadius: '8px',
+                    background: '#ffffff', border: '1px solid rgba(0,0,0,0.06)',
+                    fontSize: '13px', color: 'var(--color-text-primary)',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0, flex: 1 }}>
+                    <CheckCircle2 size={15} color="var(--color-primary)" style={{ flexShrink: 0 }} />
+                    <span style={{ wordBreak: 'break-word' }}>{item}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveBenefit(index)}
+                    title="Hapus poin"
+                    style={{
+                      background: 'none', border: 'none', color: '#9ca3af',
+                      cursor: 'pointer', padding: 4, display: 'flex', alignItems: 'center',
+                      borderRadius: 4, transition: 'color 0.15s ease',
+                      flexShrink: 0, marginLeft: 8,
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.color = '#ef4444'}
+                    onMouseLeave={e => e.currentTarget.style.color = '#9ca3af'}
+                  >
+                    <X size={15} />
+                  </button>
+                </div>
+              ))}
+              {benefitsList.length === 0 && (
+                <div style={{ textAlign: 'center', padding: '12px', fontSize: '12.5px', color: '#9ca3af' }}>
+                  Belum ada poin keuntungan. Silakan tambahkan keuntungan webinar di atas.
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Status & Template Sertifikat */}
