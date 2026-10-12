@@ -121,23 +121,19 @@ export default function ChallengeBankPage() {
 
   // ── 2. Active State: Ultra Clean & Minimalis ───────────────
   return (
-    <div className="animate-fade-in" style={{ paddingBottom: '48px', maxWidth: '1100px', margin: '0 auto' }}>
-      {/* Header */}
-      <div style={{ marginBottom: '24px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
-          <div>
-            <h1 style={{ fontSize: '22px', fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--color-text-primary)', margin: '0 0 6px 0' }}>
-              Challenge Bank
-            </h1>
-            <p style={{ color: 'var(--color-text-secondary)', fontSize: '13px', margin: 0, maxWidth: 640, lineHeight: 1.5 }}>
-              Latihan terarah sesuai kelas yang kamu ikuti. Selesaikan tantangan untuk klaim XP pertama kali dan latih pemahamanmu berulang kali tanpa batas.
-            </p>
-          </div>
-        </div>
+    <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-6)' }}>
+      {/* ── Header ─────────────────────────────────────────── */}
+      <div>
+        <h1 style={{ fontSize: 'var(--text-2xl)', fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 4 }}>
+          Challenge Bank
+        </h1>
+        <p style={{ fontSize: '13px', color: 'var(--color-text-tertiary)' }}>
+          Uji pemahamanmu dengan tantangan yang selaras dengan kelas yang kamu ikuti. Dapatkan XP pada kelulusan pertama dan latih kemampuanmu berulang kali tanpa batas.
+        </p>
 
         {/* Clean Class Pills (Tanpa emoji) */}
         {purchasedClasses.length > 0 && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 14, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
             <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-tertiary)' }}>
               Kelas Terdaftar:
             </span>
@@ -164,9 +160,9 @@ export default function ChallengeBankPage() {
       {/* Clean Typography Stats (Tanpa icon-icon kotak) */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
         gap: '12px',
-        marginBottom: '24px',
+        maxWidth: 720,
       }}>
         {[
           { label: 'Total Tantangan', value: totalCount },
@@ -206,7 +202,7 @@ export default function ChallengeBankPage() {
       </div>
 
       {/* Filter Row */}
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', flexWrap: 'wrap', alignItems: 'center' }}>
+      <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
         <CleanCombobox
           options={dynamicFieldOptions}
           value={field}
