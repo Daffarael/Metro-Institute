@@ -3,10 +3,6 @@
 import { useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useQuery, useMutation } from '@tanstack/react-query'
-import { 
-  CheckCircle2, XCircle, ChevronRight, ChevronLeft, AlertCircle, 
-  Lock, ArrowLeft, RefreshCw, Trophy, Sparkles, GraduationCap
-} from 'lucide-react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import api from '@/lib/axios'
@@ -62,48 +58,42 @@ export default function ChallengeDetailPage() {
   })
 
   if (isLoading) return (
-    <div style={{ maxWidth: 680, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+    <div style={{ maxWidth: 640, margin: '40px auto', display: 'flex', flexDirection: 'column', gap: 14 }}>
       {Array.from({ length: 3 }).map((_, i) => <div key={i} className="skeleton" style={{ height: 80, borderRadius: 12 }} />)}
     </div>
   )
 
-  // ── Error state: misal 403 (belum beli kelas) atau 429 (cooldown) ────────
+  // ── Error state: 403 (belum beli kelas) atau error lainnya ────────
   if (error || !challenge) {
     const errObj = error as any
     const statusCode = errObj?.response?.status
     const message = errObj?.response?.data?.message || 'Tantangan tidak dapat diakses saat ini.'
 
     return (
-      <div style={{ maxWidth: 540, margin: '40px auto', textAlign: 'center' }} className="animate-fade-in">
-        <div className="card" style={{ padding: '36px 28px', border: '1px solid var(--color-border)' }}>
-          <div style={{ width: 64, height: 64, borderRadius: '50%', background: statusCode === 403 ? 'rgba(234, 88, 12, 0.1)' : 'rgba(239, 68, 68, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
-            {statusCode === 403 ? <Lock size={32} color="#EA580C" /> : <AlertCircle size={32} color="#EF4444" />}
-          </div>
-
-          <h2 style={{ fontSize: '20px', fontWeight: 800, marginBottom: 8, color: 'var(--color-text-primary)' }}>
+      <div style={{ maxWidth: 480, margin: '60px auto', textAlign: 'center' }} className="animate-fade-in">
+        <div style={{ padding: '36px 28px', background: 'var(--color-surface)', border: '1px solid var(--color-border-subtle)', borderRadius: '16px' }}>
+          <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: 8, color: 'var(--color-text-primary)', letterSpacing: '-0.01em' }}>
             {statusCode === 403 ? 'Tantangan Terkunci' : 'Tidak Dapat Diakses'}
           </h2>
-          <p style={{ color: 'var(--color-text-secondary)', fontSize: '14px', lineHeight: 1.6, marginBottom: 24 }}>
+          <p style={{ color: 'var(--color-text-secondary)', fontSize: '13px', lineHeight: 1.6, marginBottom: 20 }}>
             {message}
           </p>
 
-          <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
-            <motion.button
-              whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+          <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
+            <button
               onClick={() => router.push(ROUTES.CHALLENGES)}
-              style={{ padding: '10px 18px', background: 'var(--color-surface)', color: 'var(--color-text-primary)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', fontWeight: 600, fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
+              style={{ padding: '9px 16px', background: 'var(--color-surface)', color: 'var(--color-text-primary)', border: '1px solid var(--color-border)', borderRadius: '8px', fontWeight: 600, fontSize: '13px', cursor: 'pointer' }}
             >
-              <ArrowLeft size={15} /> Kembali ke Challenge Bank
-            </motion.button>
+              Kembali
+            </button>
 
             {statusCode === 403 && (
               <Link href={ROUTES.BOOTCAMP_LIST} style={{ textDecoration: 'none' }}>
-                <motion.button
-                  whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-                  style={{ padding: '10px 18px', background: 'var(--color-primary)', color: '#fff', border: 'none', borderRadius: 'var(--radius-md)', fontWeight: 700, fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
+                <button
+                  style={{ padding: '9px 16px', background: 'var(--color-primary, #018556)', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 600, fontSize: '13px', cursor: 'pointer' }}
                 >
-                  <GraduationCap size={16} /> Lihat Kelas Tersedia
-                </motion.button>
+                  Lihat Katalog Kelas
+                </button>
               </Link>
             )}
           </div>
@@ -116,13 +106,12 @@ export default function ChallengeDetailPage() {
   const currentQ = questions[currentQIdx]
   const totalQ = questions.length
   const answeredCount = Object.keys(answers).length
-  const progress = totalQ > 0 ? Math.round((answeredCount / totalQ) * 100) : 0
   const isLastQ = currentQIdx === totalQ - 1
 
   if (challenge.type !== 'PROJECT' && !currentQ) return (
-    <div style={{ textAlign: 'center', padding: 'var(--space-8)' }}>
-      <p style={{ color: 'var(--color-text-secondary)' }}>Belum ada soal untuk challenge ini.</p>
-      <button onClick={() => router.push(ROUTES.CHALLENGES)} style={{ marginTop: 12, padding: '8px 16px', borderRadius: 8, cursor: 'pointer' }}>
+    <div style={{ textAlign: 'center', padding: '48px 24px' }}>
+      <p style={{ color: 'var(--color-text-secondary)', fontSize: '14px' }}>Belum ada soal untuk tantangan ini.</p>
+      <button onClick={() => router.push(ROUTES.CHALLENGES)} style={{ marginTop: 12, padding: '8px 16px', borderRadius: 8, cursor: 'pointer', background: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
         Kembali
       </button>
     </div>
@@ -134,110 +123,90 @@ export default function ChallengeDetailPage() {
     const isRetakePass = result.passed && !isFirstTimePass
 
     return (
-      <div style={{ maxWidth: 540, margin: '0 auto' }} className="animate-fade-in">
-        <div className="card" style={{ padding: 'var(--space-8)', textAlign: 'center', border: '1px solid var(--color-border)' }}>
-          {/* Icon */}
-          <div style={{ marginBottom: 'var(--space-5)' }}>
-            {result.type === 'PROJECT' || result.passed ? (
-              <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'rgba(34, 197, 94, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto' }}>
-                <CheckCircle2 size={42} color="#16A34A" />
-              </div>
-            ) : (
-              <div style={{ width: 80, height: 80, borderRadius: '50%', background: '#FEE2E2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto' }}>
-                <XCircle size={42} color="#EF4444" />
-              </div>
-            )}
-          </div>
-
-          <h1 style={{ fontSize: 'var(--text-2xl)', fontWeight: 800, marginBottom: 'var(--space-2)' }}>
+      <div style={{ maxWidth: 460, margin: '40px auto' }} className="animate-fade-in">
+        <div style={{ padding: '36px 28px', textAlign: 'center', background: 'var(--color-surface)', border: '1px solid var(--color-border-subtle)', borderRadius: '16px' }}>
+          <h1 style={{ fontSize: '20px', fontWeight: 700, marginBottom: 8, letterSpacing: '-0.02em', color: 'var(--color-text-primary)' }}>
             {result.type === 'PROJECT' 
-              ? '🎉 Proyek Terkirim!' 
+              ? 'Proyek Terkirim' 
               : isFirstTimePass 
-                ? '🎉 Kamu Berhasil!' 
+                ? 'Tantangan Selesai' 
                 : isRetakePass 
-                  ? '🎯 Latihan Selesai!' 
-                  : 'Hampir! Coba Lagi'}
+                  ? 'Latihan Selesai' 
+                  : 'Coba Lagi'}
           </h1>
 
-          <p style={{ color: 'var(--color-text-secondary)', fontSize: '14px', lineHeight: 1.5, marginBottom: 'var(--space-6)' }}>
+          <p style={{ color: 'var(--color-text-secondary)', fontSize: '13px', lineHeight: 1.5, marginBottom: 20 }}>
             {result.type === 'PROJECT' 
-              ? 'Jawaban proyekmu telah dikirim dan sedang menunggu penilaian dari Admin.'
+              ? 'Jawaban proyekmu telah dikirim dan menunggu penilaian mentor.'
               : isFirstTimePass
-                ? `Selamat! Kamu lulus challenge "${challenge.title}" dan mendapatkan XP kelulusan pertamamu.`
+                ? `Selamat! Kamu berhasil menyelesaikan tantangan "${challenge.title}" dan mendapatkan XP.`
                 : isRetakePass
-                  ? `Kerja bagus! Kamu berhasil menuntaskan tantangan "${challenge.title}" dengan skor ${result.score}%.`
-                  : `Skor minimum kelulusan adalah ${challenge.passingScore}%. Tetap semangat!`}
+                  ? `Latihan untuk "${challenge.title}" selesai dengan skor ${result.score}%.`
+                  : `Skor kelulusan adalah ${challenge.passingScore}%. Tetap semangat dan coba lagi!`}
           </p>
 
           {result.type !== 'PROJECT' && (
             <>
-              {/* Score circle */}
-              <div style={{
-                width: 120, height: 120, borderRadius: '50%', margin: '0 auto var(--space-6)',
-                background: `conic-gradient(${result.passed ? '#16A34A' : '#EF4444'} ${result.score * 3.6}deg, var(--color-border) 0deg)`,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <div style={{ width: 96, height: 96, borderRadius: '50%', background: 'var(--color-surface)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
-                  <div style={{ fontSize: 'var(--text-2xl)', fontWeight: 800, color: result.passed ? '#16A34A' : '#EF4444' }}>{result.score}%</div>
-                  <div style={{ fontSize: '10px', color: 'var(--color-text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Skor Akhir</div>
+              {/* Score block */}
+              <div style={{ padding: '16px 0', marginBottom: 16 }}>
+                <div style={{ fontSize: '44px', fontWeight: 800, color: result.passed ? 'var(--color-primary, #018556)' : '#DC2626', lineHeight: 1, letterSpacing: '-0.02em' }}>
+                  {result.score}%
+                </div>
+                <div style={{ fontSize: '12px', color: 'var(--color-text-tertiary)', marginTop: 4, fontWeight: 500 }}>
+                  Skor Akhir
                 </div>
               </div>
 
-              {/* Stats */}
-              <div className="grid-cols-3" style={{ display: 'grid', gap: 'var(--space-3)', marginBottom: 'var(--space-5)' }}>
+              {/* Stats row */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, marginBottom: 20 }}>
                 {[
-                  { label: 'Benar', value: result.correct, color: '#16A34A' },
-                  { label: 'Salah', value: result.totalQuestions - result.correct, color: '#EF4444' },
-                  { label: 'Poin XP', value: isFirstTimePass ? `+${result.xpEarned}` : '0', color: 'var(--color-xp)' },
+                  { label: 'Benar', value: result.correct, color: 'var(--color-text-primary)' },
+                  { label: 'Salah', value: result.totalQuestions - result.correct, color: 'var(--color-text-secondary)' },
+                  { label: 'XP', value: isFirstTimePass ? `+${result.xpEarned}` : '0', color: isFirstTimePass ? 'var(--color-primary, #018556)' : 'var(--color-text-secondary)' },
                 ].map((s) => (
-                  <div key={s.label} style={{ textAlign: 'center', padding: 'var(--space-3)', background: 'var(--color-bg)', borderRadius: 'var(--radius-md)' }}>
-                    <div style={{ fontWeight: 800, fontSize: 'var(--text-lg)', color: s.color }}>{s.value}</div>
-                    <div style={{ fontSize: '11px', color: 'var(--color-text-tertiary)' }}>{s.label}</div>
+                  <div key={s.label} style={{ textAlign: 'center', padding: '10px', background: 'var(--color-bg)', borderRadius: '8px' }}>
+                    <div style={{ fontWeight: 700, fontSize: '15px', color: s.color }}>{s.value}</div>
+                    <div style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 2 }}>{s.label}</div>
                   </div>
                 ))}
               </div>
 
-              {/* Banner XP untuk First Clear */}
+              {/* Banner XP */}
               {isFirstTimePass && (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: '10px 16px', background: 'var(--color-xp-bg)', borderRadius: 'var(--radius-md)', marginBottom: 'var(--space-5)' }}>
-                  <Trophy size={16} color="var(--color-xp)" />
-                  <span style={{ fontWeight: 700, fontSize: '13px', color: 'var(--color-xp)' }}>+{result.xpEarned} XP Berhasil Ditambahkan ke Profilmu!</span>
+                <div style={{ padding: '9px 12px', background: 'rgba(1, 133, 86, 0.08)', borderRadius: '8px', marginBottom: 20, fontSize: '12px', fontWeight: 600, color: 'var(--color-primary, #018556)' }}>
+                  +{result.xpEarned} XP ditambahkan ke profilmu
                 </div>
               )}
 
-              {/* Banner Retake Info jika sudah pernah lulus sebelumnya */}
               {isRetakePass && (
-                <div style={{ padding: '10px 14px', background: 'rgba(37, 99, 235, 0.06)', border: '1px solid rgba(37, 99, 235, 0.15)', borderRadius: 'var(--radius-md)', marginBottom: 'var(--space-5)', fontSize: '12px', color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>
-                  <Sparkles size={14} color="var(--color-primary)" style={{ display: 'inline', marginRight: 4, verticalAlign: 'middle' }} />
-                  <strong>Latihan Ulang:</strong> XP challenge ini sudah kamu klaim pada kelulusan pertama. Kamu bebas mengulang latihan ini kapan saja untuk mengasah pemahamanmu!
+                <div style={{ padding: '9px 12px', background: 'var(--color-bg)', borderRadius: '8px', marginBottom: 20, fontSize: '12px', color: 'var(--color-text-secondary)', lineHeight: 1.5 }}>
+                  XP didapat pada pengerjaan pertama. Latihan ini bebas diulang kapan saja.
                 </div>
               )}
             </>
           )}
 
           {/* Action buttons */}
-          <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
-            <motion.button 
-              whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} 
+          <div style={{ display: 'flex', gap: 10 }}>
+            <button 
               onClick={() => router.push(ROUTES.CHALLENGES)} 
-              style={{ flex: 1, padding: '11px 18px', background: 'var(--color-surface)', color: 'var(--color-text-primary)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', fontWeight: 600, fontSize: '13px', cursor: 'pointer' }}
+              style={{ flex: 1, padding: '10px 16px', background: 'var(--color-surface)', color: 'var(--color-text-primary)', border: '1px solid var(--color-border)', borderRadius: '8px', fontWeight: 600, fontSize: '13px', cursor: 'pointer' }}
             >
-              ← Kembali ke Bank Soal
-            </motion.button>
+              Kembali ke Bank
+            </button>
 
             {result.type !== 'PROJECT' && (
-              <motion.button 
-                whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} 
+              <button 
                 onClick={() => { 
                   setPhase('quiz')
                   setAnswers({})
                   setCurrentQIdx(0)
                   setResult(null) 
                 }} 
-                style={{ flex: 1, padding: '11px 18px', background: 'var(--color-primary)', color: '#fff', border: '1px solid var(--color-primary)', borderRadius: 'var(--radius-md)', fontWeight: 700, fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}
+                style={{ flex: 1, padding: '10px 16px', background: 'var(--color-primary, #018556)', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 600, fontSize: '13px', cursor: 'pointer' }}
               >
-                <RefreshCw size={14} /> {result.passed ? 'Ulangi Latihan' : 'Coba Lagi'}
-              </motion.button>
+                {result.passed ? 'Ulangi Latihan' : 'Coba Lagi'}
+              </button>
             )}
           </div>
         </div>
@@ -248,55 +217,55 @@ export default function ChallengeDetailPage() {
   // ── Project Screen ───────────────────────────────────────
   if (challenge.type === 'PROJECT') {
     return (
-      <div style={{ maxWidth: 680, margin: '0 auto' }} className="animate-fade-in">
-        <div style={{ marginBottom: 'var(--space-6)' }}>
-          <div style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginBottom: 4 }}>
+      <div style={{ maxWidth: 640, margin: '24px auto' }} className="animate-fade-in">
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--color-text-tertiary)', marginBottom: 4 }}>
             {FIELD_LABELS[challenge.field] || challenge.field} · {LEVEL_LABELS[challenge.level] || challenge.level}
           </div>
-          <h1 style={{ fontSize: 'var(--text-lg)', fontWeight: 800, marginBottom: 'var(--space-2)' }}>{challenge.title}</h1>
-          <p style={{ color: 'var(--color-text-secondary)', lineHeight: 1.6 }}>{challenge.description}</p>
+          <h1 style={{ fontSize: '20px', fontWeight: 700, margin: '0 0 6px 0', color: 'var(--color-text-primary)' }}>{challenge.title}</h1>
+          <p style={{ color: 'var(--color-text-secondary)', fontSize: '13px', lineHeight: 1.6, margin: 0 }}>{challenge.description}</p>
         </div>
 
-        <div className="card card-body" style={{ marginBottom: 'var(--space-5)' }}>
-          <h2 style={{ fontSize: 'var(--text-base)', fontWeight: 700, marginBottom: 'var(--space-4)' }}>Kumpulkan Jawaban</h2>
+        <div style={{ padding: '22px', background: 'var(--color-surface)', border: '1px solid var(--color-border-subtle)', borderRadius: '12px', marginBottom: 20 }}>
+          <h2 style={{ fontSize: '14px', fontWeight: 600, marginBottom: 16 }}>Kumpulkan Jawaban Proyek</h2>
           
-          <div style={{ marginBottom: 'var(--space-4)' }}>
-            <label style={{ display: 'block', fontSize: 'var(--text-sm)', fontWeight: 600, marginBottom: 'var(--space-2)' }}>Tautan (URL)</label>
+          <div style={{ marginBottom: 14 }}>
+            <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, marginBottom: 6, color: 'var(--color-text-secondary)' }}>Tautan (URL)</label>
             <input 
               type="url" 
               className="input" 
               placeholder="https://github.com/... atau https://figma.com/..." 
               value={linkUrl} 
               onChange={(e) => setLinkUrl(e.target.value)} 
+              style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1px solid var(--color-border)', fontSize: '13px', boxSizing: 'border-box' }}
             />
           </div>
 
-          <div style={{ marginBottom: 'var(--space-4)' }}>
-            <label style={{ display: 'block', fontSize: 'var(--text-sm)', fontWeight: 600, marginBottom: 'var(--space-2)' }}>Catatan / Penjelasan Tambahan (Opsional)</label>
+          <div style={{ marginBottom: 14 }}>
+            <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, marginBottom: 6, color: 'var(--color-text-secondary)' }}>Catatan Tambahan (Opsional)</label>
             <textarea 
-              className="input" 
               rows={4}
-              placeholder="Tuliskan catatan pengerjaan proyek..." 
+              placeholder="Tuliskan catatan pengerjaan..." 
               value={answerText} 
               onChange={(e) => setAnswerText(e.target.value)} 
+              style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1px solid var(--color-border)', fontSize: '13px', boxSizing: 'border-box', resize: 'vertical' }}
             />
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
-          <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => router.push(ROUTES.CHALLENGES)} 
-            style={{ flex: 1, padding: '10px 20px', background: 'var(--color-surface)', color: 'var(--color-text-primary)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', fontWeight: 600, fontSize: '13px', cursor: 'pointer' }}>
+        <div style={{ display: 'flex', gap: 10 }}>
+          <button 
+            onClick={() => router.push(ROUTES.CHALLENGES)} 
+            style={{ flex: 1, padding: '10px 18px', background: 'var(--color-surface)', color: 'var(--color-text-primary)', border: '1px solid var(--color-border)', borderRadius: '8px', fontWeight: 600, fontSize: '13px', cursor: 'pointer' }}>
             Batal
-          </motion.button>
-          <motion.button 
-            whileHover={(!submitMutation.isPending && (linkUrl || answerText)) ? { scale: 1.02 } : {}}
-            whileTap={(!submitMutation.isPending && (linkUrl || answerText)) ? { scale: 0.98 } : {}}
+          </button>
+          <button 
             onClick={() => submitMutation.mutate()} 
-            style={{ flex: 1, padding: '10px 20px', background: 'var(--color-primary)', color: '#fff', border: '1px solid var(--color-primary)', borderRadius: 'var(--radius-md)', fontWeight: 600, fontSize: '13px', cursor: (submitMutation.isPending || (!linkUrl && !answerText)) ? 'not-allowed' : 'pointer', opacity: (submitMutation.isPending || (!linkUrl && !answerText)) ? 0.5 : 1 }}
+            style={{ flex: 1, padding: '10px 18px', background: 'var(--color-primary, #018556)', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 600, fontSize: '13px', cursor: (submitMutation.isPending || (!linkUrl && !answerText)) ? 'not-allowed' : 'pointer', opacity: (submitMutation.isPending || (!linkUrl && !answerText)) ? 0.5 : 1 }}
             disabled={submitMutation.isPending || (!linkUrl && !answerText)}
           >
             {submitMutation.isPending ? 'Mengirim...' : 'Kirim Proyek'}
-          </motion.button>
+          </button>
         </div>
       </div>
     )
@@ -304,160 +273,137 @@ export default function ChallengeDetailPage() {
 
   // ── Quiz Screen ─────────────────────────────────────────
   return (
-    <div style={{ maxWidth: 680, margin: '0 auto', paddingBottom: 'var(--space-8)' }} className="animate-fade-in">
+    <div style={{ maxWidth: 640, margin: '24px auto', paddingBottom: '48px' }} className="animate-fade-in">
       {/* Header */}
-      <div style={{ marginBottom: 'var(--space-6)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 'var(--space-2)' }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: 'var(--space-3)' }}>
-              <span style={{ fontSize: '11px', fontWeight: 600, padding: '2px 8px', background: 'var(--color-bg)', borderRadius: 'var(--radius-full)', color: 'var(--color-text-secondary)' }}>
-                {FIELD_LABELS[challenge.field] || challenge.field}
+      <div style={{ marginBottom: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', color: 'var(--color-text-tertiary)' }}>
+              {FIELD_LABELS[challenge.field] || challenge.field} · {LEVEL_LABELS[challenge.level] || challenge.level}
+            </span>
+            {challenge.isCompleted && (
+              <span style={{ fontSize: '11px', fontWeight: 600, padding: '2px 8px', background: 'rgba(1, 133, 86, 0.08)', borderRadius: '6px', color: 'var(--color-primary, #018556)' }}>
+                Selesai (Latihan Ulang)
               </span>
-              <span style={{ fontSize: '11px', fontWeight: 600, padding: '2px 8px', background: 'var(--color-bg)', borderRadius: 'var(--radius-full)', color: 'var(--color-text-secondary)' }}>
-                {LEVEL_LABELS[challenge.level] || challenge.level}
-              </span>
-              {challenge.isCompleted && (
-                <span style={{ fontSize: '11px', fontWeight: 700, padding: '2px 8px', background: 'rgba(34, 197, 94, 0.1)', borderRadius: 'var(--radius-full)', color: '#16A34A', display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <CheckCircle2 size={12} /> Selesai (Latihan Ulang)
-                </span>
-              )}
-            </div>
-            <h1 style={{ fontSize: 'var(--text-xl)', fontWeight: 800 }}>{challenge.title}</h1>
+            )}
           </div>
-          <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: 'var(--text-lg)', fontWeight: 700, color: 'var(--color-primary)' }}>
-              {currentQIdx + 1} <span style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-tertiary)', fontWeight: 500 }}>/ {totalQ}</span>
-            </div>
-            <div style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', fontWeight: 500 }}>{answeredCount} dijawab</div>
+          <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-secondary)' }}>
+            {currentQIdx + 1} <span style={{ color: 'var(--color-text-tertiary)', fontWeight: 400 }}>/ {totalQ}</span>
           </div>
         </div>
-        
-        {/* Progress */}
-        <div style={{ marginTop: 'var(--space-4)' }}>
-          <div className="progress-bar" style={{ height: 6, background: 'var(--color-border)' }}>
-            <div className="progress-bar-fill" style={{ width: `${(answeredCount / totalQ) * 100}%`, background: 'var(--color-primary)' }} />
-          </div>
+
+        <h1 style={{ fontSize: '18px', fontWeight: 700, margin: '0 0 14px 0', color: 'var(--color-text-primary)' }}>
+          {challenge.title}
+        </h1>
+
+        {/* Minimal Progress Bar */}
+        <div style={{ height: 4, width: '100%', background: 'var(--color-border-subtle)', borderRadius: 2, overflow: 'hidden' }}>
+          <div style={{ height: '100%', width: `${(answeredCount / totalQ) * 100}%`, background: 'var(--color-primary, #018556)', transition: 'width 0.2s ease' }} />
         </div>
       </div>
 
-      {/* Question card */}
-      <div className="card card-body" style={{ marginBottom: 'var(--space-6)', border: '1px solid var(--color-border)', boxShadow: 'none' }}>
-        <div style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', fontWeight: 600, marginBottom: 'var(--space-3)' }}>
-          Pertanyaan {currentQIdx + 1}
+      {/* Question Card */}
+      <div style={{ padding: '24px', background: 'var(--color-surface)', border: '1px solid var(--color-border-subtle)', borderRadius: '14px', marginBottom: 16 }}>
+        <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-tertiary)', marginBottom: 8 }}>
+          Soal {currentQIdx + 1}
         </div>
-        <p style={{ fontSize: 'var(--text-base)', fontWeight: 500, lineHeight: 1.6, color: 'var(--color-text-primary)', marginBottom: 'var(--space-6)' }}>
+        <p style={{ fontSize: '15px', fontWeight: 500, lineHeight: 1.6, color: 'var(--color-text-primary)', margin: '0 0 20px 0' }}>
           {currentQ.question}
         </p>
-        
+
         {currentQ.imageUrl && (
-          <img src={currentQ.imageUrl} alt="Ilustrasi soal" style={{ width: '100%', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', marginBottom: 'var(--space-6)', maxHeight: 280, objectFit: 'contain' }} />
+          <img src={currentQ.imageUrl} alt="Ilustrasi" style={{ width: '100%', borderRadius: 8, border: '1px solid var(--color-border-subtle)', marginBottom: 18, maxHeight: 260, objectFit: 'contain' }} />
         )}
 
         {/* Options */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {(currentQ.options || []).map((option, idx) => {
             const isSelected = answers[currentQ.id] === option.id
             return (
-              <motion.button
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.99 }}
+              <button
                 key={option.id}
                 onClick={() => setAnswers((prev) => ({ ...prev, [currentQ.id]: option.id }))}
                 style={{
-                  padding: 'var(--space-4)',
-                  border: `1px solid ${isSelected ? 'var(--color-primary)' : 'var(--color-border)'}`,
-                  borderRadius: 'var(--radius-md)',
-                  background: isSelected ? 'rgba(37, 99, 235, 0.03)' : 'var(--color-surface)',
+                  padding: '14px 16px',
+                  border: `1px solid ${isSelected ? 'var(--color-primary, #018556)' : 'var(--color-border-subtle)'}`,
+                  borderRadius: '10px',
+                  background: isSelected ? 'rgba(1, 133, 86, 0.04)' : 'var(--color-surface)',
                   cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', gap: 'var(--space-4)',
+                  display: 'flex', alignItems: 'center', gap: 12,
                   textAlign: 'left',
+                  transition: 'all 0.15s ease',
                 }}
               >
                 <div style={{
-                  width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
-                  border: `1px solid ${isSelected ? 'var(--color-primary)' : 'var(--color-border)'}`,
-                  background: isSelected ? 'var(--color-primary)' : 'var(--color-bg)',
+                  width: 24, height: 24, borderRadius: '50%', flexShrink: 0,
+                  border: `1px solid ${isSelected ? 'var(--color-primary, #018556)' : 'var(--color-border-subtle)'}`,
+                  background: isSelected ? 'var(--color-primary, #018556)' : 'transparent',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: '12px', fontWeight: 600,
-                  color: isSelected ? 'white' : 'var(--color-text-secondary)',
+                  fontSize: '11px', fontWeight: 600,
+                  color: isSelected ? '#fff' : 'var(--color-text-secondary)',
                 }}>
                   {String.fromCharCode(65 + idx)}
                 </div>
-                <span style={{ fontSize: 'var(--text-sm)', fontWeight: isSelected ? 600 : 400, color: 'var(--color-text-primary)' }}>
+                <span style={{ fontSize: '13px', fontWeight: isSelected ? 600 : 400, color: 'var(--color-text-primary)' }}>
                   {option.text}
                 </span>
-              </motion.button>
+              </button>
             )
           })}
         </div>
       </div>
 
-      {/* Navigation */}
-      <div className="card card-body" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 'var(--space-4)', border: '1px solid var(--color-border)', boxShadow: 'none' }}>
-        <motion.button
-          whileHover={currentQIdx > 0 ? { scale: 1.02 } : {}}
-          whileTap={currentQIdx > 0 ? { scale: 0.98 } : {}}
+      {/* Navigation Controls */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+        <button
           onClick={() => setCurrentQIdx((i) => Math.max(0, i - 1))}
           disabled={currentQIdx === 0}
-          style={{ gap: 'var(--space-2)', padding: '10px 20px', background: 'var(--color-surface)', color: 'var(--color-text-primary)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', fontWeight: 600, fontSize: '13px', cursor: currentQIdx === 0 ? 'not-allowed' : 'pointer', opacity: currentQIdx === 0 ? 0.5 : 1, display: 'flex', alignItems: 'center' }}
+          style={{ padding: '9px 16px', background: 'var(--color-surface)', color: 'var(--color-text-primary)', border: '1px solid var(--color-border-subtle)', borderRadius: '8px', fontWeight: 600, fontSize: '13px', cursor: currentQIdx === 0 ? 'not-allowed' : 'pointer', opacity: currentQIdx === 0 ? 0.4 : 1 }}
         >
-          <ChevronLeft size={16} /> Sebelumnya
-        </motion.button>
+          Sebelumnya
+        </button>
 
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center', flex: 1 }}>
+        {/* Number dots */}
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center' }}>
           {questions.map((q, i) => (
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+            <button
               key={q.id}
               onClick={() => setCurrentQIdx(i)}
               style={{
-                width: 32, height: 32, borderRadius: '50%', border: 'none', cursor: 'pointer',
-                fontSize: '12px', fontWeight: 600,
-                background: i === currentQIdx ? 'var(--color-primary)' : answers[q.id] ? 'rgba(37, 99, 235, 0.12)' : 'var(--color-bg)',
-                color: i === currentQIdx ? 'white' : answers[q.id] ? 'var(--color-primary)' : 'var(--color-text-secondary)',
+                width: 28, height: 28, borderRadius: '6px', border: 'none', cursor: 'pointer',
+                fontSize: '11px', fontWeight: 600,
+                background: i === currentQIdx ? 'var(--color-primary, #018556)' : answers[q.id] ? 'rgba(1, 133, 86, 0.12)' : 'var(--color-bg)',
+                color: i === currentQIdx ? '#fff' : answers[q.id] ? 'var(--color-primary, #018556)' : 'var(--color-text-secondary)',
               }}
             >
               {i + 1}
-            </motion.button>
+            </button>
           ))}
         </div>
 
         {isLastQ ? (
-          <motion.button
-            whileHover={!submitMutation.isPending ? { scale: 1.02 } : {}}
-            whileTap={!submitMutation.isPending ? { scale: 0.98 } : {}}
+          <button
             onClick={() => {
               if (answeredCount < totalQ) {
                 const unanswered = totalQ - answeredCount
-                if (!confirm(`Masih ada ${unanswered} soal yang belum dijawab. Yakin ingin submit?`)) return
+                if (!confirm(`Masih ada ${unanswered} soal yang belum dijawab. Yakin ingin mengumpulkan?`)) return
               }
               submitMutation.mutate()
             }}
             disabled={submitMutation.isPending}
-            style={{ gap: 'var(--space-2)', padding: '10px 20px', background: 'var(--color-primary)', color: '#fff', border: '1px solid var(--color-primary)', borderRadius: 'var(--radius-md)', fontWeight: 600, fontSize: '13px', cursor: submitMutation.isPending ? 'not-allowed' : 'pointer', opacity: submitMutation.isPending ? 0.5 : 1, display: 'flex', alignItems: 'center' }}
+            style={{ padding: '9px 18px', background: 'var(--color-primary, #018556)', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 600, fontSize: '13px', cursor: submitMutation.isPending ? 'not-allowed' : 'pointer', opacity: submitMutation.isPending ? 0.5 : 1 }}
           >
-            {!submitMutation.isPending ? <><CheckCircle2 size={16} /> Submit</> : 'Submit...'}
-          </motion.button>
+            {submitMutation.isPending ? 'Mengirim...' : 'Selesai'}
+          </button>
         ) : (
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+          <button
             onClick={() => setCurrentQIdx((i) => Math.min(totalQ - 1, i + 1))}
-            style={{ gap: 'var(--space-2)', padding: '10px 20px', background: 'var(--color-primary)', color: '#fff', border: '1px solid var(--color-primary)', borderRadius: 'var(--radius-md)', fontWeight: 600, fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+            style={{ padding: '9px 16px', background: 'var(--color-primary, #018556)', color: '#fff', border: 'none', borderRadius: '8px', fontWeight: 600, fontSize: '13px', cursor: 'pointer' }}
           >
-            Selanjutnya <ChevronRight size={16} />
-          </motion.button>
+            Selanjutnya
+          </button>
         )}
       </div>
-
-      {/* Warning if not all answered */}
-      {isLastQ && answeredCount < totalQ && (
-        <div style={{ marginTop: 'var(--space-4)', display: 'flex', alignItems: 'center', gap: 'var(--space-2)', color: '#D97706', fontSize: 'var(--text-sm)' }}>
-          <AlertCircle size={15} />
-          {totalQ - answeredCount} soal belum dijawab
-        </div>
-      )}
     </div>
   )
 }
