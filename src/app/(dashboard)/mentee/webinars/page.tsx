@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { motion } from 'motion/react'
 import {
   Video, Calendar, Clock, Search, ChevronRight
 } from 'lucide-react'
@@ -13,6 +12,7 @@ import AdminEmptyState from '@/components/admin/AdminEmptyState'
 import { SlidingTabs } from '@/components/ui/SlidingTabs'
 import { useAuthStore } from '@/stores/auth.store'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 interface WebinarItem {
   id: string
@@ -192,38 +192,37 @@ function WebinarCard({
 }: {
   webinar: WebinarItem
 }) {
-  const router = useRouter()
   const isEnded = Boolean(webinar.isEnded) || (new Date(webinar.scheduledAt).getTime() + 24 * 60 * 60 * 1000 < Date.now())
 
-  const handleNavigateDetail = () => {
-    router.push(ROUTES.WEBINAR_DETAIL(webinar.id))
-  }
-
   return (
-    <div
-      style={{
-        border: '1px solid var(--color-border)',
-        borderRadius: 16,
-        background: 'var(--color-surface)',
-        overflow: 'hidden',
-        display: 'flex',
-        flexDirection: 'column',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
-        transition: 'transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease',
-        cursor: 'pointer',
-      }}
-      onMouseEnter={e => {
-        e.currentTarget.style.transform = 'translateY(-3px)'
-        e.currentTarget.style.boxShadow = '0 12px 24px rgba(0,0,0,0.06)'
-        e.currentTarget.style.borderColor = 'var(--color-primary)'
-      }}
-      onMouseLeave={e => {
-        e.currentTarget.style.transform = 'translateY(0)'
-        e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.02)'
-        e.currentTarget.style.borderColor = 'var(--color-border)'
-      }}
-      onClick={handleNavigateDetail}
+    <Link
+      href={ROUTES.WEBINAR_DETAIL(webinar.id)}
+      style={{ textDecoration: 'none', display: 'block', height: '100%', color: 'inherit' }}
     >
+      <div
+        style={{
+          border: '1px solid var(--color-border)',
+          borderRadius: 16,
+          background: 'var(--color-surface)',
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+          transition: 'transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease',
+          cursor: 'pointer',
+          height: '100%',
+        }}
+        onMouseEnter={e => {
+          e.currentTarget.style.transform = 'translateY(-3px)'
+          e.currentTarget.style.boxShadow = '0 12px 24px rgba(0,0,0,0.06)'
+          e.currentTarget.style.borderColor = 'var(--color-primary)'
+        }}
+        onMouseLeave={e => {
+          e.currentTarget.style.transform = 'translateY(0)'
+          e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.02)'
+          e.currentTarget.style.borderColor = 'var(--color-border)'
+        }}
+      >
       {/* Banner / Poster Thumbnail */}
       <div style={{ position: 'relative', height: 150, background: 'linear-gradient(135deg, #064e3b 0%, #1e293b 100%)', overflow: 'hidden' }}>
         {webinar.bannerUrl ? (
@@ -322,23 +321,18 @@ function WebinarCard({
           </div>
         </div>
 
-        {/* Action Button: Semua mengarahkan ke halaman detail terlebih dahulu */}
+        {/* Action Button: Visual CTA (Navigasi ditangani oleh Link pembungkus card) */}
         <div style={{ paddingTop: 4 }}>
-          <motion.button
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.99 }}
-            onClick={e => {
-              e.stopPropagation()
-              handleNavigateDetail()
-            }}
+          <div
             style={{
               width: '100%', padding: '9px 12px', borderRadius: 8,
               background: isEnded ? 'var(--color-bg)' : 'var(--color-primary)',
               color: isEnded ? 'var(--color-text-tertiary)' : '#fff',
               border: isEnded ? '1px solid var(--color-border-subtle)' : 'none',
               fontWeight: 600, fontSize: '12px',
-              cursor: 'pointer', display: 'flex', alignItems: 'center',
+              display: 'flex', alignItems: 'center',
               justifyContent: 'center', gap: 6,
+              transition: 'all 0.15s ease',
             }}
           >
             {isEnded
@@ -348,9 +342,10 @@ function WebinarCard({
                 : webinar.price === 0
                   ? 'Daftar Gratis ›'
                   : `Beli Tiket (${formatRupiah(webinar.price)})`}
-          </motion.button>
+          </div>
         </div>
       </div>
     </div>
-  )
+  </Link>
+)
 }
