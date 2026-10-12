@@ -10,7 +10,7 @@ import {
   ExternalLink, PlayCircle, Lock, Zap, Share2, X
 } from 'lucide-react'
 import api from '@/lib/axios'
-import { ROUTES, formatDate, formatRupiah, FIELD_LABELS } from '@/lib/utils'
+import { ROUTES, formatDate, formatRupiah, FIELD_LABELS, ensureAbsoluteUrl } from '@/lib/utils'
 import { toast } from 'sonner'
 import { useAuthStore } from '@/stores/auth.store'
 import { useUIStore } from '@/stores/ui.store'
@@ -376,7 +376,7 @@ export default function MenteeWebinarDetailPage() {
                           Ruang sesi webinar telah siap. Silakan klik tombol di bawah untuk langsung bergabung ke ruang sesi.
                         </p>
                         <a
-                          href={webinar.meetingUrl}
+                          href={ensureAbsoluteUrl(webinar.meetingUrl)}
                           target="_blank"
                           rel="noreferrer"
                           style={{ textDecoration: 'none', display: 'inline-block' }}
@@ -500,7 +500,7 @@ export default function MenteeWebinarDetailPage() {
               {/* CTA */}
               {webinar.isRegistered ? (
                 webinar.meetingUrl ? (
-                  <a href={webinar.meetingUrl} target="_blank" rel="noreferrer" style={{ textDecoration: 'none', display: 'block' }}>
+                  <a href={ensureAbsoluteUrl(webinar.meetingUrl)} target="_blank" rel="noreferrer" style={{ textDecoration: 'none', display: 'block' }}>
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}

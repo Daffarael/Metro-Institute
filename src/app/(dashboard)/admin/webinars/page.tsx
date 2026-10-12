@@ -8,8 +8,8 @@ import { z } from 'zod'
 import { Plus, Edit2, Users, Trash2, X, Calendar, Clock, Video, Link2, ExternalLink } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
 import api from '@/lib/axios'
-import { formatRupiah, formatDate } from '@/lib/utils'
 import Link from 'next/link'
+import { formatRupiah, formatDate, ensureAbsoluteUrl } from '@/lib/utils'
 import AdminPageHeader from '@/components/admin/AdminPageHeader'
 import AdminStatusChip from '@/components/admin/AdminStatusChip'
 import AdminTableSkeleton from '@/components/admin/AdminTableSkeleton'
@@ -118,8 +118,14 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
   const mutation = useMutation({
     mutationFn: (data: WebinarForm) => {
       const { status, ...rest } = data
+      const sanitizeUrl = (url?: string | null) => {
+        if (!url || !url.trim()) return null
+        return ensureAbsoluteUrl(url)
+      }
       const payload = {
         ...rest,
+        meetingUrl: sanitizeUrl(rest.meetingUrl),
+        recordingUrl: sanitizeUrl(rest.recordingUrl),
         isPublished: status === 'PUBLISHED',
       }
       return isEdit
