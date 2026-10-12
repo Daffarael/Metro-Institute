@@ -124,33 +124,60 @@ export default function ChallengeBankPage() {
     <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-6)' }}>
       {/* ── Header ─────────────────────────────────────────── */}
       <div>
-        <h1 style={{ fontSize: 'var(--text-2xl)', fontWeight: 700, letterSpacing: '-0.02em', marginBottom: 4 }}>
-          Challenge Bank
-        </h1>
-        <p style={{ fontSize: '13px', color: 'var(--color-text-tertiary)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 4 }}>
+          <h1 style={{ fontSize: 'var(--text-2xl)', fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--color-text-primary)' }}>
+            Challenge Bank
+          </h1>
+          {enrolledFields.map((f) => (
+            <span
+              key={f}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '2px 9px',
+                borderRadius: 9999,
+                background: 'rgba(1, 133, 86, 0.06)',
+                border: '1px solid rgba(1, 133, 86, 0.18)',
+                color: 'var(--color-primary, #018556)',
+                fontSize: '11px',
+                fontWeight: 600,
+                letterSpacing: '0.01em',
+              }}
+            >
+              <span style={{
+                width: 6, height: 6, borderRadius: '50%',
+                background: 'var(--color-primary, #018556)',
+                boxShadow: '0 0 0 2px rgba(1, 133, 86, 0.2)',
+              }} />
+              {FIELD_LABELS[f] || f}
+            </span>
+          ))}
+        </div>
+        <p style={{ fontSize: '13px', color: 'var(--color-text-tertiary)', margin: 0 }}>
           Uji pemahamanmu dengan tantangan yang selaras dengan kelas yang kamu ikuti. Dapatkan XP pada kelulusan pertama dan latih kemampuanmu berulang kali tanpa batas.
         </p>
 
-        {/* Clean Class Pills (Tanpa emoji) */}
+        {/* Clean Class Pills */}
         {purchasedClasses.length > 0 && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
-            <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-tertiary)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 10, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '12px', color: 'var(--color-text-tertiary)' }}>
               Kelas Terdaftar:
             </span>
             {purchasedClasses.map((pc) => (
               <span
                 key={pc.id}
                 style={{
-                  fontSize: '12px',
+                  fontSize: '11px',
                   fontWeight: 500,
-                  padding: '3px 10px',
-                  borderRadius: '6px',
-                  background: 'var(--color-surface)',
+                  padding: '2px 9px',
+                  borderRadius: 9999,
+                  background: 'var(--color-bg)',
                   color: 'var(--color-text-secondary)',
                   border: '1px solid var(--color-border-subtle)',
                 }}
               >
-                {pc.title} <span style={{ color: 'var(--color-text-tertiary)' }}>· {FIELD_LABELS[pc.field] || pc.field}</span>
+                {pc.title}
               </span>
             ))}
           </div>
