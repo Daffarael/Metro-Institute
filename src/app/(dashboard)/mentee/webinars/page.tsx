@@ -1,19 +1,16 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { motion, AnimatePresence } from 'motion/react'
+import { useQuery } from '@tanstack/react-query'
+import { motion } from 'motion/react'
 import {
-  Video, Calendar, Clock, Users, Search, CheckCircle2,
-  ExternalLink, Sparkles, AlertCircle, PlayCircle, X, Share2,
-  BookOpen, ChevronRight
+  Video, Calendar, Clock, Search, ChevronRight
 } from 'lucide-react'
 import api from '@/lib/axios'
-import { formatDate, formatRupiah } from '@/lib/utils'
+import { ROUTES, formatDate, formatRupiah } from '@/lib/utils'
 import CleanCombobox from '@/components/admin/CleanCombobox'
 import AdminEmptyState from '@/components/admin/AdminEmptyState'
 import { SlidingTabs } from '@/components/ui/SlidingTabs'
-import { toast } from 'sonner'
 import { useAuthStore } from '@/stores/auth.store'
 import { useRouter } from 'next/navigation'
 
@@ -48,13 +45,11 @@ const SCHEDULE_OPTIONS = [
 export default function MenteeWebinarsPage() {
   const router = useRouter()
   const { user } = useAuthStore()
-  const qc = useQueryClient()
 
   const [activeTab, setActiveTab] = useState<'ALL' | 'MY'>('ALL')
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [scheduleStatus, setScheduleStatus] = useState('')
-  const [selectedWebinar, setSelectedWebinar] = useState<WebinarItem | null>(null)
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 350)
@@ -81,62 +76,6 @@ export default function MenteeWebinarsPage() {
     staleTime: 30_000,
     enabled: Boolean(user),
   })
-
-  // Register mutation (for free webinars or direct registration)
-  const registerMutation = useMutation({
-    mutationFn: (webinarId: string) => api.post(`/webinars/${webinarId}/register`),
-    onSuccess: (res, webinarId) => {
-      toast.success(res.data.message || 'Berhasil mendaftar ke webinar!')
-      qc.invalidateQueries({ queryKey: ['webinars'] })
-      qc.invalidateQueries({ queryKey: ['webinars', 'my', 'registered'] })
-      if (selectedWebinar?.id === webinarId) {
-        setSelectedWebinar(prev => prev ? { ...prev, isRegistered: true } : null)
-      }
-    },
-    onError: (err: any) => {
-      toast.error(err.response?.data?.message || 'Gagal mendaftar webinar')
-    },
-  })
-
-  const handleRegisterOrPay = (webinar: WebinarItem) => {
-    if (!user) {
-      toast.info('Silakan login terlebih dahulu')
-      router.push('/login')
-      return
-    }
-
-    if (webinar.price > 0) {
-      // Initiate checkout
-      api.post('/transactions/initiate', {
-        productType: 'WEBINAR',
-        webinarId: webinar.id,
-      })
-      .then(res => {
-        const snapToken = res.data.data?.snapToken
-        if (snapToken && (window as any).snap) {
-          (window as any).snap.pay(snapToken, {
-            onSuccess: () => {
-              toast.success('Pembayaran berhasil!')
-              qc.invalidateQueries({ queryKey: ['webinars'] })
-              qc.invalidateQueries({ queryKey: ['webinars', 'my', 'registered'] })
-            },
-            onPending: () => {
-              toast.info('Menunggu pembayaran...')
-              router.push('/mentee/transactions')
-            },
-            onError: () => toast.error('Pembayaran gagal atau dibatalkan'),
-          })
-        } else {
-          router.push(`/mentee/checkout?type=webinar&id=${webinar.id}`)
-        }
-      })
-      .catch(err => {
-        toast.error(err.response?.data?.message || 'Gagal memulai transaksi')
-      })
-    } else {
-      registerMutation.mutate(webinar.id)
-    }
-  }
 
   const displayedWebinars = activeTab === 'ALL' ? allWebinars : myWebinars
 
@@ -239,237 +178,25 @@ export default function MenteeWebinarsPage() {
             <WebinarCard
               key={webinar.id}
               webinar={webinar}
-              onSelect={() => setSelectedWebinar(webinar)}
-              onRegister={() => handleRegisterOrPay(webinar)}
-              isPending={registerMutation.isPending && registerMutation.variables === webinar.id}
             />
           ))}
         </div>
       )}
-
-      {/* ── Detail Modal ──────────────────────────────────── */}
-      <AnimatePresence>
-        {selectedWebinar && (
-          <div style={{
-            position: 'fixed', inset: 0, zIndex: 999, display: 'flex',
-            alignItems: 'center', justifyContent: 'center', padding: 20,
-            background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)',
-          }}>
-            <motion.div
-              initial={{ opacity: 0, scale: 0.96, y: 15 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.96, y: 15 }}
-              transition={{ duration: 0.2 }}
-              style={{
-                background: 'var(--color-surface)', border: '1px solid var(--color-border)',
-                borderRadius: 20, maxWidth: 600, width: '100%', maxHeight: '90vh',
-                overflowY: 'auto', position: 'relative', boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
-              }}
-            >
-              {/* Modal Banner */}
-              <div style={{ position: 'relative', height: 200, background: 'linear-gradient(135deg, #064e3b 0%, #0f172a 100%)', overflow: 'hidden' }}>
-                {selectedWebinar.bannerUrl ? (
-                  <img
-                    src={selectedWebinar.bannerUrl}
-                    alt={selectedWebinar.title}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
-                ) : (
-                  <div style={{
-                    position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    background: 'linear-gradient(135deg, #059669 0%, #047857 50%, #064e3b 100%)',
-                    color: '#fff', flexDirection: 'column', gap: 6,
-                  }}>
-                    <Video size={44} opacity={0.8} />
-                    <span style={{ fontSize: '13px', fontWeight: 600, opacity: 0.9 }}>Metro Institute Webinar</span>
-                  </div>
-                )}
-
-                <button
-                  onClick={() => setSelectedWebinar(null)}
-                  style={{
-                    position: 'absolute', top: 14, right: 14, width: 32, height: 32,
-                    borderRadius: '50%', background: 'rgba(0,0,0,0.5)', color: '#fff',
-                    border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    cursor: 'pointer', backdropFilter: 'blur(4px)',
-                  }}
-                >
-                  <X size={16} />
-                </button>
-
-                {selectedWebinar.isRegistered && (
-                  <div style={{ position: 'absolute', bottom: 12, left: 14 }}>
-                    <span style={{
-                      fontSize: '11px', fontWeight: 700, padding: '3px 8px', borderRadius: 20,
-                      background: '#059669', color: '#fff',
-                    }}>
-                      Terdaftar ✅
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              {/* Modal Body */}
-              <div style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 18 }}>
-                <div>
-                  <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: 6, lineHeight: 1.35 }}>
-                    {selectedWebinar.title}
-                  </h2>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 14, fontSize: '13px', color: 'var(--color-text-secondary)', marginTop: 8 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                      <Calendar size={14} color="#64748b" /> {formatDate(selectedWebinar.scheduledAt)}
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                      <Clock size={14} color="#64748b" /> {selectedWebinar.duration} Menit
-                    </div>
-                    {selectedWebinar.quota && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                        <Users size={14} color="#64748b" /> Kuota: {selectedWebinar.quota} Peserta
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Speaker Card */}
-                <div style={{
-                  display: 'flex', alignItems: 'center', gap: 12, padding: 14,
-                  borderRadius: 12, background: 'var(--color-bg)', border: '1px solid var(--color-border)',
-                }}>
-                  <div style={{
-                    width: 44, height: 44, borderRadius: '50%',
-                    background: 'rgba(1, 133, 86, 0.1)', color: 'var(--color-primary)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontWeight: 700, fontSize: '16px', overflow: 'hidden', flexShrink: 0,
-                  }}>
-                    {selectedWebinar.speakerAvatarUrl ? (
-                      <img src={selectedWebinar.speakerAvatarUrl} alt={selectedWebinar.speakerName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    ) : (
-                      selectedWebinar.speakerName.charAt(0).toUpperCase()
-                    )}
-                  </div>
-                  <div>
-                    <div style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', fontWeight: 600, textTransform: 'uppercase' }}>
-                      Narasumber
-                    </div>
-                    <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-text-primary)' }}>
-                      {selectedWebinar.speakerName}
-                    </div>
-                    {selectedWebinar.speakerRole && (
-                      <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
-                        {selectedWebinar.speakerRole}
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Description */}
-                <div>
-                  <h3 style={{ fontSize: '13px', fontWeight: 700, color: 'var(--color-text-tertiary)', textTransform: 'uppercase', marginBottom: 8, letterSpacing: '0.04em' }}>
-                    Deskripsi & Pembahasan
-                  </h3>
-                  <div style={{ fontSize: '13px', lineHeight: 1.6, color: 'var(--color-text-secondary)', whiteSpace: 'pre-line' }}>
-                    {selectedWebinar.description}
-                  </div>
-                </div>
-
-                {/* Meeting Room Link if registered */}
-                {selectedWebinar.isRegistered && (
-                  <div style={{
-                    padding: 16, borderRadius: 14, background: 'rgba(16, 185, 129, 0.08)',
-                    border: '1px solid rgba(16, 185, 129, 0.25)', display: 'flex', flexDirection: 'column', gap: 10,
-                  }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 700, fontSize: '13px', color: '#047857' }}>
-                      <Video size={16} /> Akses Link Live Room
-                    </div>
-                    {selectedWebinar.meetingUrl ? (
-                      <a
-                        href={selectedWebinar.meetingUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        style={{
-                          display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                          padding: '10px 18px', borderRadius: 8, background: '#059669', color: '#fff',
-                          textDecoration: 'none', fontWeight: 600, fontSize: '13px',
-                        }}
-                      >
-                        Buka Link Zoom / Google Meet <ExternalLink size={14} />
-                      </a>
-                    ) : (
-                      <p style={{ fontSize: '12px', color: '#065f46', margin: 0 }}>
-                        Link meeting akan diaktifkan mendekati jadwal webinar dimulai. Pantau kembali halaman ini menjelang sesi!
-                      </p>
-                    )}
-
-                    {selectedWebinar.recordingUrl && (
-                      <a
-                        href={selectedWebinar.recordingUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        style={{
-                          display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                          padding: '8px 14px', borderRadius: 8, background: '#fff', color: '#334155',
-                          border: '1px solid #cbd5e1', textDecoration: 'none', fontWeight: 600, fontSize: '12px',
-                        }}
-                      >
-                        Tonton Rekaman Sesi <PlayCircle size={14} />
-                      </a>
-                    )}
-                  </div>
-                )}
-
-                {/* Footer Actions */}
-                <div style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  paddingTop: 14, borderTop: '1px solid var(--color-border)',
-                }}>
-                  <div>
-                    <div style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', fontWeight: 600 }}>Biaya Registrasi</div>
-                    <div style={{ fontSize: '18px', fontWeight: 800, color: selectedWebinar.price === 0 ? '#059669' : 'var(--color-text-primary)' }}>
-                      {selectedWebinar.price === 0 ? 'Gratis' : formatRupiah(selectedWebinar.price)}
-                    </div>
-                  </div>
-
-                  {!selectedWebinar.isRegistered ? (
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => handleRegisterOrPay(selectedWebinar)}
-                      disabled={registerMutation.isPending}
-                      style={{
-                        padding: '10px 24px', borderRadius: 'var(--radius-md)', background: 'var(--color-primary)',
-                        color: '#fff', border: 'none', fontWeight: 600, fontSize: '13px',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      {registerMutation.isPending ? 'Memproses...' : selectedWebinar.price === 0 ? 'Daftar Sekarang (Gratis)' : 'Beli Tiket'}
-                    </motion.button>
-                  ) : (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#059669', fontWeight: 700, fontSize: '13px' }}>
-                      <CheckCircle2 size={16} /> Sudah Terdaftar
-                    </div>
-                  )}
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
     </div>
   )
 }
 
 function WebinarCard({
   webinar,
-  onSelect,
-  onRegister,
-  isPending,
 }: {
   webinar: WebinarItem
-  onSelect: () => void
-  onRegister: () => void
-  isPending: boolean
 }) {
+  const router = useRouter()
   const isPast = new Date(webinar.scheduledAt).getTime() < Date.now()
+
+  const handleNavigateDetail = () => {
+    router.push(ROUTES.WEBINAR_DETAIL(webinar.id))
+  }
 
   return (
     <div
@@ -494,7 +221,7 @@ function WebinarCard({
         e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.02)'
         e.currentTarget.style.borderColor = 'var(--color-border)'
       }}
-      onClick={onSelect}
+      onClick={handleNavigateDetail}
     >
       {/* Banner / Poster Thumbnail */}
       <div style={{ position: 'relative', height: 150, background: 'linear-gradient(135deg, #064e3b 0%, #1e293b 100%)', overflow: 'hidden' }}>
@@ -615,52 +342,33 @@ function WebinarCard({
           </div>
         </div>
 
-        {/* Action Button */}
-        <div style={{ paddingTop: 4 }} onClick={e => e.stopPropagation()}>
-          {webinar.isRegistered ? (
-            webinar.meetingUrl ? (
-              <a
-                href={webinar.meetingUrl}
-                target="_blank"
-                rel="noreferrer"
-                style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                  width: '100%', padding: '8px 12px', borderRadius: 8, background: '#059669',
-                  color: '#fff', textDecoration: 'none', fontWeight: 600, fontSize: '12px',
-                }}
-              >
-                <Video size={13} /> Masuk Live Room
-              </a>
-            ) : (
-              <button
-                onClick={onSelect}
-                style={{
-                  width: '100%', padding: '8px 12px', borderRadius: 8, background: 'rgba(16, 185, 129, 0.1)',
-                  color: '#047857', border: '1px solid rgba(16, 185, 129, 0.3)', fontWeight: 600,
-                  fontSize: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                }}
-              >
-                <CheckCircle2 size={13} /> Lihat Detail Akses
-              </button>
-            )
-          ) : (
-            <motion.button
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-              onClick={onRegister}
-              disabled={isPending}
-              style={{
-                width: '100%', padding: '8px 12px', borderRadius: 8,
-                background: 'var(--color-primary)', color: '#fff',
-                border: 'none', fontWeight: 600, fontSize: '12px',
-                cursor: 'pointer', display: 'flex', alignItems: 'center',
-                justifyContent: 'center', gap: 6,
-              }}
-            >
-              {isPending ? 'Mendaftar...' : webinar.price === 0 ? 'Daftar Gratis' : 'Daftar Webinar'}
-              <ChevronRight size={13} />
-            </motion.button>
-          )}
+        {/* Action Button: Semua mengarahkan ke halaman detail terlebih dahulu */}
+        <div style={{ paddingTop: 4 }}>
+          <motion.button
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.99 }}
+            onClick={e => {
+              e.stopPropagation()
+              handleNavigateDetail()
+            }}
+            style={{
+              width: '100%', padding: '9px 12px', borderRadius: 8,
+              background: isPast ? 'var(--color-bg)' : 'var(--color-primary)',
+              color: isPast ? 'var(--color-text-tertiary)' : '#fff',
+              border: isPast ? '1px solid var(--color-border-subtle)' : 'none',
+              fontWeight: 600, fontSize: '12px',
+              cursor: 'pointer', display: 'flex', alignItems: 'center',
+              justifyContent: 'center', gap: 6,
+            }}
+          >
+            {isPast
+              ? 'Lihat Detail Sesi'
+              : webinar.isRegistered
+                ? 'Akses Sesi ›'
+                : webinar.price === 0
+                  ? 'Daftar Gratis ›'
+                  : `Beli Tiket (${formatRupiah(webinar.price)})`}
+          </motion.button>
         </div>
       </div>
     </div>
