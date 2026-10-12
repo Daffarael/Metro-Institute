@@ -149,31 +149,9 @@ export default function MenteeWebinarsPage() {
     <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-6)' }}>
       {/* ── Page Header ────────────────────────────────────── */}
       <div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-          <h1 style={{ fontSize: 'var(--text-2xl)', fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--color-text-primary)', margin: 0 }}>
-            Webinar & Workshop
-          </h1>
-          <span style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 6,
-            padding: '2px 8px',
-            borderRadius: 9999,
-            background: 'var(--color-bg)',
-            border: '1px solid var(--color-border-subtle)',
-            color: 'var(--color-text-secondary)',
-            fontSize: '11px',
-            fontWeight: 500,
-          }}>
-            <span style={{
-              width: 5,
-              height: 5,
-              borderRadius: '50%',
-              background: 'var(--color-primary, #018556)',
-            }} />
-            Live Learning
-          </span>
-        </div>
+        <h1 style={{ fontSize: 'var(--text-2xl)', fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--color-text-primary)', marginBottom: 4 }}>
+          Webinar & Workshop
+        </h1>
         <p style={{ fontSize: '13px', color: 'var(--color-text-tertiary)', margin: 0 }}>
           Ikuti sesi interaktif live streaming bersama mentor dan pakar industri teknologi. Diskusikan studi kasus nyata, tren terkini, dan tanyakan langsung kendalamu.
         </p>
@@ -537,27 +515,45 @@ function WebinarCard({
           </div>
         )}
 
-        {/* Top Badges */}
-        {webinar.isRegistered && (
-          <div style={{ position: 'absolute', top: 10, left: 10 }}>
-            <span style={{
-              fontSize: '11px', fontWeight: 700, padding: '3px 8px', borderRadius: 20,
-              background: '#059669', color: '#fff',
-            }}>
-              Terdaftar ✅
-            </span>
-          </div>
-        )}
-
-        {/* Price Tag top right */}
+        {/* Price / Gratis Badge — top-left corner styled like Bootcamp */}
         <div style={{
-          position: 'absolute', top: 10, right: 10,
-          background: webinar.price === 0 ? 'rgba(5, 150, 105, 0.95)' : 'rgba(15, 23, 42, 0.85)',
-          color: '#fff', fontSize: '11px', fontWeight: 700, padding: '3px 9px', borderRadius: 20,
-          backdropFilter: 'blur(4px)',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          padding: '4px 10px',
+          background: webinar.price === 0 ? 'var(--color-primary)' : 'rgba(0,0,0,0.5)',
+          borderRadius: '15px 0 8px 0',
+          fontSize: '11px',
+          fontFamily: 'var(--font-reggae-one)',
+          color: '#fff',
+          letterSpacing: '0.03em',
+          whiteSpace: 'nowrap',
+          zIndex: 2,
+          lineHeight: 1.4,
         }}>
           {webinar.price === 0 ? 'Gratis' : formatRupiah(webinar.price)}
         </div>
+
+        {/* Top Badges: Terdaftar */}
+        {webinar.isRegistered && (
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            padding: '4px 10px',
+            background: 'var(--color-primary)',
+            borderRadius: '0 15px 0 8px',
+            fontSize: '11px',
+            fontWeight: 600,
+            color: '#fff',
+            letterSpacing: '0.02em',
+            whiteSpace: 'nowrap',
+            zIndex: 2,
+            lineHeight: 1.4,
+          }}>
+            Terdaftar
+          </div>
+        )}
       </div>
 
       {/* Content */}
