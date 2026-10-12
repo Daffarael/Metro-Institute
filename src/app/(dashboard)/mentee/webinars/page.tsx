@@ -34,6 +34,7 @@ interface WebinarItem {
   isFeatured: boolean
   isRegistered?: boolean
   attended?: boolean
+  isEnded?: boolean
   _count?: { registrations: number }
 }
 
@@ -192,7 +193,7 @@ function WebinarCard({
   webinar: WebinarItem
 }) {
   const router = useRouter()
-  const isPast = new Date(webinar.scheduledAt).getTime() < Date.now()
+  const isEnded = Boolean(webinar.isEnded) || (new Date(webinar.scheduledAt).getTime() + 24 * 60 * 60 * 1000 < Date.now())
 
   const handleNavigateDetail = () => {
     router.push(ROUTES.WEBINAR_DETAIL(webinar.id))
@@ -332,15 +333,15 @@ function WebinarCard({
             }}
             style={{
               width: '100%', padding: '9px 12px', borderRadius: 8,
-              background: isPast ? 'var(--color-bg)' : 'var(--color-primary)',
-              color: isPast ? 'var(--color-text-tertiary)' : '#fff',
-              border: isPast ? '1px solid var(--color-border-subtle)' : 'none',
+              background: isEnded ? 'var(--color-bg)' : 'var(--color-primary)',
+              color: isEnded ? 'var(--color-text-tertiary)' : '#fff',
+              border: isEnded ? '1px solid var(--color-border-subtle)' : 'none',
               fontWeight: 600, fontSize: '12px',
               cursor: 'pointer', display: 'flex', alignItems: 'center',
               justifyContent: 'center', gap: 6,
             }}
           >
-            {isPast
+            {isEnded
               ? 'Lihat Detail Sesi'
               : webinar.isRegistered
                 ? 'Akses Sesi ›'

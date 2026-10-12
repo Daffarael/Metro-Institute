@@ -36,6 +36,7 @@ interface WebinarDetail {
   isFeatured: boolean
   isRegistered?: boolean
   attended?: boolean
+  isEnded?: boolean
   _count?: { registrations: number }
   liveStatus?: 'UPCOMING' | 'LIVE' | 'ENDED'
   openTime?: string
@@ -170,16 +171,19 @@ export default function MenteeWebinarDetailPage() {
     )
   }
 
-  // ── Perhitungan Time-Gate Ketat ─────────────────────────────
+  // ── Perhitungan Time-Gate Fleksibel & Cerdas ─────────────────────────────
   const scheduledStart = new Date(webinar.scheduledAt)
   const durationMin = webinar.duration || 90
   const scheduledEnd = new Date(scheduledStart.getTime() + durationMin * 60 * 1000)
   const openTime = new Date(scheduledStart.getTime() - 30 * 60 * 1000) // Ruang tunggu dibuka 30 menit sebelum sesi
-  const closeTime = new Date(scheduledEnd.getTime() + 30 * 60 * 1000)  // Buffer toleransi 30 menit setelah sesi selesai
 
-  const isUpcoming = currentTime < openTime.getTime()
-  const isLiveWindow = currentTime >= openTime.getTime() && currentTime <= closeTime.getTime()
-  const isEnded = currentTime > closeTime.getTime()
+  // Sesi dinyatakan Selesai JIKA diakhiri manual oleh admin (isEnded = true / liveStatus = 'ENDED')
+  // ATAU fallback pengaman 24 jam setelah waktu jadwal
+  const isEnded = Boolean(webinar.isEnded) || webinar.liveStatus === 'ENDED' || currentTime > (scheduledStart.getTime() + 24 * 60 * 60 * 1000)
+  const isUpcoming = !isEnded && currentTime < openTime.getTime()
+  const isLiveWindow = !isEnded && currentTime >= openTime.getTime()
+  // Overtime: Sesi melewati jadwal durasi awal, namun admin belum mengakhiri sesi (masih diskusi/Q&A)
+  const isOvertime = isLiveWindow && currentTime > scheduledEnd.getTime()
   const isFree = webinar.price === 0
   const isFull = !!webinar.quota && (webinar._count?.registrations || 0) >= webinar.quota
 
@@ -244,9 +248,25 @@ export default function MenteeWebinarDetailPage() {
               <span style={{ fontSize: '14px', color: 'var(--color-border)' }}>•</span>
               <span style={{
                 fontSize: '12px', fontWeight: 600,
-                color: isEnded ? 'var(--color-text-secondary)' : isLiveWindow ? 'var(--color-primary)' : isFull ? '#DC2626' : 'var(--color-primary)',
+                color: isEnded
+                  ? 'var(--color-text-secondary)'
+                  : isOvertime
+                    ? '#D97706'
+                    : isLiveWindow
+                      ? 'var(--color-primary)'
+                      : isFull
+                        ? '#DC2626'
+                        : 'var(--color-primary)',
               }}>
-                {isEnded ? 'Sesi Selesai' : isLiveWindow ? 'Live Berlangsung' : isFull ? 'Kuota Penuh' : 'Pendaftaran Dibuka'}
+                {isEnded
+                  ? 'Sesi Selesai'
+                  : isOvertime
+                    ? 'Live Berlangsung (Waktu Tambahan)'
+                    : isLiveWindow
+                      ? 'Live Berlangsung'
+                      : isFull
+                        ? 'Kuota Penuh'
+                        : 'Pendaftaran Dibuka'}
               </span>
             </div>
 
@@ -447,7 +467,7 @@ export default function MenteeWebinarDetailPage() {
                       </div>
                     </div>
                   ) : isLiveWindow ? (
-                    /* KONDISI 2: SEDANG BERLANGSUNG / SIAP MASUK (LIVE) */
+                    /* KONDISI 2: SEDANG BERLANGSUNG / SIAP MASUK (LIVE / OVERTIME) */
                     <div style={{
                       padding: '20px', borderRadius: 12,
                       background: 'var(--color-bg)', border: '1px solid var(--color-border-subtle)',
@@ -456,7 +476,8 @@ export default function MenteeWebinarDetailPage() {
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                         <div style={{
                           width: 32, height: 32, borderRadius: 8,
-                          background: 'rgba(1, 133, 86, 0.08)', color: 'var(--color-primary)',
+                          background: isOvertime ? 'rgba(217, 119, 6, 0.1)' : 'rgba(1, 133, 86, 0.08)',
+                          color: isOvertime ? '#D97706' : 'var(--color-primary)',
                           display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
                         }}>
                           <CheckCircle2 size={18} strokeWidth={2} />
@@ -464,23 +485,27 @@ export default function MenteeWebinarDetailPage() {
                         <div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                             <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>
-                              Ruang Sesi Telah Dibuka
+                              {isOvertime ? 'Ruang Sesi Masih Aktif' : 'Ruang Sesi Telah Dibuka'}
                             </h3>
                             <span style={{
                               fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: 6,
-                              background: 'var(--color-primary)', color: '#fff',
+                              background: isOvertime ? '#D97706' : 'var(--color-primary)', color: '#fff',
                             }}>
-                              LIVE
+                              {isOvertime ? 'WAKTU TAMBAHAN' : 'LIVE'}
                             </span>
                           </div>
                           <p style={{ fontSize: '12.5px', color: 'var(--color-text-tertiary)', margin: '2px 0 0' }}>
-                            Sesi sedang berlangsung via Google Meet / Zoom
+                            {isOvertime
+                              ? 'Sesi melewati estimasi durasi awal, namun diskusi & Q&A masih berlangsung aktif.'
+                              : 'Sesi sedang berlangsung via Google Meet / Zoom'}
                           </p>
                         </div>
                       </div>
 
                       <p style={{ fontSize: '13.5px', color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: 0 }}>
-                        Ruang sesi webinar telah siap. Silakan klik tombol di bawah untuk langsung bergabung ke ruang sesi bersama narasumber.
+                        {isOvertime
+                          ? 'Acara masih berlangsung. Anda tetap dapat masuk atau bergabung kembali ke ruang sesi kapan saja melalui tombol di bawah.'
+                          : 'Ruang sesi webinar telah siap. Silakan klik tombol di bawah untuk langsung bergabung ke ruang sesi bersama narasumber.'}
                       </p>
 
                       {webinar.meetingUrl && (
@@ -497,11 +522,11 @@ export default function MenteeWebinarDetailPage() {
                               style={{
                                 display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                                 padding: '12px 24px', borderRadius: 8,
-                                background: 'var(--color-primary)', color: '#fff',
+                                background: isOvertime ? '#D97706' : 'var(--color-primary)', color: '#fff',
                                 fontWeight: 700, fontSize: '14px', cursor: 'pointer',
                               }}
                             >
-                              <PlayCircle size={16} strokeWidth={2} /> Buka Ruang Sesi Sekarang
+                              <PlayCircle size={16} strokeWidth={2} /> Masuk Ruang Sesi Sekarang
                             </motion.div>
                           </a>
                         </div>
@@ -686,35 +711,49 @@ export default function MenteeWebinarDetailPage() {
                 ) : isLiveWindow ? (
                   /* Terdaftar dan SEDANG BERLANGSUNG */
                   webinar.meetingUrl ? (
-                    <a href={ensureAbsoluteUrl(webinar.meetingUrl)} target="_blank" rel="noreferrer" style={{ textDecoration: 'none', display: 'block' }}>
+                    <div>
+                      <a href={ensureAbsoluteUrl(webinar.meetingUrl)} target="_blank" rel="noreferrer" style={{ textDecoration: 'none', display: 'block' }}>
+                        <motion.div
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          style={{
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                            width: '100%', padding: '12px 0',
+                            background: isOvertime ? '#D97706' : 'var(--color-primary)', color: '#fff',
+                            borderRadius: 8, fontWeight: 700, fontSize: '14px',
+                          }}
+                        >
+                          <PlayCircle size={16} strokeWidth={2} /> Masuk Live Room Sekarang
+                        </motion.div>
+                      </a>
+                      {isOvertime && (
+                        <div style={{ textAlign: 'center', marginTop: 8, fontSize: '11.5px', color: '#D97706', fontWeight: 500 }}>
+                          Sesi sedang berlangsung (waktu tambahan / Q&A)
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div>
                       <motion.div
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
+                        onClick={() => setActiveTab('schedule')}
                         style={{
                           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                           width: '100%', padding: '12px 0',
-                          background: 'var(--color-primary)', color: '#fff',
+                          background: isOvertime ? '#D97706' : 'var(--color-primary)', color: '#fff',
                           borderRadius: 8, fontWeight: 700, fontSize: '14px',
+                          cursor: 'pointer',
                         }}
                       >
-                        <PlayCircle size={16} strokeWidth={2} /> Masuk Live Room Sekarang
+                        <PlayCircle size={16} strokeWidth={2} /> Masuk Live Room
                       </motion.div>
-                    </a>
-                  ) : (
-                    <motion.div
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => setActiveTab('schedule')}
-                      style={{
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                        width: '100%', padding: '12px 0',
-                        background: 'var(--color-primary)', color: '#fff',
-                        borderRadius: 8, fontWeight: 700, fontSize: '14px',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      <PlayCircle size={16} strokeWidth={2} /> Masuk Live Room
-                    </motion.div>
+                      {isOvertime && (
+                        <div style={{ textAlign: 'center', marginTop: 8, fontSize: '11.5px', color: '#D97706', fontWeight: 500 }}>
+                          Sesi sedang berlangsung (waktu tambahan / Q&A)
+                        </div>
+                      )}
+                    </div>
                   )
                 ) : (
                   /* Terdaftar dan SESI TELAH SELESAI */
