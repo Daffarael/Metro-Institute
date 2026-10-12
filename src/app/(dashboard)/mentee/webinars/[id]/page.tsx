@@ -692,24 +692,29 @@ export default function MenteeWebinarDetailPage() {
               {webinar.isRegistered ? (
                 isUpcoming ? (
                   /* Terdaftar tapi BELUM WAKTUNYA */
-                  <motion.div
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.99 }}
-                    onClick={() => {
-                      setActiveTab('schedule')
-                      toast.info(`Ruang sesi akan dibuka otomatis 30 menit sebelum jadwal (pukul ${formatTimeOnly(openTime)} WIB).`)
-                    }}
-                    style={{
-                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                      width: '100%', padding: '12px 0',
-                      background: 'var(--color-bg)', color: 'var(--color-text-secondary)',
-                      border: '1px solid var(--color-border-subtle)',
-                      borderRadius: 8, fontWeight: 700, fontSize: '13.5px',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    <Lock size={15} strokeWidth={2} /> Dibuka {formatTimeOnly(openTime)} WIB
-                  </motion.div>
+                  <div>
+                    <motion.div
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
+                      onClick={() => {
+                        setActiveTab('schedule')
+                        toast.info(`Ruang sesi akan dibuka otomatis 30 menit sebelum jadwal (pukul ${formatTimeOnly(openTime)} WIB). Sesi mulai pukul ${formatTimeOnly(scheduledStart)} WIB.`)
+                      }}
+                      style={{
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                        width: '100%', padding: '12px 0',
+                        background: 'var(--color-bg)', color: 'var(--color-text-secondary)',
+                        border: '1px solid var(--color-border-subtle)',
+                        borderRadius: 8, fontWeight: 700, fontSize: '13.5px',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      <Lock size={15} strokeWidth={2} /> Dibuka {formatTimeOnly(openTime)} WIB
+                    </motion.div>
+                    <div style={{ textAlign: 'center', marginTop: 6, fontSize: '11px', color: 'var(--color-text-tertiary)' }}>
+                      Ruang buka 30 menit sebelum mulai ({formatTimeOnly(scheduledStart)} WIB)
+                    </div>
+                  </div>
                 ) : isLiveWindow ? (
                   /* Terdaftar dan SEDANG BERLANGSUNG */
                   webinar.meetingUrl ? (
@@ -898,7 +903,7 @@ export default function MenteeWebinarDetailPage() {
                   { icon: Zap,      text: 'XP dari setiap sesi', color: 'var(--color-xp)' },
                   { icon: Users,    text: `${webinar._count?.registrations || 0} peserta terdaftar`, color: 'var(--color-text-tertiary)' },
                   { icon: Clock,    text: `${webinar.duration}m durasi sesi`, color: 'var(--color-text-tertiary)' },
-                  { icon: Calendar, text: `Mulai: ${formatDate(webinar.scheduledAt)}`, color: 'var(--color-text-tertiary)' },
+                  { icon: Calendar, text: `Mulai: ${formatDate(webinar.scheduledAt)}, ${formatTimeOnly(scheduledStart)} WIB`, color: 'var(--color-text-tertiary)' },
                 ].map((item, i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: '13px', color: 'var(--color-text-secondary)' }}>
                     <item.icon size={14} strokeWidth={1.5} color={item.color} />
