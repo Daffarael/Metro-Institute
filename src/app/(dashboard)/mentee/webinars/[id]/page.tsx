@@ -29,14 +29,17 @@ interface WebinarDetail {
   bannerUrl?: string
   scheduledAt: string
   duration: number
-  meetingUrl?: string
-  recordingUrl?: string
+  meetingUrl?: string | null
+  recordingUrl?: string | null
   quota?: number
   isPublished: boolean
   isFeatured: boolean
   isRegistered?: boolean
   attended?: boolean
   _count?: { registrations: number }
+  liveStatus?: 'UPCOMING' | 'LIVE' | 'ENDED'
+  openTime?: string
+  closeTime?: string
 }
 
 export default function MenteeWebinarDetailPage() {
@@ -48,6 +51,13 @@ export default function MenteeWebinarDetailPage() {
 
   const [activeTab, setActiveTab] = useState<'overview' | 'schedule' | 'speaker'>('overview')
   const [showConfirmModal, setShowConfirmModal] = useState(false)
+  const [currentTime, setCurrentTime] = useState(Date.now())
+
+  // Update clock every 15s to keep time-gate live and reactive
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(Date.now()), 15000)
+    return () => clearInterval(timer)
+  }, [])
 
   const { data: webinar, isLoading, error } = useQuery<WebinarDetail>({
     queryKey: ['webinar', id],
@@ -160,9 +170,43 @@ export default function MenteeWebinarDetailPage() {
     )
   }
 
-  const isPast = new Date(webinar.scheduledAt).getTime() < Date.now()
+  // ── Perhitungan Time-Gate Ketat ─────────────────────────────
+  const scheduledStart = new Date(webinar.scheduledAt)
+  const durationMin = webinar.duration || 90
+  const scheduledEnd = new Date(scheduledStart.getTime() + durationMin * 60 * 1000)
+  const openTime = new Date(scheduledStart.getTime() - 30 * 60 * 1000) // Ruang tunggu dibuka 30 menit sebelum sesi
+  const closeTime = new Date(scheduledEnd.getTime() + 30 * 60 * 1000)  // Buffer toleransi 30 menit setelah sesi selesai
+
+  const isUpcoming = currentTime < openTime.getTime()
+  const isLiveWindow = currentTime >= openTime.getTime() && currentTime <= closeTime.getTime()
+  const isEnded = currentTime > closeTime.getTime()
   const isFree = webinar.price === 0
   const isFull = !!webinar.quota && (webinar._count?.registrations || 0) >= webinar.quota
+
+  const formatTimeOnly = (date: Date) => {
+    return new Intl.DateTimeFormat('id-ID', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    }).format(date)
+  }
+
+  const getTimeUntilOpen = () => {
+    const diffMs = openTime.getTime() - currentTime
+    if (diffMs <= 0) return null
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
+    const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60))
+    if (diffHours > 24) {
+      const diffDays = Math.floor(diffHours / 24)
+      return `${diffDays} hari lagi`
+    }
+    if (diffHours > 0) {
+      return `${diffHours} jam ${diffMinutes} menit lagi`
+    }
+    return `${diffMinutes} menit lagi`
+  }
+
+  const timeUntilOpen = getTimeUntilOpen()
 
   return (
     <div style={{ maxWidth: 1100, margin: '0 auto' }} className="animate-fade-in">
@@ -200,9 +244,9 @@ export default function MenteeWebinarDetailPage() {
               <span style={{ fontSize: '14px', color: 'var(--color-border)' }}>•</span>
               <span style={{
                 fontSize: '12px', fontWeight: 600,
-                color: isPast ? 'var(--color-text-secondary)' : isFull ? '#DC2626' : 'var(--color-primary)',
+                color: isEnded ? 'var(--color-text-secondary)' : isLiveWindow ? 'var(--color-primary)' : isFull ? '#DC2626' : 'var(--color-primary)',
               }}>
-                {isPast ? 'Sesi Selesai' : isFull ? 'Kuota Penuh' : 'Pendaftaran Dibuka'}
+                {isEnded ? 'Sesi Selesai' : isLiveWindow ? 'Live Berlangsung' : isFull ? 'Kuota Penuh' : 'Pendaftaran Dibuka'}
               </span>
             </div>
 
@@ -237,7 +281,7 @@ export default function MenteeWebinarDetailPage() {
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 5, color: 'var(--color-text-secondary)', fontSize: '13px' }}>
                 <Clock size={13} strokeWidth={1.5} />
-                <span>{webinar.duration}m</span>
+                <span>{webinar.duration}m ({formatTimeOnly(scheduledStart)} – {formatTimeOnly(scheduledEnd)} WIB)</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 5, color: 'var(--color-text-secondary)', fontSize: '13px' }}>
                 <Calendar size={13} strokeWidth={1.5} />
@@ -322,6 +366,7 @@ export default function MenteeWebinarDetailPage() {
 
             {activeTab === 'schedule' && (
               <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+                {/* Waktu & Tempat */}
                 <div style={{
                   padding: '18px 20px', borderRadius: 12,
                   background: 'var(--color-bg)', border: '1px solid var(--color-border-subtle)',
@@ -333,11 +378,11 @@ export default function MenteeWebinarDetailPage() {
                   <div style={{ display: 'grid', gap: 10, fontSize: '13.5px', color: 'var(--color-text-secondary)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                       <Calendar size={15} color="var(--color-primary)" />
-                      <span><strong>Tanggal:</strong> {formatDate(webinar.scheduledAt)}</span>
+                      <span><strong>Hari, Tanggal:</strong> {formatDate(webinar.scheduledAt)}</span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                       <Clock size={15} color="var(--color-primary)" />
-                      <span><strong>Durasi:</strong> {webinar.duration} Menit</span>
+                      <span><strong>Waktu:</strong> {formatTimeOnly(scheduledStart)} – {formatTimeOnly(scheduledEnd)} WIB ({webinar.duration} Menit)</span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                       <Video size={15} color="var(--color-primary)" />
@@ -346,37 +391,41 @@ export default function MenteeWebinarDetailPage() {
                   </div>
                 </div>
 
+                {/* Section Akses Meeting Ketat */}
                 {webinar.isRegistered ? (
-                  <div style={{
-                    padding: '20px', borderRadius: 12,
-                    background: 'var(--color-bg)', border: '1px solid var(--color-border-subtle)',
-                    display: 'flex', flexDirection: 'column', gap: 12,
-                  }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <div style={{
-                        width: 32, height: 32, borderRadius: 8,
-                        background: 'rgba(1, 133, 86, 0.08)', color: 'var(--color-primary)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                      }}>
-                        <CheckCircle2 size={18} strokeWidth={2} />
+                  isUpcoming ? (
+                    /* KONDISI 1: BELUM WAKTUNYA (UPCOMING) */
+                    <div style={{
+                      padding: '20px', borderRadius: 12,
+                      background: 'var(--color-bg)', border: '1px solid var(--color-border-subtle)',
+                      display: 'flex', flexDirection: 'column', gap: 14,
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <div style={{
+                          width: 32, height: 32, borderRadius: 8,
+                          background: 'var(--color-surface)', border: '1px solid var(--color-border-subtle)',
+                          color: 'var(--color-text-tertiary)',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                        }}>
+                          <Clock size={16} strokeWidth={2} />
+                        </div>
+                        <div>
+                          <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>
+                            Ruang Sesi Belum Dibuka
+                          </h3>
+                          <p style={{ fontSize: '12.5px', color: 'var(--color-text-tertiary)', margin: '2px 0 0' }}>
+                            Dibuka otomatis 30 menit sebelum acara ({formatTimeOnly(openTime)} WIB)
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>
-                          Akses Live Room Kamu
-                        </h3>
-                        <p style={{ fontSize: '12.5px', color: 'var(--color-text-tertiary)', margin: '2px 0 0' }}>
-                          Sesi interaktif via Zoom / Google Meet
-                        </p>
-                      </div>
-                    </div>
 
-                    {webinar.meetingUrl ? (
+                      <p style={{ fontSize: '13.5px', color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: 0 }}>
+                        Tautan Google Meet / Zoom akan otomatis aktif di halaman ini mulai pukul <strong>{formatTimeOnly(openTime)} WIB</strong> {timeUntilOpen ? `(${timeUntilOpen})` : ''}. Silakan simpan jadwal ke kalender agar Anda mendapatkan pengingat saat sesi dimulai.
+                      </p>
+
                       <div>
-                        <p style={{ fontSize: '13.5px', color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: '0 0 16px' }}>
-                          Ruang sesi webinar telah siap. Silakan klik tombol di bawah untuk langsung bergabung ke ruang sesi.
-                        </p>
                         <a
-                          href={ensureAbsoluteUrl(webinar.meetingUrl)}
+                          href={getGoogleCalendarUrl()}
                           target="_blank"
                           rel="noreferrer"
                           style={{ textDecoration: 'none', display: 'inline-block' }}
@@ -386,22 +435,137 @@ export default function MenteeWebinarDetailPage() {
                             whileTap={{ scale: 0.98 }}
                             style={{
                               display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                              padding: '12px 24px', borderRadius: 8,
-                              background: 'var(--color-primary)', color: '#fff',
-                              fontWeight: 700, fontSize: '14px', cursor: 'pointer',
+                              padding: '10px 18px', borderRadius: 8,
+                              background: 'var(--color-surface)', color: 'var(--color-text-primary)',
+                              border: '1px solid var(--color-border-subtle)',
+                              fontWeight: 600, fontSize: '13px', cursor: 'pointer',
                             }}
                           >
-                            <PlayCircle size={16} strokeWidth={2} /> Buka Ruang Sesi Sekarang
+                            <Calendar size={15} /> Simpan ke Google Calendar
                           </motion.div>
                         </a>
                       </div>
-                    ) : (
+                    </div>
+                  ) : isLiveWindow ? (
+                    /* KONDISI 2: SEDANG BERLANGSUNG / SIAP MASUK (LIVE) */
+                    <div style={{
+                      padding: '20px', borderRadius: 12,
+                      background: 'var(--color-bg)', border: '1px solid var(--color-border-subtle)',
+                      display: 'flex', flexDirection: 'column', gap: 14,
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <div style={{
+                          width: 32, height: 32, borderRadius: 8,
+                          background: 'rgba(1, 133, 86, 0.08)', color: 'var(--color-primary)',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                        }}>
+                          <CheckCircle2 size={18} strokeWidth={2} />
+                        </div>
+                        <div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>
+                              Ruang Sesi Telah Dibuka
+                            </h3>
+                            <span style={{
+                              fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: 6,
+                              background: 'var(--color-primary)', color: '#fff',
+                            }}>
+                              LIVE
+                            </span>
+                          </div>
+                          <p style={{ fontSize: '12.5px', color: 'var(--color-text-tertiary)', margin: '2px 0 0' }}>
+                            Sesi sedang berlangsung via Google Meet / Zoom
+                          </p>
+                        </div>
+                      </div>
+
                       <p style={{ fontSize: '13.5px', color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: 0 }}>
-                        Tautan Live Room (Zoom / GMeet) akan aktif otomatis di halaman ini 30 menit sebelum webinar dimulai. Pastikan kamu hadir tepat waktu!
+                        Ruang sesi webinar telah siap. Silakan klik tombol di bawah untuk langsung bergabung ke ruang sesi bersama narasumber.
                       </p>
-                    )}
-                  </div>
+
+                      {webinar.meetingUrl && (
+                        <div>
+                          <a
+                            href={ensureAbsoluteUrl(webinar.meetingUrl)}
+                            target="_blank"
+                            rel="noreferrer"
+                            style={{ textDecoration: 'none', display: 'inline-block' }}
+                          >
+                            <motion.div
+                              whileHover={{ scale: 1.02 }}
+                              whileTap={{ scale: 0.98 }}
+                              style={{
+                                display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                                padding: '12px 24px', borderRadius: 8,
+                                background: 'var(--color-primary)', color: '#fff',
+                                fontWeight: 700, fontSize: '14px', cursor: 'pointer',
+                              }}
+                            >
+                              <PlayCircle size={16} strokeWidth={2} /> Buka Ruang Sesi Sekarang
+                            </motion.div>
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    /* KONDISI 3: SESI TELAH SELESAI (ENDED) */
+                    <div style={{
+                      padding: '20px', borderRadius: 12,
+                      background: 'var(--color-bg)', border: '1px solid var(--color-border-subtle)',
+                      display: 'flex', flexDirection: 'column', gap: 14,
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <div style={{
+                          width: 32, height: 32, borderRadius: 8,
+                          background: 'var(--color-surface)', border: '1px solid var(--color-border-subtle)',
+                          color: 'var(--color-text-tertiary)',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                        }}>
+                          <CheckCircle2 size={18} strokeWidth={2} />
+                        </div>
+                        <div>
+                          <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>
+                            Sesi Webinar Telah Selesai
+                          </h3>
+                          <p style={{ fontSize: '12.5px', color: 'var(--color-text-tertiary)', margin: '2px 0 0' }}>
+                            Berakhir pada {formatDate(webinar.scheduledAt)} pukul {formatTimeOnly(scheduledEnd)} WIB
+                          </p>
+                        </div>
+                      </div>
+
+                      <p style={{ fontSize: '13.5px', color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: 0 }}>
+                        {webinar.recordingUrl
+                          ? 'Sesi live streaming untuk webinar ini telah berakhir. Anda dapat menyaksikan kembali video rekaman pembahasannya di bawah ini.'
+                          : 'Sesi live streaming untuk webinar ini telah berakhir. Terima kasih telah berpartisipasi! Rekaman materi dan sertifikat akan segera diperbarui jika telah siap.'}
+                      </p>
+
+                      {webinar.recordingUrl && (
+                        <div>
+                          <a
+                            href={ensureAbsoluteUrl(webinar.recordingUrl)}
+                            target="_blank"
+                            rel="noreferrer"
+                            style={{ textDecoration: 'none', display: 'inline-block' }}
+                          >
+                            <motion.div
+                              whileHover={{ scale: 1.02 }}
+                              whileTap={{ scale: 0.98 }}
+                              style={{
+                                display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                                padding: '12px 24px', borderRadius: 8,
+                                background: 'var(--color-primary)', color: '#fff',
+                                fontWeight: 700, fontSize: '14px', cursor: 'pointer',
+                              }}
+                            >
+                              <PlayCircle size={16} strokeWidth={2} /> Tonton Rekaman Webinar
+                            </motion.div>
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  )
                 ) : (
+                  /* Belum Terdaftar */
                   <div style={{
                     padding: '20px', borderRadius: 12,
                     background: 'var(--color-bg)', border: '1px solid var(--color-border-subtle)',
@@ -497,43 +661,95 @@ export default function MenteeWebinarDetailPage() {
                 {isFree ? 'Gratis' : formatRupiah(webinar.price)}
               </div>
 
-              {/* CTA */}
+              {/* CTA dengan Logika Waktu Ketat */}
               {webinar.isRegistered ? (
-                webinar.meetingUrl ? (
-                  <a href={ensureAbsoluteUrl(webinar.meetingUrl)} target="_blank" rel="noreferrer" style={{ textDecoration: 'none', display: 'block' }}>
+                isUpcoming ? (
+                  /* Terdaftar tapi BELUM WAKTUNYA */
+                  <motion.div
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.99 }}
+                    onClick={() => {
+                      setActiveTab('schedule')
+                      toast.info(`Ruang sesi akan dibuka otomatis 30 menit sebelum jadwal (pukul ${formatTimeOnly(openTime)} WIB).`)
+                    }}
+                    style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                      width: '100%', padding: '12px 0',
+                      background: 'var(--color-bg)', color: 'var(--color-text-secondary)',
+                      border: '1px solid var(--color-border-subtle)',
+                      borderRadius: 8, fontWeight: 700, fontSize: '13.5px',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <Lock size={15} strokeWidth={2} /> Dibuka {formatTimeOnly(openTime)} WIB
+                  </motion.div>
+                ) : isLiveWindow ? (
+                  /* Terdaftar dan SEDANG BERLANGSUNG */
+                  webinar.meetingUrl ? (
+                    <a href={ensureAbsoluteUrl(webinar.meetingUrl)} target="_blank" rel="noreferrer" style={{ textDecoration: 'none', display: 'block' }}>
+                      <motion.div
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        style={{
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                          width: '100%', padding: '12px 0',
+                          background: 'var(--color-primary)', color: '#fff',
+                          borderRadius: 8, fontWeight: 700, fontSize: '14px',
+                        }}
+                      >
+                        <PlayCircle size={16} strokeWidth={2} /> Masuk Live Room Sekarang
+                      </motion.div>
+                    </a>
+                  ) : (
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
+                      onClick={() => setActiveTab('schedule')}
                       style={{
                         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                         width: '100%', padding: '12px 0',
                         background: 'var(--color-primary)', color: '#fff',
                         borderRadius: 8, fontWeight: 700, fontSize: '14px',
+                        cursor: 'pointer',
                       }}
                     >
                       <PlayCircle size={16} strokeWidth={2} /> Masuk Live Room
                     </motion.div>
-                  </a>
+                  )
                 ) : (
-                  <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => {
-                      setActiveTab('schedule')
-                      toast.info('Tautan sesi akan aktif 30 menit sebelum acara.')
-                    }}
-                    style={{
-                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                      width: '100%', padding: '12px 0',
-                      background: 'var(--color-primary)', color: '#fff',
-                      borderRadius: 8, fontWeight: 700, fontSize: '14px',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    <PlayCircle size={16} strokeWidth={2} /> Lanjut Belajar
-                  </motion.div>
+                  /* Terdaftar dan SESI TELAH SELESAI */
+                  webinar.recordingUrl ? (
+                    <a href={ensureAbsoluteUrl(webinar.recordingUrl)} target="_blank" rel="noreferrer" style={{ textDecoration: 'none', display: 'block' }}>
+                      <motion.div
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        style={{
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                          width: '100%', padding: '12px 0',
+                          background: 'var(--color-primary)', color: '#fff',
+                          borderRadius: 8, fontWeight: 700, fontSize: '14px',
+                        }}
+                      >
+                        <PlayCircle size={16} strokeWidth={2} /> Tonton Rekaman Sesi
+                      </motion.div>
+                    </a>
+                  ) : (
+                    <div
+                      style={{
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                        width: '100%', padding: '12px 0',
+                        background: 'var(--color-bg)', color: 'var(--color-text-tertiary)',
+                        border: '1px solid var(--color-border-subtle)',
+                        borderRadius: 8, fontWeight: 700, fontSize: '14px',
+                        cursor: 'default',
+                      }}
+                    >
+                      <CheckCircle2 size={16} strokeWidth={2} /> Sesi Telah Selesai
+                    </div>
+                  )
                 )
-              ) : isPast ? (
+              ) : isEnded ? (
+                /* Belum Terdaftar tapi Sesi sudah selesai */
                 <div
                   style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
@@ -547,6 +763,7 @@ export default function MenteeWebinarDetailPage() {
                   <Lock size={16} strokeWidth={2} /> Sesi Selesai
                 </div>
               ) : isFull ? (
+                /* Kuota Penuh */
                 <div
                   style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
@@ -560,6 +777,7 @@ export default function MenteeWebinarDetailPage() {
                   <Lock size={16} strokeWidth={2} /> Kuota Penuh
                 </div>
               ) : isFree ? (
+                /* Belum Terdaftar: Gratis */
                 <motion.button
                   whileHover={!registerMutation.isPending ? { scale: 1.02 } : {}}
                   whileTap={!registerMutation.isPending ? { scale: 0.98 } : {}}
@@ -584,6 +802,7 @@ export default function MenteeWebinarDetailPage() {
                   {registerMutation.isPending ? 'Memproses...' : 'Daftar Sekarang'}
                 </motion.button>
               ) : (
+                /* Belum Terdaftar: Berbayar */
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -637,7 +856,7 @@ export default function MenteeWebinarDetailPage() {
                 {[
                   { icon: Zap,      text: 'XP dari setiap sesi', color: 'var(--color-xp)' },
                   { icon: Users,    text: `${webinar._count?.registrations || 0} peserta terdaftar`, color: 'var(--color-text-tertiary)' },
-                  { icon: Clock,    text: `${webinar.duration}m`, color: 'var(--color-text-tertiary)' },
+                  { icon: Clock,    text: `${webinar.duration}m durasi sesi`, color: 'var(--color-text-tertiary)' },
                   { icon: Calendar, text: `Mulai: ${formatDate(webinar.scheduledAt)}`, color: 'var(--color-text-tertiary)' },
                 ].map((item, i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: '13px', color: 'var(--color-text-secondary)' }}>
@@ -687,7 +906,7 @@ export default function MenteeWebinarDetailPage() {
               </div>
 
               <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: '0 0 16px 0' }}>
-                Kamu akan mendaftar ke webinar <strong>"{webinar.title}"</strong> tanpa dipungut biaya. Tiket akses live room akan langsung terdaftar di akunmu.
+                Kamu akan mendaftar ke webinar <strong>"{webinar.title}"</strong> tanpa dipungut biaya. Akses ruang sesi akan langsung tercatat di akunmu.
               </p>
 
               <div style={{
@@ -697,7 +916,7 @@ export default function MenteeWebinarDetailPage() {
                 fontSize: '12px', color: 'var(--color-text-secondary)',
                 marginBottom: 20,
               }}>
-                <div><strong>Jadwal:</strong> {formatDate(webinar.scheduledAt)}</div>
+                <div><strong>Jadwal:</strong> {formatDate(webinar.scheduledAt)} ({formatTimeOnly(scheduledStart)} WIB)</div>
                 <div style={{ marginTop: 4 }}><strong>Narasumber:</strong> {webinar.speakerName}</div>
               </div>
 

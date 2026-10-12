@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tansta
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Plus, Edit2, Users, Trash2, X, Calendar, Clock, Video, Link2, ExternalLink } from 'lucide-react'
+import { Plus, Edit2, Users, Trash2, X, Calendar, Clock, Video, Link2, ExternalLink, CheckCircle2 } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
 import api from '@/lib/axios'
 import Link from 'next/link'
@@ -56,6 +56,7 @@ interface WebinarItem {
   quota?: number
   isPublished: boolean
   isFeatured: boolean
+  isEnded?: boolean
   certificateTemplateId?: string
   _count?: { registrations: number }
 }
@@ -458,6 +459,18 @@ export default function AdminWebinarsPage() {
     onError: () => toast.error('Gagal menghapus webinar.'),
   })
 
+  const toggleEndMutation = useMutation({
+    mutationFn: ({ id, isEnded }: { id: string; isEnded: boolean }) =>
+      api.patch(`/admin/webinars/${id}/end`, { isEnded }),
+    onSuccess: (_, variables) => {
+      toast.success(variables.isEnded ? 'Sesi webinar ditandai selesai.' : 'Sesi webinar diaktifkan kembali.')
+      qc.invalidateQueries({ queryKey: ['admin', 'webinars'] })
+    },
+    onError: (err: any) => {
+      toast.error(err.response?.data?.message || 'Gagal mengubah status sesi webinar.')
+    },
+  })
+
   const items: WebinarItem[] = data?.items ?? []
   const pagination = data?.pagination ?? { total: 0, page: 1, limit: 10, totalPages: 1 }
 
@@ -591,12 +604,40 @@ export default function AdminWebinarsPage() {
 
                   {/* Status */}
                   <td style={{ padding: '14px 18px' }}>
-                    <AdminStatusChip status={w.isPublished ? 'PUBLISHED' : 'DRAFT'} />
+                    {w.isEnded ? (
+                      <span style={{
+                        display: 'inline-flex', alignItems: 'center', gap: 4,
+                        padding: '3px 8px', borderRadius: 6, fontSize: '11px', fontWeight: 700,
+                        background: '#f1f5f9', color: '#64748b', border: '1px solid #e2e8f0',
+                      }}>
+                        SELESAI
+                      </span>
+                    ) : (
+                      <AdminStatusChip status={w.isPublished ? 'PUBLISHED' : 'DRAFT'} />
+                    )}
                   </td>
 
                   {/* Actions */}
                   <td style={{ padding: '14px 18px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
+                      <button
+                        onClick={() => toggleEndMutation.mutate({ id: w.id, isEnded: !w.isEnded })}
+                        title={w.isEnded ? 'Aktifkan Kembali Sesi' : 'Akhiri Sesi Webinar'}
+                        disabled={toggleEndMutation.isPending}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px',
+                          borderRadius: 'var(--radius-md)',
+                          border: w.isEnded ? '1px solid #e5e7eb' : '1px solid rgba(16, 185, 129, 0.3)',
+                          background: w.isEnded ? '#f3f4f6' : 'rgba(16, 185, 129, 0.08)',
+                          boxShadow: '0 1px 2px rgba(0,0,0,0.05)', fontSize: '12px', fontWeight: 600,
+                          cursor: 'pointer',
+                          color: w.isEnded ? '#6b7280' : 'var(--color-primary)',
+                          transition: 'all 0.15s',
+                        }}
+                      >
+                        <CheckCircle2 size={12} /> {w.isEnded ? 'Selesai' : 'Akhiri Sesi'}
+                      </button>
+
                       <button
                         onClick={() => setModal(w)}
                         title="Edit Webinar"
