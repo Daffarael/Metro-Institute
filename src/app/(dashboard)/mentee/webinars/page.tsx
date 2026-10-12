@@ -148,29 +148,33 @@ export default function MenteeWebinarsPage() {
   return (
     <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-6)' }}>
       {/* ── Page Header ────────────────────────────────────── */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-          <h1 style={{ fontSize: 'var(--text-2xl)', fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--color-text-primary)' }}>
+      <div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+          <h1 style={{ fontSize: 'var(--text-2xl)', fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--color-text-primary)', margin: 0 }}>
             Webinar & Workshop
           </h1>
           <span style={{
-            display: 'inline-flex', alignItems: 'center', gap: 6,
-            padding: '2px 9px', borderRadius: 9999,
-            background: 'rgba(1, 133, 86, 0.06)',
-            border: '1px solid rgba(1, 133, 86, 0.18)',
-            color: 'var(--color-primary)',
-            fontSize: '11px', fontWeight: 600,
-            letterSpacing: '0.01em',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 6,
+            padding: '2px 8px',
+            borderRadius: 9999,
+            background: 'var(--color-bg)',
+            border: '1px solid var(--color-border-subtle)',
+            color: 'var(--color-text-secondary)',
+            fontSize: '11px',
+            fontWeight: 500,
           }}>
             <span style={{
-              width: 6, height: 6, borderRadius: '50%',
-              background: 'var(--color-primary)',
-              boxShadow: '0 0 0 2px rgba(1, 133, 86, 0.2)',
+              width: 5,
+              height: 5,
+              borderRadius: '50%',
+              background: 'var(--color-primary, #018556)',
             }} />
             Live Learning
           </span>
         </div>
-        <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', maxWidth: 680, lineHeight: 1.5 }}>
+        <p style={{ fontSize: '13px', color: 'var(--color-text-tertiary)', margin: 0 }}>
           Ikuti sesi interaktif live streaming bersama mentor dan pakar industri teknologi. Diskusikan studi kasus nyata, tren terkini, dan tanyakan langsung kendalamu.
         </p>
       </div>
