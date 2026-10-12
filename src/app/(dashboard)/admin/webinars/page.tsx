@@ -91,10 +91,21 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
     staleTime: 5 * 60 * 1000,
   })
 
-  // Format scheduledAt for datetime-local input
+  // Helper to format Date/ISO string to "YYYY-MM-DDTHH:mm" in local timezone for <input type="datetime-local">
+  const toLocalDatetimeValue = (dateVal: string | Date | number) => {
+    const d = new Date(dateVal)
+    const pad = (n: number) => String(n).padStart(2, '0')
+    const year = d.getFullYear()
+    const month = pad(d.getMonth() + 1)
+    const day = pad(d.getDate())
+    const hours = pad(d.getHours())
+    const minutes = pad(d.getMinutes())
+    return `${year}-${month}-${day}T${hours}:${minutes}`
+  }
+
   const defaultDate = webinar?.scheduledAt
-    ? new Date(webinar.scheduledAt).toISOString().slice(0, 16)
-    : new Date(Date.now() + 86400000).toISOString().slice(0, 16)
+    ? toLocalDatetimeValue(webinar.scheduledAt)
+    : toLocalDatetimeValue(Date.now() + 86400000)
 
   const { register, handleSubmit, control, formState: { errors } } = useForm<WebinarForm>({
     resolver: zodResolver(webinarSchema) as any,
@@ -118,13 +129,17 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
 
   const mutation = useMutation({
     mutationFn: (data: WebinarForm) => {
-      const { status, ...rest } = data
+      const { status, scheduledAt, ...rest } = data
       const sanitizeUrl = (url?: string | null) => {
         if (!url || !url.trim()) return null
         return ensureAbsoluteUrl(url)
       }
+      // Konversi local input "2026-10-12T19:15" ke UTC ISO string sesuai browser timezone (WIB)
+      const scheduledAtIso = new Date(scheduledAt).toISOString()
+
       const payload = {
         ...rest,
+        scheduledAt: scheduledAtIso,
         meetingUrl: sanitizeUrl(rest.meetingUrl),
         recordingUrl: sanitizeUrl(rest.recordingUrl),
         isPublished: status === 'PUBLISHED',
