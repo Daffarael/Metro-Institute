@@ -260,27 +260,6 @@ function WebinarCard({
         }}>
           {webinar.price === 0 ? 'Gratis' : formatRupiah(webinar.price)}
         </div>
-
-        {/* Top Badges: Terdaftar */}
-        {webinar.isRegistered && (
-          <div style={{
-            position: 'absolute',
-            top: 0,
-            right: 0,
-            padding: '4px 10px',
-            background: 'var(--color-primary)',
-            borderRadius: '0 15px 0 8px',
-            fontSize: '11px',
-            fontWeight: 600,
-            color: '#fff',
-            letterSpacing: '0.02em',
-            whiteSpace: 'nowrap',
-            zIndex: 2,
-            lineHeight: 1.4,
-          }}>
-            Terdaftar
-          </div>
-        )}
       </div>
 
       {/* Content */}
