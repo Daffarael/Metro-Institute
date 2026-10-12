@@ -62,7 +62,7 @@ export default function MenteeWebinarDetailPage() {
   }, [])
 
   const { data: webinar, isLoading, error } = useQuery<WebinarDetail>({
-    queryKey: ['webinar', id],
+    queryKey: ['webinar', id, user?.id],
     queryFn: () => api.get(`/webinars/${id}`).then((r) => r.data.data),
     retry: false,
     enabled: !!id,

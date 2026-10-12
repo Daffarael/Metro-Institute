@@ -51,12 +51,14 @@ export const useAuthStore = create<AuthState>()(
       setToken: (token) => {
         if (typeof window !== 'undefined') {
           sessionStorage.setItem('metro_access_token', token)
+          localStorage.setItem('metro_access_token', token)
         }
       },
 
       logout: () => {
         if (typeof window !== 'undefined') {
           sessionStorage.removeItem('metro_access_token')
+          localStorage.removeItem('metro_access_token')
         }
         set({ user: null, isAuthenticated: false })
       },

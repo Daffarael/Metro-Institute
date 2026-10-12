@@ -9,10 +9,10 @@ export const api = axios.create({
   timeout: 15000,
 })
 
-// Attach access token from memory store
+// Attach access token from memory / storage store
 api.interceptors.request.use((config) => {
   if (typeof window !== 'undefined') {
-    const token = sessionStorage.getItem('metro_access_token')
+    const token = sessionStorage.getItem('metro_access_token') || localStorage.getItem('metro_access_token')
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`
     }
@@ -58,6 +58,7 @@ api.interceptors.response.use(
         )
         const newToken = data.data.accessToken
         sessionStorage.setItem('metro_access_token', newToken)
+        localStorage.setItem('metro_access_token', newToken)
         originalRequest.headers['Authorization'] = `Bearer ${newToken}`
         processQueue(null, newToken)
         return api(originalRequest)

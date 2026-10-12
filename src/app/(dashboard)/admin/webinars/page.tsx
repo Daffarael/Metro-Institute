@@ -96,15 +96,18 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
   // Helper to format Date/ISO string to "YYYY-MM-DDTHH:mm" in local WIB timezone for <input type="datetime-local">
   const toLocalDatetimeValue = (dateVal: string | Date | number) => {
     const d = new Date(dateVal)
-    const wibStr = d.toLocaleString('en-US', { timeZone: 'Asia/Jakarta' })
-    const wibTime = new Date(wibStr)
-    const pad = (n: number) => String(n).padStart(2, '0')
-    const year = wibTime.getFullYear()
-    const month = pad(wibTime.getMonth() + 1)
-    const day = pad(wibTime.getDate())
-    const hours = pad(wibTime.getHours())
-    const minutes = pad(wibTime.getMinutes())
-    return `${year}-${month}-${day}T${hours}:${minutes}`
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Asia/Jakarta',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    })
+    const parts = Object.fromEntries(formatter.formatToParts(d).map((p) => [p.type, p.value]))
+    const hour = parts.hour === '24' ? '00' : parts.hour
+    return `${parts.year}-${parts.month}-${parts.day}T${hour}:${parts.minute}`
   }
 
   const defaultDate = webinar?.scheduledAt
@@ -165,8 +168,10 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
         if (!url || !url.trim()) return null
         return ensureAbsoluteUrl(url)
       }
-      // Konversi local input "2026-10-12T19:15" ke UTC ISO string sesuai browser timezone (WIB)
-      const scheduledAtIso = new Date(scheduledAt).toISOString()
+      // Pastikan string datetime-local selalu terkonversi sebagai WIB (+07:00) ke UTC ISO string
+      const scheduledAtIso = scheduledAt.includes('Z') || /[+-]\d{2}(:\d{2})?$/.test(scheduledAt)
+        ? new Date(scheduledAt).toISOString()
+        : new Date(`${scheduledAt}+07:00`).toISOString()
 
       const payload = {
         ...rest,
