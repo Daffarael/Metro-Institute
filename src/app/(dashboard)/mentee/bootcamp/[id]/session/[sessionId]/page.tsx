@@ -391,92 +391,113 @@ export default function BootcampLearningPlayerPage() {
             ) : currentSession.type === 'LIVE' ? (
               <div style={{
                 background: '#ffffff',
-                borderRadius: 20,
-                padding: '36px 32px',
+                borderRadius: 16,
+                padding: '24px 28px',
                 border: '1px solid #e2e8f0',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: 20
+                gap: 18
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <div style={{
-                    width: 48, height: 48, borderRadius: 12,
-                    background: 'rgba(239, 68, 68, 0.1)', color: '#dc2626',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center'
-                  }}>
-                    <Video size={24} />
-                  </div>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                {/* Header with clean pill badges */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                    <span style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      padding: '4px 10px',
+                      borderRadius: 6,
+                      background: 'rgba(239, 68, 68, 0.08)',
+                      color: '#ef4444',
+                      fontSize: '12px',
+                      fontWeight: 700,
+                      letterSpacing: '0.04em',
+                    }}>
+                      <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#ef4444', display: 'inline-block' }} />
+                      LIVE SESSION
+                    </span>
+
+                    {currentSession.liveScheduledAt && (
                       <span style={{
-                        padding: '3px 8px', borderRadius: 6,
-                        background: '#fee2e2', color: '#dc2626',
-                        fontSize: '11px', fontWeight: 800, letterSpacing: '0.04em'
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        fontSize: '12.5px',
+                        color: '#64748b',
+                        background: '#f8fafc',
+                        border: '1px solid #e2e8f0',
+                        padding: '4px 10px',
+                        borderRadius: 6,
+                        fontWeight: 600
                       }}>
-                        LIVE SESSION
+                        <Calendar size={13} color="#94a3b8" /> {formatSchedule(currentSession.liveScheduledAt)}
                       </span>
-                      {currentSession.liveScheduledAt && (
-                        <span style={{ fontSize: '13px', color: '#64748b', display: 'flex', alignItems: 'center', gap: 4 }}>
-                          <Calendar size={13} /> {formatSchedule(currentSession.liveScheduledAt)}
-                        </span>
-                      )}
-                    </div>
-                    <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#0f172a', margin: '6px 0 0' }}>
-                      {currentSession.title}
-                    </h2>
+                    )}
                   </div>
                 </div>
 
-                <p style={{ color: '#475569', fontSize: '14px', lineHeight: 1.6, margin: 0 }}>
+                {/* Description Text */}
+                <p style={{
+                  color: '#334155',
+                  fontSize: '14.5px',
+                  lineHeight: 1.75,
+                  margin: 0
+                }}>
                   {currentSession.description || 'Sesi ini berlangsung secara tatap muka daring melalui Google Meet / Zoom. Pastikan Anda telah bergabung beberapa menit sebelum jadwal dimulai.'}
                 </p>
 
-                <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+                {/* Actions: Join Live button only (no "Tandai Telah Hadir") */}
+                <div>
                   {currentSession.liveUrl ? (
                     <a
                       href={currentSession.liveUrl.startsWith('http') ? currentSession.liveUrl : `https://${currentSession.liveUrl}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      style={{
-                        display: 'inline-flex', alignItems: 'center', gap: 8,
-                        padding: '12px 24px', borderRadius: 10,
-                        background: 'var(--color-primary)', color: '#fff',
-                        fontWeight: 700, fontSize: '14px', textDecoration: 'none',
-                        boxShadow: '0 4px 12px rgba(16, 185, 129, 0.25)'
-                      }}
+                      style={{ textDecoration: 'none', display: 'inline-block' }}
                     >
-                      <Video size={16} /> Masuk Ruang Sesi Live <ExternalLink size={14} />
+                      <motion.div
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 8,
+                          padding: '10px 22px',
+                          borderRadius: 'var(--radius-md)',
+                          background: 'var(--color-primary)',
+                          color: '#fff',
+                          fontWeight: 600,
+                          fontSize: '13.5px',
+                          boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <Video size={16} /> Masuk Ruang Sesi Live <ExternalLink size={14} />
+                      </motion.div>
                     </a>
                   ) : (
-                    <div style={{ padding: '10px 18px', background: '#f1f5f9', borderRadius: 8, color: '#64748b', fontSize: '13px', fontWeight: 500 }}>
+                    <div style={{
+                      padding: '12px 18px',
+                      background: '#f8fafc',
+                      borderRadius: 10,
+                      border: '1px solid #e2e8f0',
+                      color: '#64748b',
+                      fontSize: '13px',
+                      fontWeight: 500
+                    }}>
                       Tautan meeting akan diaktifkan menjelang jadwal sesi dimulai.
                     </div>
-                  )}
-
-                  {!isCompleted && (
-                    <button
-                      onClick={() => completeMutation.mutate()}
-                      disabled={completeMutation.isPending}
-                      style={{
-                        padding: '11px 20px', borderRadius: 10,
-                        background: '#fff', border: '1px solid var(--color-border)',
-                        color: 'var(--color-text-primary)', fontWeight: 600, fontSize: '13.5px',
-                        cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6
-                      }}
-                    >
-                      <CheckCircle2 size={16} color="var(--color-primary)" /> Tandai Telah Hadir
-                    </button>
                   )}
                 </div>
 
                 {/* Video replay if available */}
                 {currentSession.videoUrl && (
-                  <div style={{ marginTop: 12, borderTop: '1px solid #e2e8f0', paddingTop: 20 }}>
+                  <div style={{ marginTop: 8, borderTop: '1px solid #e2e8f0', paddingTop: 18 }}>
                     <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a', marginBottom: 12 }}>
                       Rekaman Sesi Tersedia
                     </h3>
-                    <div style={{ width: '100%', aspectRatio: '16/9', borderRadius: 14, overflow: 'hidden', background: '#000' }}>
+                    <div style={{ width: '100%', aspectRatio: '16/9', borderRadius: 12, overflow: 'hidden', background: '#000' }}>
                       <CourseVideoPlayer url={currentSession.videoUrl} title={`Rekaman - ${currentSession.title}`} />
                     </div>
                   </div>
@@ -485,37 +506,39 @@ export default function BootcampLearningPlayerPage() {
             ) : currentSession.type === 'ASSIGNMENT' ? (
               <div style={{
                 background: '#ffffff',
-                borderRadius: 20,
-                padding: '36px 32px',
+                borderRadius: 16,
+                padding: '24px 28px',
                 border: '1px solid #e2e8f0',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: 20
+                gap: 18
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <div style={{
-                    width: 48, height: 48, borderRadius: 12,
-                    background: 'rgba(245, 158, 11, 0.1)', color: '#d97706',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center'
-                  }}>
-                    <FileText size={24} />
-                  </div>
-                  <div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <span style={{
-                      padding: '3px 8px', borderRadius: 6,
-                      background: '#fef3c7', color: '#b45309',
-                      fontSize: '11px', fontWeight: 800, letterSpacing: '0.04em'
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      padding: '4px 10px',
+                      borderRadius: 6,
+                      background: 'rgba(245, 158, 11, 0.1)',
+                      color: '#d97706',
+                      fontSize: '12px',
+                      fontWeight: 700,
+                      letterSpacing: '0.04em'
                     }}>
-                      TUGAS / PROYEK PRAKTIK
+                      <FileText size={13} /> TUGAS / PROYEK PRAKTIK
                     </span>
-                    <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#0f172a', margin: '4px 0 0' }}>
-                      {currentSession.title}
-                    </h2>
                   </div>
                 </div>
 
-                <div style={{ padding: '16px 20px', background: '#f8fafc', borderRadius: 12, border: '1px solid #e2e8f0' }}>
+                <div style={{
+                  padding: '18px 22px',
+                  background: '#f8fafc',
+                  borderRadius: 12,
+                  border: '1px solid #e2e8f0'
+                }}>
                   <h4 style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a', margin: '0 0 6px' }}>Instruksi Tugas:</h4>
                   <p style={{ color: '#475569', fontSize: '14px', lineHeight: 1.6, margin: 0, whiteSpace: 'pre-wrap' }}>
                     {currentSession.assignmentDescription || currentSession.description || 'Silakan kerjakan tugas sesuai arahan mentor dan kirimkan tautan repository GitHub / Google Drive / Figma Anda di bawah ini.'}
@@ -523,43 +546,46 @@ export default function BootcampLearningPlayerPage() {
                 </div>
 
                 {/* Submission Form */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   <label style={{ fontSize: '13px', fontWeight: 600, color: '#334155' }}>
                     Tautan Pengumpulan Tugas (Google Drive / GitHub / Figma):
                   </label>
-                  <div style={{ display: 'flex', gap: 12 }}>
+                  <div style={{ display: 'flex', gap: 10 }}>
                     <input
                       type="url"
                       value={assignmentLink}
                       onChange={(e) => setAssignmentLink(e.target.value)}
                       placeholder="https://..."
                       style={{
-                        flex: 1, padding: '12px 16px', borderRadius: 10,
+                        flex: 1, padding: '10px 16px', borderRadius: 'var(--radius-md)',
                         border: '1px solid #cbd5e1', background: '#fff',
-                        fontSize: '14px', outline: 'none'
+                        fontSize: '13.5px', outline: 'none'
                       }}
                     />
-                    <button
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
                       onClick={() => submitAssignmentMutation.mutate()}
                       disabled={submitAssignmentMutation.isPending || !assignmentLink.trim()}
                       style={{
-                        padding: '12px 24px', borderRadius: 10, border: 'none',
-                        background: 'var(--color-primary)', color: '#fff', fontWeight: 700, fontSize: '13.5px',
+                        padding: '10px 20px', borderRadius: 'var(--radius-md)', border: 'none',
+                        background: 'var(--color-primary)', color: '#fff', fontWeight: 600, fontSize: '13px',
                         cursor: assignmentLink.trim() ? 'pointer' : 'not-allowed',
-                        opacity: assignmentLink.trim() ? 1 : 0.6, display: 'flex', alignItems: 'center', gap: 6
+                        opacity: assignmentLink.trim() ? 1 : 0.6, display: 'inline-flex', alignItems: 'center', gap: 6,
+                        boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)'
                       }}
                     >
-                      <Upload size={16} /> {submitAssignmentMutation.isPending ? 'Mengirim...' : 'Kumpulkan'}
-                    </button>
+                      <Upload size={15} /> {submitAssignmentMutation.isPending ? 'Mengirim...' : 'Kumpulkan'}
+                    </motion.button>
                   </div>
 
                   {currentSession.assignment && (
                     <div style={{
-                      marginTop: 8, padding: '14px 18px', borderRadius: 10,
+                      marginTop: 6, padding: '12px 16px', borderRadius: 10,
                       background: 'rgba(16, 185, 129, 0.08)', border: '1px solid rgba(16, 185, 129, 0.2)',
                       display: 'flex', alignItems: 'center', gap: 10
                     }}>
-                      <CheckCircle2 size={18} color="var(--color-primary)" />
+                      <CheckCircle2 size={16} color="var(--color-primary)" />
                       <div style={{ fontSize: '13px', color: '#0f172a' }}>
                         <strong>Tugas telah dikumpulkan</strong> pada {new Date(currentSession.assignment.submittedAt || Date.now()).toLocaleDateString('id-ID')}.
                         {currentSession.assignment.score !== undefined && (
