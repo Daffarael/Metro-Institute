@@ -1166,6 +1166,7 @@ function InteractiveQuiz({
   const [score, setScore] = useState(0)
   const [isStarted, setIsStarted] = useState(false)
 
+  // Normalize quiz questions safely
   const questions: QuizQuestion[] = useMemo(() => {
     let raw = quizOptions
     if (typeof raw === 'string') {
@@ -1222,134 +1223,390 @@ function InteractiveQuiz({
     }
   }
 
+  // 1. Empty state if no questions
   if (totalQ === 0) {
     return (
-      <div style={{
-        background: '#ffffff', borderRadius: 16, padding: '40px 24px',
-        display: 'flex', flexDirection: 'column', alignItems: 'center',
-        justifyContent: 'center', border: '1px solid #e2e8f0'
-      }}>
-        <HelpCircle size={28} color="var(--color-primary)" style={{ marginBottom: 12 }} />
-        <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', marginBottom: 4 }}>Kuis: {title}</h2>
-        <p style={{ color: '#64748b', fontSize: '14px', margin: 0 }}>Belum ada pertanyaan yang disediakan untuk kuis ini.</p>
+      <div
+        className="animate-fade-in"
+        style={{
+          background: '#ffffff',
+          borderRadius: 16,
+          padding: '40px 24px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          border: '1px solid #e2e8f0',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+        }}
+      >
+        <div
+          style={{
+            width: 48,
+            height: 48,
+            borderRadius: 12,
+            background: 'rgba(16, 185, 129, 0.08)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: 14,
+          }}
+        >
+          <HelpCircle size={24} color="var(--color-primary)" strokeWidth={1.8} />
+        </div>
+        <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', marginBottom: 4, letterSpacing: '-0.01em' }}>
+          Kuis: {title}
+        </h2>
+        <p style={{ color: '#64748b', fontSize: '14px', maxWidth: 420, textAlign: 'center', margin: 0 }}>
+          Belum ada pertanyaan yang disediakan untuk kuis ini.
+        </p>
       </div>
     )
   }
 
+  // 2. Result state
   if (showResult) {
     const isPassed = score >= 70
     return (
-      <div style={{
-        background: '#ffffff', borderRadius: 16, border: '1px solid #e2e8f0',
-        padding: '44px 32px', display: 'flex', flexDirection: 'column',
-        alignItems: 'center', textAlign: 'center'
-      }}>
-        <div style={{
-          width: 100, height: 100, borderRadius: '50%',
-          background: `conic-gradient(var(--color-primary) ${score * 3.6}deg, #e2e8f0 0deg)`,
-          display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 18
-        }}>
-          <div style={{ width: 80, height: 80, borderRadius: '50%', background: '#fff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ fontSize: '22px', fontWeight: 800, color: 'var(--color-primary)' }}>{score}%</span>
-            <span style={{ fontSize: '10px', fontWeight: 600, color: '#94a3b8' }}>SKOR</span>
+      <div
+        className="animate-fade-in"
+        style={{
+          background: '#ffffff',
+          borderRadius: 16,
+          border: '1px solid #e2e8f0',
+          padding: '44px 32px',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          textAlign: 'center',
+        }}
+      >
+        {/* Score Ring */}
+        <div
+          style={{
+            width: 110,
+            height: 110,
+            borderRadius: '50%',
+            background: `conic-gradient(var(--color-primary) ${score * 3.6}deg, #e2e8f0 0deg)`,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: 18,
+          }}
+        >
+          <div
+            style={{
+              width: 88,
+              height: 88,
+              borderRadius: '50%',
+              background: '#ffffff',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <span style={{ fontSize: '24px', fontWeight: 800, color: 'var(--color-primary)' }}>
+              {score}%
+            </span>
+            <span style={{ fontSize: '11px', fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase' }}>
+              Skor
+            </span>
           </div>
         </div>
 
         <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#0f172a', marginBottom: 6 }}>
           {isPassed ? 'Kuis Selesai! 🎉' : 'Kuis Telah Selesai'}
         </h2>
-        <p style={{ color: '#64748b', fontSize: '14px', maxWidth: 440, lineHeight: 1.6, margin: '0 auto 24px' }}>
-          {isPassed ? 'Selamat! Pemahaman Anda sangat baik. Sesi ini telah ditandai selesai.' : 'Jawaban Anda telah tersimpan. Anda dapat mengulang kuis untuk meningkatkan pemahaman.'}
+        <p style={{ color: '#64748b', fontSize: '14px', maxWidth: 440, lineHeight: 1.6, marginBottom: 24, margin: '0 auto 24px' }}>
+          {isPassed
+            ? 'Selamat! Pemahaman Anda terhadap materi sangat baik. Sesi ini telah ditandai selesai.'
+            : 'Jawaban Anda telah tersimpan. Anda dapat mengulang kuis untuk meningkatkan pemahaman Anda.'}
         </p>
 
-        <button
-          onClick={() => {
-            setShowResult(false)
-            setCurrentQIdx(0)
-            setAnswers({})
-            setIsStarted(false)
-          }}
-          style={{
-            display: 'inline-flex', alignItems: 'center', gap: 8, padding: '11px 20px',
-            borderRadius: 8, border: '1px solid #e2e8f0', background: '#f8fafc',
-            cursor: 'pointer', fontWeight: 600, fontSize: '13px', color: '#475569'
-          }}
-        >
-          <RotateCcw size={14} /> Coba Lagi Kuis
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, flexWrap: 'wrap' }}>
+          {isPassed && (
+            <Link
+              href={ROUTES.CERTIFICATES}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
+                padding: '11px 24px',
+                borderRadius: 8,
+                background: 'var(--color-primary)',
+                color: '#ffffff',
+                textDecoration: 'none',
+                fontWeight: 700,
+                fontSize: '13.5px',
+                boxShadow: '0 4px 12px rgba(16, 185, 129, 0.25)',
+                transition: 'all 0.15s ease',
+              }}
+            >
+              <Award size={16} /> Klaim & Lihat Sertifikat
+            </Link>
+          )}
+
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => {
+              setShowResult(false)
+              setCurrentQIdx(0)
+              setAnswers({})
+              setIsStarted(false)
+            }}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8,
+              padding: '11px 20px',
+              borderRadius: 8,
+              border: '1px solid #e2e8f0',
+              background: '#f8fafc',
+              cursor: 'pointer',
+              fontWeight: 600,
+              fontSize: '13px',
+              color: '#475569',
+              transition: 'all 0.15s ease',
+            }}
+          >
+            <RotateCcw size={14} strokeWidth={2} /> Coba Lagi Kuis
+          </motion.button>
+        </div>
       </div>
     )
   }
 
+  // 3. Start Screen state (!isStarted)
   if (!isStarted) {
     return (
-      <div style={{
-        background: '#ffffff', borderRadius: 16, border: '1px solid #e2e8f0',
-        padding: '40px 24px', display: 'flex', flexDirection: 'column',
-        alignItems: 'center', textAlign: 'center'
-      }}>
-        <div style={{ width: 48, height: 48, borderRadius: 12, background: 'rgba(16, 185, 129, 0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16, color: 'var(--color-primary)' }}>
-          <HelpCircle size={24} />
-        </div>
-        <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#0f172a', marginBottom: 6 }}>Siap untuk Mulai Kuis?</h2>
-        <p style={{ color: '#64748b', fontSize: '14px', maxWidth: 440, lineHeight: 1.6, margin: '0 auto 16px' }}>
-          Kuis ini terdiri dari <strong style={{ color: '#0f172a' }}>{totalQ} pertanyaan</strong>. Pastikan Anda sudah memahami materi sesi ini.
-        </p>
-
-        <button
-          onClick={() => setIsStarted(true)}
+      <div
+        className="animate-fade-in"
+        style={{
+          background: '#ffffff',
+          borderRadius: 16,
+          border: '1px solid #e2e8f0',
+          padding: '40px 24px',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          textAlign: 'center',
+        }}
+      >
+        <div
           style={{
-            display: 'inline-flex', alignItems: 'center', gap: 8, padding: '12px 28px',
-            background: 'var(--color-primary)', color: '#fff', border: 'none', borderRadius: 8,
-            fontWeight: 700, fontSize: '14px', cursor: 'pointer'
+            width: 48,
+            height: 48,
+            borderRadius: 12,
+            background: 'rgba(16, 185, 129, 0.08)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: 16,
+            color: 'var(--color-primary)',
           }}
         >
-          <PlayCircle size={16} /> {isCompleted ? 'Kerjakan Ulang Kuis' : 'Mulai Kuis'}
-        </button>
+          <HelpCircle size={24} strokeWidth={1.8} />
+        </div>
+
+        <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#0f172a', marginBottom: 6, letterSpacing: '-0.01em' }}>
+          Siap untuk Mulai Kuis?
+        </h2>
+        <p style={{ color: '#64748b', fontSize: '14px', maxWidth: 440, lineHeight: 1.6, margin: '0 auto 16px' }}>
+          Kuis ini terdiri dari <strong style={{ color: '#0f172a' }}>{totalQ} pertanyaan</strong>. Pastikan Anda sudah memahami materi sesi ini sebelum memulai.
+        </p>
+
+        {isCompleted && (
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '5px 12px',
+              background: '#f8fafc',
+              border: '1px solid #e2e8f0',
+              color: '#475569',
+              borderRadius: 8,
+              fontSize: '12.5px',
+              fontWeight: 600,
+              marginBottom: 20,
+            }}
+          >
+            <CheckCircle2 size={14} color="var(--color-primary)" strokeWidth={2} /> Kuis Sudah Pernah Dikerjakan
+          </div>
+        )}
+
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={() => setIsStarted(true)}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
+            padding: '12px 28px',
+            background: 'var(--color-primary)',
+            color: '#fff',
+            border: 'none',
+            borderRadius: 8,
+            fontWeight: 700,
+            fontSize: '14px',
+            cursor: 'pointer',
+          }}
+        >
+          <PlayCircle size={16} strokeWidth={2} />
+          {isCompleted ? 'Kerjakan Ulang Kuis' : 'Mulai Kuis'}
+        </motion.button>
       </div>
     )
   }
 
+  // 4. Questions state - Clean layout
   return (
-    <div style={{ background: '#ffffff', borderRadius: 16, border: '1px solid #e2e8f0', padding: '32px', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
+    <div
+      className="animate-fade-in"
+      style={{
+        background: '#ffffff',
+        borderRadius: 16,
+        border: '1px solid #e2e8f0',
+        padding: '32px 32px',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+      }}
+    >
       <div style={{ maxWidth: 720, margin: '0 auto' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+        {/* Header Question counter & Answered */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ padding: '3px 9px', borderRadius: 6, background: 'rgba(16, 185, 129, 0.1)', color: 'var(--color-primary)', fontSize: '12px', fontWeight: 700 }}>
+            <span
+              style={{
+                padding: '3px 9px',
+                borderRadius: 6,
+                background: 'rgba(16, 185, 129, 0.1)',
+                color: 'var(--color-primary)',
+                fontSize: '12px',
+                fontWeight: 700,
+              }}
+            >
               Pertanyaan {currentQIdx + 1}
             </span>
             <span style={{ fontSize: '13px', color: '#64748b' }}>dari {totalQ}</span>
           </div>
-          <span style={{ fontSize: '12.5px', color: '#64748b' }}>Terjawab: {answeredCount}/{totalQ}</span>
+
+          <div style={{ fontSize: '13px', fontWeight: 600, color: '#64748b' }}>
+            <span style={{ color: 'var(--color-primary)', fontWeight: 700 }}>{answeredCount}</span>/{totalQ} Terjawab
+          </div>
         </div>
 
-        <h3 style={{ fontSize: '17px', fontWeight: 700, color: '#0f172a', lineHeight: 1.5, marginBottom: 20 }}>
-          {currentQ.question}
-        </h3>
+        {/* Progress Bar */}
+        <div
+          style={{
+            height: 5,
+            background: '#f1f5f9',
+            borderRadius: 3,
+            marginBottom: 24,
+            overflow: 'hidden',
+          }}
+        >
+          <div
+            style={{
+              height: '100%',
+              background: 'linear-gradient(90deg, #10b981, #059669)',
+              width: `${(answeredCount / totalQ) * 100}%`,
+              transition: 'width 0.3s ease',
+              borderRadius: 3,
+            }}
+          />
+        </div>
 
+        {/* Question Prompt */}
+        <div
+          style={{
+            background: '#f8fafc',
+            borderRadius: 10,
+            padding: '20px 22px',
+            border: '1px solid #e2e8f0',
+            marginBottom: 18,
+          }}
+        >
+          <p
+            style={{
+              fontSize: '15.5px',
+              fontWeight: 600,
+              lineHeight: 1.6,
+              color: '#0f172a',
+              margin: 0,
+            }}
+          >
+            {currentQ.question}
+          </p>
+        </div>
+
+        {/* Options */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 24 }}>
-          {currentQ.options.map((opt) => {
+          {currentQ.options.map((opt, idx) => {
             const isSelected = answers[currentQ.id] === opt.id
             return (
               <button
                 key={opt.id}
                 onClick={() => setAnswers((prev) => ({ ...prev, [currentQ.id]: opt.id }))}
                 style={{
-                  display: 'flex', alignItems: 'center', gap: 14, padding: '14px 18px',
-                  borderRadius: 12, border: isSelected ? '1.5px solid var(--color-primary)' : '1px solid #e2e8f0',
-                  background: isSelected ? 'rgba(16, 185, 129, 0.05)' : '#f8fafc',
-                  cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s ease'
+                  padding: '13px 16px',
+                  borderRadius: 8,
+                  border: isSelected ? '2px solid var(--color-primary)' : '1px solid #e2e8f0',
+                  background: isSelected ? 'rgba(16, 185, 129, 0.05)' : '#ffffff',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 12,
+                  textAlign: 'left',
+                  transition: 'all 0.15s ease',
+                  outline: 'none',
+                }}
+                onMouseEnter={(e) => {
+                  if (!isSelected) {
+                    e.currentTarget.style.borderColor = '#cbd5e1'
+                    e.currentTarget.style.background = '#f8fafc'
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isSelected) {
+                    e.currentTarget.style.borderColor = '#e2e8f0'
+                    e.currentTarget.style.background = '#ffffff'
+                  }
                 }}
               >
-                <div style={{
-                  width: 28, height: 28, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  background: isSelected ? 'var(--color-primary)' : '#fff',
-                  border: isSelected ? 'none' : '1px solid #cbd5e1',
-                  color: isSelected ? '#fff' : '#64748b', fontSize: '13px', fontWeight: 700
-                }}>
-                  {opt.id}
+                <div
+                  style={{
+                    width: 26,
+                    height: 26,
+                    borderRadius: 6,
+                    border: isSelected ? '2px solid var(--color-primary)' : '1px solid #cbd5e1',
+                    background: isSelected ? 'var(--color-primary)' : '#f8fafc',
+                    color: isSelected ? '#ffffff' : '#64748b',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    flexShrink: 0,
+                  }}
+                >
+                  {String.fromCharCode(65 + idx)}
                 </div>
-                <span style={{ flex: 1, fontSize: '14px', color: isSelected ? '#0f172a' : '#334155', fontWeight: isSelected ? 600 : 400 }}>
+                <span
+                  style={{
+                    fontSize: '14px',
+                    fontWeight: isSelected ? 600 : 500,
+                    color: isSelected ? '#0f172a' : '#334155',
+                    flex: 1,
+                  }}
+                >
                   {opt.text}
                 </span>
               </button>
@@ -1357,42 +1614,77 @@ function InteractiveQuiz({
           })}
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: 16, borderTop: '1px solid #e2e8f0' }}>
-          <button
-            onClick={() => setCurrentQIdx((prev) => Math.max(0, prev - 1))}
+        {/* Navigation buttons with Lanjut Belajar styling */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <motion.button
+            whileHover={currentQIdx > 0 ? { scale: 1.02 } : {}}
+            whileTap={currentQIdx > 0 ? { scale: 0.98 } : {}}
+            onClick={() => setCurrentQIdx((i) => Math.max(0, i - 1))}
             disabled={currentQIdx === 0}
             style={{
-              padding: '9px 16px', borderRadius: 8, border: '1px solid #e2e8f0', background: '#fff',
-              fontSize: '13px', fontWeight: 600, color: '#475569', cursor: currentQIdx === 0 ? 'not-allowed' : 'pointer',
-              opacity: currentQIdx === 0 ? 0.4 : 1
+              padding: '9px 18px',
+              borderRadius: 8,
+              border: '1px solid #e2e8f0',
+              background: '#f8fafc',
+              fontWeight: 600,
+              fontSize: '13px',
+              cursor: currentQIdx === 0 ? 'not-allowed' : 'pointer',
+              opacity: currentQIdx === 0 ? 0.4 : 1,
+              color: '#475569',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
             }}
           >
-            ← Sebelumnya
-          </button>
+            <ChevronLeft size={16} /> Sebelumnya
+          </motion.button>
 
-          {currentQIdx < totalQ - 1 ? (
-            <button
-              onClick={() => setCurrentQIdx((prev) => prev + 1)}
-              style={{
-                padding: '9px 20px', borderRadius: 8, background: 'var(--color-primary)', border: 'none',
-                color: '#fff', fontSize: '13px', fontWeight: 700, cursor: 'pointer'
-              }}
-            >
-              Berikutnya →
-            </button>
-          ) : (
-            <button
+          {currentQIdx === totalQ - 1 ? (
+            <motion.button
+              whileHover={answeredCount === totalQ ? { scale: 1.02 } : {}}
+              whileTap={answeredCount === totalQ ? { scale: 0.98 } : {}}
               onClick={handleSubmit}
               disabled={answeredCount < totalQ}
               style={{
-                padding: '9px 24px', borderRadius: 8, background: 'var(--color-primary)', border: 'none',
-                color: '#fff', fontSize: '13px', fontWeight: 700,
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
+                padding: '10px 24px',
+                borderRadius: 8,
+                border: 'none',
+                background: 'var(--color-primary)',
+                color: '#fff',
+                fontWeight: 700,
+                fontSize: '13.5px',
                 cursor: answeredCount < totalQ ? 'not-allowed' : 'pointer',
-                opacity: answeredCount < totalQ ? 0.5 : 1
+                opacity: answeredCount < totalQ ? 0.5 : 1,
               }}
             >
-              Kirim Jawaban
-            </button>
+              <CheckCircle2 size={16} strokeWidth={2} /> Selesaikan Kuis
+            </motion.button>
+          ) : (
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => setCurrentQIdx((i) => Math.min(totalQ - 1, i + 1))}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
+                padding: '10px 22px',
+                borderRadius: 8,
+                border: 'none',
+                background: '#0f172a',
+                color: '#fff',
+                fontWeight: 700,
+                fontSize: '13.5px',
+                cursor: 'pointer',
+              }}
+            >
+              Selanjutnya <ChevronRight size={16} />
+            </motion.button>
           )}
         </div>
       </div>
