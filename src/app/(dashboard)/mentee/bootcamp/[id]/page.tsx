@@ -320,43 +320,53 @@ export default function BootcampDetailPage() {
                         <div style={{ overflow: 'hidden' }}>
                           <div style={{ padding: '0 8px 12px' }}>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                              {chapter.sessions.map((session, idx: number) => (
-                                <div
-                                  key={session.id}
-                                  style={{
-                                    display: 'flex', alignItems: 'center', gap: 12,
-                                    padding: '10px 12px',
-                                    borderRadius: 10,
-                                    transition: 'all 500ms cubic-bezier(0.4,0,0.2,1)',
-                                    transform: isOpen ? 'translateY(0)' : 'translateY(16px)',
-                                    opacity: isOpen ? 1 : 0,
-                                    transitionDelay: isOpen ? `${idx * 75}ms` : '0ms',
-                                    cursor: 'default',
-                                  }}
-                                  onMouseEnter={(e) => e.currentTarget.style.background = 'color-mix(in srgb, var(--color-text-primary) 3%, transparent)'}
-                                  onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                                >
-                                  <div style={{
-                                    display: 'flex', height: 36, width: 36, flexShrink: 0,
-                                    alignItems: 'center', justifyContent: 'center',
-                                    borderRadius: 10, background: 'var(--color-bg)',
-                                    border: '1px solid var(--color-border-subtle)'
-                                  }}>
-                                    {getSessionIcon(session.type, session.type === 'LIVE' ? 'var(--color-primary)' : 'var(--color-text-tertiary)')}
-                                  </div>
-                                  <div style={{ flex: 1, minWidth: 0, paddingRight: 16 }}>
-                                    <div style={{ fontSize: '13.5px', fontWeight: 500, color: data.isEnrolled ? 'var(--color-text-primary)' : 'var(--color-text-secondary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                      {session.title}
+                              {chapter.sessions.map((session, idx: number) => {
+                                const sessionContent = (
+                                  <div
+                                    key={session.id}
+                                    style={{
+                                      display: 'flex', alignItems: 'center', gap: 12,
+                                      padding: '10px 12px',
+                                      borderRadius: 10,
+                                      transition: 'all 500ms cubic-bezier(0.4,0,0.2,1)',
+                                      transform: isOpen ? 'translateY(0)' : 'translateY(16px)',
+                                      opacity: isOpen ? 1 : 0,
+                                      transitionDelay: isOpen ? `${idx * 75}ms` : '0ms',
+                                      cursor: data.isEnrolled ? 'pointer' : 'default',
+                                    }}
+                                    onMouseEnter={(e) => e.currentTarget.style.background = 'color-mix(in srgb, var(--color-text-primary) 3%, transparent)'}
+                                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                                  >
+                                    <div style={{
+                                      display: 'flex', height: 36, width: 36, flexShrink: 0,
+                                      alignItems: 'center', justifyContent: 'center',
+                                      borderRadius: 10, background: 'var(--color-bg)',
+                                      border: '1px solid var(--color-border-subtle)'
+                                    }}>
+                                      {getSessionIcon(session.type, session.type === 'LIVE' ? 'var(--color-primary)' : 'var(--color-text-tertiary)')}
                                     </div>
+                                    <div style={{ flex: 1, minWidth: 0, paddingRight: 16 }}>
+                                      <div style={{ fontSize: '13.5px', fontWeight: 500, color: data.isEnrolled ? 'var(--color-text-primary)' : 'var(--color-text-secondary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                        {session.title}
+                                      </div>
+                                    </div>
+                                    {session.type === 'LIVE' && session.liveScheduledAt ? (
+                                      <span style={{ fontSize: '11px', color: 'var(--color-primary)', flexShrink: 0 }}>{formatDate(session.liveScheduledAt)}</span>
+                                    ) : session.videoDuration ? (
+                                      <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', flexShrink: 0 }}>{formatDuration(session.videoDuration)}</span>
+                                    ) : null}
+                                    {!data.isEnrolled && <Lock size={13} color="var(--color-text-tertiary)" style={{ flexShrink: 0, marginLeft: 4 }} />}
                                   </div>
-                                  {session.type === 'LIVE' && session.liveScheduledAt ? (
-                                    <span style={{ fontSize: '11px', color: 'var(--color-primary)', flexShrink: 0 }}>{formatDate(session.liveScheduledAt)}</span>
-                                  ) : session.videoDuration ? (
-                                    <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', flexShrink: 0 }}>{formatDuration(session.videoDuration)}</span>
-                                  ) : null}
-                                  {!data.isEnrolled && <Lock size={13} color="var(--color-text-tertiary)" style={{ flexShrink: 0, marginLeft: 4 }} />}
-                                </div>
-                              ))}
+                                )
+
+                                return data.isEnrolled ? (
+                                  <Link key={session.id} href={ROUTES.LEARN_BOOTCAMP_SESSION(id, session.id)} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
+                                    {sessionContent}
+                                  </Link>
+                                ) : (
+                                  sessionContent
+                                )
+                              })}
                             </div>
                           </div>
                         </div>
@@ -473,7 +483,7 @@ export default function BootcampDetailPage() {
               {/* CTA */}
               {data.isEnrolled ? (
                 (!data.batchStartDate || new Date(data.batchStartDate) <= new Date()) ? (
-                  <Link href={data.chapters?.[0]?.sessions?.[0] ? ROUTES.LEARN_BOOTCAMP_SESSION(id, data.chapters[0].sessions[0].id) : '#'} style={{ textDecoration: 'none', display: 'block' }}>
+                  <Link href={ROUTES.LEARN_BOOTCAMP(id)} style={{ textDecoration: 'none', display: 'block' }}>
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
