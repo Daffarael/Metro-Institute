@@ -6,7 +6,15 @@ import { usePathname } from 'next/navigation'
 // ── Page Transition ─────────────────────────────────────────────
 // Pure opacity fade — no movement, no stagger, fully consistent
 // across all admin pages.
-export default function PageTransition({ children }: { children: React.ReactNode }) {
+export default function PageTransition({
+  children,
+  style,
+  className,
+}: {
+  children: React.ReactNode
+  style?: React.CSSProperties
+  className?: string
+}) {
   const pathname = usePathname()
   const key = pathname.split('/').slice(0, 3).join('/')
 
@@ -19,6 +27,8 @@ export default function PageTransition({ children }: { children: React.ReactNode
         duration: 0.45,
         ease: [0.4, 0, 0.2, 1], // easeInOut — mulai pelan, akhiri pelan
       }}
+      style={style}
+      className={className}
     >
       {children}
     </motion.div>

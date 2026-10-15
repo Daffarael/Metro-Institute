@@ -68,6 +68,8 @@ export default function LoginPage() {
     formState: { errors: signupErrors, isSubmitting: isSignupSubmitting },
   } = useForm<RegisterForm>({ resolver: zodResolver(registerSchema) })
 
+  const redirectUrl = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('redirect') : null;
+
   const onLogin = async (data: LoginForm) => {
     try {
       const res = await authService.login(data)
@@ -76,7 +78,6 @@ export default function LoginPage() {
       if (res.data.user.role === 'SUPER_ADMIN' || res.data.user.role === 'ADMIN') {
         router.push('/admin/dashboard')
       } else {
-        const redirectUrl = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('redirect') : null;
         if (redirectUrl) {
           router.push(redirectUrl);
         } else {

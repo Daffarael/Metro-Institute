@@ -526,10 +526,10 @@ export default function CourseLearningPlayerPage() {
                           border: '1px solid #e2e8f0', background: '#f8fafc',
                           fontSize: '14px', color: '#0f172a', outline: 'none'
                         }}
-                        onKeyDown={(e) => e.key === 'Enter' && addNoteMutation.mutate()}
+                        onKeyDown={(e) => e.key === 'Enter' && note.trim() && addNoteMutation.mutate(note)}
                       />
                       <button
-                        onClick={() => addNoteMutation.mutate()} disabled={addNoteMutation.isPending || !note.trim()}
+                        onClick={() => addNoteMutation.mutate(note)} disabled={addNoteMutation.isPending || !note.trim()}
                         style={{
                           padding: '0 20px', borderRadius: 10, border: 'none',
                           background: 'var(--color-primary)', color: '#fff', fontWeight: 600, fontSize: '13px',
@@ -576,10 +576,10 @@ export default function CourseLearningPlayerPage() {
                           border: '1px solid #e2e8f0', background: '#f8fafc',
                           fontSize: '14px', color: '#0f172a', outline: 'none'
                         }}
-                        onKeyDown={(e) => e.key === 'Enter' && sendQnaMutation.mutate()}
+                        onKeyDown={(e) => e.key === 'Enter' && qnaMessage.trim() && sendQnaMutation.mutate(qnaMessage)}
                       />
                       <button
-                        onClick={() => sendQnaMutation.mutate()} disabled={sendQnaMutation.isPending || !qnaMessage.trim()}
+                        onClick={() => sendQnaMutation.mutate(qnaMessage)} disabled={sendQnaMutation.isPending || !qnaMessage.trim()}
                         style={{
                           padding: '0 20px', borderRadius: 10, border: 'none',
                           background: '#0f172a', color: '#fff', fontWeight: 600, fontSize: '13px',

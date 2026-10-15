@@ -219,89 +219,71 @@ export default function BootcampLearningPlayerPage() {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24, maxWidth: 1400, margin: '0 auto', width: '100%' }}>
-      {/* Top Session Navigation Header (Natural Flow / Ikut Scroll) */}
-      <div style={{
+    <div style={{ height: '100%', minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden', background: '#f8fafc' }}>
+      {/* -- Top Header --------------------------------------- */}
+      <header style={{
         background: '#ffffff',
-        border: '1px solid var(--color-border)',
-        borderRadius: 16,
-        padding: '14px 20px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
+        borderBottom: '1px solid #e2e8f0',
+        height: 64, padding: '0 24px',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0,
+        zIndex: 10,
         boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
-        flexWrap: 'wrap',
-        gap: 12
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <Link
-            href={ROUTES.BOOTCAMP_DETAIL(bootcampId)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              color: 'var(--color-text-secondary)',
-              textDecoration: 'none',
-              fontSize: '13.5px',
-              fontWeight: 600,
-              padding: '8px 12px',
-              borderRadius: 8,
-              border: '1px solid var(--color-border-subtle)',
-              background: '#fff',
-              transition: 'all 0.15s ease'
-            }}
+        <Link href={ROUTES.BOOTCAMP_DETAIL(bootcampId)} style={{
+          display: 'flex', alignItems: 'center', gap: 12,
+          color: '#0f172a', textDecoration: 'none',
+          transition: 'all 0.15s',
+        }}>
+          <div style={{
+            width: 36, height: 36, borderRadius: 10, background: '#f1f5f9',
+            border: '1px solid #e2e8f0',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: '#475569', transition: 'all 0.15s',
+          }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = '#e2e8f0'; e.currentTarget.style.color = '#0f172a' }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = '#f1f5f9'; e.currentTarget.style.color = '#475569' }}
           >
-            <ChevronLeft size={16} /> Detail Bootcamp
-          </Link>
-          <div style={{ height: 20, width: 1, background: 'var(--color-border)' }} />
-          <div>
-            <span style={{ fontSize: '11px', color: 'var(--color-primary)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-              Bootcamp
-            </span>
-            <h1 style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0, lineHeight: 1.2 }}>
-              {bootcamp.title}
-            </h1>
+            <ChevronLeft size={18} />
           </div>
-        </div>
+          <div>
+            <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-primary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              Bootcamp
+            </div>
+            <div className="truncate" style={{ maxWidth: 360, fontSize: '15px', fontWeight: 700, color: '#0f172a', lineHeight: 1.2 }}>
+              {bootcamp.title}
+            </div>
+          </div>
+        </Link>
 
-        {/* Navigation & Progress */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          {prevSessionId && (
-            <Link
-              href={ROUTES.LEARN_BOOTCAMP_SESSION(bootcampId, prevSessionId)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 6,
-                padding: '8px 14px', borderRadius: 8,
-                background: '#fff', border: '1px solid var(--color-border)',
-                color: 'var(--color-text-primary)', fontSize: '13px', fontWeight: 600,
-                textDecoration: 'none', transition: 'all 0.15s ease'
-              }}
-            >
-              <ChevronLeft size={14} /> Sesi Sebelumnya
-            </Link>
-          )}
-
-          {nextSessionId && (
-            <Link
-              href={ROUTES.LEARN_BOOTCAMP_SESSION(bootcampId, nextSessionId)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 6,
-                padding: '8px 14px', borderRadius: 8,
-                background: 'var(--color-primary)', border: '1px solid var(--color-primary)',
-                color: '#fff', fontSize: '13px', fontWeight: 600,
-                textDecoration: 'none', transition: 'all 0.15s ease'
-              }}
-            >
-              Sesi Berikutnya <ChevronRight size={14} />
-            </Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, width: 220 }}>
+            <div style={{ flex: 1, height: 7, background: '#e2e8f0', borderRadius: 4, overflow: 'hidden' }}>
+              <div style={{ height: '100%', background: 'linear-gradient(90deg, #10b981, #059669)', width: `${data.progress}%`, transition: 'width 0.5s ease', borderRadius: 4 }} />
+            </div>
+            <span style={{ fontSize: '13px', fontWeight: 700, color: '#475569', whiteSpace: 'nowrap' }}>
+              {data.progress}% Selesai
+            </span>
+          </div>
+          
+          {(currentSession.isCompleted || isCompleted) && (
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 6,
+              padding: '6px 14px', background: '#ecfdf5',
+              border: '1px solid #a7f3d0',
+              color: '#059669', borderRadius: 20, fontSize: '12px', fontWeight: 700
+            }}>
+              <CheckCircle2 size={15} /> Selesai
+            </div>
           )}
         </div>
-      </div>
+      </header>
 
-      {/* Main Workspace Layout */}
-      <div style={{ display: 'flex', gap: 24, alignItems: 'flex-start' }} className="flex-col lg:flex-row">
-        {/* Left Side: Content & Tabs */}
-        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 24, width: '100%' }}>
+      {/* -- Main Layout --------------------------------------- */}
+      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+        
+        {/* Left Side: Video & Content */}
+        <div style={{ flex: 1, overflowY: 'auto', background: '#f8fafc' }}>
+          <div style={{ maxWidth: 1040, margin: '0 auto', padding: '28px 32px 64px', display: 'flex', flexDirection: 'column', gap: 24 }}>
             
             {/* Celebration Banner when 100% Complete */}
             {data.progress === 100 && (
@@ -678,23 +660,53 @@ export default function BootcampLearningPlayerPage() {
                   </h1>
                 </div>
 
-                {/* Mark Complete Button */}
-                <div>
-                  {isCompleted ? (
-                    <div style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 6,
-                      padding: '9px 18px',
-                      borderRadius: 10,
-                      background: 'rgba(16, 185, 129, 0.1)',
-                      color: 'var(--color-primary)',
-                      fontWeight: 700,
-                      fontSize: '13px'
-                    }}>
-                      <CheckCircle2 size={16} /> Selesai
-                    </div>
-                  ) : (
+                {/* Right: Actions (Nav Prev/Next + Complete) */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                  {prevSessionId && (
+                    <Link
+                      href={ROUTES.LEARN_BOOTCAMP_SESSION(bootcampId, prevSessionId)}
+                      style={{
+                        padding: '9px 15px',
+                        borderRadius: 10,
+                        background: '#f8fafc',
+                        border: '1px solid #e2e8f0',
+                        color: '#475569',
+                        fontSize: '13px',
+                        fontWeight: 600,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        textDecoration: 'none',
+                        transition: 'all 0.15s'
+                      }}
+                    >
+                      <ChevronLeft size={16} /> Sebelumnya
+                    </Link>
+                  )}
+
+                  {nextSessionId && (
+                    <Link
+                      href={ROUTES.LEARN_BOOTCAMP_SESSION(bootcampId, nextSessionId)}
+                      style={{
+                        padding: '9px 15px',
+                        borderRadius: 10,
+                        background: '#f8fafc',
+                        border: '1px solid #e2e8f0',
+                        color: '#475569',
+                        fontSize: '13px',
+                        fontWeight: 600,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        textDecoration: 'none',
+                        transition: 'all 0.15s'
+                      }}
+                    >
+                      Selanjutnya <ChevronRight size={16} />
+                    </Link>
+                  )}
+
+                  {!(currentSession.isCompleted || isCompleted) && (
                     <button
                       onClick={() => completeMutation.mutate()}
                       disabled={completeMutation.isPending}
@@ -722,6 +734,22 @@ export default function BootcampLearningPlayerPage() {
                         </>
                       )}
                     </button>
+                  )}
+
+                  {(currentSession.isCompleted || isCompleted) && (
+                    <div style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      padding: '9px 18px',
+                      borderRadius: 10,
+                      background: 'rgba(16, 185, 129, 0.1)',
+                      color: 'var(--color-primary)',
+                      fontWeight: 700,
+                      fontSize: '13px'
+                    }}>
+                      <CheckCircle2 size={16} /> Selesai
+                    </div>
                   )}
                 </div>
               </div>
@@ -890,24 +918,24 @@ export default function BootcampLearningPlayerPage() {
                 )}
               </div>
             </CardTabs>
+          </div>
         </div>
 
         {/* Right Side: Curriculum Sidebar */}
         <div style={{
           width: 360,
-          maxWidth: '100%',
           background: '#fff',
-          border: '1px solid var(--color-border)',
-          borderRadius: 16,
-          overflow: 'hidden',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+          borderLeft: '1px solid var(--color-border)',
           display: 'flex',
           flexDirection: 'column',
-          flexShrink: 0
+          flexShrink: 0,
+          boxShadow: '-4px 0 24px rgba(0,0,0,0.02)',
+          zIndex: 10
         }}>
-          <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--color-border-subtle)' }}>
-            <h3 style={{ fontSize: '17px', fontWeight: 800, color: 'var(--color-text-primary)', margin: 0 }}>Kurikulum Bootcamp</h3>
-            <div style={{ marginTop: 14 }}>
+          {/* Header */}
+          <div style={{ padding: '24px', borderBottom: '1px solid var(--color-border-subtle)', flexShrink: 0 }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--color-text-primary)' }}>Kurikulum Bootcamp</h3>
+            <div style={{ marginTop: 16 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
                 <span style={{ fontSize: '13px', color: 'var(--color-text-secondary)', fontWeight: 500 }}>Progres Belajar</span>
                 <span style={{ fontSize: '13px', color: 'var(--color-primary)', fontWeight: 700 }}>{data.progress}%</span>
@@ -918,71 +946,82 @@ export default function BootcampLearningPlayerPage() {
             </div>
           </div>
 
-          <div style={{ padding: '8px 0' }}>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '16px 0' }}>
             {chapters.map((chapter, idx) => {
               const isOpen = expandedChapters.has(String(idx))
+              const completedCount = chapter.sessions.filter((s) => s.isCompleted).length
               return (
-                <div key={chapter.id} style={{ borderBottom: '1px solid var(--color-border-subtle)' }}>
+                <div key={chapter.id} style={{ marginBottom: 8 }}>
                   <button
                     onClick={() => toggleChapter(String(idx))}
                     style={{
-                      width: '100%', padding: '14px 24px',
-                      display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                      background: isOpen ? 'var(--color-bg)' : '#fff', border: 'none', cursor: 'pointer',
-                      textAlign: 'left'
+                      width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                      padding: '16px 24px', background: 'transparent', border: 'none', cursor: 'pointer',
+                      transition: 'background 0.2s'
                     }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = 'var(--color-bg)'}
+                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                   >
-                    <div>
-                      <div style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', fontWeight: 600 }}>BAB {idx + 1}</div>
-                      <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-text-primary)', marginTop: 2 }}>{chapter.title}</div>
+                    <div style={{ textAlign: 'left', flex: 1, paddingRight: 16 }}>
+                      <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: 4 }}>
+                        {chapter.title}
+                      </div>
+                      <div style={{ fontSize: '12px', color: 'var(--color-text-tertiary)', fontWeight: 500 }}>
+                        {completedCount}/{chapter.sessions.length} Sesi Selesai
+                      </div>
                     </div>
-                    <ChevronDown size={16} style={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: '0.2s ease', color: 'var(--color-text-secondary)' }} />
+                    <div style={{
+                      width: 28, height: 28, borderRadius: '50%', background: 'var(--color-bg)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+                    }}>
+                      <ChevronDown size={16} color="var(--color-text-secondary)"
+                        style={{ transform: isOpen ? 'rotate(-180deg)' : 'rotate(0deg)', transition: 'transform 0.3s' }} />
+                    </div>
                   </button>
-
+                  
                   {isOpen && (
-                    <div style={{ padding: '8px 16px 16px' }}>
-                      {chapter.sessions.map((sess) => {
+                    <div style={{ padding: '8px 16px' }}>
+                      {chapter.sessions.map((sess, sIdx) => {
                         const isActive = sess.id === sessionId
                         return (
                           <Link
                             key={sess.id}
                             href={ROUTES.LEARN_BOOTCAMP_SESSION(bootcampId, sess.id)}
                             style={{
-                              display: 'flex', alignItems: 'center', gap: 12,
-                              padding: '10px 12px', borderRadius: 10,
-                              background: isActive ? 'rgba(16, 185, 129, 0.08)' : 'transparent',
+                              display: 'flex', alignItems: 'flex-start', gap: 12,
+                              padding: '12px 16px', textDecoration: 'none',
+                              background: isActive ? 'rgba(16, 185, 129, 0.05)' : 'transparent',
+                              borderRadius: 12, marginBottom: 4,
                               border: isActive ? '1px solid rgba(16, 185, 129, 0.2)' : '1px solid transparent',
-                              textDecoration: 'none', marginBottom: 4, transition: 'all 0.15s ease'
+                              transition: 'all 0.2s'
                             }}
+                            onMouseEnter={(e) => { if(!isActive) e.currentTarget.style.background = 'var(--color-bg)' }}
+                            onMouseLeave={(e) => { if(!isActive) e.currentTarget.style.background = 'transparent' }}
                           >
-                            <div style={{
-                              width: 22, height: 22, borderRadius: '50%',
-                              display: 'flex', alignItems: 'center', justifyContent: 'center',
-                              background: sess.isCompleted ? 'var(--color-primary)' : '#f1f5f9',
-                              color: sess.isCompleted ? '#fff' : '#94a3b8'
-                            }}>
-                              {sess.isCompleted ? <CheckCircle2 size={14} /> : <PlayCircle size={14} />}
+                            <div style={{ marginTop: 2 }}>
+                              {sess.isCompleted
+                                ? <CheckCircle2 size={18} color="var(--color-primary)" />
+                                : sess.type === 'LIVE'
+                                ? <Video size={18} color={isActive ? 'var(--color-primary)' : '#cbd5e1'} />
+                                : <PlayCircle size={18} color={isActive ? 'var(--color-primary)' : '#cbd5e1'} />
+                              }
                             </div>
-                            <div style={{ flex: 1, minWidth: 0 }}>
-                              <p style={{
-                                fontSize: '13px', margin: 0,
-                                fontWeight: isActive ? 700 : 500,
-                                color: isActive ? 'var(--color-primary)' : 'var(--color-text-primary)',
-                                overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
+                            <div style={{ flex: 1 }}>
+                              <div style={{
+                                fontSize: '13px', fontWeight: isActive ? 700 : 500,
+                                color: isActive ? 'var(--color-primary)' : 'var(--color-text-secondary)',
+                                lineHeight: 1.4, marginBottom: 4
                               }}>
-                                {sess.title}
-                              </p>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2, fontSize: '11px', color: 'var(--color-text-tertiary)' }}>
-                                {sess.type === 'LIVE' ? (
-                                  <span style={{ color: '#dc2626', fontWeight: 700 }}>Live Session</span>
-                                ) : sess.type === 'ASSIGNMENT' ? (
-                                  <span style={{ color: '#d97706', fontWeight: 600 }}>Tugas</span>
-                                ) : sess.videoDuration ? (
-                                  <span>{formatDuration(sess.videoDuration)}</span>
-                                ) : (
-                                  <span>Materi</span>
+                                {sIdx + 1}. {sess.title}
+                              </div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '11px', color: 'var(--color-text-tertiary)' }}>
+                                <span style={{ textTransform: 'capitalize' }}>{sess.type.toLowerCase()}</span>
+                                {sess.videoDuration && (
+                                  <>
+                                    <span>•</span>
+                                    <span>{formatDuration(sess.videoDuration)}</span>
+                                  </>
                                 )}
-                                {sess.xpReward > 0 && <span>• +{sess.xpReward} XP</span>}
                               </div>
                             </div>
                           </Link>

@@ -33,6 +33,7 @@ interface CourseDetail {
   tags: string[]
   isEnrolled: boolean
   isWishlisted: boolean
+  progress?: number
   chapters: Array<{
     id: string; title: string; orderIndex: number
     sessions: Array<{
@@ -332,7 +333,7 @@ export default function CourseDetailPage() {
 
             {activeTab === 'reviews' && (
               <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
-                {course.isEnrolled && course.progress >= 100 ? (
+                {course.isEnrolled && (course.progress ?? 0) >= 100 ? (
                   <div style={{ padding: '20px', border: '1px solid var(--color-border-subtle)', borderRadius: 10, background: 'var(--color-surface)' }}>
                     <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: 12 }}>Berikan Ulasan Anda</h3>
                     <div style={{ display: 'flex', gap: 4, marginBottom: 16 }}>
