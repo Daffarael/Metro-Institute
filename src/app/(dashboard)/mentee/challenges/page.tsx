@@ -171,9 +171,9 @@ export default function ChallengeBankPage() {
         maxWidth: 720,
       }}>
         {[
-          { label: 'Total Tantangan', value: totalCount },
-          { label: 'Terbuka / Selesai', value: `${unlockedCount} Terbuka · ${completedCount} Selesai` },
-          { label: 'XP Dapat Diraih', value: `${totalXpEarnable} XP` },
+          { label: 'Total Tantangan', value: String(totalCount) },
+          { label: 'Telah Diselesaikan', value: `${completedCount} / ${totalCount}` },
+          { label: 'XP Tersedia', value: `${totalXpEarnable} XP` },
         ].map((stat) => (
           <div
             key={stat.label}
@@ -191,15 +191,17 @@ export default function ChallengeBankPage() {
               letterSpacing: '0.04em',
               color: 'var(--color-text-tertiary)',
               marginBottom: 6,
+              whiteSpace: 'nowrap',
             }}>
               {stat.label}
             </div>
             <div style={{
-              fontSize: '20px',
+              fontSize: '22px',
               fontWeight: 700,
               color: 'var(--color-text-primary)',
               letterSpacing: '-0.02em',
-              lineHeight: 1,
+              lineHeight: 1.2,
+              whiteSpace: 'nowrap',
             }}>
               {stat.value}
             </div>
