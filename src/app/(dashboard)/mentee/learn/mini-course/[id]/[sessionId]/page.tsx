@@ -203,28 +203,6 @@ export default function CourseLearningPlayerPage() {
               <CheckCircle2 size={15} /> Selesai
             </div>
           )}
-
-          {data.progress === 100 && (
-            <Link
-              href={ROUTES.CERTIFICATES}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 7,
-                padding: '7px 16px',
-                background: 'var(--color-primary)',
-                color: '#ffffff',
-                borderRadius: 20,
-                fontSize: '12.5px',
-                fontWeight: 700,
-                textDecoration: 'none',
-                boxShadow: '0 2px 10px rgba(16, 185, 129, 0.28)',
-                transition: 'all 0.15s ease',
-              }}
-            >
-              <Award size={15} /> Lihat Sertifikat
-            </Link>
-          )}
         </div>
       </header>
 
