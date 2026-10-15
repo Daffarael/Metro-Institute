@@ -58,6 +58,7 @@ interface WebinarItem {
   isPublished: boolean
   isFeatured: boolean
   isEnded?: boolean
+  endedAt?: string | null
   certificateTemplateId?: string
   benefits?: string[]
   _count?: { registrations: number }

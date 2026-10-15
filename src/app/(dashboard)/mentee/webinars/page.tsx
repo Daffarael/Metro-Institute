@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { motion } from 'framer-motion'
 import {
   Video, Calendar, Clock, Search, ChevronRight
 } from 'lucide-react'
@@ -35,6 +36,7 @@ interface WebinarItem {
   isRegistered?: boolean
   attended?: boolean
   isEnded?: boolean
+  endedAt?: string | null
   _count?: { registrations: number }
 }
 

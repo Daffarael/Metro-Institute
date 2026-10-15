@@ -37,6 +37,7 @@ interface WebinarDetail {
   isRegistered?: boolean
   attended?: boolean
   isEnded?: boolean
+  endedAt?: string | null
   benefits?: string[]
   _count?: { registrations: number }
   liveStatus?: 'UPCOMING' | 'LIVE' | 'ENDED'
@@ -187,6 +188,11 @@ export default function MenteeWebinarDetailPage() {
   const isOvertime = isLiveWindow && currentTime > scheduledEnd.getTime()
   const isFree = webinar.price === 0
   const isFull = !!webinar.quota && (webinar._count?.registrations || 0) >= webinar.quota
+
+  // Waktu berakhir aktual sesuai saat admin klik selesaikan (atau fallback durasi jadwal)
+  const actualEndTime = webinar.endedAt
+    ? new Date(webinar.endedAt)
+    : scheduledEnd
 
   const formatTimeOnly = (date: Date) => {
     return new Intl.DateTimeFormat('id-ID', {
@@ -404,7 +410,7 @@ export default function MenteeWebinarDetailPage() {
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                       <Clock size={15} color="var(--color-primary)" />
-                      <span><strong>Waktu:</strong> {formatTimeOnly(scheduledStart)} – {formatTimeOnly(scheduledEnd)} WIB ({webinar.duration} Menit)</span>
+                      <span><strong>Waktu:</strong> {formatTimeOnly(scheduledStart)} – {formatTimeOnly(isEnded ? actualEndTime : scheduledEnd)} WIB ({webinar.duration} Menit)</span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                       <Video size={15} color="var(--color-primary)" />
@@ -555,7 +561,7 @@ export default function MenteeWebinarDetailPage() {
                             Sesi Webinar Telah Selesai
                           </h3>
                           <p style={{ fontSize: '12.5px', color: 'var(--color-text-tertiary)', margin: '2px 0 0' }}>
-                            Berakhir pada {formatDate(webinar.scheduledAt)} pukul {formatTimeOnly(scheduledEnd)} WIB
+                            Berakhir pada {formatDate(actualEndTime.toISOString())} pukul {formatTimeOnly(actualEndTime)} WIB
                           </p>
                         </div>
                       </div>
@@ -903,7 +909,15 @@ export default function MenteeWebinarDetailPage() {
                   { icon: Zap,      text: 'XP dari setiap sesi', color: 'var(--color-xp)' },
                   { icon: Users,    text: `${webinar._count?.registrations || 0} peserta terdaftar`, color: 'var(--color-text-tertiary)' },
                   { icon: Clock,    text: `${webinar.duration}m durasi sesi`, color: 'var(--color-text-tertiary)' },
-                  { icon: Calendar, text: `Mulai: ${formatDate(webinar.scheduledAt)}, ${formatTimeOnly(scheduledStart)} WIB`, color: 'var(--color-text-tertiary)' },
+                  isEnded ? {
+                    icon: Calendar,
+                    text: `Berakhir: ${formatDate(actualEndTime.toISOString())}, ${formatTimeOnly(actualEndTime)} WIB`,
+                    color: 'var(--color-text-tertiary)',
+                  } : {
+                    icon: Calendar,
+                    text: `Mulai: ${formatDate(webinar.scheduledAt)}, ${formatTimeOnly(scheduledStart)} WIB`,
+                    color: 'var(--color-text-tertiary)',
+                  },
                 ].map((item, i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: '13px', color: 'var(--color-text-secondary)' }}>
                     <item.icon size={14} strokeWidth={1.5} color={item.color} />
