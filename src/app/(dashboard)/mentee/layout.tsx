@@ -1,15 +1,19 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 import { Sidebar } from './_components/Sidebar'
 import { Topbar } from './_components/Topbar'
 import RoleGuard from '@/components/RoleGuard'
 import PageTransition from '@/components/admin/PageTransition'
 
 export default function MenteeLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname()
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+
+  const isLearningPage = pathname.includes('/session/') || pathname.includes('/learn/')
 
   useEffect(() => {
     const handleResize = () => {
@@ -19,6 +23,18 @@ export default function MenteeLayout({ children }: { children: React.ReactNode }
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [])
+
+  if (isLearningPage) {
+    return (
+      <RoleGuard allowedRoles={['MENTEE']} fallbackRoute="/admin/dashboard">
+        <div style={{ height: '100vh', width: '100%', overflow: 'hidden' }}>
+          <PageTransition>
+            {children}
+          </PageTransition>
+        </div>
+      </RoleGuard>
+    )
+  }
 
   return (
     <RoleGuard allowedRoles={['MENTEE']} fallbackRoute="/admin/dashboard">

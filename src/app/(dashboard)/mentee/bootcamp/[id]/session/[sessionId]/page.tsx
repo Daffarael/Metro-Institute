@@ -73,9 +73,20 @@ export default function BootcampLearningPlayerPage() {
   const playerRef = useRef<unknown>(null)
   const completeTriggerRef = useRef(false)
   const [mounted, setMounted] = useState(false)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
     setMounted(true)
+    const handleResize = () => {
+      const mobile = window.innerWidth <= 960
+      setIsMobile(mobile)
+      if (mobile) setIsSidebarOpen(false)
+      else setIsSidebarOpen(true)
+    }
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
   }, [])
 
   const { data, isLoading, isError } = useQuery<LearningData>({
@@ -219,7 +230,7 @@ export default function BootcampLearningPlayerPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#f8fafc' }}>
+    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', background: '#f8fafc', overflow: 'hidden' }}>
       {/* Top Navbar */}
       <header style={{
         height: 64,
@@ -229,8 +240,7 @@ export default function BootcampLearningPlayerPage() {
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: '0 24px',
-        position: 'sticky',
-        top: 0,
+        flexShrink: 0,
         zIndex: 50,
         boxShadow: '0 1px 2px rgba(0,0,0,0.03)'
       }}>
@@ -265,7 +275,7 @@ export default function BootcampLearningPlayerPage() {
         </div>
 
         {/* Navigation & Progress */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           {prevSessionId && (
             <Link
               href={ROUTES.LEARN_BOOTCAMP_SESSION(bootcampId, prevSessionId)}
@@ -295,13 +305,30 @@ export default function BootcampLearningPlayerPage() {
               Sesi Berikutnya <ChevronRight size={14} />
             </Link>
           )}
+
+          <button
+            onClick={() => setIsSidebarOpen((prev) => !prev)}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 6,
+              padding: '8px 12px', borderRadius: 8,
+              background: isSidebarOpen ? 'rgba(16, 185, 129, 0.1)' : '#fff',
+              border: `1px solid ${isSidebarOpen ? 'var(--color-primary)' : 'var(--color-border)'}`,
+              color: isSidebarOpen ? 'var(--color-primary)' : 'var(--color-text-secondary)',
+              fontSize: '13px', fontWeight: 600,
+              cursor: 'pointer'
+            }}
+            title={isSidebarOpen ? 'Tutup Kurikulum' : 'Buka Kurikulum'}
+          >
+            <BookOpen size={15} />
+            <span>Kurikulum</span>
+          </button>
         </div>
       </header>
 
       {/* Main Workspace Layout */}
-      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+      <div style={{ display: 'flex', flex: 1, overflow: 'hidden', position: 'relative' }}>
         {/* Left Side: Content & Tabs */}
-        <div style={{ flex: 1, overflowY: 'auto', padding: '32px 40px', display: 'flex', flexDirection: 'column', gap: 24 }}>
+        <div style={{ flex: 1, overflowY: 'auto', padding: isMobile ? '20px 16px' : '32px 40px', display: 'flex', flexDirection: 'column', gap: 24 }}>
           <div style={{ maxWidth: 1040, width: '100%', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 24 }}>
             
             {/* Player / Content Based on Type */}
@@ -829,26 +856,44 @@ export default function BootcampLearningPlayerPage() {
         </div>
 
         {/* Right Side: Curriculum Sidebar */}
-        <div style={{
-          width: 360, background: '#fff',
-          borderLeft: '1px solid var(--color-border)',
-          display: 'flex', flexDirection: 'column', flexShrink: 0,
-          boxShadow: '-4px 0 24px rgba(0,0,0,0.02)', zIndex: 10
-        }}>
-          <div style={{ padding: '24px', borderBottom: '1px solid var(--color-border-subtle)' }}>
-            <h3 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--color-text-primary)' }}>Kurikulum Bootcamp</h3>
-            <div style={{ marginTop: 16 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                <span style={{ fontSize: '13px', color: 'var(--color-text-secondary)', fontWeight: 500 }}>Progres Belajar</span>
-                <span style={{ fontSize: '13px', color: 'var(--color-primary)', fontWeight: 700 }}>{data.progress}%</span>
+        {isSidebarOpen && (
+          <div style={{
+            width: isMobile ? '100%' : 360,
+            position: isMobile ? 'absolute' : 'relative',
+            inset: isMobile ? '0 0 0 0' : undefined,
+            background: '#fff',
+            borderLeft: isMobile ? 'none' : '1px solid var(--color-border)',
+            display: 'flex', flexDirection: 'column', flexShrink: 0,
+            boxShadow: '-4px 0 24px rgba(0,0,0,0.06)', zIndex: 30
+          }}>
+            <div style={{ padding: '24px', borderBottom: '1px solid var(--color-border-subtle)', flexShrink: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <h3 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--color-text-primary)', margin: 0 }}>Kurikulum Bootcamp</h3>
+                {isMobile && (
+                  <button
+                    onClick={() => setIsSidebarOpen(false)}
+                    style={{
+                      padding: '4px 10px', borderRadius: 6, border: '1px solid var(--color-border)',
+                      background: '#f8fafc', color: 'var(--color-text-secondary)', fontSize: '12px', fontWeight: 600,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Tutup
+                  </button>
+                )}
               </div>
-              <div style={{ height: 6, background: 'var(--color-bg)', borderRadius: 3, overflow: 'hidden' }}>
-                <div style={{ height: '100%', background: 'var(--color-primary)', width: `${data.progress}%`, transition: 'width 0.5s ease' }} />
+              <div style={{ marginTop: 16 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                  <span style={{ fontSize: '13px', color: 'var(--color-text-secondary)', fontWeight: 500 }}>Progres Belajar</span>
+                  <span style={{ fontSize: '13px', color: 'var(--color-primary)', fontWeight: 700 }}>{data.progress}%</span>
+                </div>
+                <div style={{ height: 6, background: 'var(--color-bg)', borderRadius: 3, overflow: 'hidden' }}>
+                  <div style={{ height: '100%', background: 'var(--color-primary)', width: `${data.progress}%`, transition: 'width 0.5s ease' }} />
+                </div>
               </div>
             </div>
-          </div>
 
-          <div style={{ flex: 1, overflow: 'auto', padding: '16px 0' }}>
+            <div style={{ flex: 1, overflowY: 'auto', padding: '16px 0' }}>
             {chapters.map((chapter, idx) => {
               const isOpen = expandedChapters.has(String(idx))
               return (
@@ -925,6 +970,7 @@ export default function BootcampLearningPlayerPage() {
             })}
           </div>
         </div>
+      )}
       </div>
     </div>
   )
