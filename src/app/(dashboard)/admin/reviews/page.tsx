@@ -20,10 +20,18 @@ import CleanCombobox from '@/components/admin/CleanCombobox'
 import { toast } from 'sonner'
 
 interface Review {
-  id: string; rating: number; comment?: string; isVisible: boolean
-  productType: string; createdAt: string
-  user: { id: string; name: string; email: string }
-  product: { id: string; title: string }
+  id: string
+  rating: number
+  comment?: string
+  content?: string
+  isVisible?: boolean
+  isHidden?: boolean
+  productType: string
+  createdAt: string
+  user: { id?: string; name: string; email: string }
+  product?: { id: string; title: string }
+  course?: { title: string }
+  bootcamp?: { title: string }
 }
 interface Filters { isVisible?: boolean | string; rating?: number; page: number; limit: number }
 
@@ -138,48 +146,54 @@ export default function AdminReviewsPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {items.map(r => (
-                      <tr key={r.id}
-                        style={{ borderBottom: '1px solid var(--color-border-subtle)', transition: 'background var(--transition-fast)' }}
-                        onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-bg)')}
-                        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                      >
-                        <td style={{ padding: 'var(--space-3) var(--space-4)' }}>
-                          <div style={{ fontWeight: 600 }}>{r.user.name}</div>
-                          <div style={{ fontSize: '11px', color: 'var(--color-text-tertiary)' }}>{r.user.email}</div>
-                        </td>
-                        <td style={{ padding: 'var(--space-3) var(--space-4)', maxWidth: 180 }}>
-                          <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 500 }}>{r.product.title}</div>
-                          <div style={{ fontSize: '11px', color: 'var(--color-text-tertiary)' }}>{r.productType === 'BOOTCAMP' ? 'Bootcamp' : 'Mini Course'}</div>
-                        </td>
-                        <td style={{ padding: 'var(--space-3) var(--space-4)' }}>
-                          <StarRating rating={r.rating} />
-                          <div style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 2 }}>{r.rating}/5</div>
-                        </td>
-                        <td style={{ padding: 'var(--space-3) var(--space-4)', maxWidth: 240 }}>
-                          {r.comment ? (
-                            <div style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
-                              "{r.comment}"
-                            </div>
-                          ) : <span style={{ color: 'var(--color-text-tertiary)', fontStyle: 'italic', fontSize: '12px' }}>Tanpa komentar</span>}
-                        </td>
-                        <td style={{ padding: 'var(--space-3) var(--space-4)', color: 'var(--color-text-secondary)', fontSize: '12px', whiteSpace: 'nowrap' }}>{formatDate(r.createdAt)}</td>
-                        <td style={{ padding: 'var(--space-3) var(--space-4)' }}>
-                          <span style={{ padding: '2px 10px', borderRadius: 'var(--radius-full)', fontSize: '11px', fontWeight: 600, background: r.isVisible ? '#ECFDF5' : '#F3F4F6', color: r.isVisible ? 'var(--color-primary)' : '#6B7280' }}>
-                            {r.isVisible ? 'Ditampilkan' : 'Disembunyikan'}
-                          </span>
-                        </td>
-                        <td style={{ padding: 'var(--space-3) var(--space-4)' }}>
-                          <button
-                            onClick={() => toggleVisibility.mutate({ id: r.id, isVisible: !r.isVisible })}
-                            disabled={toggleVisibility.isPending}
-                            style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', background: 'transparent', fontSize: '12px', fontWeight: 500, cursor: 'pointer', opacity: toggleVisibility.isPending ? 0.6 : 1 }}
-                          >
-                            {r.isVisible ? <><EyeOff size={12} /> Sembunyikan</> : <><Eye size={12} /> Tampilkan</>}
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+                    {items.map(r => {
+                      const productTitle = r.product?.title || r.course?.title || r.bootcamp?.title || 'Produk'
+                      const commentText = r.comment || r.content
+                      const isVisible = r.isVisible !== undefined ? r.isVisible : !r.isHidden
+
+                      return (
+                        <tr key={r.id}
+                          style={{ borderBottom: '1px solid var(--color-border-subtle)', transition: 'background var(--transition-fast)' }}
+                          onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-bg)')}
+                          onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                        >
+                          <td style={{ padding: 'var(--space-3) var(--space-4)' }}>
+                            <div style={{ fontWeight: 600 }}>{r.user?.name || 'Mentee'}</div>
+                            <div style={{ fontSize: '11px', color: 'var(--color-text-tertiary)' }}>{r.user?.email || '-'}</div>
+                          </td>
+                          <td style={{ padding: 'var(--space-3) var(--space-4)', maxWidth: 180 }}>
+                            <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 500 }}>{productTitle}</div>
+                            <div style={{ fontSize: '11px', color: 'var(--color-text-tertiary)' }}>{r.productType === 'BOOTCAMP' ? 'Bootcamp' : 'Mini Course'}</div>
+                          </td>
+                          <td style={{ padding: 'var(--space-3) var(--space-4)' }}>
+                            <StarRating rating={r.rating} />
+                            <div style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 2 }}>{r.rating}/5</div>
+                          </td>
+                          <td style={{ padding: 'var(--space-3) var(--space-4)', maxWidth: 240 }}>
+                            {commentText ? (
+                              <div style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                                "{commentText}"
+                              </div>
+                            ) : <span style={{ color: 'var(--color-text-tertiary)', fontStyle: 'italic', fontSize: '12px' }}>Tanpa komentar</span>}
+                          </td>
+                          <td style={{ padding: 'var(--space-3) var(--space-4)', color: 'var(--color-text-secondary)', fontSize: '12px', whiteSpace: 'nowrap' }}>{formatDate(r.createdAt)}</td>
+                          <td style={{ padding: 'var(--space-3) var(--space-4)' }}>
+                            <span style={{ padding: '2px 10px', borderRadius: 'var(--radius-full)', fontSize: '11px', fontWeight: 600, background: isVisible ? '#ECFDF5' : '#F3F4F6', color: isVisible ? 'var(--color-primary)' : '#6B7280' }}>
+                              {isVisible ? 'Ditampilkan' : 'Disembunyikan'}
+                            </span>
+                          </td>
+                          <td style={{ padding: 'var(--space-3) var(--space-4)' }}>
+                            <button
+                              onClick={() => toggleVisibility.mutate({ id: r.id, isVisible: !isVisible })}
+                              disabled={toggleVisibility.isPending}
+                              style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', background: 'transparent', fontSize: '12px', fontWeight: 500, cursor: 'pointer', opacity: toggleVisibility.isPending ? 0.6 : 1 }}
+                            >
+                              {isVisible ? <><EyeOff size={12} /> Sembunyikan</> : <><Eye size={12} /> Tampilkan</>}
+                            </button>
+                          </td>
+                        </tr>
+                      )
+                    })}
                   </tbody>
                 </table>
               </div>

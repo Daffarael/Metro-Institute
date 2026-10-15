@@ -224,9 +224,8 @@ export default function AdminTransactionsPage() {
                         <td style={{ padding: 'var(--space-3) var(--space-4)' }}>
                           <AdminStatusChip status={tx.status} />
                         </td>
-                        <td style={{ padding: 'var(--space-3) var(--space-4)', color: 'var(--color-text-secondary)', fontSize: '11px', whiteSpace: 'nowrap' }}>
+                        <td style={{ padding: 'var(--space-3) var(--space-4)', color: 'var(--color-text-secondary)', fontSize: '12px', whiteSpace: 'nowrap' }}>
                           {formatDate(tx.createdAt)}
-                          {tx.paidAt && <div style={{ color: 'var(--color-primary)', fontSize: '10px' }}>✓ {formatDate(tx.paidAt)}</div>}
                         </td>
                       </tr>
                     ))}
