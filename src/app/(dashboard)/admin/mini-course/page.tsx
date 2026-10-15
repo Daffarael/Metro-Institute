@@ -8,7 +8,7 @@ import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tansta
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Plus, Edit2, Layers, BarChart2, X, Zap } from 'lucide-react'
+import { Plus, Edit2, Layers, BarChart2, X, Target } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
 import api from '@/lib/axios'
 import { formatRupiah } from '@/lib/utils'
@@ -519,11 +519,11 @@ export default function AdminMiniCoursePage() {
                           <Layers size={12} /> Kurikulum
                         </Link>
                         <button onClick={() => setChallengeTarget(c)} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 'var(--radius-md)', background: '#fff', color: '#374151', border: '1px solid #e5e7eb', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', fontSize: '12px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s' }}
-                          onMouseEnter={e => { e.currentTarget.style.background = '#fef3c7'; e.currentTarget.style.color = '#b45309'; e.currentTarget.style.borderColor = '#fde68a' }}
-                          onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#374151'; e.currentTarget.style.borderColor = '#e5e7eb' }}
-                          title="Kelola Challenge Bank untuk kelas ini"
+                          onMouseEnter={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.color = 'var(--color-primary)' }}
+                          onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#374151' }}
+                          title="Kelola Challenge Bank"
                         >
-                          <Zap size={12} fill="#f59e0b" color="#f59e0b" /> Challenge
+                          <Target size={12} /> Challenge
                         </button>
                         <Link href={`/admin/mini-course/${c.id}/stats`} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 'var(--radius-md)', background: '#fff', color: '#374151', border: '1px solid #e5e7eb', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', fontSize: '12px', fontWeight: 600, textDecoration: 'none', transition: 'all 0.15s' }}
                           onMouseEnter={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.color = 'var(--color-primary)' }}

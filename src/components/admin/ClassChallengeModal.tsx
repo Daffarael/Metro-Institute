@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { motion, AnimatePresence } from 'motion/react'
-import { X, Check, Zap, HelpCircle, FileText, Search, Sparkles, AlertCircle } from 'lucide-react'
+import { motion } from 'motion/react'
+import { X, Check, Search } from 'lucide-react'
+import Link from 'next/link'
 import api from '@/lib/axios'
 import { FIELD_LABELS, LEVEL_LABELS } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -92,7 +93,7 @@ export default function ClassChallengeModal({
       if (next[id] !== undefined) {
         delete next[id]
       } else {
-        next[id] = 0 // Default to 0% (unlocked at start)
+        next[id] = 0
       }
       return next
     })
@@ -105,7 +106,6 @@ export default function ClassChallengeModal({
     }))
   }
 
-  // Auto-distribute unlock percentages evenly (e.g. 4 items -> 0%, 25%, 50%, 75%)
   const autoDistributePercentages = () => {
     const selectedIds = Object.keys(selectedMap)
     if (selectedIds.length === 0) {
@@ -119,11 +119,11 @@ export default function ClassChallengeModal({
         next[id] = 0
       } else {
         const step = 100 / (selectedIds.length || 1)
-        next[id] = Math.min(100, Math.round((idx * step) / 5) * 5) // round to nearest 5%
+        next[id] = Math.min(100, Math.round((idx * step) / 5) * 5)
       }
     })
     setSelectedMap(next)
-    toast.success('Persentase buka challenge berhasil dibagi rata otomatis!')
+    toast.success('Persentase buka challenge berhasil dibagi rata.')
   }
 
   const selectAll = () => {
@@ -149,7 +149,7 @@ export default function ClassChallengeModal({
       return api.put(apiEndpoint, { challenges: payload })
     },
     onSuccess: () => {
-      toast.success('Pengaturan Challenge Bank kelas berhasil disimpan!')
+      toast.success('Pengaturan Challenge Bank berhasil disimpan.')
       qc.invalidateQueries({ queryKey: ['admin', classType] })
       qc.invalidateQueries({ queryKey: ['challenges'] })
       onClose()
@@ -160,18 +160,20 @@ export default function ClassChallengeModal({
   })
 
   const selectedCount = Object.keys(selectedMap).length
+  const fieldName = FIELD_LABELS[field] || field
+  const levelName = LEVEL_LABELS[level] || level
 
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.2 }}
+      transition={{ duration: 0.15 }}
       style={{
         position: 'fixed',
         inset: 0,
-        background: 'rgba(15, 23, 42, 0.65)',
-        backdropFilter: 'blur(4px)',
+        background: 'rgba(15, 23, 42, 0.45)',
+        backdropFilter: 'blur(3px)',
         zIndex: 9999,
         display: 'flex',
         alignItems: 'center',
@@ -184,28 +186,28 @@ export default function ClassChallengeModal({
       }}
     >
       <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 16 }}
+        initial={{ opacity: 0, scale: 0.98, y: 8 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: 16 }}
-        transition={{ type: 'spring', damping: 26, stiffness: 300 }}
+        exit={{ opacity: 0, scale: 0.98, y: 8 }}
+        transition={{ duration: 0.18 }}
         style={{
-          background: '#ffffff',
-          borderRadius: 20,
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+          background: 'var(--color-surface, #ffffff)',
+          borderRadius: 16,
+          boxShadow: '0 20px 40px -15px rgba(0, 0, 0, 0.15)',
           width: '100%',
-          maxWidth: 720,
-          maxHeight: '90vh',
+          maxWidth: 680,
+          maxHeight: '88vh',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
-          border: '1px solid #e2e8f0',
+          border: '1px solid var(--color-border-subtle, #e2e8f0)',
         }}
       >
-        {/* Header */}
+        {/* Header - Ultra Clean */}
         <div
           style={{
-            padding: '24px 28px 18px',
-            borderBottom: '1px solid #f1f5f9',
+            padding: '20px 24px 16px',
+            borderBottom: '1px solid var(--color-border-subtle, #f1f5f9)',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'flex-start',
@@ -213,242 +215,198 @@ export default function ClassChallengeModal({
           }}
         >
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-              <span
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 4,
-                  fontSize: '11px',
-                  fontWeight: 700,
-                  padding: '3px 8px',
-                  borderRadius: 6,
-                  background: '#fef3c7',
-                  color: '#b45309',
-                }}
-              >
-                <Zap size={12} fill="#f59e0b" color="#f59e0b" /> CHALLENGE BANK KELAS
-              </span>
-              <span
-                style={{
-                  fontSize: '11px',
-                  fontWeight: 600,
-                  padding: '3px 8px',
-                  borderRadius: 6,
-                  background: 'var(--color-primary-light, #e0f2fe)',
-                  color: 'var(--color-primary, #0284c7)',
-                }}
-              >
-                {FIELD_LABELS[field] || field}
-              </span>
-              <span
-                style={{
-                  fontSize: '11px',
-                  fontWeight: 600,
-                  padding: '3px 8px',
-                  borderRadius: 6,
-                  background: '#f1f5f9',
-                  color: '#475569',
-                  border: '1px solid #e2e8f0',
-                }}
-              >
-                Level: {LEVEL_LABELS[level] || level}
-              </span>
-            </div>
             <h2
               style={{
-                fontSize: '18px',
-                fontWeight: 800,
-                color: '#0f172a',
+                fontSize: '17px',
+                fontWeight: 700,
+                color: 'var(--color-text-primary, #0f172a)',
                 margin: 0,
-                letterSpacing: '-0.02em',
+                letterSpacing: '-0.01em',
               }}
             >
-              {classTitle}
+              Challenge Bank Kelas
             </h2>
+            <div
+              style={{
+                fontSize: '13px',
+                color: 'var(--color-text-secondary, #64748b)',
+                marginTop: 4,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                flexWrap: 'wrap',
+              }}
+            >
+              <span style={{ fontWeight: 600, color: 'var(--color-text-primary, #1e293b)' }}>
+                {classTitle}
+              </span>
+              <span style={{ color: 'var(--color-border, #cbd5e1)' }}>·</span>
+              <span>{fieldName}</span>
+              <span style={{ color: 'var(--color-border, #cbd5e1)' }}>·</span>
+              <span>Level {levelName}</span>
+            </div>
           </div>
 
           <button
             onClick={onClose}
+            aria-label="Tutup"
             style={{
-              background: '#f8fafc',
-              border: '1px solid #e2e8f0',
+              background: 'transparent',
+              border: 'none',
               cursor: 'pointer',
-              color: '#64748b',
+              color: 'var(--color-text-tertiary, #94a3b8)',
               width: 32,
               height: 32,
               borderRadius: 8,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              transition: 'all 0.15s',
+              transition: 'background 0.15s, color 0.15s',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = '#f1f5f9'
-              e.currentTarget.style.color = '#0f172a'
+              e.currentTarget.style.background = 'var(--color-bg, #f1f5f9)'
+              e.currentTarget.style.color = 'var(--color-text-primary, #0f172a)'
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = '#f8fafc'
-              e.currentTarget.style.color = '#64748b'
+              e.currentTarget.style.background = 'transparent'
+              e.currentTarget.style.color = 'var(--color-text-tertiary, #94a3b8)'
             }}
           >
-            <X size={16} />
+            <X size={18} />
           </button>
         </div>
 
         {/* Content Body */}
-        <div style={{ padding: '20px 28px', overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: 16 }}>
-          {/* Info Banner */}
-          <div
-            style={{
-              padding: '12px 16px',
-              borderRadius: 12,
-              background: '#f0fdf4',
-              border: '1px solid #bbf7d0',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              flexWrap: 'wrap',
-              gap: 10,
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Sparkles size={16} color="#16a34a" />
-              <span style={{ fontSize: '12px', color: '#166534', fontWeight: 500 }}>
-                Menampilkan soal yang cocok untuk bidang <strong>{FIELD_LABELS[field] || field}</strong> dan level <strong>{LEVEL_LABELS[level] || level}</strong>.
-              </span>
-            </div>
-            <button
-              type="button"
-              onClick={autoDistributePercentages}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 5,
-                padding: '5px 10px',
-                borderRadius: 8,
-                background: '#ffffff',
-                border: '1px solid #86efac',
-                color: '#15803d',
-                fontSize: '11px',
-                fontWeight: 700,
-                cursor: 'pointer',
-                boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
-              }}
-            >
-              <Zap size={12} fill="#16a34a" /> Bagi Rata Progres Otomatis
-            </button>
-          </div>
-
-          {/* Search & Actions Bar */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+        <div style={{ padding: '16px 24px', overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: 14 }}>
+          {/* Search & Actions Bar - Ultra Clean */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap' }}>
             <div style={{ position: 'relative', flex: 1, minWidth: 200 }}>
               <Search
                 size={14}
                 color="#94a3b8"
-                style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }}
+                style={{ position: 'absolute', left: 11, top: '50%', transform: 'translateY(-50%)' }}
               />
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Cari judul challenge..."
+                placeholder="Cari challenge..."
                 style={{
                   width: '100%',
-                  padding: '8px 12px 8px 34px',
-                  borderRadius: 10,
-                  border: '1px solid #e2e8f0',
+                  padding: '7px 12px 7px 32px',
+                  borderRadius: 8,
+                  border: '1px solid var(--color-border, #e2e8f0)',
                   fontSize: '13px',
                   outline: 'none',
-                  background: '#f8fafc',
+                  background: 'var(--color-bg, #f8fafc)',
+                  color: 'var(--color-text-primary, #0f172a)',
                 }}
               />
             </div>
 
-            <div style={{ display: 'flex', gap: 8 }}>
+            <div style={{ display: 'flex', gap: 6 }}>
+              {selectedCount > 1 && (
+                <button
+                  type="button"
+                  onClick={autoDistributePercentages}
+                  style={{
+                    padding: '6px 11px',
+                    borderRadius: 7,
+                    border: '1px solid var(--color-border, #e2e8f0)',
+                    background: 'var(--color-surface, #ffffff)',
+                    fontSize: '12px',
+                    fontWeight: 500,
+                    color: 'var(--color-primary, #018556)',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Bagi Rata
+                </button>
+              )}
               <button
                 type="button"
                 onClick={selectAll}
                 style={{
-                  padding: '7px 12px',
-                  borderRadius: 8,
-                  border: '1px solid #e2e8f0',
-                  background: '#fff',
+                  padding: '6px 11px',
+                  borderRadius: 7,
+                  border: '1px solid var(--color-border, #e2e8f0)',
+                  background: 'var(--color-surface, #ffffff)',
                   fontSize: '12px',
-                  fontWeight: 600,
-                  color: '#475569',
+                  fontWeight: 500,
+                  color: 'var(--color-text-secondary, #475569)',
                   cursor: 'pointer',
                 }}
               >
                 Pilih Semua
               </button>
-              <button
-                type="button"
-                onClick={unselectAll}
-                style={{
-                  padding: '7px 12px',
-                  borderRadius: 8,
-                  border: '1px solid #e2e8f0',
-                  background: '#fff',
-                  fontSize: '12px',
-                  fontWeight: 600,
-                  color: '#64748b',
-                  cursor: 'pointer',
-                }}
-              >
-                Reset
-              </button>
+              {selectedCount > 0 && (
+                <button
+                  type="button"
+                  onClick={unselectAll}
+                  style={{
+                    padding: '6px 11px',
+                    borderRadius: 7,
+                    border: '1px solid var(--color-border, #e2e8f0)',
+                    background: 'var(--color-surface, #ffffff)',
+                    fontSize: '12px',
+                    fontWeight: 500,
+                    color: 'var(--color-text-tertiary, #64748b)',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Reset
+                </button>
+              )}
             </div>
           </div>
 
           {/* Challenge List */}
           {isLoading ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: '20px 0' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: '16px 0' }}>
               {Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="skeleton" style={{ height: 80, borderRadius: 12 }} />
+                <div key={i} className="skeleton" style={{ height: 68, borderRadius: 10 }} />
               ))}
             </div>
           ) : availableChallenges.length === 0 ? (
+            /* Clean Empty State - No giant icons, no loud banners */
             <div
               style={{
                 textAlign: 'center',
-                padding: '40px 20px',
-                background: '#f8fafc',
-                borderRadius: 16,
-                border: '1px dashed #cbd5e1',
+                padding: '44px 20px',
+                background: 'var(--color-surface, #ffffff)',
+                borderRadius: 12,
+                border: '1px solid var(--color-border-subtle, #f1f5f9)',
               }}
             >
-              <AlertCircle size={32} color="#94a3b8" style={{ margin: '0 auto 10px' }} />
-              <h4 style={{ fontSize: '14px', fontWeight: 700, color: '#334155', marginBottom: 4 }}>
-                Belum Ada Challenge untuk Level Ini
+              <h4 style={{ fontSize: '14px', fontWeight: 600, color: 'var(--color-text-primary, #1e293b)', margin: '0 0 6px 0' }}>
+                Belum ada challenge untuk {fieldName} ({levelName})
               </h4>
-              <p style={{ fontSize: '12px', color: '#64748b', maxWidth: 360, margin: '0 auto 16px', lineHeight: 1.5 }}>
-                Sistem tidak menemukan Challenge Bank di bidang <strong>{FIELD_LABELS[field] || field}</strong> dengan level <strong>{LEVEL_LABELS[level] || level}</strong>.
+              <p style={{ fontSize: '13px', color: 'var(--color-text-secondary, #64748b)', maxWidth: 400, margin: '0 auto 16px', lineHeight: 1.5 }}>
+                Tantangan yang dibuat di menu Challenge Bank dengan bidang dan level yang sama akan muncul otomatis di sini.
               </p>
-              <a
+              <Link
                 href="/admin/challenges"
                 target="_blank"
                 style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  padding: '8px 16px',
-                  borderRadius: 8,
-                  background: 'var(--color-primary, #0284c7)',
-                  color: '#ffffff',
+                  display: 'inline-block',
+                  padding: '7px 14px',
+                  borderRadius: 7,
+                  border: '1px solid var(--color-primary, #018556)',
+                  color: 'var(--color-primary, #018556)',
                   fontSize: '12px',
                   fontWeight: 600,
                   textDecoration: 'none',
+                  background: 'transparent',
                 }}
               >
-                Buat Challenge di Menu Challenge Bank ↗
-              </a>
+                Buka Challenge Bank
+              </Link>
             </div>
           ) : filteredChallenges.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '30px 0', color: '#64748b', fontSize: '13px' }}>
+            <div style={{ textAlign: 'center', padding: '30px 0', color: 'var(--color-text-tertiary, #64748b)', fontSize: '13px' }}>
               Tidak ada challenge yang cocok dengan pencarian "{search}".
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {filteredChallenges.map((ch) => {
                 const isSelected = selectedMap[ch.id] !== undefined
                 const unlockPct = selectedMap[ch.id] ?? 0
@@ -457,77 +415,63 @@ export default function ClassChallengeModal({
                   <div
                     key={ch.id}
                     style={{
-                      padding: '14px 16px',
-                      borderRadius: 14,
-                      border: isSelected ? '1.5px solid var(--color-primary, #0284c7)' : '1px solid #e2e8f0',
-                      background: isSelected ? 'rgba(2, 132, 199, 0.02)' : '#ffffff',
-                      transition: 'all 0.15s ease',
+                      padding: '12px 14px',
+                      borderRadius: 10,
+                      border: isSelected
+                        ? '1px solid var(--color-primary, #018556)'
+                        : '1px solid var(--color-border-subtle, #e2e8f0)',
+                      background: isSelected
+                        ? 'rgba(1, 133, 86, 0.02)'
+                        : 'var(--color-surface, #ffffff)',
+                      transition: 'border-color 0.15s ease',
                       display: 'flex',
                       flexDirection: 'column',
-                      gap: 12,
+                      gap: 10,
                     }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10 }}>
                       <label
                         style={{
                           display: 'flex',
                           alignItems: 'flex-start',
-                          gap: 12,
+                          gap: 10,
                           cursor: 'pointer',
                           flex: 1,
                         }}
                       >
                         <div
                           style={{
-                            width: 20,
-                            height: 20,
-                            borderRadius: 6,
-                            border: isSelected ? 'none' : '1.5px solid #cbd5e1',
-                            background: isSelected ? 'var(--color-primary, #0284c7)' : '#ffffff',
+                            width: 18,
+                            height: 18,
+                            borderRadius: 5,
+                            border: isSelected ? 'none' : '1.5px solid var(--color-border, #cbd5e1)',
+                            background: isSelected ? 'var(--color-primary, #018556)' : '#ffffff',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
                             marginTop: 2,
                             flexShrink: 0,
-                            transition: 'all 0.15s',
+                            transition: 'all 0.12s',
                           }}
                           onClick={() => toggleSelect(ch.id)}
                         >
-                          {isSelected && <Check size={13} color="#ffffff" strokeWidth={3} />}
+                          {isSelected && <Check size={12} color="#ffffff" strokeWidth={3} />}
                         </div>
 
                         <div style={{ flex: 1 }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 4 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
                             <span
                               style={{
-                                fontSize: '10px',
-                                fontWeight: 700,
-                                padding: '2px 6px',
-                                borderRadius: 4,
-                                background: ch.type === 'QUIZ' ? '#eff6ff' : '#faf5ff',
-                                color: ch.type === 'QUIZ' ? '#2563eb' : '#9333ea',
+                                fontSize: '11px',
+                                fontWeight: 600,
+                                color: 'var(--color-text-tertiary, #64748b)',
                               }}
                             >
-                              {ch.type === 'QUIZ' ? 'KUIS' : 'PROYEK'}
-                            </span>
-                            <span
-                              style={{
-                                fontSize: '10px',
-                                fontWeight: 700,
-                                padding: '2px 6px',
-                                borderRadius: 4,
-                                background: '#fef3c7',
-                                color: '#b45309',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: 3,
-                              }}
-                            >
-                              <Zap size={10} fill="#f59e0b" /> +{ch.xpReward} XP
+                              {ch.type === 'QUIZ' ? 'Kuis' : 'Proyek'} · {ch.xpReward} XP
                             </span>
                           </div>
 
-                          <div style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a', lineHeight: 1.3 }}>
+                          <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-primary, #0f172a)', lineHeight: 1.35 }}>
                             {ch.title}
                           </div>
 
@@ -535,10 +479,10 @@ export default function ClassChallengeModal({
                             <div
                               style={{
                                 fontSize: '12px',
-                                color: '#64748b',
-                                marginTop: 3,
+                                color: 'var(--color-text-secondary, #64748b)',
+                                marginTop: 2,
                                 display: '-webkit-box',
-                                WebkitLineClamp: 2,
+                                WebkitLineClamp: 1,
                                 WebkitBoxOrient: 'vertical',
                                 overflow: 'hidden',
                               }}
@@ -550,41 +494,25 @@ export default function ClassChallengeModal({
                       </label>
                     </div>
 
-                    {/* Unlock Percentage Setting (Only if selected) */}
+                    {/* Unlock Percentage Setting (Only if selected) - Clean minimalist row */}
                     {isSelected && (
                       <div
                         style={{
-                          padding: '10px 14px',
-                          background: '#f8fafc',
-                          borderRadius: 10,
-                          border: '1px solid #e2e8f0',
+                          padding: '8px 10px',
+                          background: 'var(--color-bg, #f8fafc)',
+                          borderRadius: 7,
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'space-between',
                           flexWrap: 'wrap',
-                          gap: 10,
+                          gap: 8,
+                          marginLeft: 28,
                         }}
                       >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                          <span style={{ fontSize: '12px', fontWeight: 600, color: '#334155' }}>
-                            Terbuka di Progres Belajar:
-                          </span>
-                          <span
-                            style={{
-                              fontSize: '12px',
-                              fontWeight: 800,
-                              color: 'var(--color-primary, #0284c7)',
-                              background: '#ffffff',
-                              padding: '2px 8px',
-                              borderRadius: 6,
-                              border: '1px solid #cbd5e1',
-                            }}
-                          >
-                            {unlockPct}%
-                          </span>
-                        </div>
+                        <span style={{ fontSize: '11px', fontWeight: 500, color: 'var(--color-text-secondary, #475569)' }}>
+                          Buka di progres:
+                        </span>
 
-                        {/* Quick Presets */}
                         <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                           {PRESET_PERCENTAGES.map((preset) => (
                             <button
@@ -592,13 +520,17 @@ export default function ClassChallengeModal({
                               type="button"
                               onClick={() => setProgress(ch.id, preset)}
                               style={{
-                                padding: '3px 8px',
-                                borderRadius: 6,
-                                border: unlockPct === preset ? '1px solid var(--color-primary, #0284c7)' : '1px solid #cbd5e1',
-                                background: unlockPct === preset ? 'var(--color-primary, #0284c7)' : '#ffffff',
-                                color: unlockPct === preset ? '#ffffff' : '#475569',
+                                padding: '2px 8px',
+                                borderRadius: 5,
+                                border: unlockPct === preset
+                                  ? '1px solid var(--color-primary, #018556)'
+                                  : '1px solid var(--color-border, #e2e8f0)',
+                                background: unlockPct === preset
+                                  ? 'var(--color-primary, #018556)'
+                                  : '#ffffff',
+                                color: unlockPct === preset ? '#ffffff' : 'var(--color-text-secondary, #475569)',
                                 fontSize: '11px',
-                                fontWeight: 700,
+                                fontWeight: 600,
                                 cursor: 'pointer',
                                 transition: 'all 0.1s',
                               }}
@@ -616,34 +548,33 @@ export default function ClassChallengeModal({
           )}
         </div>
 
-        {/* Footer */}
+        {/* Footer - Ultra Clean */}
         <div
           style={{
-            padding: '16px 28px',
-            borderTop: '1px solid #f1f5f9',
-            background: '#fafafa',
+            padding: '14px 24px',
+            borderTop: '1px solid var(--color-border-subtle, #f1f5f9)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             gap: 12,
           }}
         >
-          <div style={{ fontSize: '13px', color: '#64748b' }}>
-            <strong style={{ color: '#0f172a' }}>{selectedCount}</strong> challenge dipilih untuk kelas ini
+          <div style={{ fontSize: '12px', color: 'var(--color-text-secondary, #64748b)' }}>
+            <span style={{ fontWeight: 600, color: 'var(--color-text-primary, #0f172a)' }}>{selectedCount}</span> dipilih
           </div>
 
-          <div style={{ display: 'flex', gap: 10 }}>
+          <div style={{ display: 'flex', gap: 8 }}>
             <button
               type="button"
               onClick={onClose}
               style={{
-                padding: '9px 18px',
-                borderRadius: 10,
-                border: '1px solid #e2e8f0',
-                background: '#ffffff',
-                fontSize: '13px',
-                fontWeight: 600,
-                color: '#475569',
+                padding: '7px 14px',
+                borderRadius: 7,
+                border: '1px solid var(--color-border, #e2e8f0)',
+                background: 'transparent',
+                fontSize: '12px',
+                fontWeight: 500,
+                color: 'var(--color-text-secondary, #475569)',
                 cursor: 'pointer',
               }}
             >
@@ -654,19 +585,18 @@ export default function ClassChallengeModal({
               disabled={saveMutation.isPending}
               onClick={() => saveMutation.mutate()}
               style={{
-                padding: '9px 20px',
-                borderRadius: 10,
+                padding: '7px 16px',
+                borderRadius: 7,
                 border: 'none',
-                background: 'var(--color-primary, #0284c7)',
+                background: 'var(--color-primary, #018556)',
                 color: '#ffffff',
-                fontSize: '13px',
-                fontWeight: 700,
+                fontSize: '12px',
+                fontWeight: 600,
                 cursor: 'pointer',
                 opacity: saveMutation.isPending ? 0.7 : 1,
-                boxShadow: '0 2px 4px rgba(0,0,0,0.06)',
               }}
             >
-              {saveMutation.isPending ? 'Menyimpan...' : 'Simpan Challenge Kelas'}
+              {saveMutation.isPending ? 'Menyimpan...' : 'Simpan'}
             </button>
           </div>
         </div>

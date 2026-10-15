@@ -392,7 +392,7 @@ export default function ChallengeBankPage() {
                         padding: '2px 8px',
                         borderRadius: '6px',
                       }}>
-                        🔒 {challenge.unlockAtProgress}%
+                        Buka di {challenge.unlockAtProgress}%
                       </span>
                     )}
 
@@ -489,12 +489,12 @@ export default function ChallengeBankPage() {
                           : 'var(--color-primary, #018556)',
                     }}>
                       {isLocked
-                        ? `🔒 Terbuka di ${challenge.unlockAtProgress}%`
+                        ? `Terbuka di ${challenge.unlockAtProgress}%`
                         : isCooldown
                           ? 'Tunggu Cooldown'
                           : challenge.isCompleted
                             ? 'Ulangi Latihan'
-                            : 'Mulai Tantangan →'}
+                            : 'Mulai Tantangan'}
                     </span>
                   </div>
                 </div>
