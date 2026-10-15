@@ -582,7 +582,7 @@ export default function CourseLearningPlayerPage() {
                       fontWeight: 700,
                       color: '#b45309'
                     }}>
-                      <Zap size={13} fill="#f59e0b" color="#f59e0b" /> +{currentSession.xpReward} XP
+                      <Zap size={13} fill="#f59e0b" color="#f59e0b" /> +{currentSession.xpReward > 0 ? currentSession.xpReward : 10} XP
                     </span>
                   </div>
 

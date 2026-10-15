@@ -852,22 +852,20 @@ export default function BootcampLearningPlayerPage() {
                       </span>
                     )}
 
-                    {currentSession.xpReward > 0 && (
-                      <span style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: 4,
-                        padding: '4px 10px',
-                        borderRadius: 8,
-                        background: 'rgba(245, 158, 11, 0.1)',
-                        border: '1px solid rgba(245, 158, 11, 0.2)',
-                        fontSize: '12px',
-                        fontWeight: 700,
-                        color: '#d97706'
-                      }}>
-                        <Zap size={12} fill="#d97706" /> +{currentSession.xpReward} XP
-                      </span>
-                    )}
+                    <span style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 4,
+                      padding: '4px 10px',
+                      borderRadius: 8,
+                      background: 'rgba(245, 158, 11, 0.1)',
+                      border: '1px solid rgba(245, 158, 11, 0.2)',
+                      fontSize: '12px',
+                      fontWeight: 700,
+                      color: '#d97706'
+                    }}>
+                      <Zap size={12} fill="#d97706" /> +{currentSession.xpReward > 0 ? currentSession.xpReward : 10} XP
+                    </span>
                   </div>
 
                   <h1 style={{ fontSize: '20px', fontWeight: 800, color: 'var(--color-text-primary)', margin: 0, letterSpacing: '-0.01em' }}>

@@ -18,7 +18,7 @@ import { toast } from 'sonner'
 
 interface CourseSession {
   id: string; title: string; type: 'VIDEO' | 'MATERIAL' | 'QUIZ'
-  videoUrl?: string; materialUrl?: string; isFreePreview: boolean; order: number
+  videoUrl?: string; materialUrl?: string; materials?: any; isFreePreview: boolean; order: number; xpReward?: number
 }
 interface MiniCourse { id: string; title: string }
 
@@ -42,7 +42,8 @@ function AddSessionModal({ courseId, editSession, onClose }: { courseId: string;
     videoUrl: editSession?.videoUrl || '', 
     materialUrl: (editSession?.materials as any)?.[0]?.url || '', 
     assignmentDescription: (editSession as any)?.assignmentDescription || '',
-    isPreview: editSession?.isFreePreview || false 
+    isPreview: editSession?.isFreePreview || false,
+    xpReward: (editSession as any)?.xpReward !== undefined ? (editSession as any).xpReward : 10
   })
 
   const [quizOptions, setQuizOptions] = useState<any[]>(
@@ -216,6 +217,19 @@ return (
               </div>
             </div>
           )}
+          <div>
+            <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 4 }}>Reward XP</label>
+            <input 
+              type="number"
+              min={0}
+              value={form.xpReward} 
+              onChange={e => f('xpReward', Number(e.target.value))} 
+              placeholder="10" 
+              style={inputStyle} 
+            />
+            <p style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 3 }}>Poin XP yang diperoleh mentee setelah menyelesaikan sesi ini (default: 10 XP).</p>
+          </div>
+
           {/* Clean Neutral Preview Toggle Card */}
           <div
             onClick={() => f('isPreview', !form.isPreview)}

@@ -34,7 +34,7 @@ import { CSS } from '@dnd-kit/utilities'
 interface BootcampSession {
   id: string; title: string; type: 'LIVE' | 'VIDEO' | 'MATERIAL' | 'QUIZ'
   videoUrl?: string; materialUrl?: string; isPreview: boolean
-  order: number; challengeId?: string; deadlineAt?: string
+  order: number; challengeId?: string; deadlineAt?: string; xpReward?: number
 }
 
 interface BootcampChapter {
@@ -102,7 +102,8 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
     materialUrl: editSession?.materials?.[0]?.url || '', 
     isPreview: editSession?.isFreePreview || false,
     assignmentDescription: editSession?.assignmentDescription || '',
-    assignmentDeadline: editSession?.assignmentDeadline ? editSession.assignmentDeadline.slice(0, 16) : ''
+    assignmentDeadline: editSession?.assignmentDeadline ? editSession.assignmentDeadline.slice(0, 16) : '',
+    xpReward: editSession?.xpReward !== undefined ? editSession.xpReward : 10
   })
   const f = (k: string, v: any) => setForm(p => ({ ...p, [k]: v }))
 
@@ -163,6 +164,19 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
                 width="100%"
               />
             </div>
+          </div>
+
+          <div>
+            <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Reward XP</label>
+            <input 
+              type="number"
+              min={0}
+              value={form.xpReward} 
+              onChange={e => f('xpReward', Number(e.target.value))} 
+              placeholder="10" 
+              style={inputStyle} 
+            />
+            <p style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 4 }}>Poin XP yang diperoleh mentee setelah menyelesaikan sesi ini (default: 10 XP).</p>
           </div>
           
 
