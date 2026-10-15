@@ -63,7 +63,7 @@ export default function BootcampLearningPlayerPage() {
   const { id: bootcampId, sessionId } = useParams<{ id: string; sessionId: string }>()
   const router = useRouter()
   const queryClient = useQueryClient()
-  const [activeTab, setActiveTab] = useState<'overview' | 'notes' | 'qna' | 'materials'>('overview')
+  const [activeTab, setActiveTab] = useState<'overview' | 'notes' | 'qna'>('overview')
   const [playedSeconds, setPlayedSeconds] = useState(0)
   const [isCompleted, setIsCompleted] = useState(false)
   const [expandedChapters, setExpandedChapters] = useState<Set<string>>(new Set(['0']))
@@ -582,40 +582,42 @@ export default function BootcampLearningPlayerPage() {
             ) : (
               <div style={{
                 background: '#ffffff',
-                borderRadius: 20,
-                padding: '32px 32px',
+                borderRadius: 16,
+                padding: '24px 28px',
                 border: '1px solid #e2e8f0',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 20
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                  <div style={{
-                    width: 48,
-                    height: 48,
-                    borderRadius: 14,
-                    background: 'rgba(16, 185, 129, 0.1)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0
-                  }}>
-                    <BookOpen size={24} color="var(--color-primary)" />
-                  </div>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      padding: '4px 10px',
+                      borderRadius: 6,
+                      background: 'rgba(16, 185, 129, 0.08)',
+                      color: 'var(--color-primary)',
+                      fontSize: '12px',
+                      fontWeight: 700,
+                      letterSpacing: '0.02em',
+                    }}>
+                      <BookOpen size={13} /> Modul Pembelajaran
+                    </span>
+                    {parsedMaterials.length > 0 && (
                       <span style={{
-                        padding: '3px 8px', borderRadius: 6,
-                        background: 'rgba(16, 185, 129, 0.1)', color: 'var(--color-primary)',
-                        fontSize: '11px', fontWeight: 800, letterSpacing: '0.04em'
+                        fontSize: '12px',
+                        fontWeight: 600,
+                        color: '#64748b',
+                        background: '#f1f5f9',
+                        padding: '4px 10px',
+                        borderRadius: 6,
                       }}>
-                        MATERI PEMBELAJARAN
+                        {parsedMaterials.length} File Lampiran
                       </span>
-                    </div>
-                    <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#0f172a', margin: '4px 0 0' }}>
-                      {currentSession.title}
-                    </h2>
+                    )}
                   </div>
                 </div>
 
@@ -628,8 +630,8 @@ export default function BootcampLearningPlayerPage() {
                     whiteSpace: 'pre-wrap',
                     background: '#f8fafc',
                     padding: '20px 24px',
-                    borderRadius: 14,
-                    border: '1px solid #e2e8f0'
+                    borderRadius: 12,
+                    border: '1px solid #f1f5f9'
                   }}>
                     {currentSession.description || currentSession.assignmentDescription}
                   </div>
@@ -637,63 +639,91 @@ export default function BootcampLearningPlayerPage() {
 
                 {/* File Materi Pendukung & Unduhan */}
                 {parsedMaterials.length > 0 && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <FileText size={18} color="var(--color-primary)" />
-                      <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a', margin: 0 }}>
-                        File Dokumen & Lampiran Materi ({parsedMaterials.length})
-                      </h3>
-                    </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
-                      {parsedMaterials.map((mat: any, idx: number) => (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                    {parsedMaterials.map((mat: any, idx: number) => {
+                      const displayName = mat.name && mat.name !== 'Materi' ? mat.name : (currentSession.title ? `Dokumen - ${currentSession.title}` : `Materi Pembelajaran ${idx + 1}`)
+                      return (
                         <a
                           key={idx}
                           href={mat.url}
                           target="_blank"
                           rel="noopener noreferrer"
                           style={{
-                            display: 'flex', alignItems: 'center', gap: 12,
-                            padding: '14px 18px', border: '1px solid #e2e8f0',
-                            borderRadius: 12, textDecoration: 'none', background: '#ffffff',
-                            color: '#0f172a', transition: 'all 0.15s ease',
-                            boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            gap: 16,
+                            padding: '14px 18px',
+                            border: '1px solid #e2e8f0',
+                            borderRadius: 12,
+                            textDecoration: 'none',
+                            background: '#ffffff',
+                            transition: 'all 0.15s ease',
+                            boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
                           }}
                           onMouseEnter={(e) => {
                             e.currentTarget.style.borderColor = 'var(--color-primary)';
-                            e.currentTarget.style.background = '#f0fdf4';
+                            e.currentTarget.style.boxShadow = '0 2px 8px rgba(16, 185, 129, 0.08)';
                           }}
                           onMouseLeave={(e) => {
                             e.currentTarget.style.borderColor = '#e2e8f0';
-                            e.currentTarget.style.background = '#ffffff';
+                            e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.02)';
                           }}
                         >
-                          <div style={{
-                            width: 38, height: 38, borderRadius: 8,
-                            background: 'rgba(16, 185, 129, 0.1)',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            color: 'var(--color-primary)', flexShrink: 0
-                          }}>
-                            <FileText size={18} />
-                          </div>
-                          <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontSize: '13.5px', fontWeight: 700, color: '#0f172a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                              {mat.name || `Lampiran Materi ${idx + 1}`}
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0, flex: 1 }}>
+                            <div style={{
+                              width: 40,
+                              height: 40,
+                              borderRadius: 10,
+                              background: 'rgba(16, 185, 129, 0.08)',
+                              color: 'var(--color-primary)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              flexShrink: 0
+                            }}>
+                              <FileText size={20} />
                             </div>
-                            <div style={{ fontSize: '11px', color: '#64748b', marginTop: 2 }}>
-                              Klik untuk membuka / unduh
+                            <div style={{ minWidth: 0, flex: 1 }}>
+                              <div style={{
+                                fontSize: '14px',
+                                fontWeight: 600,
+                                color: '#0f172a',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap'
+                              }}>
+                                {displayName}
+                              </div>
+                              <div style={{ fontSize: '12px', color: '#64748b', marginTop: 2 }}>
+                                Dokumen Pembelajaran • Klik untuk unduh
+                              </div>
                             </div>
                           </div>
-                          <div style={{
-                            display: 'flex', alignItems: 'center', gap: 4,
-                            padding: '6px 12px', borderRadius: 8,
-                            background: 'var(--color-primary)', color: '#ffffff',
-                            fontSize: '12px', fontWeight: 600, flexShrink: 0
-                          }}>
-                            <Download size={13} /> Unduh
-                          </div>
+
+                          <motion.div
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              gap: 6,
+                              padding: '8px 16px',
+                              background: 'var(--color-primary)',
+                              color: '#ffffff',
+                              borderRadius: 'var(--radius-md)',
+                              fontWeight: 600,
+                              fontSize: '13px',
+                              flexShrink: 0,
+                              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)'
+                            }}
+                          >
+                            <Download size={14} /> Unduh
+                          </motion.div>
                         </a>
-                      ))}
-                    </div>
+                      )
+                    })}
                   </div>
                 )}
 
@@ -701,11 +731,11 @@ export default function BootcampLearningPlayerPage() {
                 {!currentSession.description && !currentSession.assignmentDescription && parsedMaterials.length === 0 && (
                   <div style={{
                     textAlign: 'center',
-                    padding: '24px 0',
+                    padding: '32px 0',
                     color: '#64748b',
                     fontSize: '14px'
                   }}>
-                    Materi untuk sesi ini dapat Anda diskusikan langsung pada tab <strong>Tanya Jawab</strong> atau buat <strong>Catatan</strong> pribadi.
+                    Materi pembelajaran untuk sesi ini dapat Anda diskusikan langsung pada tab <strong>Tanya Jawab</strong> atau buat <strong>Catatan</strong> pribadi di bawah.
                   </div>
                 )}
               </div>
@@ -878,7 +908,6 @@ export default function BootcampLearningPlayerPage() {
                 { id: 'overview', label: 'Ringkasan', icon: BookOpen },
                 { id: 'notes', label: 'Catatan', icon: StickyNote },
                 { id: 'qna', label: 'Tanya Jawab', icon: MessageSquare },
-                { id: 'materials', label: 'Materi', icon: FileText },
               ]}
               activeId={activeTab}
               onChange={(id) => setActiveTab(id as typeof activeTab)}
@@ -995,42 +1024,6 @@ export default function BootcampLearningPlayerPage() {
                         </div>
                       )}
                     </div>
-                  </div>
-                )}
-
-                {activeTab === 'materials' && (
-                  <div className="animate-fade-in">
-                    <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#0f172a', marginBottom: 16 }}>Materi Pendukung</h3>
-                    {currentSession.materials && currentSession.materials.length > 0 ? (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                        {currentSession.materials.map((mat) => (
-                          <a
-                            key={mat.url} href={mat.url} target="_blank" rel="noopener noreferrer"
-                            style={{
-                              display: 'flex', alignItems: 'center', gap: 14,
-                              padding: '14px 18px', border: '1px solid #e2e8f0',
-                              borderRadius: 14, textDecoration: 'none', background: '#f8fafc',
-                              color: '#0f172a', transition: 'all 0.15s',
-                            }}
-                            onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--color-primary)'; e.currentTarget.style.background = '#ffffff' }}
-                            onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.background = '#f8fafc' }}
-                          >
-                            <div style={{ width: 36, height: 36, borderRadius: 8, background: 'rgba(16, 185, 129, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                              <FileText size={18} color="var(--color-primary)" />
-                            </div>
-                            <span style={{ flex: 1, fontSize: '14px', fontWeight: 600 }}>{mat.name}</span>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-primary)', fontSize: '13px', fontWeight: 600 }}>
-                              <Download size={15} /> Unduh
-                            </div>
-                          </a>
-                        ))}
-                      </div>
-                    ) : (
-                      <div style={{ textAlign: 'center', padding: '40px 0', color: '#94a3b8' }}>
-                        <FileText size={40} opacity={0.3} style={{ margin: '0 auto 12px' }} />
-                        <p style={{ fontSize: '14px', margin: 0 }}>Tidak ada file materi tambahan untuk sesi ini.</p>
-                      </div>
-                    )}
                   </div>
                 )}
               </div>
