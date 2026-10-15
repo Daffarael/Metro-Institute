@@ -238,60 +238,65 @@ export default function CourseLearningPlayerPage() {
             {/* Celebration Banner when 100% Complete */}
             {data.progress === 100 && (
               <div style={{
-                background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(5, 150, 105, 0.03) 100%)',
-                border: '1px solid rgba(16, 185, 129, 0.25)',
-                borderRadius: 20,
-                padding: '20px 24px',
+                background: '#ffffff',
+                border: '1px solid #e2e8f0',
+                borderRadius: 16,
+                padding: '18px 24px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 gap: 16,
                 flexWrap: 'wrap',
-                boxShadow: '0 4px 16px rgba(16, 185, 129, 0.06)',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.03), 0 6px 16px rgba(0,0,0,0.02)',
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
                   <div style={{
-                    width: 48,
-                    height: 48,
-                    borderRadius: 14,
-                    background: 'var(--color-primary)',
+                    width: 44,
+                    height: 44,
+                    borderRadius: 12,
+                    background: 'rgba(16, 185, 129, 0.1)',
+                    border: '1px solid rgba(16, 185, 129, 0.2)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: '#ffffff',
+                    color: 'var(--color-primary)',
                     flexShrink: 0,
-                    boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)',
                   }}>
-                    <Award size={26} />
+                    <Award size={22} strokeWidth={2.2} />
                   </div>
                   <div>
-                    <h3 style={{ fontSize: '16px', fontWeight: 800, color: '#065f46', margin: '0 0 3px', letterSpacing: '-0.01em' }}>
+                    <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a', margin: '0 0 3px', letterSpacing: '-0.01em' }}>
                       Selamat! Anda Telah Menyelesaikan Kelas Ini 🎉
                     </h3>
-                    <p style={{ fontSize: '13px', color: '#047857', margin: 0, lineHeight: 1.4 }}>
+                    <p style={{ fontSize: '13px', color: '#64748b', margin: 0, lineHeight: 1.5 }}>
                       Sertifikat kelulusan Anda sudah resmi diterbitkan oleh Metro Institute dan siap diunduh.
                     </p>
                   </div>
                 </div>
 
-                <Link
-                  href={ROUTES.CERTIFICATES}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 8,
-                    padding: '10px 20px',
-                    borderRadius: 10,
-                    background: 'var(--color-primary)',
-                    color: '#ffffff',
-                    fontSize: '13.5px',
-                    fontWeight: 700,
-                    textDecoration: 'none',
-                    boxShadow: '0 2px 8px rgba(16, 185, 129, 0.25)',
-                    transition: 'all 0.15s ease',
-                  }}
-                >
-                  <Award size={16} /> Klaim & Unduh Sertifikat
+                <Link href={ROUTES.CERTIFICATES} style={{ textDecoration: 'none' }}>
+                  <motion.div
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 8,
+                      padding: '10px 20px',
+                      background: 'var(--color-primary)',
+                      color: '#ffffff',
+                      borderRadius: 'var(--radius-md)',
+                      fontWeight: 600,
+                      fontSize: '13px',
+                      cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                      boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+                      transition: 'background-color 0.15s ease',
+                    }}
+                  >
+                    <Award size={15} /> Klaim & Unduh Sertifikat
+                  </motion.div>
                 </Link>
               </div>
             )}
