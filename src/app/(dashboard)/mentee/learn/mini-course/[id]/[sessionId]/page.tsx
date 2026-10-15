@@ -147,17 +147,18 @@ export default function CourseLearningPlayerPage() {
 
   const { course, chapters, currentSession, prevSessionId, nextSessionId } = data
 
-  const parsedMaterials = useMemo(() => {
-    let raw = currentSession?.materials
-    if (typeof raw === 'string') {
+  let parsedMaterials: Array<{ name: string; url: string }> = []
+  if (currentSession?.materials) {
+    if (typeof currentSession.materials === 'string') {
       try {
-        raw = JSON.parse(raw)
+        parsedMaterials = JSON.parse(currentSession.materials)
       } catch {
-        raw = []
+        parsedMaterials = []
       }
+    } else if (Array.isArray(currentSession.materials)) {
+      parsedMaterials = currentSession.materials
     }
-    return Array.isArray(raw) ? raw : []
-  }, [currentSession?.materials])
+  }
 
   return (
     <div style={{ height: '100dvh', display: 'flex', flexDirection: 'column', overflow: 'hidden', background: '#f8fafc' }}>
