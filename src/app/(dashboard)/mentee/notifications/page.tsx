@@ -147,7 +147,7 @@ export default function NotificationsPage() {
                     )}
                   </div>
                 </div>
-                <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', marginTop: 2, lineHeight: 'var(--leading-relaxed)' }}>
+                <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', marginTop: 2, lineHeight: 'var(--leading-relaxed)', whiteSpace: 'pre-line' }}>
                   {notif.body}
                 </p>
               </div>

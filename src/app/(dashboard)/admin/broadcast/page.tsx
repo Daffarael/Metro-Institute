@@ -65,28 +65,28 @@ export default function AdminBroadcastPage() {
             style={inputStyleClean}
             placeholder="Contoh: Update Kurikulum Baru!"
             value={title}
-            maxLength={100}
+            maxLength={150}
             onChange={(e) => setTitle(e.target.value)}
             onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)'; e.currentTarget.style.boxShadow = '0 0 0 4px rgba(1,133,86,0.08)' }}
             onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)'; e.currentTarget.style.boxShadow = 'none' }}
           />
-          <div style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', textAlign: 'right', marginTop: '8px', fontWeight: 500 }}>{title.length}/100</div>
+          <div style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', textAlign: 'right', marginTop: '8px', fontWeight: 500 }}>{title.length}/150</div>
         </div>
 
         {/* Body */}
         <div style={{ marginBottom: '32px' }}>
           <label style={labelStyle}>Isi Pesan <span style={{color: 'var(--color-error)'}}>*</span></label>
           <textarea
-            style={{ ...inputStyleClean, resize: 'vertical', fontFamily: 'inherit', minHeight: 120 }}
+            style={{ ...inputStyleClean, resize: 'vertical', fontFamily: 'inherit', minHeight: 140 }}
             placeholder="Tulis pesan broadcast di sini..."
             value={body}
-            maxLength={500}
-            rows={5}
+            maxLength={3000}
+            rows={6}
             onChange={(e) => setBody(e.target.value)}
             onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)'; e.currentTarget.style.boxShadow = '0 0 0 4px rgba(1,133,86,0.08)' }}
             onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)'; e.currentTarget.style.boxShadow = 'none' }}
           />
-          <div style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', textAlign: 'right', marginTop: '8px', fontWeight: 500 }}>{body.length}/500</div>
+          <div style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', textAlign: 'right', marginTop: '8px', fontWeight: 500 }}>{body.length}/3000</div>
         </div>
 
         {/* Targeting */}
