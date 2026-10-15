@@ -470,7 +470,7 @@ export default function AdminMiniCoursePage() {
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--text-sm)' }}>
               <thead>
                 <tr style={{ background: 'var(--color-bg)', borderBottom: '1px solid var(--color-border)' }}>
-                  {['#', 'Judul', 'Bidang', 'Harga', 'Akses', 'Mentee', 'Rating', 'Status', 'Aksi'].map(h => (
+                  {['#', 'Judul', 'Bidang', 'Level', 'Harga', 'Akses', 'Mentee', 'Rating', 'Status', 'Aksi'].map(h => (
                     <th key={h} style={{ padding: 'var(--space-3) var(--space-4)', textAlign: 'left', fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-tertiary)', letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>{h}</th>
                   ))}
                 </tr>
@@ -487,17 +487,11 @@ export default function AdminMiniCoursePage() {
                       <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.title}</div>
                       {c.descShort && <div style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.descShort}</div>}
                     </td>
-                    <td style={{ padding: 'var(--space-3) var(--space-4)' }}>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'flex-start' }}>
-                        <span style={{ fontSize: '11px', fontWeight: 600, padding: '2px 8px', borderRadius: 'var(--radius-full)', background: 'var(--color-primary-light)', color: 'var(--color-primary)' }}>
-                          {FIELD_LABELS[c.field] ?? c.field}
-                        </span>
-                        {c.level && (
-                          <span style={{ fontSize: '10px', fontWeight: 600, color: 'var(--color-text-secondary)', background: 'var(--color-bg)', border: '1px solid var(--color-border)', padding: '1px 6px', borderRadius: 4 }}>
-                            {LEVEL_LABELS[c.level] ?? c.level}
-                          </span>
-                        )}
-                      </div>
+                    <td style={{ padding: 'var(--space-3) var(--space-4)', color: 'var(--color-text-secondary)', whiteSpace: 'nowrap' }}>
+                      {FIELD_LABELS[c.field] ?? c.field}
+                    </td>
+                    <td style={{ padding: 'var(--space-3) var(--space-4)', color: 'var(--color-text-secondary)', whiteSpace: 'nowrap' }}>
+                      {c.level ? (LEVEL_LABELS[c.level] ?? c.level) : '—'}
                     </td>
                     <td style={{ padding: 'var(--space-3) var(--space-4)', fontWeight: 700 }}>{c.price === 0 ? 'Gratis' : formatRupiah(c.price)}</td>
                     <td style={{ padding: 'var(--space-3) var(--space-4)', color: 'var(--color-text-secondary)' }}>{c.accessDays > 10000 ? 'Seumur Hidup' : `${c.accessDays} hari`}</td>

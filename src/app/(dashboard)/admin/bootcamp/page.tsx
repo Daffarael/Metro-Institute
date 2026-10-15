@@ -474,7 +474,7 @@ export default function AdminBootcampPage() {
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--text-sm)' }}>
               <thead>
                 <tr style={{ background: 'var(--color-bg)', borderBottom: '1px solid var(--color-border)' }}>
-                  {['#', 'Nama', 'Bidang', 'Harga', 'Peserta', 'Buka Beli', 'Mulai', 'Status', 'Aksi'].map(h => (
+                  {['#', 'Nama', 'Bidang', 'Harga', 'Mentee', 'Buka Beli', 'Mulai', 'Status', 'Aksi'].map(h => (
                     <th key={h} style={{ padding: 'var(--space-3) var(--space-4)', textAlign: 'left', fontWeight: 600, fontSize: 'var(--text-xs)', color: 'var(--color-text-tertiary)', letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>{h}</th>
                   ))}
                 </tr>
@@ -492,14 +492,8 @@ export default function AdminBootcampPage() {
                     <td style={{ padding: 'var(--space-3) var(--space-4)', fontWeight: 600, maxWidth: 200 }}>
                       <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{b.name}</div>
                     </td>
-                    <td style={{ padding: 'var(--space-3) var(--space-4)' }}>
-                      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-                        {b.fields.map(f => (
-                          <span key={f} style={{ fontSize: '10px', fontWeight: 600, padding: '2px 6px', borderRadius: 'var(--radius-full)', background: 'var(--color-primary-light)', color: 'var(--color-primary)' }}>
-                            {FIELD_LABELS[f] ?? f}
-                          </span>
-                        ))}
-                      </div>
+                    <td style={{ padding: 'var(--space-3) var(--space-4)', color: 'var(--color-text-secondary)', whiteSpace: 'nowrap' }}>
+                      {b.fields.map(f => FIELD_LABELS[f] ?? f).join(', ')}
                     </td>
                     <td style={{ padding: 'var(--space-3) var(--space-4)', fontWeight: 700, whiteSpace: 'nowrap' }}>{formatRupiah(b.price)}</td>
                     <td style={{ padding: 'var(--space-3) var(--space-4)', color: 'var(--color-text-secondary)' }}>
