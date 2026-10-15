@@ -196,6 +196,18 @@ export default function BootcampLearningPlayerPage() {
 
   const { bootcamp, chapters, currentSession, prevSessionId, nextSessionId } = data
 
+  const parsedMaterials = useMemo(() => {
+    let raw = currentSession?.materials
+    if (typeof raw === 'string') {
+      try {
+        raw = JSON.parse(raw)
+      } catch {
+        raw = []
+      }
+    }
+    return Array.isArray(raw) ? raw : []
+  }, [currentSession?.materials])
+
   const toggleChapter = (idxStr: string) => {
     setExpandedChapters((prev) => {
       const next = new Set(prev)
@@ -570,27 +582,131 @@ export default function BootcampLearningPlayerPage() {
               <div style={{
                 background: '#ffffff',
                 borderRadius: 20,
-                padding: '48px 24px',
+                padding: '32px 32px',
+                border: '1px solid #e2e8f0',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.03)',
                 display: 'flex',
                 flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                border: '1px solid #e2e8f0',
-                boxShadow: '0 4px 16px rgba(0,0,0,0.03)'
+                gap: 20
               }}>
-                <div style={{
-                  width: 56, height: 56, borderRadius: 14,
-                  background: 'rgba(16, 185, 129, 0.1)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 14
-                }}>
-                  <BookOpen size={28} color="var(--color-primary)" />
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                  <div style={{
+                    width: 48,
+                    height: 48,
+                    borderRadius: 14,
+                    background: 'rgba(16, 185, 129, 0.1)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0
+                  }}>
+                    <BookOpen size={24} color="var(--color-primary)" />
+                  </div>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{
+                        padding: '3px 8px', borderRadius: 6,
+                        background: 'rgba(16, 185, 129, 0.1)', color: 'var(--color-primary)',
+                        fontSize: '11px', fontWeight: 800, letterSpacing: '0.04em'
+                      }}>
+                        MATERI PEMBELAJARAN
+                      </span>
+                    </div>
+                    <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#0f172a', margin: '4px 0 0' }}>
+                      {currentSession.title}
+                    </h2>
+                  </div>
                 </div>
-                <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', marginBottom: 6 }}>
-                  Sesi Materi & Panduan
-                </h2>
-                <p style={{ color: '#64748b', fontSize: '14px', maxWidth: 440, textAlign: 'center', margin: 0 }}>
-                  Pelajari materi di bawah ini secara saksama dan tandai sebagai selesai jika Anda sudah memahaminya.
-                </p>
+
+                {/* Deskripsi / Isi Materi Teks */}
+                {(currentSession.description || currentSession.assignmentDescription) && (
+                  <div style={{
+                    fontSize: '14.5px',
+                    color: '#334155',
+                    lineHeight: 1.8,
+                    whiteSpace: 'pre-wrap',
+                    background: '#f8fafc',
+                    padding: '20px 24px',
+                    borderRadius: 14,
+                    border: '1px solid #e2e8f0'
+                  }}>
+                    {currentSession.description || currentSession.assignmentDescription}
+                  </div>
+                )}
+
+                {/* File Materi Pendukung & Unduhan */}
+                {parsedMaterials.length > 0 && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <FileText size={18} color="var(--color-primary)" />
+                      <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a', margin: 0 }}>
+                        File Dokumen & Lampiran Materi ({parsedMaterials.length})
+                      </h3>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
+                      {parsedMaterials.map((mat: any, idx: number) => (
+                        <a
+                          key={idx}
+                          href={mat.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            display: 'flex', alignItems: 'center', gap: 12,
+                            padding: '14px 18px', border: '1px solid #e2e8f0',
+                            borderRadius: 12, textDecoration: 'none', background: '#ffffff',
+                            color: '#0f172a', transition: 'all 0.15s ease',
+                            boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.borderColor = 'var(--color-primary)';
+                            e.currentTarget.style.background = '#f0fdf4';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.borderColor = '#e2e8f0';
+                            e.currentTarget.style.background = '#ffffff';
+                          }}
+                        >
+                          <div style={{
+                            width: 38, height: 38, borderRadius: 8,
+                            background: 'rgba(16, 185, 129, 0.1)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            color: 'var(--color-primary)', flexShrink: 0
+                          }}>
+                            <FileText size={18} />
+                          </div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: '13.5px', fontWeight: 700, color: '#0f172a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              {mat.name || `Lampiran Materi ${idx + 1}`}
+                            </div>
+                            <div style={{ fontSize: '11px', color: '#64748b', marginTop: 2 }}>
+                              Klik untuk membuka / unduh
+                            </div>
+                          </div>
+                          <div style={{
+                            display: 'flex', alignItems: 'center', gap: 4,
+                            padding: '6px 12px', borderRadius: 8,
+                            background: 'var(--color-primary)', color: '#ffffff',
+                            fontSize: '12px', fontWeight: 600, flexShrink: 0
+                          }}>
+                            <Download size={13} /> Unduh
+                          </div>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* If no description and no materials */}
+                {!currentSession.description && !currentSession.assignmentDescription && parsedMaterials.length === 0 && (
+                  <div style={{
+                    textAlign: 'center',
+                    padding: '24px 0',
+                    color: '#64748b',
+                    fontSize: '14px'
+                  }}>
+                    Materi untuk sesi ini dapat Anda diskusikan langsung pada tab <strong>Tanya Jawab</strong> atau buat <strong>Catatan</strong> pribadi.
+                  </div>
+                )}
               </div>
             )}
 
