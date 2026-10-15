@@ -137,7 +137,7 @@ return (
               <input value={form.materialUrl} onChange={e => f('materialUrl', e.target.value)} placeholder="https://..." style={inputStyle} />
             </div>
           )}
-          {(form.type === 'QUIZ' || form.type === 'ASSIGNMENT') && (
+          {form.type === 'QUIZ' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
               <div>
                 <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 4 }}>Instruksi Kuis <span style={{ color: 'var(--color-error)' }}>*</span></label>

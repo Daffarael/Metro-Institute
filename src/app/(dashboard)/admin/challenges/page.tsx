@@ -24,12 +24,12 @@ import { toast } from 'sonner'
 // ─── Types (sesuai Prisma schema Challenge model) ──────────
 interface Challenge {
   id: string; title: string; type: 'QUIZ' | 'PROJECT'
-  field: string; maxScore: number; description?: string
+  field: string; level: string; maxScore: number; description?: string
   deadlineAt?: string
   options?: Array<{ id: string; question: string; options: Array<{ id: string; text: string; isCorrect: boolean; explanation?: string }> }>
   _count?: { attempts: number }
 }
-interface Filters { type?: string; field?: string; search?: string; page: number; limit: number }
+interface Filters { type?: string; field?: string; level?: string; search?: string; page: number; limit: number }
 
 // ─── Zod Schema ────────────────────────────────────────────
 const challengeSchema = z.object({
@@ -37,6 +37,7 @@ const challengeSchema = z.object({
   description: z.string().min(10, 'Minimal 10 karakter'),
   type:        z.enum(['QUIZ', 'PROJECT'], { error: () => ({ message: 'Pilih tipe challenge' }) }),
   field:       z.enum(['UI_UX', 'FRONTEND', 'BACKEND', 'MOBILE'], { error: () => ({ message: 'Pilih bidang' }) }),
+  level:       z.enum(['BEGINNER', 'ELEMENTARY', 'INTERMEDIATE', 'ADVANCED'], { error: () => ({ message: 'Pilih level challenge' }) }),
   maxScore:    z.number().min(1).max(1000),
   options:     z.array(z.object({
     id: z.string(),
@@ -64,6 +65,8 @@ type ChallengeForm = z.infer<typeof challengeSchema>
 
 const FIELD_LABELS: Record<string, string> = { UI_UX: 'UI/UX', FRONTEND: 'Frontend', BACKEND: 'Backend', MOBILE: 'Mobile' }
 const FIELD_OPTS = ['UI_UX', 'FRONTEND', 'BACKEND', 'MOBILE'] as const
+const LEVEL_LABELS: Record<string, string> = { BEGINNER: 'Beginner', ELEMENTARY: 'Elementary', INTERMEDIATE: 'Intermediate', ADVANCED: 'Advanced' }
+const LEVEL_OPTS = ['BEGINNER', 'ELEMENTARY', 'INTERMEDIATE', 'ADVANCED'] as const
 
 const inputStyle: React.CSSProperties = {
   width: '100%', padding: '8px 12px', borderRadius: 'var(--radius-md)',
@@ -83,6 +86,7 @@ function ChallengeModal({ challenge, onClose }: { challenge?: Challenge; onClose
       description: challenge?.description ?? '',
       type:        challenge?.type ?? ('' as any),
       field:       challenge?.field ?? ('' as any),
+      level:       (challenge as any)?.level ?? 'BEGINNER',
       maxScore:    challenge?.maxScore ?? 100,
       options:     challenge?.options?.length && 'question' in challenge.options[0] 
         ? challenge.options 
@@ -197,7 +201,7 @@ return (
             {errors.description && <p style={{ color: 'var(--color-error)', fontSize: '12px', marginTop: 6, fontWeight: 500 }}>{errors.description.message}</p>}
           </div>
           
-          <div className="grid-cols-2" style={{ display: 'grid', gap: '20px' }}>
+          <div className="grid-cols-3" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '16px' }}>
             <div>
               <label style={labelStyle}>Tipe Challenge <span style={{color: 'var(--color-error)'}}>*</span></label>
               <Controller
@@ -232,6 +236,22 @@ return (
                 )}
               />
               {errors.field && <p style={{ color: 'var(--color-error)', fontSize: '12px', marginTop: 6, fontWeight: 500 }}>{errors.field.message}</p>}
+            </div>
+            <div>
+              <label style={labelStyle}>Level <span style={{color: 'var(--color-error)'}}>*</span></label>
+              <Controller
+                control={control}
+                name="level"
+                render={({ field }) => (
+                  <CleanCombobox 
+                    options={LEVEL_OPTS.map(l => ({ value: l, label: LEVEL_LABELS[l] }))} 
+                    value={field.value as string} 
+                    onChange={field.onChange} 
+                    placeholder="Pilih Level"
+                  />
+                )}
+              />
+              {errors.level && <p style={{ color: 'var(--color-error)', fontSize: '12px', marginTop: 6, fontWeight: 500 }}>{errors.level.message}</p>}
             </div>
           </div>
           
@@ -444,6 +464,13 @@ export default function AdminChallengesPage() {
           options={FIELD_OPTS.map(f => ({ value: f, label: FIELD_LABELS[f] }))}
           width={180}
         />
+        <CleanCombobox
+          value={filters.level ?? ''}
+          onChange={val => setFilters(f => ({ ...f, level: val || undefined, page: 1 }))}
+          placeholder="Semua Level"
+          options={LEVEL_OPTS.map(l => ({ value: l, label: LEVEL_LABELS[l] }))}
+          width={180}
+        />
       </div>
 
       {/* Table */}
@@ -466,7 +493,7 @@ export default function AdminChallengesPage() {
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--text-sm)' }}>
                 <thead>
                   <tr style={{ background: 'var(--color-bg)', borderBottom: '1px solid var(--color-border)' }}>
-                    {['#', 'Judul', 'Tipe', 'Bidang', 'Skor Max', 'Pengerjaan', 'Aksi'].map(h => (
+                    {['#', 'Judul', 'Tipe', 'Bidang', 'Level', 'Skor Max', 'Pengerjaan', 'Aksi'].map(h => (
                       <th key={h} style={{ padding: 'var(--space-3) var(--space-4)', textAlign: 'left', fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-tertiary)', letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>{h}</th>
                     ))}
                   </tr>
@@ -485,9 +512,14 @@ export default function AdminChallengesPage() {
                       </td>
                       <td style={{ padding: 'var(--space-3) var(--space-4)' }}>
                         <AdminStatusChip status={c.type} label={c.type} />
-                    </td>
-                    <td style={{ padding: 'var(--space-3) var(--space-4)', color: 'var(--color-text-secondary)' }}>{FIELD_LABELS[c.field] ?? c.field}</td>
-                    <td style={{ padding: 'var(--space-3) var(--space-4)', textAlign: 'center', fontWeight: 600 }}>{c.maxScore}</td>
+                      </td>
+                      <td style={{ padding: 'var(--space-3) var(--space-4)', color: 'var(--color-text-secondary)' }}>{FIELD_LABELS[c.field] ?? c.field}</td>
+                      <td style={{ padding: 'var(--space-3) var(--space-4)' }}>
+                        <span style={{ fontSize: '11px', fontWeight: 600, padding: '2px 8px', borderRadius: 6, background: '#f1f5f9', color: '#475569', border: '1px solid #e2e8f0' }}>
+                          {LEVEL_LABELS[c.level] ?? c.level}
+                        </span>
+                      </td>
+                      <td style={{ padding: 'var(--space-3) var(--space-4)', textAlign: 'center', fontWeight: 600 }}>{c.maxScore}</td>
                     <td style={{ padding: 'var(--space-3) var(--space-4)', textAlign: 'center', color: 'var(--color-text-secondary)' }}>{c._count?.attempts ?? 0}x</td>
                     <td style={{ padding: 'var(--space-3) var(--space-4)' }}>
                       <div style={{ display: 'flex', gap: 6 }}>

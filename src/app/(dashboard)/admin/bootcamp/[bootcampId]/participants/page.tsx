@@ -31,7 +31,7 @@ interface Participant {
     badgeLevel: string; totalXp: number; photoUrl?: string
   }
 }
-interface Bootcamp { id: string; name: string }
+interface Bootcamp { id: string; name?: string; title?: string }
 
 interface Filters { field?: string; status?: string; page: number; limit: number }
 

@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import Link from 'next/link'
+import toast from 'react-hot-toast'
 import api from '@/lib/axios'
 import { useAuthStore } from '@/stores/auth.store'
 import { ROUTES, FIELD_LABELS, LEVEL_LABELS } from '@/lib/utils'
@@ -21,6 +22,10 @@ interface Challenge {
   xpClaimed?: boolean
   canRetryAt?: string
   cooldownHoursLeft?: number
+  isLocked?: boolean
+  unlockAtProgress?: number
+  linkedClassName?: string
+  currentClassProgress?: number
 }
 
 interface PurchasedClass {
@@ -74,9 +79,10 @@ export default function ChallengeBankPage() {
     ...LEVEL_ORDER.map((l) => ({ value: l, label: LEVEL_LABELS[l] || l }))
   ], [])
 
+  const unlockedCount = challenges.filter((c) => !c.isLocked).length
   const completedCount = challenges.filter((c) => c.isCompleted).length
   const totalCount = challenges.length
-  const totalXpEarnable = challenges.filter((c) => !c.isCompleted).reduce((a, c) => a + c.xpReward, 0)
+  const totalXpEarnable = challenges.filter((c) => !c.isCompleted && !c.isLocked).reduce((a, c) => a + c.xpReward, 0)
 
   // ── 1. Locked State: Belum Beli Kelas ──────────────────────
   if (!isLoading && !hasAccess) {
@@ -128,7 +134,7 @@ export default function ChallengeBankPage() {
           Challenge Bank
         </h1>
         <p style={{ fontSize: '13px', color: 'var(--color-text-tertiary)', margin: 0 }}>
-          Uji pemahamanmu dengan tantangan yang selaras dengan kelas yang kamu ikuti. Dapatkan XP pada kelulusan pertama dan latih kemampuanmu berulang kali tanpa batas.
+          Tantangan praktis yang diselaraskan dengan kelasmu dan terbuka bertahap sesuai progres belajar. Selesaikan untuk memperoleh XP dan latih kemampuanmu berulang kali.
         </p>
 
         {/* Clean Class Pills */}
@@ -166,8 +172,8 @@ export default function ChallengeBankPage() {
       }}>
         {[
           { label: 'Total Tantangan', value: totalCount },
-          { label: 'Telah Diselesaikan', value: `${completedCount} / ${totalCount}` },
-          { label: 'XP Tersedia', value: `${totalXpEarnable} XP` },
+          { label: 'Terbuka / Selesai', value: `${unlockedCount} Terbuka · ${completedCount} Selesai` },
+          { label: 'XP Dapat Diraih', value: `${totalXpEarnable} XP` },
         ].map((stat) => (
           <div
             key={stat.label}
@@ -189,7 +195,7 @@ export default function ChallengeBankPage() {
               {stat.label}
             </div>
             <div style={{
-              fontSize: '22px',
+              fontSize: '20px',
               fontWeight: 700,
               color: 'var(--color-text-primary)',
               letterSpacing: '-0.02em',
@@ -302,32 +308,51 @@ export default function ChallengeBankPage() {
         /* Challenge Grid */
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(290px, 1fr))', gap: '14px' }}>
           {challenges.map((challenge) => {
-            const locked = !!challenge.cooldownHoursLeft && !challenge.isCompleted
+            const isCooldown = !!challenge.cooldownHoursLeft && !challenge.isCompleted
+            const isLocked = !!challenge.isLocked
+            const isBlocked = isLocked || isCooldown
+
+            const handleCardClick = (e: React.MouseEvent) => {
+              if (isLocked) {
+                e.preventDefault()
+                toast.error(
+                  `Tantangan terkunci. Selesaikan materi ${challenge.linkedClassName || 'kelas'} hingga ${challenge.unlockAtProgress || 0}% (saat ini ${challenge.currentClassProgress || 0}%).`,
+                  { duration: 4000 }
+                )
+                return
+              }
+              if (isCooldown) {
+                e.preventDefault()
+                toast.error(`Tantangan sedang cooldown. Coba lagi dalam ${challenge.cooldownHoursLeft} jam.`)
+                return
+              }
+            }
 
             return (
               <Link
                 key={challenge.id}
-                href={locked ? '#' : ROUTES.CHALLENGE_DETAIL(challenge.id)}
+                href={isBlocked ? '#' : ROUTES.CHALLENGE_DETAIL(challenge.id)}
+                onClick={handleCardClick}
                 style={{ textDecoration: 'none' }}
               >
                 <div
                   style={{
                     padding: '20px',
                     height: '100%',
-                    opacity: locked ? 0.6 : 1,
+                    opacity: isBlocked ? 0.75 : 1,
                     display: 'flex',
                     flexDirection: 'column',
                     background: 'var(--color-surface)',
                     border: '1px solid var(--color-border-subtle)',
                     borderRadius: '12px',
                     transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
-                    cursor: locked ? 'not-allowed' : 'pointer',
+                    cursor: isBlocked ? 'not-allowed' : 'pointer',
                   }}
-                  onMouseEnter={!locked ? (e) => {
+                  onMouseEnter={!isBlocked ? (e) => {
                     e.currentTarget.style.borderColor = 'var(--color-border)'
                     e.currentTarget.style.boxShadow = '0 4px 14px rgba(0,0,0,0.03)'
                   } : undefined}
-                  onMouseLeave={!locked ? (e) => {
+                  onMouseLeave={!isBlocked ? (e) => {
                     e.currentTarget.style.borderColor = 'var(--color-border-subtle)'
                     e.currentTarget.style.boxShadow = 'none'
                   } : undefined}
@@ -357,7 +382,21 @@ export default function ChallengeBankPage() {
                       </span>
                     )}
 
-                    {locked && (
+                    {!challenge.isCompleted && isLocked && (
+                      <span style={{
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        color: 'var(--color-text-tertiary)',
+                        background: 'var(--color-bg)',
+                        border: '1px solid var(--color-border-subtle)',
+                        padding: '2px 8px',
+                        borderRadius: '6px',
+                      }}>
+                        🔒 {challenge.unlockAtProgress}%
+                      </span>
+                    )}
+
+                    {!challenge.isCompleted && !isLocked && isCooldown && (
                       <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)' }}>
                         {challenge.cooldownHoursLeft}j lagi
                       </span>
@@ -395,12 +434,44 @@ export default function ChallengeBankPage() {
                     </p>
                   )}
 
+                  {/* Progressive Unlock Progress Indicator */}
+                  {isLocked && (
+                    <div style={{
+                      marginTop: 'auto',
+                      marginBottom: 12,
+                      padding: '8px 10px',
+                      borderRadius: '8px',
+                      background: 'var(--color-bg)',
+                      border: '1px solid var(--color-border-subtle)',
+                    }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
+                        <span style={{ fontSize: '11px', color: 'var(--color-text-secondary)', fontWeight: 500 }}>
+                          {challenge.linkedClassName ? `${challenge.linkedClassName}: ` : ''}Butuh {challenge.unlockAtProgress}%
+                        </span>
+                        <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-text-tertiary)' }}>
+                          {challenge.currentClassProgress || 0}% / {challenge.unlockAtProgress}%
+                        </span>
+                      </div>
+                      <div style={{ height: 4, width: '100%', background: 'var(--color-border-subtle)', borderRadius: 2, overflow: 'hidden' }}>
+                        <div
+                          style={{
+                            height: '100%',
+                            width: `${Math.min(100, Math.round(((challenge.currentClassProgress || 0) / Math.max(1, challenge.unlockAtProgress || 1)) * 100))}%`,
+                            background: 'var(--color-primary, #018556)',
+                            borderRadius: 2,
+                            transition: 'width 0.3s ease',
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
+
                   {/* Footer */}
                   <div style={{
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
-                    marginTop: 'auto',
+                    marginTop: isLocked ? 0 : 'auto',
                     paddingTop: 12,
                     borderTop: '1px solid var(--color-border-subtle)',
                   }}>
@@ -411,9 +482,19 @@ export default function ChallengeBankPage() {
                     <span style={{
                       fontSize: '12px',
                       fontWeight: 600,
-                      color: challenge.isCompleted ? 'var(--color-text-secondary)' : 'var(--color-primary, #018556)',
+                      color: isLocked || isCooldown
+                        ? 'var(--color-text-tertiary)'
+                        : challenge.isCompleted
+                          ? 'var(--color-text-secondary)'
+                          : 'var(--color-primary, #018556)',
                     }}>
-                      {locked ? 'Terkunci' : challenge.isCompleted ? 'Ulangi Latihan' : 'Mulai Tantangan →'}
+                      {isLocked
+                        ? `🔒 Terbuka di ${challenge.unlockAtProgress}%`
+                        : isCooldown
+                          ? 'Tunggu Cooldown'
+                          : challenge.isCompleted
+                            ? 'Ulangi Latihan'
+                            : 'Mulai Tantangan →'}
                     </span>
                   </div>
                 </div>

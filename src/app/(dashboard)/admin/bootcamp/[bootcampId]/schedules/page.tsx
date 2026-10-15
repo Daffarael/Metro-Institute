@@ -25,7 +25,7 @@ interface LiveSchedule {
   recordingUrl?: string; attendanceWindowMin: number
   _count?: { attendances: number }
 }
-interface Bootcamp { id: string; name: string }
+interface Bootcamp { id: string; name?: string; title?: string }
 
 // ─── Zod schema (sesuai design_superadmin.md) ─────────────
 const scheduleSchema = z.object({

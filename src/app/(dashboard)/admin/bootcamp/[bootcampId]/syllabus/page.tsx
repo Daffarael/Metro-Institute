@@ -42,7 +42,7 @@ interface BootcampChapter {
   sessions: BootcampSession[]
 }
 
-interface Bootcamp { id: string; name: string }
+interface Bootcamp { id: string; name?: string; title?: string }
 
 const SESSION_TYPE_COLORS: Record<string, { bg: string; color: string; icon: any }> = {
   LIVE:      { bg: '#ECFDF5', color: '#059669', icon: Video },

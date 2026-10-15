@@ -8,8 +8,9 @@ import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tansta
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Plus, Edit2, Users, CalendarDays, Layers, X } from 'lucide-react'
+import { Plus, Edit2, Users, CalendarDays, Layers, X, Zap } from 'lucide-react'
 import api from '@/lib/axios'
+import ClassChallengeModal from '@/components/admin/ClassChallengeModal'
 import { formatRupiah, formatDate } from '@/lib/utils'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -43,9 +44,20 @@ type BootcampForm = z.infer<typeof bootcampSchema>
 
 // ─── Types ─────────────────────────────────────────────────
 interface Bootcamp {
-  id: string; name: string; fields: string[]; status: string
-  price: number; purchaseOpenAt: string; purchaseCloseAt: string
-  startDate: string; endDate: string; thumbnailUrl?: string
+  id: string
+  name: string
+  title?: string
+  description?: string
+  field?: string
+  fields: string[]
+  level?: string
+  status: string
+  price: number
+  purchaseOpenAt: string
+  purchaseCloseAt: string
+  startDate: string
+  endDate: string
+  thumbnailUrl?: string
   certificateTemplateId?: string
   isFeatured?: boolean
   _count?: { registrations: number }
@@ -347,6 +359,7 @@ export default function AdminBootcampPage() {
   const [filters, setFilters] = useState<BootcampFilters>({ page: 1, limit: 10 })
   const [search, setSearch] = useState('')
   const [modal, setModal] = useState<null | 'new' | Bootcamp>(null)
+  const [challengeTarget, setChallengeTarget] = useState<Bootcamp | null>(null)
   const qc = useQueryClient()
 
   const featuredMutation = useMutation({
@@ -517,6 +530,13 @@ export default function AdminBootcampPage() {
                         >
                           <Layers size={12} /> Silabus
                         </Link>
+                        <button onClick={() => setChallengeTarget(b)} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 'var(--radius-md)', background: '#fff', color: '#374151', border: '1px solid #e5e7eb', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', fontSize: '12px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s' }}
+                          onMouseEnter={e => { e.currentTarget.style.background = '#fef3c7'; e.currentTarget.style.color = '#b45309'; e.currentTarget.style.borderColor = '#fde68a' }}
+                          onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#374151'; e.currentTarget.style.borderColor = '#e5e7eb' }}
+                          title="Kelola Challenge Bank untuk bootcamp ini"
+                        >
+                          <Zap size={12} fill="#f59e0b" color="#f59e0b" /> Challenge
+                        </button>
                         <Link href={`/admin/bootcamp/${b.id}/schedules`} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 'var(--radius-md)', background: '#fff', color: '#374151', border: '1px solid #e5e7eb', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', fontSize: '12px', fontWeight: 600, textDecoration: 'none', transition: 'all 0.15s' }}
                           onMouseEnter={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.color = 'var(--color-primary)' }}
                           onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#374151' }}
@@ -574,6 +594,16 @@ export default function AdminBootcampPage() {
           <BootcampModal
             bootcamp={modal === 'new' ? undefined : modal as Bootcamp}
             onClose={() => setModal(null)}
+          />
+        )}
+        {challengeTarget && (
+          <ClassChallengeModal
+            classId={challengeTarget.id}
+            classTitle={challengeTarget.name || (challengeTarget as any).title}
+            classType="BOOTCAMP"
+            field={challengeTarget.field || challengeTarget.fields?.[0] || 'FRONTEND'}
+            level={challengeTarget.level || 'BEGINNER'}
+            onClose={() => setChallengeTarget(null)}
           />
         )}
       </AnimatePresence>

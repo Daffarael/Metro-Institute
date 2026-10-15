@@ -8,7 +8,7 @@ import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tansta
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Plus, Edit2, Layers, BarChart2, X } from 'lucide-react'
+import { Plus, Edit2, Layers, BarChart2, X, Zap } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
 import api from '@/lib/axios'
 import { formatRupiah } from '@/lib/utils'
@@ -21,6 +21,7 @@ import AdminPagination from '@/components/admin/AdminPagination'
 import AdminConfirmModal from '@/components/admin/AdminConfirmModal'
 import CleanCombobox from '@/components/admin/CleanCombobox'
 import ImageUpload from '@/components/admin/ImageUpload'
+import ClassChallengeModal from '@/components/admin/ClassChallengeModal'
 import { toast } from 'sonner'
 
 // ─── Schema (sesuai design_superadmin.md) ─────────────────
@@ -29,7 +30,7 @@ const miniCourseSchema = z.object({
   descShort:   z.string().max(160, 'Maks 160 karakter'),
   descLong:    z.string().min(20, 'Minimal 20 karakter'),
   field:       z.enum(['UI_UX', 'FRONTEND', 'BACKEND', 'MOBILE'], { error: () => ({ message: 'Pilih bidang' }) }),
-  level:       z.enum(['BEGINNER', 'ELEMENTARY', 'INTERMEDIATE', 'ADVANCED'], { error: () => ({ message: 'Pilih level' }) }).default('BEGINNER'),
+  level:       z.enum(['BEGINNER', 'ELEMENTARY', 'INTERMEDIATE', 'ADVANCED'], { error: () => ({ message: 'Pilih level' }) }),
   price:       z.number().min(0),
   accessDays:  z.number().min(1).max(365000),
   totalDuration: z.number().min(1),
@@ -347,6 +348,7 @@ export default function AdminMiniCoursePage() {
   const [search, setSearch] = useState('')
   const [modal, setModal] = useState<null | 'new' | MiniCourse>(null)
   const [deleteTarget, setDeleteTarget] = useState<MiniCourse | null>(null)
+  const [challengeTarget, setChallengeTarget] = useState<MiniCourse | null>(null)
   const qc = useQueryClient()
 
   const { data, isLoading } = useQuery({
@@ -516,6 +518,13 @@ export default function AdminMiniCoursePage() {
                         >
                           <Layers size={12} /> Kurikulum
                         </Link>
+                        <button onClick={() => setChallengeTarget(c)} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 'var(--radius-md)', background: '#fff', color: '#374151', border: '1px solid #e5e7eb', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', fontSize: '12px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s' }}
+                          onMouseEnter={e => { e.currentTarget.style.background = '#fef3c7'; e.currentTarget.style.color = '#b45309'; e.currentTarget.style.borderColor = '#fde68a' }}
+                          onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#374151'; e.currentTarget.style.borderColor = '#e5e7eb' }}
+                          title="Kelola Challenge Bank untuk kelas ini"
+                        >
+                          <Zap size={12} fill="#f59e0b" color="#f59e0b" /> Challenge
+                        </button>
                         <Link href={`/admin/mini-course/${c.id}/stats`} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 'var(--radius-md)', background: '#fff', color: '#374151', border: '1px solid #e5e7eb', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', fontSize: '12px', fontWeight: 600, textDecoration: 'none', transition: 'all 0.15s' }}
                           onMouseEnter={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.color = 'var(--color-primary)' }}
                           onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#374151' }}
@@ -560,6 +569,16 @@ export default function AdminMiniCoursePage() {
 
       <AnimatePresence>
         {modal && <CourseModal course={modal === 'new' ? undefined : modal as MiniCourse} onClose={() => setModal(null)} />}
+        {challengeTarget && (
+          <ClassChallengeModal
+            classId={challengeTarget.id}
+            classTitle={challengeTarget.title}
+            classType="MINI_COURSE"
+            field={challengeTarget.field}
+            level={challengeTarget.level || 'BEGINNER'}
+            onClose={() => setChallengeTarget(null)}
+          />
+        )}
       </AnimatePresence>
     </div>
   )
