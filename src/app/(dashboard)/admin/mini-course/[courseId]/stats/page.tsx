@@ -99,7 +99,7 @@ export default function MiniCourseStatsPage() {
       {/* KPI cards */}
       <div className="grid-cols-4" style={{ display: 'grid', gap: 'var(--space-4)', marginBottom: 'var(--space-6)' }}>
         {[
-          { label: 'Total Siswa', value: totalEnrollments.toLocaleString() },
+          { label: 'Total Mentee', value: totalEnrollments.toLocaleString() },
           { label: 'Total Revenue', value: formatRupiah(totalRevenue) },
           { label: 'Rata-rata Progress', value: `${avgProgress.toFixed(1)}%` },
           { label: 'Completion Rate', value: `${completionRate.toFixed(1)}%` },
@@ -116,7 +116,7 @@ export default function MiniCourseStatsPage() {
         <input
           value={search}
           onChange={e => setSearch(e.target.value)}
-          placeholder="Cari nama atau email siswa..."
+          placeholder="Cari nama atau email mentee..."
           style={{ padding: '8px 12px', borderRadius: 'var(--radius-md)', background: 'var(--color-surface)', fontSize: 'var(--text-sm)', color: 'var(--color-text-primary)', outline: 'none', border: 'none', boxShadow: '0 1px 2px rgba(0,0,0,0.04)', minWidth: 260, width: 'auto', flex: 1, maxWidth: 300 }}
         />
       </div>
@@ -124,17 +124,17 @@ export default function MiniCourseStatsPage() {
       {/* Enrollments table */}
       <div className="card" style={{ overflow: 'hidden' }}>
         <div style={{ padding: 'var(--space-4) var(--space-5)', borderBottom: '1px solid var(--color-border-subtle)' }}>
-          <h2 style={{ fontWeight: 700, fontSize: 'var(--text-base)' }}>Daftar Siswa</h2>
+          <h2 style={{ fontWeight: 700, fontSize: 'var(--text-base)' }}>Daftar Mentee</h2>
         </div>
         {enrollments.length === 0 ? (
-          <AdminEmptyState type="empty" message={search ? "Silakan coba kata kunci atau filter lain." : "Belum ada siswa yang mendaftar."} />
+          <AdminEmptyState type="empty" message={search ? "Silakan coba kata kunci atau filter lain." : "Belum ada mentee yang mendaftar."} />
         ) : (
           <>
             <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--text-sm)' }}>
                 <thead>
                   <tr style={{ background: 'var(--color-bg)', borderBottom: '1px solid var(--color-border)' }}>
-                    {['Siswa', 'Progress', 'Akses Sampai', 'Beli Tanggal', 'Aksi'].map(h => (
+                    {['Mentee', 'Progress', 'Akses Sampai', 'Beli Tanggal', 'Aksi'].map(h => (
                       <th key={h} style={{ padding: 'var(--space-3) var(--space-4)', textAlign: 'left', fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-tertiary)', letterSpacing: '0.04em' }}>{h}</th>
                     ))}
                   </tr>

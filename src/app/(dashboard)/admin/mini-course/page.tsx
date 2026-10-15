@@ -44,11 +44,11 @@ type CourseForm = z.infer<typeof miniCourseSchema>
 interface MiniCourse {
   id: string; title: string; field: string; level?: string; price: number
   accessDays: number; totalDuration: number; status: string
-  descShort?: string; rating?: number
+  descShort?: string; rating?: number; reviewCount?: number; enrollmentCount?: number
   certificateTemplateId?: string
   thumbnailUrl?: string
   isFeatured?: boolean
-  _count?: { enrollments: number }
+  _count?: { enrollments: number; reviews?: number }
 }
 interface Filters { field?: string; status?: string; search?: string; page: number; limit: number }
 
@@ -470,7 +470,7 @@ export default function AdminMiniCoursePage() {
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--text-sm)' }}>
               <thead>
                 <tr style={{ background: 'var(--color-bg)', borderBottom: '1px solid var(--color-border)' }}>
-                  {['#', 'Judul', 'Bidang', 'Harga', 'Akses', 'Siswa', 'Rating', 'Status', 'Aksi'].map(h => (
+                  {['#', 'Judul', 'Bidang', 'Harga', 'Akses', 'Mentee', 'Rating', 'Status', 'Aksi'].map(h => (
                     <th key={h} style={{ padding: 'var(--space-3) var(--space-4)', textAlign: 'left', fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-tertiary)', letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>{h}</th>
                   ))}
                 </tr>
@@ -501,8 +501,8 @@ export default function AdminMiniCoursePage() {
                     </td>
                     <td style={{ padding: 'var(--space-3) var(--space-4)', fontWeight: 700 }}>{c.price === 0 ? 'Gratis' : formatRupiah(c.price)}</td>
                     <td style={{ padding: 'var(--space-3) var(--space-4)', color: 'var(--color-text-secondary)' }}>{c.accessDays > 10000 ? 'Seumur Hidup' : `${c.accessDays} hari`}</td>
-                    <td style={{ padding: 'var(--space-3) var(--space-4)', textAlign: 'center' }}>{c._count?.enrollments ?? 0}</td>
-                    <td style={{ padding: 'var(--space-3) var(--space-4)', color: 'var(--color-text-secondary)' }}>{c.rating != null ? `⭐ ${c.rating.toFixed(1)}` : '—'}</td>
+                    <td style={{ padding: 'var(--space-3) var(--space-4)', textAlign: 'center', fontWeight: 600 }}>{c._count?.enrollments ?? c.enrollmentCount ?? 0}</td>
+                    <td style={{ padding: 'var(--space-3) var(--space-4)', color: 'var(--color-text-secondary)', whiteSpace: 'nowrap' }}>{c.rating != null && c.rating > 0 ? `⭐ ${c.rating.toFixed(1)}${c.reviewCount ? ` (${c.reviewCount})` : ''}` : '—'}</td>
                     <td style={{ padding: 'var(--space-3) var(--space-4)' }}><AdminStatusChip status={c.status} /></td>
                     <td style={{ padding: 'var(--space-3) var(--space-4)' }}>
                       <div style={{ display: 'flex', gap: 6, whiteSpace: 'nowrap' }}>
