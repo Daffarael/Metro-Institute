@@ -879,35 +879,7 @@ export default function BootcampLearningPlayerPage() {
                     </Link>
                   )}
 
-                  {!(currentSession.isCompleted || isCompleted) && (
-                    <button
-                      onClick={() => completeMutation.mutate()}
-                      disabled={completeMutation.isPending}
-                      style={{
-                        padding: '9px 18px',
-                        background: 'var(--color-primary)',
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: 10,
-                        fontWeight: 700,
-                        fontSize: '13px',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: 6,
-                        cursor: 'pointer',
-                        transition: 'all 0.15s',
-                        boxShadow: '0 2px 8px rgba(16, 185, 129, 0.25)'
-                      }}
-                    >
-                      {completeMutation.isPending ? (
-                        <Loader2 size={16} className="animate-spin" />
-                      ) : (
-                        <>
-                          <CheckCircle2 size={16} /> Tandai Selesai
-                        </>
-                      )}
-                    </button>
-                  )}
+
 
                   {(currentSession.isCompleted || isCompleted) && (
                     <div style={{
