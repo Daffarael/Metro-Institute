@@ -7,7 +7,7 @@ import Link from 'next/link'
 import {
   Star, Users, Clock, ChevronRight, Play, Lock, Heart,
   CheckCircle2, Calendar, Zap, User, ChevronDown, ChevronUp, Share2, PlayCircle,
-  FileText, HelpCircle, FileEdit
+  FileText, HelpCircle, FileEdit, Award, ShieldCheck, XCircle, AlertCircle
 } from 'lucide-react'
 import api from '@/lib/axios'
 import { useAuthStore } from '@/stores/auth.store'
@@ -36,13 +36,19 @@ export default function BootcampDetailPage() {
   const { setSearchPlaceholder } = useUIStore()
   const queryClient = useQueryClient()
   const [expandedChapter, setExpandedChapter] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState<'overview' | 'curriculum' | 'reviews'>('overview')
+  const [activeTab, setActiveTab] = useState<'overview' | 'curriculum' | 'attendance' | 'reviews'>('overview')
   const [reviewRating, setReviewRating] = useState<number>(0)
   const [reviewContent, setReviewContent] = useState('')
 
   const { data, isLoading } = useQuery({
     queryKey: ['bootcamp', id],
     queryFn: () => api.get(`/bootcamps/${id}`).then((r) => r.data.data),
+  })
+
+  const { data: attendanceData } = useQuery({
+    queryKey: ['my-bootcamp-attendance', id],
+    queryFn: () => api.get(`/bootcamps/${id}/my-attendance`).then((r) => r.data.data),
+    enabled: Boolean(data?.isEnrolled),
   })
 
   const submitReviewMutation = useMutation({
@@ -224,10 +230,11 @@ export default function BootcampDetailPage() {
             items={[
               { id: 'overview', label: 'Overview' },
               { id: 'curriculum', label: 'Kurikulum' },
+              ...(data.isEnrolled ? [{ id: 'attendance', label: 'Presensi & Sertifikat' }] : []),
               { id: 'reviews', label: 'Ulasan' },
             ]}
             activeId={activeTab}
-            onChange={(id) => setActiveTab(id as 'overview' | 'curriculum' | 'reviews')}
+            onChange={(id) => setActiveTab(id as 'overview' | 'curriculum' | 'attendance' | 'reviews')}
           >
             {activeTab === 'overview' && (
               <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-5)' }}>
@@ -376,6 +383,314 @@ export default function BootcampDetailPage() {
                 })}
               </div>
             )}
+            {activeTab === 'attendance' && (
+              <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-5)' }}>
+                {/* ── Status Sertifikat Card ────────────────────────── */}
+                {attendanceData?.certificate?.isUnlocked ? (
+                  <div style={{
+                    padding: '24px 28px',
+                    borderRadius: 14,
+                    background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
+                    border: '1px solid #86efac',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: 16,
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                      <div style={{
+                        width: 48,
+                        height: 48,
+                        borderRadius: '50%',
+                        background: '#22c55e',
+                        color: '#fff',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                      }}>
+                        <Award size={26} />
+                      </div>
+                      <div>
+                        <div style={{ fontSize: '17px', fontWeight: 800, color: '#166534', lineHeight: 1.3 }}>
+                          E-Sertifikat Kelulusan Terbuka! 🎓
+                        </div>
+                        <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#15803d' }}>
+                          Selamat! Kamu telah menyelesaikan seluruh syarat kehadiran 100%. Sertifikat resmi Metro Institute siap diunduh.
+                        </p>
+                      </div>
+                    </div>
+
+                    <Link href="/mentee/certificates" style={{ textDecoration: 'none' }}>
+                      <motion.div
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 8,
+                          padding: '10px 20px',
+                          borderRadius: 8,
+                          background: '#166534',
+                          color: '#fff',
+                          fontWeight: 700,
+                          fontSize: '13.5px',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        <Award size={16} /> Lihat & Unduh Sertifikat
+                      </motion.div>
+                    </Link>
+                  </div>
+                ) : (
+                  <div style={{
+                    padding: '22px 24px',
+                    borderRadius: 14,
+                    background: '#f8fafc',
+                    border: '1px solid #e2e8f0',
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, marginBottom: 12 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                        <div style={{
+                          width: 40,
+                          height: 40,
+                          borderRadius: '50%',
+                          background: '#f1f5f9',
+                          border: '1px solid #cbd5e1',
+                          color: '#64748b',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          flexShrink: 0,
+                        }}>
+                          <Lock size={20} />
+                        </div>
+                        <div>
+                          <div style={{ fontSize: '16px', fontWeight: 700, color: '#1e293b' }}>
+                            E-Sertifikat Terkunci ({attendanceData?.attendedCount || 0} / {attendanceData?.totalSessions || 0} Sesi Hadir)
+                          </div>
+                          <div style={{ fontSize: '12.5px', color: '#64748b' }}>
+                            Syarat Kelulusan: Wajib Hadir 100% Seluruh Sesi Live. Presensi dihitung otomatis via Google Meet (min. 80% per sesi).
+                          </div>
+                        </div>
+                      </div>
+
+                      <div style={{ fontSize: '15px', fontWeight: 800, color: 'var(--color-primary)' }}>
+                        {attendanceData?.totalSessions ? Math.round(((attendanceData?.attendedCount || 0) / attendanceData.totalSessions) * 100) : 0}%
+                      </div>
+                    </div>
+
+                    {/* Progress Bar */}
+                    <div style={{ width: '100%', height: 7, background: '#e2e8f0', borderRadius: 4, overflow: 'hidden', marginBottom: 14 }}>
+                      <div style={{
+                        width: `${attendanceData?.totalSessions ? Math.round(((attendanceData?.attendedCount || 0) / attendanceData.totalSessions) * 100) : 0}%`,
+                        height: '100%',
+                        background: 'var(--color-primary)',
+                        borderRadius: 4,
+                        transition: 'width 0.3s ease',
+                      }} />
+                    </div>
+
+                    {/* Missing sessions alert if any */}
+                    {attendanceData?.missingSessions && attendanceData.missingSessions.length > 0 && (
+                      <div style={{
+                        padding: '12px 16px',
+                        borderRadius: 8,
+                        background: '#fff1f2',
+                        border: '1px solid #fecdd3',
+                        fontSize: '12.5px',
+                        color: '#9f1239',
+                      }}>
+                        <div style={{ fontWeight: 700, marginBottom: 4 }}>
+                          Belum Memenuhi Syarat ({attendanceData.missingSessions.length} sesi belum tuntas):
+                        </div>
+                        <ul style={{ margin: 0, paddingLeft: 18, lineHeight: 1.6 }}>
+                          {attendanceData.missingSessions.slice(0, 3).map((ms: any) => (
+                            <li key={ms.id}>
+                              <strong>{ms.title}</strong> ({ms.chapterTitle})
+                            </li>
+                          ))}
+                          {attendanceData.missingSessions.length > 3 && (
+                            <li>...dan {attendanceData.missingSessions.length - 3} sesi lainnya</li>
+                          )}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* ── Checklist Kehadiran Sesi ─────────────────────── */}
+                <div style={{
+                  border: '1px solid var(--color-border-subtle)',
+                  borderRadius: 12,
+                  overflow: 'hidden',
+                  background: 'var(--color-surface)',
+                }}>
+                  <div style={{
+                    padding: '14px 20px',
+                    borderBottom: '1px solid var(--color-border-subtle)',
+                    background: 'var(--color-bg)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}>
+                    <span style={{ fontSize: '13.5px', fontWeight: 700, color: 'var(--color-text-primary)' }}>
+                      Daftar Kehadiran Sesi Pembelajaran
+                    </span>
+                    <span style={{ fontSize: '12px', color: 'var(--color-text-secondary)', fontWeight: 500 }}>
+                      Minimal hadir 80% per sesi
+                    </span>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    {attendanceData?.sessions?.map((s: any, idx: number) => {
+                      const isPresent = s.attendance?.status === 'PRESENT' || s.attendance?.status === 'MANUAL'
+                      const isExcused = s.attendance?.status === 'EXCUSED'
+                      const isAbsent = s.attendance?.status === 'ABSENT'
+
+                      return (
+                        <div
+                          key={s.id}
+                          style={{
+                            padding: '14px 20px',
+                            borderBottom: idx === attendanceData.sessions.length - 1 ? 'none' : '1px solid var(--color-border-subtle)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            flexWrap: 'wrap',
+                            gap: 12,
+                            background: idx % 2 === 1 ? 'var(--color-bg-subtle)' : '#ffffff',
+                          }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: '1 1 260px' }}>
+                            <div style={{
+                              width: 32,
+                              height: 32,
+                              borderRadius: '50%',
+                              background: isPresent ? '#dcfce7' : isExcused ? '#dbeafe' : isAbsent ? '#ffe4e6' : '#f1f5f9',
+                              color: isPresent ? '#166534' : isExcused ? '#1e40af' : isAbsent ? '#9f1239' : '#64748b',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              flexShrink: 0,
+                            }}>
+                              {isPresent ? <CheckCircle2 size={16} /> : isExcused ? <Award size={16} /> : isAbsent ? <XCircle size={16} /> : <Clock size={16} />}
+                            </div>
+                            <div>
+                              <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-text-primary)' }}>
+                                {s.title}
+                              </div>
+                              <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
+                                {s.chapterTitle} {s.type === 'LIVE' ? '· Sesi Live Google Meet' : ''}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                            {/* Duration or schedule info */}
+                            {s.attendance?.durationMinutes > 0 ? (
+                              <div style={{ textAlign: 'right', fontSize: '12px' }}>
+                                <div style={{ fontWeight: 700, color: isPresent ? '#166534' : isExcused ? '#1e40af' : '#9f1239' }}>
+                                  {s.attendance.durationMinutes} / {s.durationMinutes} menit
+                                </div>
+                                <div style={{ color: 'var(--color-text-tertiary)', fontSize: '11px' }}>
+                                  min. {s.minRequiredMinutes} mnt
+                                </div>
+                              </div>
+                            ) : s.liveScheduledAt ? (
+                              <div style={{ textAlign: 'right', fontSize: '11.5px', color: 'var(--color-text-secondary)' }}>
+                                {formatDate(s.liveScheduledAt)}
+                              </div>
+                            ) : null}
+
+                            {/* Status badge */}
+                            {isPresent ? (
+                              <span style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 4,
+                                padding: '3px 10px',
+                                borderRadius: 20,
+                                background: '#f0fdf4',
+                                border: '1px solid #bbf7d0',
+                                color: '#166534',
+                                fontSize: '12px',
+                                fontWeight: 700,
+                              }}>
+                                <CheckCircle2 size={12} color="#22c55e" /> Hadir
+                              </span>
+                            ) : isExcused ? (
+                              <span style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 4,
+                                padding: '3px 10px',
+                                borderRadius: 20,
+                                background: '#eff6ff',
+                                border: '1px solid #bfdbfe',
+                                color: '#1e40af',
+                                fontSize: '12px',
+                                fontWeight: 700,
+                              }}>
+                                <ShieldCheck size={12} color="#3b82f6" /> Izin
+                              </span>
+                            ) : isAbsent ? (
+                              <span style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 4,
+                                padding: '3px 10px',
+                                borderRadius: 20,
+                                background: '#fff1f2',
+                                border: '1px solid #fecdd3',
+                                color: '#9f1239',
+                                fontSize: '12px',
+                                fontWeight: 700,
+                              }}>
+                                <XCircle size={12} color="#f43f5e" /> Tidak Hadir
+                              </span>
+                            ) : (
+                              <span style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 4,
+                                padding: '3px 10px',
+                                borderRadius: 20,
+                                background: '#f8fafc',
+                                border: '1px solid #e2e8f0',
+                                color: '#64748b',
+                                fontSize: '12px',
+                                fontWeight: 600,
+                              }}>
+                                <Clock size={12} color="#94a3b8" /> Terjadwal
+                              </span>
+                            )}
+
+                            {/* Link to Session */}
+                            <Link
+                              href={ROUTES.LEARN_BOOTCAMP_SESSION(id, s.id)}
+                              style={{
+                                padding: '5px 12px',
+                                borderRadius: 6,
+                                background: 'var(--color-bg)',
+                                border: '1px solid var(--color-border)',
+                                color: 'var(--color-text-primary)',
+                                fontSize: '12px',
+                                fontWeight: 600,
+                                textDecoration: 'none',
+                              }}
+                            >
+                              Masuk
+                            </Link>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
             {activeTab === 'reviews' && (
               <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
                 {data.isEnrolled && data.progress >= 100 ? (
@@ -483,20 +798,42 @@ export default function BootcampDetailPage() {
               {/* CTA */}
               {data.isEnrolled ? (
                 (!data.batchStartDate || new Date(data.batchStartDate) <= new Date()) ? (
-                  <Link href={ROUTES.LEARN_BOOTCAMP(id)} style={{ textDecoration: 'none', display: 'block' }}>
-                    <motion.div
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      style={{
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                        width: '100%', padding: '12px 0',
-                        background: 'var(--color-primary)', color: '#fff',
-                        borderRadius: 8, fontWeight: 700, fontSize: '14px',
-                      }}
-                    >
-                      <PlayCircle size={16} strokeWidth={2} /> Lanjut Belajar
-                    </motion.div>
-                  </Link>
+                  <>
+                    <Link href={ROUTES.LEARN_BOOTCAMP(id)} style={{ textDecoration: 'none', display: 'block' }}>
+                      <motion.div
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        style={{
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                          width: '100%', padding: '12px 0',
+                          background: 'var(--color-primary)', color: '#fff',
+                          borderRadius: 8, fontWeight: 700, fontSize: '14px',
+                        }}
+                      >
+                        <PlayCircle size={16} strokeWidth={2} /> Lanjut Belajar
+                      </motion.div>
+                    </Link>
+                    {attendanceData && (
+                      <div style={{
+                        marginTop: 10,
+                        padding: '10px 12px',
+                        borderRadius: 8,
+                        background: attendanceData.allSessionsAttended ? '#f0fdf4' : '#f8fafc',
+                        border: attendanceData.allSessionsAttended ? '1px solid #bbf7d0' : '1px solid #e2e8f0',
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12px', fontWeight: 700, color: attendanceData.allSessionsAttended ? '#166534' : '#475569', marginBottom: 4 }}>
+                          <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                            {attendanceData.allSessionsAttended ? <Award size={14} color="#22c55e" /> : <Lock size={14} color="#64748b" />}
+                            Presensi Sertifikat
+                          </span>
+                          <span>{attendanceData.attendedCount} / {attendanceData.totalSessions} Sesi</span>
+                        </div>
+                        <div style={{ width: '100%', height: 4, background: '#e2e8f0', borderRadius: 2, overflow: 'hidden' }}>
+                          <div style={{ width: `${Math.round(((attendanceData.attendedCount || 0) / (attendanceData.totalSessions || 1)) * 100)}%`, height: '100%', background: attendanceData.allSessionsAttended ? '#22c55e' : 'var(--color-primary)', borderRadius: 2 }} />
+                        </div>
+                      </div>
+                    )}
+                  </>
                 ) : (
                   <div
                     style={{

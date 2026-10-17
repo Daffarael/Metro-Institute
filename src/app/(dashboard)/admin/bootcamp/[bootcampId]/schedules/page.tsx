@@ -9,7 +9,8 @@ import { useParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Plus, Edit2, Trash2, Video, X, Calendar, Clock } from 'lucide-react'
+import Link from 'next/link'
+import { Plus, Edit2, Trash2, Video, X, Calendar, Clock, Users } from 'lucide-react'
 import api from '@/lib/axios'
 import { formatDate } from '@/lib/utils'
 import AdminPageHeader from '@/components/admin/AdminPageHeader'
@@ -235,6 +236,28 @@ export default function BootcampSchedulesPage() {
 
                 {/* Actions */}
                 <div style={{ display: 'flex', gap: 8, flexShrink: 0, alignItems: 'center' }}>
+                  <Link
+                    href={`/admin/bootcamp/${bootcampId}/attendance/${s.id}`}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      padding: '8px 14px',
+                      borderRadius: 'var(--radius-full)',
+                      border: '1px solid var(--color-border)',
+                      background: 'var(--color-surface)',
+                      fontSize: '13px',
+                      fontWeight: 600,
+                      color: 'var(--color-text-primary)',
+                      textDecoration: 'none',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease',
+                    }}
+                    onMouseEnter={e => e.currentTarget.style.background = 'var(--color-bg-subtle)'}
+                    onMouseLeave={e => e.currentTarget.style.background = 'var(--color-surface)'}
+                  >
+                    <Users size={14} style={{ color: 'var(--color-primary)' }} /> Presensi
+                  </Link>
                   <button onClick={() => setModal(s)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 'var(--radius-full)', border: '1px solid var(--color-border)', background: 'transparent', fontSize: '13px', fontWeight: 600, cursor: 'pointer', transition: 'background 0.2s' }} onMouseEnter={e => e.currentTarget.style.background = 'var(--color-bg-subtle)'} onMouseLeave={e => e.currentTarget.style.background = 'transparent'}>
                     <Edit2 size={14} /> Edit
                   </button>

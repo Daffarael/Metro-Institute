@@ -36,6 +36,19 @@ interface Session {
   assignmentDeadline?: string
   quizOptions?: Array<{ id: string; text: string; isCorrect: boolean; explanation: string }>
   assignment?: { score?: number; feedback?: string; fileUrl?: string; linkUrl?: string; submittedAt?: string }
+  attendance?: {
+    id: string
+    status: 'PRESENT' | 'ABSENT' | 'EXCUSED' | 'MANUAL' | 'UNRECORDED'
+    durationMinutes: number
+    sessionDurationMinutes: number
+    minRequiredMinutes: number
+    joinTime?: string
+    leaveTime?: string
+    source: string
+    markedByAdmin: boolean
+    adminNotes?: string
+    attendedAt?: string
+  } | null
 }
 
 interface Chapter {
@@ -447,7 +460,123 @@ export default function BootcampLearningPlayerPage() {
                   {currentSession.description || 'Sesi ini berlangsung secara tatap muka daring melalui Google Meet / Zoom. Pastikan Anda telah bergabung beberapa menit sebelum jadwal dimulai.'}
                 </p>
 
-                {/* Actions: Join Live button only (no "Tandai Telah Hadir") */}
+                {/* Status Kehadiran Google Meet Otomatis */}
+                {currentSession.attendance ? (
+                  <div style={{
+                    padding: '16px 18px',
+                    borderRadius: 12,
+                    background: (currentSession.attendance.status === 'PRESENT' || currentSession.attendance.status === 'MANUAL')
+                      ? '#f0fdf4'
+                      : currentSession.attendance.status === 'EXCUSED'
+                      ? '#eff6ff'
+                      : '#fff1f2',
+                    border: (currentSession.attendance.status === 'PRESENT' || currentSession.attendance.status === 'MANUAL')
+                      ? '1px solid #bbf7d0'
+                      : currentSession.attendance.status === 'EXCUSED'
+                      ? '1px solid #bfdbfe'
+                      : '1px solid #fecdd3',
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, marginBottom: 8 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        {(currentSession.attendance.status === 'PRESENT' || currentSession.attendance.status === 'MANUAL') ? (
+                          <span style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 6,
+                            padding: '3px 10px',
+                            borderRadius: 20,
+                            background: '#dcfce7',
+                            color: '#166534',
+                            fontSize: '12px',
+                            fontWeight: 700,
+                          }}>
+                            <CheckCircle2 size={14} color="#22c55e" /> Hadir Terverifikasi
+                          </span>
+                        ) : currentSession.attendance.status === 'EXCUSED' ? (
+                          <span style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 6,
+                            padding: '3px 10px',
+                            borderRadius: 20,
+                            background: '#dbeafe',
+                            color: '#1e40af',
+                            fontSize: '12px',
+                            fontWeight: 700,
+                          }}>
+                            <Award size={14} color="#3b82f6" /> Izin Disetujui
+                          </span>
+                        ) : (
+                          <span style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 6,
+                            padding: '3px 10px',
+                            borderRadius: 20,
+                            background: '#ffe4e6',
+                            color: '#9f1239',
+                            fontSize: '12px',
+                            fontWeight: 700,
+                          }}>
+                            <Clock size={14} color="#f43f5e" /> Durasi Kurang
+                          </span>
+                        )}
+
+                        <span style={{ fontSize: '13px', fontWeight: 700, color: '#334155' }}>
+                          {currentSession.attendance.durationMinutes} dari {currentSession.attendance.sessionDurationMinutes || 90} menit
+                        </span>
+                      </div>
+
+                      <span style={{ fontSize: '11.5px', color: '#64748b', fontWeight: 500 }}>
+                        Syarat Hadir: min. {currentSession.attendance.minRequiredMinutes || 72} menit (80%)
+                      </span>
+                    </div>
+
+                    {/* Progress bar durasi */}
+                    <div style={{ width: '100%', height: 6, background: '#e2e8f0', borderRadius: 4, overflow: 'hidden', marginBottom: 8 }}>
+                      <div style={{
+                        width: `${Math.min(100, Math.round((currentSession.attendance.durationMinutes / (currentSession.attendance.sessionDurationMinutes || 90)) * 100))}%`,
+                        height: '100%',
+                        background: (currentSession.attendance.status === 'PRESENT' || currentSession.attendance.status === 'MANUAL')
+                          ? '#22c55e'
+                          : currentSession.attendance.status === 'EXCUSED'
+                          ? '#3b82f6'
+                          : '#f43f5e',
+                        borderRadius: 4,
+                      }} />
+                    </div>
+
+                    <p style={{ margin: 0, fontSize: '12.5px', color: '#475569', lineHeight: 1.5 }}>
+                      {(currentSession.attendance.status === 'PRESENT' || currentSession.attendance.status === 'MANUAL')
+                        ? 'Kehadiranmu di sesi live ini telah terverifikasi secara otomatis oleh sistem melalui server Google Meet.'
+                        : currentSession.attendance.status === 'EXCUSED'
+                        ? `Izin kehadiran telah disetujui oleh admin: "${currentSession.attendance.adminNotes || 'Disetujui'}". Sesi ini dihitung memenuhi syarat sertifikat.`
+                        : `Durasi aktifmu di Google Meet belum mencapai 80%. Hubungi admin jika terdapat kendala teknis atau force majeure.`}
+                    </p>
+                  </div>
+                ) : (
+                  <div style={{
+                    padding: '14px 18px',
+                    borderRadius: 12,
+                    background: '#f8fafc',
+                    border: '1px solid #e2e8f0',
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: 12,
+                  }}>
+                    <Clock size={18} color="#64748b" style={{ flexShrink: 0, marginTop: 2 }} />
+                    <div>
+                      <div style={{ fontSize: '13px', fontWeight: 700, color: '#1e293b' }}>
+                        Presensi 100% Otomatis via Google Meet
+                      </div>
+                      <p style={{ margin: '3px 0 0', fontSize: '12.5px', color: '#64748b', lineHeight: 1.5 }}>
+                        Tidak perlu mengisi formulir manual atau presensi chat. Cukup masuk menggunakan email akun yang terdaftar dan ikuti sesi minimal 80% dari durasi ({currentSession.attendanceWindowMin || 72} menit). Data kehadiran akan masuk otomatis setelah sesi selesai.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Actions: Join Live button */}
                 <div>
                   {currentSession.liveUrl ? (
                     <a
