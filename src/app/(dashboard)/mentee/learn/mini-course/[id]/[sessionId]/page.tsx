@@ -615,31 +615,13 @@ export default function CourseLearningPlayerPage() {
                   {prevSessionId && (
                     <Link
                       href={ROUTES.LEARN_COURSE_SESSION(courseId, prevSessionId)}
-                      style={{
-                        padding: '9px 15px',
-                        borderRadius: 10,
-                        background: '#f8fafc',
-                        border: '1px solid #e2e8f0',
-                        color: '#475569',
-                        fontSize: '13px',
-                        fontWeight: 600,
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: 6,
-                        textDecoration: 'none',
-                        transition: 'all 0.15s'
-                      }}
+                      style={{ textDecoration: 'none' }}
                     >
-                      <ChevronLeft size={16} /> Sebelumnya
-                    </Link>
-                  )}
-
-                  {nextSessionId && (
-                    (currentSession.isCompleted || isCompleted) ? (
-                      <Link
-                        href={ROUTES.LEARN_COURSE_SESSION(courseId, nextSessionId)}
+                      <motion.div
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
                         style={{
-                          padding: '9px 15px',
+                          padding: '9px 16px',
                           borderRadius: 10,
                           background: '#f8fafc',
                           border: '1px solid #e2e8f0',
@@ -649,11 +631,43 @@ export default function CourseLearningPlayerPage() {
                           display: 'inline-flex',
                           alignItems: 'center',
                           gap: 6,
-                          textDecoration: 'none',
-                          transition: 'all 0.15s'
+                          cursor: 'pointer',
+                          boxShadow: '0 1px 2px rgba(0, 0, 0, 0.04)',
+                          transition: 'border-color 0.15s ease'
                         }}
                       >
-                        Selanjutnya <ChevronRight size={16} />
+                        <ChevronLeft size={16} /> Sebelumnya
+                      </motion.div>
+                    </Link>
+                  )}
+
+                  {nextSessionId && (
+                    (currentSession.isCompleted || isCompleted) ? (
+                      <Link
+                        href={ROUTES.LEARN_COURSE_SESSION(courseId, nextSessionId)}
+                        style={{ textDecoration: 'none' }}
+                      >
+                        <motion.div
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          style={{
+                            padding: '9px 16px',
+                            borderRadius: 10,
+                            background: '#f8fafc',
+                            border: '1px solid #e2e8f0',
+                            color: '#475569',
+                            fontSize: '13px',
+                            fontWeight: 600,
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 6,
+                            cursor: 'pointer',
+                            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.04)',
+                            transition: 'border-color 0.15s ease'
+                          }}
+                        >
+                          Selanjutnya <ChevronRight size={16} />
+                        </motion.div>
                       </Link>
                     ) : (
                       <button
@@ -670,7 +684,7 @@ export default function CourseLearningPlayerPage() {
                           }
                         }}
                         style={{
-                          padding: '9px 15px',
+                          padding: '9px 16px',
                           borderRadius: 10,
                           background: '#f8fafc',
                           border: '1px solid #e2e8f0',
@@ -701,6 +715,7 @@ export default function CourseLearningPlayerPage() {
                         borderRadius: 10,
                         background: 'rgba(16, 185, 129, 0.1)',
                         color: 'var(--color-primary)',
+                        border: '1px solid rgba(16, 185, 129, 0.2)',
                         fontWeight: 700,
                         fontSize: '13px'
                       }}
@@ -709,7 +724,9 @@ export default function CourseLearningPlayerPage() {
                     </div>
                   ) : currentSession.type === 'VIDEO' ? (
                     playedRatio >= 0.9 ? (
-                      <button
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
                         onClick={() => completeMutation.mutate()}
                         disabled={completeMutation.isPending}
                         style={{
@@ -718,13 +735,12 @@ export default function CourseLearningPlayerPage() {
                           color: '#fff',
                           border: 'none',
                           borderRadius: 10,
-                          fontWeight: 700,
+                          fontWeight: 600,
                           fontSize: '13px',
                           display: 'inline-flex',
                           alignItems: 'center',
                           gap: 6,
                           cursor: 'pointer',
-                          transition: 'all 0.15s',
                           boxShadow: '0 2px 8px rgba(16, 185, 129, 0.25)'
                         }}
                       >
@@ -735,14 +751,14 @@ export default function CourseLearningPlayerPage() {
                             <CheckCircle2 size={16} /> Tandai Selesai
                           </>
                         )}
-                      </button>
+                      </motion.button>
                     ) : (
                       <button
                         disabled
                         title="Tonton video hingga minimal 90% untuk membuka tombol selesai"
                         style={{
                           padding: '9px 18px',
-                          background: '#f1f5f9',
+                          background: '#f8fafc',
                           color: '#94a3b8',
                           border: '1px solid #e2e8f0',
                           borderRadius: 10,
@@ -752,6 +768,7 @@ export default function CourseLearningPlayerPage() {
                           alignItems: 'center',
                           gap: 6,
                           cursor: 'not-allowed',
+                          opacity: 0.8
                         }}
                       >
                         <Lock size={14} /> Tonton min. 90% ({Math.min(99, Math.round(playedRatio * 100))}%)
@@ -759,7 +776,9 @@ export default function CourseLearningPlayerPage() {
                     )
                   ) : parsedMaterials.length > 0 ? (
                     hasDownloaded ? (
-                      <button
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
                         onClick={() => completeMutation.mutate()}
                         disabled={completeMutation.isPending}
                         style={{
@@ -768,13 +787,12 @@ export default function CourseLearningPlayerPage() {
                           color: '#fff',
                           border: 'none',
                           borderRadius: 10,
-                          fontWeight: 700,
+                          fontWeight: 600,
                           fontSize: '13px',
                           display: 'inline-flex',
                           alignItems: 'center',
                           gap: 6,
                           cursor: 'pointer',
-                          transition: 'all 0.15s',
                           boxShadow: '0 2px 8px rgba(16, 185, 129, 0.25)'
                         }}
                       >
@@ -785,14 +803,14 @@ export default function CourseLearningPlayerPage() {
                             <CheckCircle2 size={16} /> Tandai Selesai
                           </>
                         )}
-                      </button>
+                      </motion.button>
                     ) : (
                       <button
                         disabled
                         title="Unduh dokumen materi pembelajaran di atas terlebih dahulu"
                         style={{
                           padding: '9px 18px',
-                          background: '#f1f5f9',
+                          background: '#f8fafc',
                           color: '#94a3b8',
                           border: '1px solid #e2e8f0',
                           borderRadius: 10,
@@ -802,6 +820,7 @@ export default function CourseLearningPlayerPage() {
                           alignItems: 'center',
                           gap: 6,
                           cursor: 'not-allowed',
+                          opacity: 0.8
                         }}
                       >
                         <Lock size={14} /> Unduh Materi Dahulu
@@ -814,8 +833,9 @@ export default function CourseLearningPlayerPage() {
                         fontWeight: 600,
                         color: '#d97706',
                         background: '#fef3c7',
-                        padding: '6px 12px',
-                        borderRadius: 8,
+                        border: '1px solid #fde68a',
+                        padding: '7px 14px',
+                        borderRadius: 10,
                         display: 'inline-flex',
                         alignItems: 'center',
                         gap: 6
@@ -824,7 +844,9 @@ export default function CourseLearningPlayerPage() {
                       <HelpCircle size={14} /> Min. Benar 80% untuk Lulus
                     </div>
                   ) : (
-                    <button
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
                       onClick={() => completeMutation.mutate()}
                       disabled={completeMutation.isPending}
                       style={{
@@ -833,13 +855,12 @@ export default function CourseLearningPlayerPage() {
                         color: '#fff',
                         border: 'none',
                         borderRadius: 10,
-                        fontWeight: 700,
+                        fontWeight: 600,
                         fontSize: '13px',
                         display: 'inline-flex',
                         alignItems: 'center',
                         gap: 6,
                         cursor: 'pointer',
-                        transition: 'all 0.15s',
                         boxShadow: '0 2px 8px rgba(16, 185, 129, 0.25)'
                       }}
                     >
@@ -850,7 +871,7 @@ export default function CourseLearningPlayerPage() {
                           <CheckCircle2 size={16} /> Tandai Selesai
                         </>
                       )}
-                    </button>
+                    </motion.button>
                   )}
                 </div>
               </div>

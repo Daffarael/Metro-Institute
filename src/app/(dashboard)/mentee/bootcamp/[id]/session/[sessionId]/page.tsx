@@ -1010,248 +1010,363 @@ export default function BootcampLearningPlayerPage() {
                 </div>
 
                 {/* Right: Actions (Nav Prev/Next + Complete) */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-                  {prevSessionId && (
-                    <Link
-                      href={ROUTES.LEARN_BOOTCAMP_SESSION(bootcampId, prevSessionId)}
-                      style={{
-                        padding: '9px 15px',
-                        borderRadius: 10,
-                        background: '#f8fafc',
-                        border: '1px solid #e2e8f0',
-                        color: '#475569',
-                        fontSize: '13px',
-                        fontWeight: 600,
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: 6,
-                        textDecoration: 'none',
-                        transition: 'all 0.15s'
-                      }}
-                    >
-                      <ChevronLeft size={16} /> Sebelumnya
-                    </Link>
-                  )}
+                {(() => {
+                  const isLiveVerified = currentSession.type === 'LIVE' && Boolean(
+                    currentSession.attendance && (
+                      currentSession.attendance.status === 'PRESENT' ||
+                      currentSession.attendance.status === 'MANUAL' ||
+                      currentSession.attendance.status === 'EXCUSED'
+                    )
+                  )
+                  const isSessionCompleted = Boolean(currentSession.isCompleted || isCompleted || isLiveVerified)
 
-                  {nextSessionId && (
-                    (currentSession.isCompleted || isCompleted) ? (
-                      <Link
-                        href={ROUTES.LEARN_BOOTCAMP_SESSION(bootcampId, nextSessionId)}
-                        style={{
-                          padding: '9px 15px',
-                          borderRadius: 10,
-                          background: '#f8fafc',
-                          border: '1px solid #e2e8f0',
-                          color: '#475569',
-                          fontSize: '13px',
-                          fontWeight: 600,
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: 6,
-                          textDecoration: 'none',
-                          transition: 'all 0.15s'
-                        }}
-                      >
-                        Selanjutnya <ChevronRight size={16} />
-                      </Link>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (currentSession.type === 'VIDEO') {
-                            toast.info(`Tonton video minimal 90% untuk melanjutkan (saat ini ${Math.round(playedRatio * 100)}%).`)
-                          } else if (parsedMaterials.length > 0 && !hasDownloaded) {
-                            toast.info('Unduh dokumen materi terlebih dahulu untuk melanjutkan.')
-                          } else if (currentSession.type === 'QUIZ') {
-                            toast.info('Selesaikan kuis dengan nilai minimal 80% untuk melanjutkan.')
-                          } else {
-                            toast.info('Selesaikan sesi ini terlebih dahulu untuk melanjutkan.')
-                          }
-                        }}
-                        style={{
-                          padding: '9px 15px',
-                          borderRadius: 10,
-                          background: '#f8fafc',
-                          border: '1px solid #e2e8f0',
-                          color: '#94a3b8',
-                          fontSize: '13px',
-                          fontWeight: 600,
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: 6,
-                          cursor: 'not-allowed',
-                          opacity: 0.75,
-                        }}
-                        title="Selesaikan sesi ini terlebih dahulu"
-                      >
-                        Selanjutnya <Lock size={13} />
-                      </button>
-                    )
-                  )}
-
-                  {/* Status / Tombol Selesai Terbuka Sesuai Syarat */}
-                  {(currentSession.isCompleted || isCompleted) ? (
-                    <div
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: 6,
-                        padding: '9px 18px',
-                        borderRadius: 10,
-                        background: 'rgba(16, 185, 129, 0.1)',
-                        color: 'var(--color-primary)',
-                        fontWeight: 700,
-                        fontSize: '13px'
-                      }}
-                    >
-                      <CheckCircle2 size={16} /> Selesai ✓
-                    </div>
-                  ) : currentSession.type === 'VIDEO' ? (
-                    playedRatio >= 0.9 ? (
-                      <button
-                        onClick={() => completeMutation.mutate()}
-                        disabled={completeMutation.isPending}
-                        style={{
-                          padding: '9px 18px',
-                          background: 'var(--color-primary)',
-                          color: '#fff',
-                          border: 'none',
-                          borderRadius: 10,
-                          fontWeight: 700,
-                          fontSize: '13px',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: 6,
-                          cursor: 'pointer',
-                          transition: 'all 0.15s',
-                          boxShadow: '0 2px 8px rgba(16, 185, 129, 0.25)'
-                        }}
-                      >
-                        {completeMutation.isPending ? (
-                          <Loader2 size={16} className="animate-spin" />
-                        ) : (
-                          <>
-                            <CheckCircle2 size={16} /> Tandai Selesai
-                          </>
-                        )}
-                      </button>
-                    ) : (
-                      <button
-                        disabled
-                        title="Tonton video hingga minimal 90% untuk membuka tombol selesai"
-                        style={{
-                          padding: '9px 18px',
-                          background: '#f1f5f9',
-                          color: '#94a3b8',
-                          border: '1px solid #e2e8f0',
-                          borderRadius: 10,
-                          fontWeight: 600,
-                          fontSize: '13px',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: 6,
-                          cursor: 'not-allowed',
-                        }}
-                      >
-                        <Lock size={14} /> Tonton min. 90% ({Math.min(99, Math.round(playedRatio * 100))}%)
-                      </button>
-                    )
-                  ) : parsedMaterials.length > 0 ? (
-                    hasDownloaded ? (
-                      <button
-                        onClick={() => completeMutation.mutate()}
-                        disabled={completeMutation.isPending}
-                        style={{
-                          padding: '9px 18px',
-                          background: 'var(--color-primary)',
-                          color: '#fff',
-                          border: 'none',
-                          borderRadius: 10,
-                          fontWeight: 700,
-                          fontSize: '13px',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: 6,
-                          cursor: 'pointer',
-                          transition: 'all 0.15s',
-                          boxShadow: '0 2px 8px rgba(16, 185, 129, 0.25)'
-                        }}
-                      >
-                        {completeMutation.isPending ? (
-                          <Loader2 size={16} className="animate-spin" />
-                        ) : (
-                          <>
-                            <CheckCircle2 size={16} /> Tandai Selesai
-                          </>
-                        )}
-                      </button>
-                    ) : (
-                      <button
-                        disabled
-                        title="Unduh dokumen materi pembelajaran di atas terlebih dahulu"
-                        style={{
-                          padding: '9px 18px',
-                          background: '#f1f5f9',
-                          color: '#94a3b8',
-                          border: '1px solid #e2e8f0',
-                          borderRadius: 10,
-                          fontWeight: 600,
-                          fontSize: '13px',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: 6,
-                          cursor: 'not-allowed',
-                        }}
-                      >
-                        <Lock size={14} /> Unduh Materi Dahulu
-                      </button>
-                    )
-                  ) : currentSession.type === 'QUIZ' ? (
-                    <div
-                      style={{
-                        fontSize: '12.5px',
-                        fontWeight: 600,
-                        color: '#d97706',
-                        background: '#fef3c7',
-                        padding: '6px 12px',
-                        borderRadius: 8,
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: 6
-                      }}
-                    >
-                      <HelpCircle size={14} /> Min. Benar 80% untuk Lulus
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => completeMutation.mutate()}
-                      disabled={completeMutation.isPending}
-                      style={{
-                        padding: '9px 18px',
-                        background: 'var(--color-primary)',
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: 10,
-                        fontWeight: 700,
-                        fontSize: '13px',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: 6,
-                        cursor: 'pointer',
-                        transition: 'all 0.15s',
-                        boxShadow: '0 2px 8px rgba(16, 185, 129, 0.25)'
-                      }}
-                    >
-                      {completeMutation.isPending ? (
-                        <Loader2 size={16} className="animate-spin" />
-                      ) : (
-                        <>
-                          <CheckCircle2 size={16} /> Tandai Selesai
-                        </>
+                  return (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                      {prevSessionId && (
+                        <Link
+                          href={ROUTES.LEARN_BOOTCAMP_SESSION(bootcampId, prevSessionId)}
+                          style={{ textDecoration: 'none' }}
+                        >
+                          <motion.div
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            style={{
+                              padding: '9px 16px',
+                              borderRadius: 10,
+                              background: '#f8fafc',
+                              border: '1px solid #e2e8f0',
+                              color: '#475569',
+                              fontSize: '13px',
+                              fontWeight: 600,
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 6,
+                              cursor: 'pointer',
+                              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.04)',
+                              transition: 'border-color 0.15s ease'
+                            }}
+                          >
+                            <ChevronLeft size={16} /> Sebelumnya
+                          </motion.div>
+                        </Link>
                       )}
-                    </button>
-                  )}
-                </div>
+
+                      {nextSessionId && (
+                        isSessionCompleted ? (
+                          <Link
+                            href={ROUTES.LEARN_BOOTCAMP_SESSION(bootcampId, nextSessionId)}
+                            style={{ textDecoration: 'none' }}
+                          >
+                            <motion.div
+                              whileHover={{ scale: 1.02 }}
+                              whileTap={{ scale: 0.98 }}
+                              style={{
+                                padding: '9px 16px',
+                                borderRadius: 10,
+                                background: '#f8fafc',
+                                border: '1px solid #e2e8f0',
+                                color: '#475569',
+                                fontSize: '13px',
+                                fontWeight: 600,
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: 6,
+                                cursor: 'pointer',
+                                boxShadow: '0 1px 2px rgba(0, 0, 0, 0.04)',
+                                transition: 'border-color 0.15s ease'
+                              }}
+                            >
+                              Selanjutnya <ChevronRight size={16} />
+                            </motion.div>
+                          </Link>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (currentSession.type === 'VIDEO') {
+                                toast.info(`Tonton video minimal 90% untuk melanjutkan (saat ini ${Math.round(playedRatio * 100)}%).`)
+                              } else if (currentSession.type === 'LIVE') {
+                                toast.info('Sesi ini adalah Live Session. Kehadiran akan tercatat otomatis saat Anda mengikuti sesi di Google Meet (min. 80%).')
+                              } else if (parsedMaterials.length > 0 && !hasDownloaded) {
+                                toast.info('Unduh dokumen materi terlebih dahulu untuk melanjutkan.')
+                              } else if (currentSession.type === 'QUIZ') {
+                                toast.info('Selesaikan kuis dengan nilai minimal 80% untuk melanjutkan.')
+                              } else if (currentSession.type === 'ASSIGNMENT' && !currentSession.assignment?.submittedAt) {
+                                toast.info('Kumpulkan tugas terlebih dahulu untuk melanjutkan.')
+                              } else {
+                                toast.info('Selesaikan sesi ini terlebih dahulu untuk melanjutkan.')
+                              }
+                            }}
+                            style={{
+                              padding: '9px 16px',
+                              borderRadius: 10,
+                              background: '#f8fafc',
+                              border: '1px solid #e2e8f0',
+                              color: '#94a3b8',
+                              fontSize: '13px',
+                              fontWeight: 600,
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 6,
+                              cursor: 'not-allowed',
+                              opacity: 0.75,
+                            }}
+                            title="Selesaikan sesi ini terlebih dahulu"
+                          >
+                            Selanjutnya <Lock size={13} />
+                          </button>
+                        )
+                      )}
+
+                      {/* Status / Tombol Selesai Terbuka Sesuai Syarat */}
+                      {isSessionCompleted ? (
+                        <div
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 6,
+                            padding: '9px 18px',
+                            borderRadius: 10,
+                            background: 'rgba(16, 185, 129, 0.1)',
+                            color: 'var(--color-primary)',
+                            border: '1px solid rgba(16, 185, 129, 0.2)',
+                            fontWeight: 700,
+                            fontSize: '13px'
+                          }}
+                        >
+                          <CheckCircle2 size={16} /> {currentSession.type === 'LIVE' ? 'Hadir Terverifikasi ✓' : 'Selesai ✓'}
+                        </div>
+                      ) : currentSession.type === 'LIVE' ? (
+                        <button
+                          type="button"
+                          disabled
+                          onClick={() => {
+                            toast.info('Presensi sesi live ini otomatis tercatat saat Anda mengikuti sesi di Google Meet (min. 80% durasi).')
+                          }}
+                          title="Presensi otomatis via Google Meet (min. 80% durasi)"
+                          style={{
+                            padding: '9px 18px',
+                            background: '#f8fafc',
+                            color: '#94a3b8',
+                            border: '1px solid #e2e8f0',
+                            borderRadius: 10,
+                            fontWeight: 600,
+                            fontSize: '13px',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 6,
+                            cursor: 'not-allowed',
+                            opacity: 0.8
+                          }}
+                        >
+                          <Lock size={14} /> Presensi Otomatis via Meet
+                        </button>
+                      ) : currentSession.type === 'VIDEO' ? (
+                        playedRatio >= 0.9 ? (
+                          <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => completeMutation.mutate()}
+                            disabled={completeMutation.isPending}
+                            style={{
+                              padding: '9px 18px',
+                              background: 'var(--color-primary)',
+                              color: '#fff',
+                              border: 'none',
+                              borderRadius: 10,
+                              fontWeight: 600,
+                              fontSize: '13px',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 6,
+                              cursor: 'pointer',
+                              boxShadow: '0 2px 8px rgba(16, 185, 129, 0.25)'
+                            }}
+                          >
+                            {completeMutation.isPending ? (
+                              <Loader2 size={16} className="animate-spin" />
+                            ) : (
+                              <>
+                                <CheckCircle2 size={16} /> Tandai Selesai
+                              </>
+                            )}
+                          </motion.button>
+                        ) : (
+                          <button
+                            disabled
+                            title="Tonton video hingga minimal 90% untuk membuka tombol selesai"
+                            style={{
+                              padding: '9px 18px',
+                              background: '#f8fafc',
+                              color: '#94a3b8',
+                              border: '1px solid #e2e8f0',
+                              borderRadius: 10,
+                              fontWeight: 600,
+                              fontSize: '13px',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 6,
+                              cursor: 'not-allowed',
+                              opacity: 0.8
+                            }}
+                          >
+                            <Lock size={14} /> Tonton min. 90% ({Math.min(99, Math.round(playedRatio * 100))}%)
+                          </button>
+                        )
+                      ) : parsedMaterials.length > 0 ? (
+                        hasDownloaded ? (
+                          <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => completeMutation.mutate()}
+                            disabled={completeMutation.isPending}
+                            style={{
+                              padding: '9px 18px',
+                              background: 'var(--color-primary)',
+                              color: '#fff',
+                              border: 'none',
+                              borderRadius: 10,
+                              fontWeight: 600,
+                              fontSize: '13px',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 6,
+                              cursor: 'pointer',
+                              boxShadow: '0 2px 8px rgba(16, 185, 129, 0.25)'
+                            }}
+                          >
+                            {completeMutation.isPending ? (
+                              <Loader2 size={16} className="animate-spin" />
+                            ) : (
+                              <>
+                                <CheckCircle2 size={16} /> Tandai Selesai
+                              </>
+                            )}
+                          </motion.button>
+                        ) : (
+                          <button
+                            disabled
+                            title="Unduh dokumen materi pembelajaran di atas terlebih dahulu"
+                            style={{
+                              padding: '9px 18px',
+                              background: '#f8fafc',
+                              color: '#94a3b8',
+                              border: '1px solid #e2e8f0',
+                              borderRadius: 10,
+                              fontWeight: 600,
+                              fontSize: '13px',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 6,
+                              cursor: 'not-allowed',
+                              opacity: 0.8
+                            }}
+                          >
+                            <Lock size={14} /> Unduh Materi Dahulu
+                          </button>
+                        )
+                      ) : currentSession.type === 'QUIZ' ? (
+                        <div
+                          style={{
+                            fontSize: '12.5px',
+                            fontWeight: 600,
+                            color: '#d97706',
+                            background: '#fef3c7',
+                            border: '1px solid #fde68a',
+                            padding: '7px 14px',
+                            borderRadius: 10,
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 6
+                          }}
+                        >
+                          <HelpCircle size={14} /> Min. Benar 80% untuk Lulus
+                        </div>
+                      ) : currentSession.type === 'ASSIGNMENT' ? (
+                        currentSession.assignment?.submittedAt ? (
+                          <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => completeMutation.mutate()}
+                            disabled={completeMutation.isPending}
+                            style={{
+                              padding: '9px 18px',
+                              background: 'var(--color-primary)',
+                              color: '#fff',
+                              border: 'none',
+                              borderRadius: 10,
+                              fontWeight: 600,
+                              fontSize: '13px',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 6,
+                              cursor: 'pointer',
+                              boxShadow: '0 2px 8px rgba(16, 185, 129, 0.25)'
+                            }}
+                          >
+                            {completeMutation.isPending ? (
+                              <Loader2 size={16} className="animate-spin" />
+                            ) : (
+                              <>
+                                <CheckCircle2 size={16} /> Tandai Selesai
+                              </>
+                            )}
+                          </motion.button>
+                        ) : (
+                          <button
+                            disabled
+                            title="Kumpulkan tugas terlebih dahulu untuk menyelesaikan sesi ini"
+                            style={{
+                              padding: '9px 18px',
+                              background: '#f8fafc',
+                              color: '#94a3b8',
+                              border: '1px solid #e2e8f0',
+                              borderRadius: 10,
+                              fontWeight: 600,
+                              fontSize: '13px',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 6,
+                              cursor: 'not-allowed',
+                              opacity: 0.8
+                            }}
+                          >
+                            <Lock size={14} /> Kumpulkan Tugas Dahulu
+                          </button>
+                        )
+                      ) : (
+                        <motion.button
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => completeMutation.mutate()}
+                          disabled={completeMutation.isPending}
+                          style={{
+                            padding: '9px 18px',
+                            background: 'var(--color-primary)',
+                            color: '#fff',
+                            border: 'none',
+                            borderRadius: 10,
+                            fontWeight: 600,
+                            fontSize: '13px',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 6,
+                            cursor: 'pointer',
+                            boxShadow: '0 2px 8px rgba(16, 185, 129, 0.25)'
+                          }}
+                        >
+                          {completeMutation.isPending ? (
+                            <Loader2 size={16} className="animate-spin" />
+                          ) : (
+                            <>
+                              <CheckCircle2 size={16} /> Tandai Selesai
+                            </>
+                          )}
+                        </motion.button>
+                      )}
+                    </div>
+                  )
+                })()}
               </div>
             </div>
 
