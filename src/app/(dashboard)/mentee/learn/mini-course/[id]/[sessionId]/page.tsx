@@ -8,7 +8,8 @@ import Link from 'next/link'
 import {
   ChevronLeft, ChevronRight, CheckCircle2, PlayCircle, FileText,
   MessageSquare, BookOpen, StickyNote, ChevronDown, Loader2,
-  Send, Plus, Clock, Zap, Upload, Download, Award, HelpCircle, RotateCcw
+  Send, Plus, Clock, Zap, Upload, Download, Award, HelpCircle, RotateCcw,
+  Lock
 } from 'lucide-react'
 import { toast } from 'sonner'
 import dynamic from 'next/dynamic'
@@ -47,6 +48,8 @@ export default function CourseLearningPlayerPage() {
   const queryClient = useQueryClient()
   const [activeTab, setActiveTab] = useState<'overview' | 'notes' | 'qna'>('overview')
   const [playedSeconds, setPlayedSeconds] = useState(0)
+  const [playedRatio, setPlayedRatio] = useState(0)
+  const [hasDownloaded, setHasDownloaded] = useState(false)
   const [isCompleted, setIsCompleted] = useState(false)
   const [expandedChapters, setExpandedChapters] = useState<Set<string>>(new Set(['0']))
   const [note, setNote] = useState('')
@@ -58,6 +61,12 @@ export default function CourseLearningPlayerPage() {
   useEffect(() => {
     setMounted(true)
   }, [])
+
+  useEffect(() => {
+    setPlayedRatio(0)
+    setHasDownloaded(false)
+    completeTriggerRef.current = false
+  }, [sessionId])
 
   const { data, isLoading } = useQuery<LearningData>({
     queryKey: ['learn-course', courseId, sessionId],
@@ -122,6 +131,7 @@ export default function CourseLearningPlayerPage() {
   // Auto complete when 90% watched
   const handleProgress = useCallback(({ playedSeconds: ps, played }: { playedSeconds: number; played: number }) => {
     setPlayedSeconds(ps)
+    setPlayedRatio(played)
     if (played >= 0.9 && !completeTriggerRef.current && !isCompleted && !data?.currentSession.isCompleted) {
       completeTriggerRef.current = true
       completeMutation.mutate()
@@ -308,6 +318,7 @@ export default function CourseLearningPlayerPage() {
                 <CourseVideoPlayer
                   url={currentSession.videoUrl}
                   title={currentSession.title}
+                  isCompleted={Boolean(currentSession.isCompleted || isCompleted)}
                   onProgress={handleProgress}
                   onEnded={() => {
                     if (!completeTriggerRef.current && !currentSession.isCompleted && !isCompleted) {
@@ -430,6 +441,7 @@ export default function CourseLearningPlayerPage() {
                           target="_blank"
                           rel="noopener noreferrer"
                           onClick={() => {
+                            setHasDownloaded(true)
                             if (!currentSession.isCompleted && !isCompleted) {
                               completeMutation.mutate()
                             }
@@ -623,28 +635,195 @@ export default function CourseLearningPlayerPage() {
                   )}
 
                   {nextSessionId && (
-                    <Link
-                      href={ROUTES.LEARN_COURSE_SESSION(courseId, nextSessionId)}
+                    (currentSession.isCompleted || isCompleted) ? (
+                      <Link
+                        href={ROUTES.LEARN_COURSE_SESSION(courseId, nextSessionId)}
+                        style={{
+                          padding: '9px 15px',
+                          borderRadius: 10,
+                          background: '#f8fafc',
+                          border: '1px solid #e2e8f0',
+                          color: '#475569',
+                          fontSize: '13px',
+                          fontWeight: 600,
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          textDecoration: 'none',
+                          transition: 'all 0.15s'
+                        }}
+                      >
+                        Selanjutnya <ChevronRight size={16} />
+                      </Link>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (currentSession.type === 'VIDEO') {
+                            toast.info(`Tonton video minimal 90% untuk melanjutkan (saat ini ${Math.round(playedRatio * 100)}%).`)
+                          } else if (parsedMaterials.length > 0 && !hasDownloaded) {
+                            toast.info('Unduh dokumen materi terlebih dahulu untuk melanjutkan.')
+                          } else if (currentSession.type === 'QUIZ') {
+                            toast.info('Selesaikan kuis dengan nilai minimal 80% untuk melanjutkan.')
+                          } else {
+                            toast.info('Selesaikan sesi ini terlebih dahulu untuk melanjutkan.')
+                          }
+                        }}
+                        style={{
+                          padding: '9px 15px',
+                          borderRadius: 10,
+                          background: '#f8fafc',
+                          border: '1px solid #e2e8f0',
+                          color: '#94a3b8',
+                          fontSize: '13px',
+                          fontWeight: 600,
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          cursor: 'not-allowed',
+                          opacity: 0.75,
+                        }}
+                        title="Selesaikan sesi ini terlebih dahulu"
+                      >
+                        Selanjutnya <Lock size={13} />
+                      </button>
+                    )
+                  )}
+
+                  {/* Status / Tombol Selesai Terbuka Sesuai Syarat */}
+                  {(currentSession.isCompleted || isCompleted) ? (
+                    <div
                       style={{
-                        padding: '9px 15px',
-                        borderRadius: 10,
-                        background: '#f8fafc',
-                        border: '1px solid #e2e8f0',
-                        color: '#475569',
-                        fontSize: '13px',
-                        fontWeight: 600,
                         display: 'inline-flex',
                         alignItems: 'center',
                         gap: 6,
-                        textDecoration: 'none',
-                        transition: 'all 0.15s'
+                        padding: '9px 18px',
+                        borderRadius: 10,
+                        background: 'rgba(16, 185, 129, 0.1)',
+                        color: 'var(--color-primary)',
+                        fontWeight: 700,
+                        fontSize: '13px'
                       }}
                     >
-                      Selanjutnya <ChevronRight size={16} />
-                    </Link>
-                  )}
-
-                  {!(currentSession.isCompleted || isCompleted) && (
+                      <CheckCircle2 size={16} /> Selesai ✓
+                    </div>
+                  ) : currentSession.type === 'VIDEO' ? (
+                    playedRatio >= 0.9 ? (
+                      <button
+                        onClick={() => completeMutation.mutate()}
+                        disabled={completeMutation.isPending}
+                        style={{
+                          padding: '9px 18px',
+                          background: 'var(--color-primary)',
+                          color: '#fff',
+                          border: 'none',
+                          borderRadius: 10,
+                          fontWeight: 700,
+                          fontSize: '13px',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          cursor: 'pointer',
+                          transition: 'all 0.15s',
+                          boxShadow: '0 2px 8px rgba(16, 185, 129, 0.25)'
+                        }}
+                      >
+                        {completeMutation.isPending ? (
+                          <Loader2 size={16} className="animate-spin" />
+                        ) : (
+                          <>
+                            <CheckCircle2 size={16} /> Tandai Selesai
+                          </>
+                        )}
+                      </button>
+                    ) : (
+                      <button
+                        disabled
+                        title="Tonton video hingga minimal 90% untuk membuka tombol selesai"
+                        style={{
+                          padding: '9px 18px',
+                          background: '#f1f5f9',
+                          color: '#94a3b8',
+                          border: '1px solid #e2e8f0',
+                          borderRadius: 10,
+                          fontWeight: 600,
+                          fontSize: '13px',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          cursor: 'not-allowed',
+                        }}
+                      >
+                        <Lock size={14} /> Tonton min. 90% ({Math.min(99, Math.round(playedRatio * 100))}%)
+                      </button>
+                    )
+                  ) : parsedMaterials.length > 0 ? (
+                    hasDownloaded ? (
+                      <button
+                        onClick={() => completeMutation.mutate()}
+                        disabled={completeMutation.isPending}
+                        style={{
+                          padding: '9px 18px',
+                          background: 'var(--color-primary)',
+                          color: '#fff',
+                          border: 'none',
+                          borderRadius: 10,
+                          fontWeight: 700,
+                          fontSize: '13px',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          cursor: 'pointer',
+                          transition: 'all 0.15s',
+                          boxShadow: '0 2px 8px rgba(16, 185, 129, 0.25)'
+                        }}
+                      >
+                        {completeMutation.isPending ? (
+                          <Loader2 size={16} className="animate-spin" />
+                        ) : (
+                          <>
+                            <CheckCircle2 size={16} /> Tandai Selesai
+                          </>
+                        )}
+                      </button>
+                    ) : (
+                      <button
+                        disabled
+                        title="Unduh dokumen materi pembelajaran di atas terlebih dahulu"
+                        style={{
+                          padding: '9px 18px',
+                          background: '#f1f5f9',
+                          color: '#94a3b8',
+                          border: '1px solid #e2e8f0',
+                          borderRadius: 10,
+                          fontWeight: 600,
+                          fontSize: '13px',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          cursor: 'not-allowed',
+                        }}
+                      >
+                        <Lock size={14} /> Unduh Materi Dahulu
+                      </button>
+                    )
+                  ) : currentSession.type === 'QUIZ' ? (
+                    <div
+                      style={{
+                        fontSize: '12.5px',
+                        fontWeight: 600,
+                        color: '#d97706',
+                        background: '#fef3c7',
+                        padding: '6px 12px',
+                        borderRadius: 8,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 6
+                      }}
+                    >
+                      <HelpCircle size={14} /> Min. Benar 80% untuk Lulus
+                    </div>
+                  ) : (
                     <button
                       onClick={() => completeMutation.mutate()}
                       disabled={completeMutation.isPending}
@@ -999,8 +1178,12 @@ function InteractiveQuiz({
     const calculatedScore = totalQ > 0 ? Math.round((correct / totalQ) * 100) : 100
     setScore(calculatedScore)
     setShowResult(true)
-    if (!isCompleted) {
-      onComplete()
+    if (calculatedScore >= 80) {
+      if (!isCompleted) {
+        onComplete()
+      }
+    } else {
+      toast.error(`Nilai Anda ${calculatedScore}%. Minimal benar 80% untuk lulus sesi kuis ini. Silakan ulangi kuis.`)
     }
   }
 
@@ -1047,7 +1230,7 @@ function InteractiveQuiz({
 
   // 2. Result state
   if (showResult) {
-    const isPassed = score >= 70
+    const isPassed = score >= 80
     return (
       <div
         className="animate-fade-in"
@@ -1098,12 +1281,12 @@ function InteractiveQuiz({
         </div>
 
         <h2 style={{ fontSize: '20px', fontWeight: 700, color: '#0f172a', marginBottom: 6 }}>
-          {isPassed ? 'Kuis Selesai! 🎉' : 'Kuis Telah Selesai'}
+          {isPassed ? 'Kuis Berhasil Diselesaikan! 🎉' : 'Nilai Belum Mencapai Batas Minimal (80%)'}
         </h2>
-        <p style={{ color: '#64748b', fontSize: '14px', maxWidth: 440, lineHeight: 1.6, marginBottom: 24, margin: '0 auto 24px' }}>
+        <p style={{ color: '#64748b', fontSize: '14px', maxWidth: 460, lineHeight: 1.6, marginBottom: 24, margin: '0 auto 24px' }}>
           {isPassed
-            ? 'Selamat! Pemahaman Anda terhadap materi sangat baik. Sesi ini telah ditandai selesai.'
-            : 'Jawaban Anda telah tersimpan. Anda dapat mengulang kuis untuk meningkatkan pemahaman Anda.'}
+            ? `Selamat! Anda berhasil memperoleh skor ${score}% (lulus syarat minimal 80%). Sesi ini telah ditandai selesai dan Anda dapat melanjutkan.`
+            : `Skor Anda saat ini ${score}%. Sesuai aturan, Anda wajib menjawab minimal 80% soal dengan benar untuk menyelesaikan sesi kuis ini dan melanjutkan ke materi berikutnya.`}
         </p>
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, flexWrap: 'wrap' }}>
