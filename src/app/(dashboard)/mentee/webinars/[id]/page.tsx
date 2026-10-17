@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import {
   Calendar, Clock, Users, Video, ChevronRight, CheckCircle2,
-  ExternalLink, PlayCircle, Lock, Zap, Share2, X
+  ExternalLink, PlayCircle, Lock, Zap, Share2, X, Award
 } from 'lucide-react'
 import api from '@/lib/axios'
 import { ROUTES, formatDate, formatRupiah, FIELD_LABELS, ensureAbsoluteUrl } from '@/lib/utils'
@@ -29,6 +29,8 @@ interface WebinarDetail {
   bannerUrl?: string
   scheduledAt: string
   duration: number
+  xpReward?: number
+  attendanceThresholdPct?: number
   meetingUrl?: string | null
   recordingUrl?: string | null
   quota?: number
@@ -36,6 +38,19 @@ interface WebinarDetail {
   isFeatured: boolean
   isRegistered?: boolean
   attended?: boolean
+  attendance?: {
+    isRegistered: boolean
+    status: 'PRESENT' | 'ABSENT' | 'EXCUSED' | 'MANUAL'
+    durationMinutes: number
+    sessionDurationMinutes: number
+    minRequiredMinutes: number
+    thresholdPct: number
+    xpReward: number
+    xpAwarded: number
+    markedByAdmin: boolean
+    adminNotes?: string | null
+    certificate?: { id: string; credentialId: string; issuedAt: string; pdfUrl?: string } | null
+  } | null
   isEnded?: boolean
   endedAt?: string | null
   benefits?: string[]
@@ -414,10 +429,169 @@ export default function MenteeWebinarDetailPage() {
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                       <Video size={15} color="var(--color-primary)" />
-                      <span><strong>Platform:</strong> Online Live Stream (Zoom / Google Meet)</span>
+                      <span><strong>Platform:</strong> Google Meet / Online Live Stream</span>
                     </div>
                   </div>
                 </div>
+
+                {/* Presensi Otomatis via Google Meet & Syarat Sertifikat / XP */}
+                {webinar.isRegistered && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    {/* Callout Presensi Ringkas */}
+                    <div style={{
+                      padding: '12px 16px',
+                      borderRadius: 12,
+                      background: 'var(--color-bg)',
+                      border: '1px solid var(--color-border-subtle)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 12,
+                    }}>
+                      <Clock size={16} color="var(--color-text-secondary)" style={{ flexShrink: 0 }} />
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                        <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--color-text-primary)' }}>
+                          Presensi 100% Otomatis via Google Meet:
+                        </span>
+                        <span style={{ fontSize: '12.5px', color: 'var(--color-text-secondary)', lineHeight: 1.4 }}>
+                          Tidak perlu mengisi formulir manual atau presensi chat. Cukup masuk menggunakan email akun yang terdaftar.
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Syarat Sertifikat & XP Banner */}
+                    <div style={{
+                      padding: '12px 16px',
+                      borderRadius: 12,
+                      background: 'rgba(16, 185, 129, 0.05)',
+                      border: '1px solid rgba(16, 185, 129, 0.15)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      flexWrap: 'wrap',
+                      gap: 10,
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <Award size={18} color="var(--color-primary)" />
+                        <div>
+                          <span style={{ fontSize: '13px', color: 'var(--color-text-primary)', fontWeight: 600 }}>
+                            Syarat E-Sertifikat & +{webinar.xpReward || 25} XP:
+                          </span>
+                          <span style={{ fontSize: '12.5px', color: 'var(--color-text-secondary)', marginLeft: 6 }}>
+                            Hadir minimal {webinar.attendanceThresholdPct || 80}% durasi ({Math.round((webinar.duration || 90) * ((webinar.attendanceThresholdPct || 80) / 100))} menit).
+                          </span>
+                        </div>
+                      </div>
+                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: '12px', fontWeight: 700, color: '#d97706', background: 'rgba(245, 158, 11, 0.1)', padding: '3px 8px', borderRadius: 6 }}>
+                        <Zap size={13} fill="#d97706" /> +{webinar.xpReward || 25} XP
+                      </div>
+                    </div>
+
+                    {/* Status Kehadiran Mentee jika sesi sudah selesai / ada data attendance */}
+                    {webinar.attendance && (
+                      <div style={{
+                        padding: '16px 20px',
+                        borderRadius: 12,
+                        background: (webinar.attendance.status === 'PRESENT' || webinar.attendance.status === 'MANUAL')
+                          ? '#f0fdf4'
+                          : webinar.attendance.status === 'EXCUSED'
+                          ? '#eff6ff'
+                          : '#fff1f2',
+                        border: (webinar.attendance.status === 'PRESENT' || webinar.attendance.status === 'MANUAL')
+                          ? '1px solid #bbf7d0'
+                          : webinar.attendance.status === 'EXCUSED'
+                          ? '1px solid #bfdbfe'
+                          : '1px solid #fecdd3',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 12,
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            {(webinar.attendance.status === 'PRESENT' || webinar.attendance.status === 'MANUAL') ? (
+                              <span style={{
+                                display: 'inline-flex', alignItems: 'center', gap: 6,
+                                padding: '4px 12px', borderRadius: 20,
+                                background: '#dcfce7', color: '#166534',
+                                fontSize: '12.5px', fontWeight: 700
+                              }}>
+                                <CheckCircle2 size={15} color="#22c55e" /> Hadir Terverifikasi
+                              </span>
+                            ) : webinar.attendance.status === 'EXCUSED' ? (
+                              <span style={{
+                                display: 'inline-flex', alignItems: 'center', gap: 6,
+                                padding: '4px 12px', borderRadius: 20,
+                                background: '#dbeafe', color: '#1e40af',
+                                fontSize: '12.5px', fontWeight: 700
+                              }}>
+                                <Award size={15} color="#3b82f6" /> Izin Disetujui
+                              </span>
+                            ) : (
+                              <span style={{
+                                display: 'inline-flex', alignItems: 'center', gap: 6,
+                                padding: '4px 12px', borderRadius: 20,
+                                background: '#ffe4e6', color: '#9f1239',
+                                fontSize: '12.5px', fontWeight: 700
+                              }}>
+                                <Clock size={15} color="#f43f5e" /> Durasi Kurang
+                              </span>
+                            )}
+
+                            <span style={{ fontSize: '13px', fontWeight: 700, color: '#334155' }}>
+                              {webinar.attendance.durationMinutes} dari {webinar.attendance.sessionDurationMinutes || webinar.duration} menit
+                            </span>
+                          </div>
+
+                          {(webinar.attendance.status === 'PRESENT' || webinar.attendance.status === 'MANUAL' || webinar.attendance.status === 'EXCUSED') && (
+                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: '12px', fontWeight: 700, color: '#d97706', background: '#fef3c7', padding: '4px 10px', borderRadius: 6 }}>
+                              <Zap size={13} fill="#d97706" /> +{webinar.attendance.xpAwarded || webinar.xpReward || 25} XP Didapatkan
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Durasi Progress Bar */}
+                        <div style={{ width: '100%', height: 6, background: '#e2e8f0', borderRadius: 4, overflow: 'hidden' }}>
+                          <div style={{
+                            width: `${Math.min(100, Math.round((webinar.attendance.durationMinutes / (webinar.attendance.sessionDurationMinutes || webinar.duration)) * 100))}%`,
+                            height: '100%',
+                            background: (webinar.attendance.status === 'PRESENT' || webinar.attendance.status === 'MANUAL')
+                              ? '#22c55e'
+                              : webinar.attendance.status === 'EXCUSED'
+                              ? '#3b82f6'
+                              : '#f43f5e',
+                            borderRadius: 4
+                          }} />
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10, marginTop: 4 }}>
+                          <p style={{ margin: 0, fontSize: '12.5px', color: '#475569', lineHeight: 1.5 }}>
+                            {(webinar.attendance.status === 'PRESENT' || webinar.attendance.status === 'MANUAL')
+                              ? 'Kehadiranmu telah terverifikasi secara otomatis oleh sistem melalui Google Meet. E-Sertifikat dan reward XP telah diberikan.'
+                              : webinar.attendance.status === 'EXCUSED'
+                              ? `Izin kehadiran telah disetujui admin: "${webinar.attendance.adminNotes || 'Disetujui'}". E-Sertifikat webinar telah dibuka.`
+                              : `Durasi aktifmu di Google Meet (${webinar.attendance.durationMinutes} menit) belum mencapai syarat minimal 80% (${webinar.attendance.minRequiredMinutes} menit). E-Sertifikat dan XP terkunci.`}
+                          </p>
+
+                          {webinar.attendance.certificate && (
+                            <Link href="/mentee/certificates" style={{ textDecoration: 'none' }}>
+                              <motion.div
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                style={{
+                                  display: 'inline-flex', alignItems: 'center', gap: 6,
+                                  padding: '8px 16px', borderRadius: 8,
+                                  background: 'var(--color-primary)', color: '#fff',
+                                  fontSize: '12.5px', fontWeight: 600, cursor: 'pointer'
+                                }}
+                              >
+                                <Award size={14} /> Buka Sertifikat Saya
+                              </motion.div>
+                            </Link>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* Section Akses Meeting Ketat */}
                 {webinar.isRegistered ? (

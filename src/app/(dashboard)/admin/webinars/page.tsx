@@ -37,6 +37,8 @@ const webinarSchema = z.object({
   certificateTemplateId: z.string().optional().nullable(),
   bannerUrl:        z.string().optional().nullable(),
   benefits:         z.array(z.string()).optional(),
+  attendanceThresholdPct: z.number().min(1).max(100).optional(),
+  xpReward:         z.number().min(0).optional(),
 })
 type WebinarForm = z.infer<typeof webinarSchema>
 
@@ -60,6 +62,8 @@ interface WebinarItem {
   isEnded?: boolean
   endedAt?: string | null
   certificateTemplateId?: string
+  attendanceThresholdPct?: number
+  xpReward?: number
   benefits?: string[]
   _count?: { registrations: number }
 }
@@ -159,6 +163,8 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
       status:           webinar?.isPublished ? 'PUBLISHED' : 'DRAFT',
       certificateTemplateId: webinar?.certificateTemplateId ?? null,
       bannerUrl:        webinar?.bannerUrl ?? '',
+      attendanceThresholdPct: webinar?.attendanceThresholdPct ?? 80,
+      xpReward:         webinar?.xpReward ?? 25,
     },
   })
 
@@ -181,6 +187,8 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
         meetingUrl: sanitizeUrl(rest.meetingUrl),
         recordingUrl: sanitizeUrl(rest.recordingUrl),
         isPublished: status === 'PUBLISHED',
+        attendanceThresholdPct: Number(rest.attendanceThresholdPct) || 80,
+        xpReward: Number(rest.xpReward) || 25,
       }
       return isEdit
         ? api.patch(`/admin/webinars/${webinar!.id}`, payload).then(r => r.data)
@@ -371,14 +379,52 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
 
           {/* Meeting Link */}
           <div>
-            <label style={labelStyle}>Link Room (Zoom / Google Meet)</label>
+            <label style={labelStyle}>Link Room (Google Meet / Zoom)</label>
             <input
               {...register('meetingUrl')}
-              placeholder="https://meet.google.com/... atau Zoom link"
+              placeholder="https://meet.google.com/xyz-abcd-efg"
               style={inputStyleClean}
               onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
               onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
             />
+            <span style={{ fontSize: '11.5px', color: 'var(--color-text-tertiary)', marginTop: 4, display: 'block' }}>
+              Gunakan link Google Meet untuk mengaktifkan pelacakan presensi dan reward otomatis.
+            </span>
+          </div>
+
+          {/* Aturan Presensi Google Meet & XP Reward */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <div>
+              <label style={labelStyle}>Syarat Hadir (% Durasi Meet)</label>
+              <input
+                type="number"
+                {...register('attendanceThresholdPct', { valueAsNumber: true })}
+                min={1}
+                max={100}
+                placeholder="80"
+                style={inputStyleClean}
+                onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
+                onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
+              />
+              <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 4, display: 'block' }}>
+                Default: 80% dari durasi webinar.
+              </span>
+            </div>
+            <div>
+              <label style={labelStyle}>Hadiah XP Kehadiran</label>
+              <input
+                type="number"
+                {...register('xpReward', { valueAsNumber: true })}
+                min={0}
+                placeholder="25"
+                style={inputStyleClean}
+                onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
+                onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
+              />
+              <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 4, display: 'block' }}>
+                XP yang didapat jika memenuhi syarat hadir.
+              </span>
+            </div>
           </div>
 
           {/* Description */}

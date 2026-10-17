@@ -13,11 +13,12 @@ import { Dialog, DialogContent } from '@/components/ui/dialog'
 interface Certificate {
   id: string
   credentialId: string
-  productType: 'MINI_COURSE' | 'BOOTCAMP'
+  productType: 'MINI_COURSE' | 'BOOTCAMP' | 'WEBINAR'
   issuedAt: string
   pdfUrl?: string
   course?: { title: string; field: string; thumbnailUrl?: string }
   bootcamp?: { title: string; field: string; thumbnailUrl?: string }
+  webinar?: { title: string; field: string; bannerUrl?: string }
 }
 
 const FIELD_ICONS: Record<string, string> = {
@@ -28,6 +29,7 @@ const TYPE_OPTIONS = [
   { value: '', label: 'Semua Tipe' },
   { value: 'BOOTCAMP', label: 'Bootcamp' },
   { value: 'MINI_COURSE', label: 'Mini Course' },
+  { value: 'WEBINAR', label: 'Webinar' },
 ]
 
 export default function CertificatesPage() {
@@ -185,28 +187,29 @@ export default function CertificatesPage() {
             <motion.div key="grid" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 'var(--space-5)', opacity: isTransitioning ? 0.5 : 1, transition: 'opacity 0.25s ease' }} className="stagger-children">
                 {filtered.map((cert) => {
-                  const product = cert.course || cert.bootcamp
-            const field = product?.field || 'FRONTEND'
-            const title = product?.title || 'Metro Institute'
-            const typeLabel = cert.productType === 'BOOTCAMP' ? 'Bootcamp' : 'Mini Course'
+                  const product = cert.course || cert.bootcamp || cert.webinar
+                  const field = product?.field || 'FRONTEND'
+                  const title = product?.title || 'Metro Institute'
+                  const typeLabel = cert.productType === 'BOOTCAMP' ? 'Bootcamp' : cert.productType === 'WEBINAR' ? 'Webinar' : 'Mini Course'
+                  const thumb = product && ('thumbnailUrl' in product ? (product as any).thumbnailUrl : (product as any).bannerUrl)
 
-            return (
-              <div key={cert.id} className="card animate-fade-in-up" style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                {/* Certificate design header */}
-                <div style={{
-                  aspectRatio: '16/9', position: 'relative', overflow: 'hidden',
-                  background: product?.thumbnailUrl ? '#f8fafc' : 'linear-gradient(135deg, var(--color-primary) 0%, #01a96b 50%, var(--color-accent) 100%)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  borderBottom: '1px solid var(--color-border-subtle)',
-                }}>
-                  {product?.thumbnailUrl && (
-                    <img
-                      src={product.thumbnailUrl}
-                      alt={title}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    />
-                  )}
-                  {!(product?.thumbnailUrl) && (
+                  return (
+                    <div key={cert.id} className="card animate-fade-in-up" style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                      {/* Certificate design header */}
+                      <div style={{
+                        aspectRatio: '16/9', position: 'relative', overflow: 'hidden',
+                        background: thumb ? '#f8fafc' : 'linear-gradient(135deg, var(--color-primary) 0%, #01a96b 50%, var(--color-accent) 100%)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        borderBottom: '1px solid var(--color-border-subtle)',
+                      }}>
+                        {thumb && (
+                          <img
+                            src={thumb}
+                            alt={title}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          />
+                        )}
+                        {!thumb && (
                     <>
                       <div style={{
                         position: 'absolute', inset: 0,
@@ -224,7 +227,7 @@ export default function CertificatesPage() {
                   <div style={{
                     position: 'absolute', bottom: 8, right: 12,
                     fontSize: '10px', color: 'rgba(255,255,255,0.4)', fontWeight: 700,
-                    textShadow: (product?.thumbnailUrl) ? '0px 1px 3px rgba(0,0,0,0.8)' : 'none'
+                    textShadow: thumb ? '0px 1px 3px rgba(0,0,0,0.8)' : 'none'
                   }}>METRO INSTITUTE</div>
                 </div>
 
