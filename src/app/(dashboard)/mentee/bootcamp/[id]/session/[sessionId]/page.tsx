@@ -404,30 +404,37 @@ export default function BootcampLearningPlayerPage() {
             ) : currentSession.type === 'LIVE' ? (
               <div style={{
                 background: '#ffffff',
-                borderRadius: 16,
+                borderRadius: 20,
                 padding: '24px 28px',
                 border: '1px solid #e2e8f0',
                 boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: 18
+                gap: 16
               }}>
-                {/* Header with clean pill badges */}
+                {/* Header: Badges & Live Join CTA */}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
                     <span style={{
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: 6,
-                      padding: '4px 10px',
-                      borderRadius: 6,
+                      padding: '5px 12px',
+                      borderRadius: 8,
                       background: 'rgba(239, 68, 68, 0.08)',
                       color: '#ef4444',
                       fontSize: '12px',
                       fontWeight: 700,
                       letterSpacing: '0.04em',
                     }}>
-                      <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#ef4444', display: 'inline-block' }} />
+                      <span style={{
+                        width: 7,
+                        height: 7,
+                        borderRadius: '50%',
+                        background: '#ef4444',
+                        display: 'inline-block',
+                        boxShadow: '0 0 0 2px rgba(239, 68, 68, 0.25)'
+                      }} />
                       LIVE SESSION
                     </span>
 
@@ -440,30 +447,74 @@ export default function BootcampLearningPlayerPage() {
                         color: '#64748b',
                         background: '#f8fafc',
                         border: '1px solid #e2e8f0',
-                        padding: '4px 10px',
-                        borderRadius: 6,
+                        padding: '5px 12px',
+                        borderRadius: 8,
                         fontWeight: 600
                       }}>
                         <Calendar size={13} color="#94a3b8" /> {formatSchedule(currentSession.liveScheduledAt)}
                       </span>
                     )}
                   </div>
+
+                  {/* Actions: Join Live button on header right */}
+                  {currentSession.liveUrl ? (
+                    <a
+                      href={currentSession.liveUrl.startsWith('http') ? currentSession.liveUrl : `https://${currentSession.liveUrl}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ textDecoration: 'none' }}
+                    >
+                      <motion.div
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 8,
+                          padding: '9px 20px',
+                          borderRadius: 10,
+                          background: 'var(--color-primary)',
+                          color: '#fff',
+                          fontWeight: 600,
+                          fontSize: '13px',
+                          boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <Video size={15} /> Masuk Ruang Sesi Live <ExternalLink size={13} />
+                      </motion.div>
+                    </a>
+                  ) : (
+                    <div style={{
+                      padding: '6px 14px',
+                      background: '#f8fafc',
+                      borderRadius: 8,
+                      border: '1px solid #e2e8f0',
+                      color: '#64748b',
+                      fontSize: '12.5px',
+                      fontWeight: 500
+                    }}>
+                      Tautan meeting akan aktif saat jadwal sesi dimulai
+                    </div>
+                  )}
                 </div>
 
                 {/* Description Text */}
-                <p style={{
-                  color: '#334155',
-                  fontSize: '14.5px',
-                  lineHeight: 1.75,
-                  margin: 0
-                }}>
-                  {currentSession.description || 'Sesi ini berlangsung secara tatap muka daring melalui Google Meet / Zoom. Pastikan Anda telah bergabung beberapa menit sebelum jadwal dimulai.'}
-                </p>
+                {currentSession.description && (
+                  <p style={{
+                    color: '#475569',
+                    fontSize: '14px',
+                    lineHeight: 1.65,
+                    margin: 0
+                  }}>
+                    {currentSession.description}
+                  </p>
+                )}
 
                 {/* Status Kehadiran Google Meet Otomatis */}
                 {currentSession.attendance ? (
                   <div style={{
-                    padding: '16px 18px',
+                    padding: '14px 18px',
                     borderRadius: 12,
                     background: (currentSession.attendance.status === 'PRESENT' || currentSession.attendance.status === 'MANUAL')
                       ? '#f0fdf4'
@@ -556,69 +607,25 @@ export default function BootcampLearningPlayerPage() {
                   </div>
                 ) : (
                   <div style={{
-                    padding: '14px 18px',
+                    padding: '12px 16px',
                     borderRadius: 12,
                     background: '#f8fafc',
                     border: '1px solid #e2e8f0',
                     display: 'flex',
-                    alignItems: 'flex-start',
+                    alignItems: 'center',
                     gap: 12,
                   }}>
-                    <Clock size={18} color="#64748b" style={{ flexShrink: 0, marginTop: 2 }} />
-                    <div>
-                      <div style={{ fontSize: '13px', fontWeight: 700, color: '#1e293b' }}>
-                        Presensi 100% Otomatis via Google Meet
-                      </div>
-                      <p style={{ margin: '3px 0 0', fontSize: '12.5px', color: '#64748b', lineHeight: 1.5 }}>
-                        Tidak perlu mengisi formulir manual atau presensi chat. Cukup masuk menggunakan email akun yang terdaftar dan ikuti sesi minimal 80% dari durasi ({currentSession.attendanceWindowMin || 72} menit). Data kehadiran akan masuk otomatis setelah sesi selesai.
-                      </p>
+                    <Clock size={16} color="#64748b" style={{ flexShrink: 0 }} />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: '13px', fontWeight: 700, color: '#1e293b' }}>
+                        Presensi 100% Otomatis via Google Meet:
+                      </span>
+                      <span style={{ fontSize: '12.5px', color: '#64748b', lineHeight: 1.4 }}>
+                        Tidak perlu mengisi formulir manual atau presensi chat. Cukup masuk menggunakan email akun yang terdaftar.
+                      </span>
                     </div>
                   </div>
                 )}
-
-                {/* Actions: Join Live button */}
-                <div>
-                  {currentSession.liveUrl ? (
-                    <a
-                      href={currentSession.liveUrl.startsWith('http') ? currentSession.liveUrl : `https://${currentSession.liveUrl}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ textDecoration: 'none', display: 'inline-block' }}
-                    >
-                      <motion.div
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: 8,
-                          padding: '10px 22px',
-                          borderRadius: 'var(--radius-md)',
-                          background: 'var(--color-primary)',
-                          color: '#fff',
-                          fontWeight: 600,
-                          fontSize: '13.5px',
-                          boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        <Video size={16} /> Masuk Ruang Sesi Live <ExternalLink size={14} />
-                      </motion.div>
-                    </a>
-                  ) : (
-                    <div style={{
-                      padding: '12px 18px',
-                      background: '#f8fafc',
-                      borderRadius: 10,
-                      border: '1px solid #e2e8f0',
-                      color: '#64748b',
-                      fontSize: '13px',
-                      fontWeight: 500
-                    }}>
-                      Tautan meeting akan diaktifkan menjelang jadwal sesi dimulai.
-                    </div>
-                  )}
-                </div>
 
                 {/* Video replay if available */}
                 {currentSession.videoUrl && (
