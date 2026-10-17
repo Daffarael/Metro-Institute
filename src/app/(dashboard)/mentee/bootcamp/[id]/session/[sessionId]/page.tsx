@@ -732,13 +732,13 @@ export default function BootcampLearningPlayerPage() {
             ) : (
               <div style={{
                 background: '#ffffff',
-                borderRadius: 16,
+                borderRadius: 20,
                 padding: '24px 28px',
                 border: '1px solid #e2e8f0',
                 boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: 20
+                gap: 16
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -746,8 +746,8 @@ export default function BootcampLearningPlayerPage() {
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: 6,
-                      padding: '4px 10px',
-                      borderRadius: 6,
+                      padding: '5px 12px',
+                      borderRadius: 8,
                       background: 'rgba(16, 185, 129, 0.08)',
                       color: 'var(--color-primary)',
                       fontSize: '12px',
@@ -762,8 +762,8 @@ export default function BootcampLearningPlayerPage() {
                         fontWeight: 600,
                         color: '#64748b',
                         background: '#f1f5f9',
-                        padding: '4px 10px',
-                        borderRadius: 6,
+                        padding: '5px 12px',
+                        borderRadius: 8,
                       }}>
                         {parsedMaterials.length} File Lampiran
                       </span>
@@ -771,54 +771,51 @@ export default function BootcampLearningPlayerPage() {
                   </div>
                 </div>
 
-                {/* Deskripsi / Isi Materi Teks */}
-                {(currentSession.description || currentSession.assignmentDescription) && (
-                  <div>
-                    <div style={{
-                      fontSize: '14.5px',
-                      color: '#334155',
-                      lineHeight: 1.8,
-                      whiteSpace: 'pre-wrap',
-                      background: '#f8fafc',
-                      padding: '20px 24px',
-                      borderRadius: 12,
-                      border: '1px solid #f1f5f9'
-                    }}>
-                      {currentSession.description || currentSession.assignmentDescription}
-                    </div>
-
-                    {/* Jika materi hanya berupa teks tanpa berkas unduhan */}
-                    {parsedMaterials.length === 0 && !isCompleted && !currentSession.isCompleted && (
-                      <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 14 }}>
-                        <motion.button
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                          onClick={() => completeMutation.mutate()}
-                          disabled={completeMutation.isPending}
-                          style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: 6,
-                            padding: '9px 18px',
-                            borderRadius: 'var(--radius-md)',
-                            background: 'var(--color-primary)',
-                            color: '#ffffff',
-                            border: 'none',
-                            fontWeight: 600,
-                            fontSize: '13px',
-                            cursor: 'pointer',
-                            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
-                          }}
-                        >
-                          {completeMutation.isPending ? (
-                            <Loader2 size={15} className="animate-spin" />
-                          ) : (
-                            <>
-                              <CheckCircle2 size={15} /> Selesai Membaca Materi
-                            </>
-                          )}
-                        </motion.button>
-                      </div>
+                {/* Jika materi teks tanpa berkas unduhan lampiran */}
+                {parsedMaterials.length === 0 && (
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: 14,
+                    padding: '16px 20px',
+                    background: '#f8fafc',
+                    borderRadius: 12,
+                    border: '1px solid #e2e8f0'
+                  }}>
+                    <span style={{ fontSize: '13.5px', color: '#64748b' }}>
+                      Silakan pelajari isi modul pada tab <strong>Ringkasan</strong> di bawah.
+                    </span>
+                    {!isCompleted && !currentSession.isCompleted && (
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => completeMutation.mutate()}
+                        disabled={completeMutation.isPending}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          padding: '9px 18px',
+                          borderRadius: 'var(--radius-md)',
+                          background: 'var(--color-primary)',
+                          color: '#ffffff',
+                          border: 'none',
+                          fontWeight: 600,
+                          fontSize: '13px',
+                          cursor: 'pointer',
+                          boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+                        }}
+                      >
+                        {completeMutation.isPending ? (
+                          <Loader2 size={15} className="animate-spin" />
+                        ) : (
+                          <>
+                            <CheckCircle2 size={15} /> Selesai Membaca Materi
+                          </>
+                        )}
+                      </motion.button>
                     )}
                   </div>
                 )}
