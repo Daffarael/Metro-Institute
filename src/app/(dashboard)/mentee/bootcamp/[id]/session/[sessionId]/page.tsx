@@ -499,18 +499,6 @@ export default function BootcampLearningPlayerPage() {
                   )}
                 </div>
 
-                {/* Description Text */}
-                {currentSession.description && (
-                  <p style={{
-                    color: '#475569',
-                    fontSize: '14px',
-                    lineHeight: 1.65,
-                    margin: 0
-                  }}>
-                    {currentSession.description}
-                  </p>
-                )}
-
                 {/* Status Kehadiran Google Meet Otomatis */}
                 {currentSession.attendance ? (
                   <div style={{
