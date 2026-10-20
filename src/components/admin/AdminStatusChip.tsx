@@ -32,14 +32,21 @@ const STATUS_MAP: Record<string, ChipStyle> = {
 }
 
 interface AdminStatusChipProps {
-  status: string
+  status?: string | boolean | null
   label?: string
   size?: 'sm' | 'md'
 }
 
 export default function AdminStatusChip({ status, label, size = 'sm' }: AdminStatusChipProps) {
-  const style = STATUS_MAP[status?.toUpperCase()] ?? { color: '#6B7280', label: status }
-  const displayLabel = label ?? style.label
+  let resolvedStatus = typeof status === 'boolean'
+    ? (status ? 'PUBLISHED' : 'DRAFT')
+    : (status ?? '').toString().toUpperCase()
+
+  if (resolvedStatus === 'TRUE') resolvedStatus = 'PUBLISHED'
+  if (resolvedStatus === 'FALSE') resolvedStatus = 'DRAFT'
+
+  const style = STATUS_MAP[resolvedStatus] ?? { color: '#6B7280', label: resolvedStatus || 'Draft' }
+  const displayLabel = label ?? (style.label || 'Draft')
 
   return (
     <span style={{

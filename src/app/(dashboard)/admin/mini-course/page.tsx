@@ -43,7 +43,7 @@ type CourseForm = z.infer<typeof miniCourseSchema>
 // ─── Types ─────────────────────────────────────────────────
 interface MiniCourse {
   id: string; title: string; field: string; level?: string; price: number
-  accessDays: number; totalDuration: number; status: string
+  accessDays: number; totalDuration: number; status?: string; isPublished?: boolean
   descShort?: string; rating?: number; reviewCount?: number; enrollmentCount?: number
   certificateTemplateId?: string
   thumbnailUrl?: string
@@ -497,7 +497,9 @@ export default function AdminMiniCoursePage() {
                     <td style={{ padding: 'var(--space-3) var(--space-4)', color: 'var(--color-text-secondary)' }}>{c.accessDays > 10000 ? 'Seumur Hidup' : `${c.accessDays} hari`}</td>
                     <td style={{ padding: 'var(--space-3) var(--space-4)', textAlign: 'center', fontWeight: 600 }}>{c._count?.enrollments ?? c.enrollmentCount ?? 0}</td>
                     <td style={{ padding: 'var(--space-3) var(--space-4)', color: 'var(--color-text-secondary)', whiteSpace: 'nowrap' }}>{c.rating != null && c.rating > 0 ? `⭐ ${c.rating.toFixed(1)}${c.reviewCount ? ` (${c.reviewCount})` : ''}` : '—'}</td>
-                    <td style={{ padding: 'var(--space-3) var(--space-4)' }}><AdminStatusChip status={c.status} /></td>
+                    <td style={{ padding: 'var(--space-3) var(--space-4)' }}>
+                      <AdminStatusChip status={c.status ?? (c.isPublished ? 'PUBLISHED' : 'DRAFT')} />
+                    </td>
                     <td style={{ padding: 'var(--space-3) var(--space-4)' }}>
                       <div style={{ display: 'flex', gap: 6, whiteSpace: 'nowrap' }}>
                         <button onClick={() => setModal(c)} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 'var(--radius-md)', background: '#fff', color: '#374151', border: '1px solid #e5e7eb', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', fontSize: '12px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s' }}
