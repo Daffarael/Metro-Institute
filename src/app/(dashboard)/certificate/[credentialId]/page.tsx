@@ -63,8 +63,8 @@ export default function DownloadCertificatePage() {
     )
   }
 
-  const title = data.productType === 'MINI_COURSE' ? data.course?.title : data.bootcamp?.title
-  const template = data.productType === 'MINI_COURSE' ? data.course?.certificateTemplate : data.bootcamp?.certificateTemplate
+  const title = data.productType === 'MINI_COURSE' ? data.course?.title : data.productType === 'BOOTCAMP' ? data.bootcamp?.title : data.webinar?.title
+  const template = data.certificateTemplate || (data.productType === 'MINI_COURSE' ? data.course?.certificateTemplate : data.productType === 'BOOTCAMP' ? data.bootcamp?.certificateTemplate : data.webinar?.certificateTemplate)
 
   const renderContent = (item: any) => {
     if (item.type === 'image') return null;
@@ -182,7 +182,11 @@ export default function DownloadCertificatePage() {
             >
               {item.type === 'image' && item.src ? (
                 <img 
-                  src={item.src} 
+                  src={
+                    item.transparentBg && item.src.includes('/image/upload/') && !item.src.includes('e_make_transparent')
+                      ? item.src.replace('/image/upload/', '/image/upload/e_make_transparent:20/')
+                      : item.src
+                  } 
                   alt={item.label} 
                   style={{ width: item.width || 150, display: 'block', pointerEvents: 'none' }} 
                 />

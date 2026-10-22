@@ -91,8 +91,19 @@ export default function CertificateTemplateEditor() {
     if (!name) return toast.error('Nama template wajib diisi')
     if (!bgImage) return toast.error('URL Gambar Background wajib diisi')
     
+    const sanitizedItems = items.map(item => {
+      if (item.type === 'image' && item.src) {
+        if (item.transparentBg && item.src.includes('/image/upload/') && !item.src.includes('e_make_transparent')) {
+          return { ...item, src: item.src.replace('/image/upload/', '/image/upload/e_make_transparent:20/') }
+        } else if (!item.transparentBg && item.src.includes('e_make_transparent:20/')) {
+          return { ...item, src: item.src.replace('e_make_transparent:20/', '') }
+        }
+      }
+      return item
+    })
+
     saveMutation.mutate({
-      name, type, bgImage, config: items
+      name, type, bgImage, config: sanitizedItems
     })
   }
 
@@ -100,7 +111,15 @@ export default function CertificateTemplateEditor() {
     setItems(prev => prev.map(item => {
       if (item.id === id) {
         const calculatedUpdates = typeof updates === 'function' ? updates(item) : updates;
-        return { ...item, ...calculatedUpdates };
+        const updated = { ...item, ...calculatedUpdates };
+        if (updated.type === 'image' && updated.src) {
+          if (updated.transparentBg && updated.src.includes('/image/upload/') && !updated.src.includes('e_make_transparent')) {
+            updated.src = updated.src.replace('/image/upload/', '/image/upload/e_make_transparent:20/');
+          } else if (!updated.transparentBg && updated.src.includes('e_make_transparent:20/')) {
+            updated.src = updated.src.replace('e_make_transparent:20/', '');
+          }
+        }
+        return updated;
       }
       return item;
     }))
@@ -552,7 +571,11 @@ export default function CertificateTemplateEditor() {
                     }}>
                       {item.type === 'image' && item.src ? (
                         <img 
-                          src={item.src} 
+                          src={
+                            item.transparentBg && item.src.includes('/image/upload/') && !item.src.includes('e_make_transparent')
+                              ? item.src.replace('/image/upload/', '/image/upload/e_make_transparent:20/')
+                              : item.src
+                          } 
                           alt={item.label} 
                           style={{ 
                             width: item.width || 150, 
