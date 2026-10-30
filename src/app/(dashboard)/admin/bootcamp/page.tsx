@@ -35,7 +35,7 @@ const bootcampSchema = z.object({
   purchaseCloseAt: z.string().min(1, 'Wajib diisi'),
   startDate:       z.string().min(1, 'Wajib diisi'),
   endDate:         z.string().min(1, 'Wajib diisi'),
-  status:          z.enum(['DRAFT', 'PUBLISHED', 'OPEN', 'CLOSED']),
+  status:          z.enum(['DRAFT', 'PUBLISHED', 'OPEN', 'ONGOING', 'CLOSED']),
   certificateTemplateId: z.string().optional().nullable(),
   thumbnailUrl:    z.string().optional().nullable(),
 })
@@ -69,8 +69,13 @@ interface BootcampFilters {
 
 const FIELD_OPTS = ['UI_UX', 'FRONTEND', 'BACKEND', 'MOBILE'] as const
 const FIELD_LABELS: Record<string, string> = { UI_UX: 'UI/UX', FRONTEND: 'Frontend', BACKEND: 'Backend', MOBILE: 'Mobile' }
-const STATUS_OPTS = ['DRAFT', 'PUBLISHED', 'OPEN', 'CLOSED'] as const
-const STATUS_NEXT: Record<string, string> = { DRAFT: 'PUBLISHED', PUBLISHED: 'OPEN', OPEN: 'CLOSED', CLOSED: '' }
+const STATUS_OPTIONS = [
+  { value: 'DRAFT', label: 'Draft' },
+  { value: 'PUBLISHED', label: 'Tayang' },
+  { value: 'OPEN', label: 'Buka Beli' },
+  { value: 'ONGOING', label: 'Berjalan' },
+  { value: 'CLOSED', label: 'Tutup Beli' },
+] as const
 
 // ─── Input / Select style helpers ─────────────────────────
 const inputStyle: React.CSSProperties = {
@@ -228,7 +233,7 @@ function BootcampModal({
                   name="status"
                   render={({ field }) => (
                     <CleanCombobox 
-                      options={STATUS_OPTS.map(s => ({ value: s, label: s }))}
+                      options={STATUS_OPTIONS.map(s => ({ value: s.value, label: s.label }))}
                       value={field.value as string} 
                       onChange={field.onChange} 
                       placeholder="Pilih Status"
@@ -448,7 +453,7 @@ export default function AdminBootcampPage() {
           value={filters.status ?? ''}
           onChange={val => setFilters(f => ({ ...f, status: val || undefined, page: 1 }))}
           placeholder="Semua Status"
-          options={STATUS_OPTS.map(s => ({ value: s, label: s }))}
+          options={STATUS_OPTIONS.map(s => ({ value: s.value, label: s.label }))}
           width={180}
         />
       </div>

@@ -6,20 +6,20 @@ interface ChipStyle { color: string; label: string }
 
 const STATUS_MAP: Record<string, ChipStyle> = {
   // BootcampStatus
-  DRAFT:          { color: '#6B7280', label: 'Draft' }, // Gray
+  DRAFT:          { color: '#4B5563', label: 'Draft' }, // Dark Gray
   PUBLISHED:      { color: '#018556', label: 'Tayang' }, // Metro Green
   OPEN:           { color: '#018556', label: 'Buka Beli' }, // Green
-  CLOSED:         { color: '#EF4444', label: 'Tutup Beli' }, // Red
-  ONGOING:        { color: '#10B981', label: 'Berjalan' }, // Emerald
-  COMPLETED:      { color: '#374151', label: 'Selesai' }, // Dark Gray
+  CLOSED:         { color: '#DC2626', label: 'Tutup Beli' }, // Deep Red
+  ONGOING:        { color: '#018556', label: 'Berjalan' }, // Metro Green
+  COMPLETED:      { color: '#1F2937', label: 'Selesai' }, // Deep Slate
   // RegistrationStatus
   ACTIVE:         { color: '#018556', label: 'Aktif' },
   REMOVED:        { color: '#EF4444', label: 'Dikeluarkan' },
   // TxStatus
-  PENDING:        { color: '#F59E0B', label: 'Menunggu' }, // Amber
-  SUCCESS:        { color: '#10B981', label: 'Berhasil' }, // Emerald
-  FAILED:         { color: '#EF4444', label: 'Gagal' },
-  CANCELLED:      { color: '#6B7280', label: 'Dibatalkan' },
+  PENDING:        { color: '#D97706', label: 'Menunggu' }, // Deep Amber
+  SUCCESS:        { color: '#018556', label: 'Berhasil' }, // Metro Green
+  FAILED:         { color: '#DC2626', label: 'Gagal' },
+  CANCELLED:      { color: '#4B5563', label: 'Dibatalkan' },
   REFUNDED:       { color: '#8B5CF6', label: 'Refunded' }, // Purple
   // AttemptStatus
   PENDING_REVIEW: { color: '#F59E0B', label: 'Belum Dinilai' },
