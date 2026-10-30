@@ -221,10 +221,10 @@ export default function CourseLearningPlayerPage() {
             <div style={{
               display: 'flex', alignItems: 'center', gap: 6,
               padding: '6px 14px', background: '#018556',
-              border: '1.5px solid #FAE653',
+              border: 'none',
               color: '#ffffff', borderRadius: 20, fontSize: '12px', fontWeight: 700
             }}>
-              <CheckCircle2 size={15} color="#FAE653" strokeWidth={2.4} /> Selesai
+              <CheckCircle2 size={15} color="#ffffff" /> Selesai
             </div>
           )}
         </div>
@@ -242,7 +242,6 @@ export default function CourseLearningPlayerPage() {
               <div style={{
                 background: '#ffffff',
                 border: '1px solid #e2e8f0',
-                borderLeft: '5px solid #FAE653',
                 borderRadius: 16,
                 padding: '18px 24px',
                 display: 'flex',
@@ -258,14 +257,14 @@ export default function CourseLearningPlayerPage() {
                     height: 44,
                     borderRadius: 12,
                     background: '#018556',
-                    border: '2px solid #FAE653', boxShadow: '0 3px 10px rgba(1, 133, 86, 0.25)',
+                    border: 'none', boxShadow: '0 2px 8px rgba(1, 133, 86, 0.25)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     color: '#ffffff',
                     flexShrink: 0,
                   }}>
-                    <Award size={24} color="#FAE653" strokeWidth={2.4} />
+                    <Award size={22} color="#ffffff" strokeWidth={2.2} />
                   </div>
                   <div>
                     <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a', margin: '0 0 3px', letterSpacing: '-0.01em' }}>
@@ -298,7 +297,7 @@ export default function CourseLearningPlayerPage() {
                       transition: 'background-color 0.15s ease',
                     }}
                   >
-                    <Award size={16} color="#FAE653" /> Klaim & Unduh Sertifikat
+                    <Award size={15} color="#ffffff" /> Klaim & Unduh Sertifikat
                   </motion.div>
                 </Link>
               </div>
@@ -709,12 +708,12 @@ export default function CourseLearningPlayerPage() {
                         borderRadius: 10,
                         background: '#018556',
                         color: '#ffffff',
-                        border: '1.5px solid #FAE653', boxShadow: '0 2px 6px rgba(1, 133, 86, 0.25)',
+                        border: 'none', boxShadow: '0 2px 6px rgba(1, 133, 86, 0.25)',
                         fontWeight: 700,
                         fontSize: '13px'
                       }}
                     >
-                      <CheckCircle2 size={16} color="#FAE653" strokeWidth={2.4} /> Selesai ✓
+                      <CheckCircle2 size={16} color="#ffffff" /> Selesai ✓
                     </div>
                   ) : currentSession.type === 'VIDEO' ? (
                     playedRatio >= 0.9 ? (
@@ -1067,12 +1066,12 @@ export default function CourseLearningPlayerPage() {
                             style={{
                               display: 'flex', alignItems: 'flex-start', gap: 12,
                               padding: '12px 16px', textDecoration: 'none',
-                              background: isActive ? '#ffffff' : 'transparent', borderRadius: 12, marginBottom: 4, border: isActive ? '1.5px solid #018556' : '1px solid transparent', borderLeft: isActive ? '4px solid #FAE653' : '1px solid transparent', boxShadow: isActive ? '0 2px 6px rgba(0, 0, 0, 0.04)' : 'none', transition: 'all 0.2s' }} onMouseEnter={(e) => { if(!isActive) e.currentTarget.style.background = '#f8fafc' }} onMouseLeave={(e) => { if(!isActive) e.currentTarget.style.background = 'transparent' }}
+                              background: isActive ? '#ffffff' : 'transparent', borderRadius: 12, marginBottom: 4, border: isActive ? '1.5px solid var(--color-primary)' : '1px solid transparent', boxShadow: isActive ? '0 2px 6px rgba(0, 0, 0, 0.04)' : 'none', transition: 'all 0.2s' }} onMouseEnter={(e) => { if(!isActive) e.currentTarget.style.background = '#f8fafc' }} onMouseLeave={(e) => { if(!isActive) e.currentTarget.style.background = 'transparent' }}
                           >
                             <div style={{ marginTop: 2 }}>
                               {sess.isCompleted
-                                ? <CheckCircle2 size={18} color="#018556" fill={isActive ? "#FAE653" : "transparent"} />
-                                : <PlayCircle size={18} color={isActive ? '#018556' : '#cbd5e1'} fill={isActive ? '#FAE653' : 'transparent'} />
+                                ? <CheckCircle2 size={18} color="var(--color-primary)" />
+                                : <PlayCircle size={18} color={isActive ? 'var(--color-primary)' : '#cbd5e1'} />
                               }
                             </div>
                             <div style={{ flex: 1 }}>
@@ -1217,14 +1216,14 @@ function InteractiveQuiz({
             width: 48,
             height: 48,
             borderRadius: 12,
-            background: '#018556', border: '2px solid #FAE653', boxShadow: '0 3px 10px rgba(1, 133, 86, 0.25)',
+            background: 'var(--color-primary)', boxShadow: '0 2px 8px rgba(1, 133, 86, 0.25)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             marginBottom: 14,
           }}
         >
-          <HelpCircle size={24} color="#FAE653" strokeWidth={2.2} />
+          <HelpCircle size={24} color="#ffffff" strokeWidth={1.8} />
         </div>
         <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', marginBottom: 4, letterSpacing: '-0.01em' }}>
           Kuis: {title}
@@ -1375,7 +1374,7 @@ function InteractiveQuiz({
             width: 48,
             height: 48,
             borderRadius: 12,
-            background: '#018556', border: '2px solid #FAE653', boxShadow: '0 3px 10px rgba(1, 133, 86, 0.25)',
+            background: 'var(--color-primary)', boxShadow: '0 2px 8px rgba(1, 133, 86, 0.25)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
