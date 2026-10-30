@@ -1,8 +1,9 @@
 'use client'
 
+import { useState, useRef, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { useQuery } from '@tanstack/react-query'
-import { PlaySquare, Flame, CheckCircle2, Circle, ArrowRight, Calendar, PlayCircle, Clock, Trophy, ChevronRight, Search, Zap, Code, Layout, Smartphone, Star, MessageCircle, GraduationCap } from 'lucide-react'
+import { PlaySquare, Flame, CheckCircle2, Circle, ArrowRight, Calendar, PlayCircle, Clock, Trophy, ChevronRight, ChevronLeft, Search, Zap, Code, Layout, Smartphone, Star, MessageCircle, GraduationCap } from 'lucide-react'
 import api from '@/lib/axios'
 import { useAuthStore } from '@/stores/auth.store'
 import { ROUTES, formatRupiah, formatDate, BADGE_LABELS } from '@/lib/utils'
@@ -47,12 +48,66 @@ const BADGE_XP: Record<string, number> = {
 
 export default function BasecampPage() {
   const { user } = useAuthStore()
+  const activeCoursesRef = useRef<HTMLDivElement>(null)
+  const [canScrollLeft, setCanScrollLeft] = useState(false)
+  const [canScrollRight, setCanScrollRight] = useState(false)
+  const isDownRef = useRef(false)
+  const startXRef = useRef(0)
+  const scrollLeftStartRef = useRef(0)
+  const isDraggingRef = useRef(false)
+
+  const updateScrollButtons = useCallback(() => {
+    if (!activeCoursesRef.current) return
+    const { scrollLeft, scrollWidth, clientWidth } = activeCoursesRef.current
+    setCanScrollLeft(scrollLeft > 10)
+    setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 10)
+  }, [])
+
+  const scrollActiveCourses = (direction: 'left' | 'right') => {
+    if (!activeCoursesRef.current) return
+    const offset = direction === 'left' ? -320 : 320
+    activeCoursesRef.current.scrollBy({ left: offset, behavior: 'smooth' })
+    setTimeout(updateScrollButtons, 350)
+  }
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!activeCoursesRef.current) return
+    isDownRef.current = true
+    isDraggingRef.current = false
+    startXRef.current = e.pageX - activeCoursesRef.current.offsetLeft
+    scrollLeftStartRef.current = activeCoursesRef.current.scrollLeft
+  }
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDownRef.current || !activeCoursesRef.current) return
+    e.preventDefault()
+    const x = e.pageX - activeCoursesRef.current.offsetLeft
+    const walk = (x - startXRef.current) * 1.5
+    if (Math.abs(walk) > 5) {
+      isDraggingRef.current = true
+    }
+    activeCoursesRef.current.scrollLeft = scrollLeftStartRef.current - walk
+    updateScrollButtons()
+  }
+
+  const handleMouseUpOrLeave = () => {
+    isDownRef.current = false
+    setTimeout(() => {
+      isDraggingRef.current = false
+    }, 60)
+  }
 
   const { data, isLoading } = useQuery<BasecampData>({
     queryKey: ['basecamp'],
     queryFn: () => api.get('/users/basecamp').then((r) => r.data.data),
     enabled: !!user,
   })
+
+  useEffect(() => {
+    updateScrollButtons()
+    window.addEventListener('resize', updateScrollButtons)
+    return () => window.removeEventListener('resize', updateScrollButtons)
+  }, [updateScrollButtons, data?.activeCourses])
 
   if (isLoading) return <BasecampSkeleton />
 
@@ -217,16 +272,83 @@ export default function BasecampPage() {
             <div className="card" style={{ padding: 0, overflow: 'hidden', boxShadow: '0 1px 2px rgba(0,0,0,0.03)', border: '1px solid var(--color-border-subtle)' }}>
               <div style={{ padding: 'var(--space-4) var(--space-5)', borderBottom: '1px solid var(--color-border-subtle)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-primary)' }}>Kelas Aktif</span>
-                <Link href={ROUTES.MY_COURSES} style={{ fontSize: '12px', color: 'var(--color-primary)', fontWeight: 500, display: 'flex', alignItems: 'center', gap: 4, textDecoration: 'none' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <Link href={ROUTES.MY_COURSES} style={{ fontSize: '12px', color: 'var(--color-primary)', fontWeight: 500, display: 'flex', alignItems: 'center', gap: 4, textDecoration: 'none' }}>
                   Lihat semua <ArrowRight size={12} />
                 </Link>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <button
+                      type="button"
+                      onClick={() => scrollActiveCourses('left')}
+                      disabled={!canScrollLeft}
+                      title="Geser ke kiri"
+                      style={{
+                        width: 28, height: 28, borderRadius: 8,
+                        border: '1px solid var(--color-border)',
+                        background: '#ffffff',
+                        color: canScrollLeft ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        cursor: canScrollLeft ? 'pointer' : 'not-allowed',
+                        opacity: canScrollLeft ? 1 : 0.35,
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      <ChevronLeft size={15} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => scrollActiveCourses('right')}
+                      disabled={!canScrollRight}
+                      title="Geser ke kanan"
+                      style={{
+                        width: 28, height: 28, borderRadius: 8,
+                        border: '1px solid var(--color-border)',
+                        background: '#ffffff',
+                        color: canScrollRight ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        cursor: canScrollRight ? 'pointer' : 'not-allowed',
+                        opacity: canScrollRight ? 1 : 0.35,
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      <ChevronRight size={15} />
+                    </button>
+                  </div>
+                </div>
               </div>
-              <div className="course-list-mobile hide-scrollbar" style={{ display: 'flex', gap: 'var(--space-4)', overflowX: 'auto', padding: 'var(--space-4) var(--space-5)' }}>
+              <div
+                ref={activeCoursesRef}
+                onScroll={updateScrollButtons}
+                onWheel={(e) => {
+                  if (e.deltaY !== 0 && activeCoursesRef.current) {
+                    activeCoursesRef.current.scrollLeft += e.deltaY * 0.9
+                    updateScrollButtons()
+                  }
+                }}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUpOrLeave}
+                onMouseLeave={handleMouseUpOrLeave}
+                className="course-list-mobile hide-scrollbar"
+                style={{
+                  display: 'flex',
+                  gap: 'var(--space-4)',
+                  overflowX: 'auto',
+                  padding: 'var(--space-4) var(--space-5)',
+                  cursor: isDownRef.current ? 'grabbing' : 'grab',
+                  userSelect: 'none',
+                  WebkitOverflowScrolling: 'touch',
+                  scrollBehavior: isDownRef.current ? 'auto' : 'smooth',
+                }}
+              >
                 {data.activeCourses.map((course) => (
                   <Link
                     key={course.id}
                     href={course.type === 'bootcamp' ? ROUTES.LEARN_BOOTCAMP(course.id) : ROUTES.LEARN_COURSE(course.id)}
                     className="course-card-mobile"
+                    onClick={(e) => {
+                      if (isDraggingRef.current) e.preventDefault()
+                    }}
                     style={{ textDecoration: 'none', flexShrink: 0, width: 220 }}
                   >
                     <div style={{ border: '1px solid var(--color-border-subtle)', borderRadius: 'var(--radius-lg)', overflow: 'hidden', transition: 'box-shadow 0.2s ease' }}
@@ -235,7 +357,7 @@ export default function BasecampPage() {
                     >
                       <div style={{ height: 100, background: 'var(--color-bg)', borderBottom: '1px solid var(--color-border-subtle)', position: 'relative', flexShrink: 0 }}>
                         {course.thumbnail
-                          ? <img src={course.thumbnail} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          ? <img src={course.thumbnail} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} draggable={false} />
                           : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                               <PlaySquare size={24} color="var(--color-border)" />
                             </div>
