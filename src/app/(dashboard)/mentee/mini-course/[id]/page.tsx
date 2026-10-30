@@ -210,19 +210,7 @@ export default function CourseDetailPage() {
             </div>
           </div>
 
-          {/* Thumbnail (left side, mobile visible) */}
-          <div style={{
-            aspectRatio: '16/9', borderRadius: 12,
-            border: '1px solid var(--color-border-subtle)',
-            marginBottom: 36, overflow: 'hidden',
-            background: 'var(--color-bg)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            {course.thumbnailUrl
-              ? <img src={course.thumbnailUrl} alt={course.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              : <BookOpen size={48} color="var(--color-border)" strokeWidth={1} />
-            }
-          </div>
+          
 
           {/* About */}
           <CardTabs
