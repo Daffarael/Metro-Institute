@@ -755,8 +755,8 @@ export default function AdminWebinarsPage() {
 
                   {/* Speaker */}
                   <td style={{ padding: '14px 18px', maxWidth: 220 }}>
-                    <div style={{ fontWeight: 600, color: 'var(--color-text-primary)', fontSize: '13px', display: 'flex', alignItems: 'center', gap: 5 }}>
-                      <span style={{ fontSize: '14px' }}>🎙️</span> {w.speakerName}
+                    <div style={{ fontWeight: 600, color: 'var(--color-text-primary)', fontSize: '13px' }}>
+                      {w.speakerName}
                     </div>
                     {w.speakerRole && (
                       <div style={{ fontSize: '12px', color: 'var(--color-text-tertiary)', marginTop: 2 }}>
@@ -817,13 +817,15 @@ export default function AdminWebinarsPage() {
                         style={{
                           display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px',
                           borderRadius: 'var(--radius-md)',
-                          border: w.isEnded ? '1px solid #e5e7eb' : '1px solid rgba(16, 185, 129, 0.3)',
-                          background: w.isEnded ? '#f3f4f6' : 'rgba(16, 185, 129, 0.08)',
+                          border: '1px solid #e5e7eb',
+                          background: '#fff',
                           boxShadow: '0 1px 2px rgba(0,0,0,0.05)', fontSize: '12px', fontWeight: 600,
                           cursor: 'pointer',
-                          color: w.isEnded ? '#6b7280' : 'var(--color-primary)',
+                          color: w.isEnded ? '#6b7280' : '#374151',
                           transition: 'all 0.15s',
                         }}
+                        onMouseEnter={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.color = 'var(--color-primary)' }}
+                        onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = w.isEnded ? '#6b7280' : '#374151' }}
                       >
                         <CheckCircle2 size={12} /> {w.isEnded ? 'Selesai' : 'Akhiri Sesi'}
                       </button>
