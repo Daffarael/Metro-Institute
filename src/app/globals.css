@@ -150,7 +150,7 @@ input, textarea, select {
 .dashboard-content {
   grid-column: 2;
   padding: var(--space-6);
-  overflow-x: hidden;
+  overflow-x: auto;
 }
 
 /* Auth layout */
@@ -964,6 +964,7 @@ input[type="number"] {
   grid-column: 2;
   padding: var(--space-6) var(--space-7);
   overflow-y: auto;
+  overflow-x: auto;
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -1232,6 +1233,11 @@ input[type="number"] {
 .basecamp-grid {
   grid-template-columns: 1fr 300px;
 }
+@media (max-width: 1080px) {
+  .basecamp-grid {
+    grid-template-columns: 1fr;
+  }
+}
 .detail-layout-grid {
   grid-template-columns: 1fr 320px;
 }
@@ -1299,13 +1305,30 @@ input[type="number"] {
   }
   
   .course-list-mobile {
-    flex-direction: column !important;
-    overflow-x: hidden !important;
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto !important;
   }
   .course-card-mobile {
-    width: 100% !important;
+    flex-shrink: 0 !important;
+    width: 220px !important;
   }
   .homepage-manager-sidebar {
     position: static;
   }
+}
+
+.course-list-mobile::-webkit-scrollbar {
+  height: 5px;
+}
+.course-list-mobile::-webkit-scrollbar-track {
+  background: var(--color-bg);
+  border-radius: 4px;
+}
+.course-list-mobile::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+.course-list-mobile::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-tertiary);
 }

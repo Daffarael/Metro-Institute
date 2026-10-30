@@ -192,11 +192,11 @@ export default function BasecampPage() {
                     <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 100%)' }} />
                   </div>
                   <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                    <div style={{ maxWidth: '70%' }}>
+                    <div style={{ flex: 1, minWidth: 0, paddingRight: 'var(--space-4)' }}>
                       <div style={{ fontSize: '11px', fontWeight: 600, color: 'rgba(255,255,255,0.6)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                         {data.continueLearning.sessionTitle}
                       </div>
-                      <h3 style={{ fontSize: 'var(--text-lg)', fontWeight: 700, color: 'white', lineHeight: 1.3 }}>
+                      <h3 style={{ fontSize: 'var(--text-lg)', fontWeight: 700, color: 'white', lineHeight: 1.3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {data.continueLearning.title}
                       </h3>
                     </div>
@@ -316,8 +316,83 @@ export default function BasecampPage() {
                   </div>
                 </div>
               </div>
-              <div
-                ref={activeCoursesRef}
+              <div style={{ position: 'relative' }}>
+                {canScrollLeft && (
+                  <button
+                    type="button"
+                    onClick={() => scrollActiveCourses('left')}
+                    aria-label="Geser ke kiri"
+                    style={{
+                      position: 'absolute',
+                      left: 10,
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      zIndex: 20,
+                      width: 36,
+                      height: 36,
+                      borderRadius: '50%',
+                      background: 'rgba(255, 255, 255, 0.95)',
+                      border: '1px solid var(--color-border)',
+                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      color: 'var(--color-text-primary)',
+                      transition: 'all 0.2s ease',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'translateY(-50%) scale(1.1)'
+                      e.currentTarget.style.background = '#ffffff'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'translateY(-50%) scale(1)'
+                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.95)'
+                    }}
+                  >
+                    <ChevronLeft size={20} />
+                  </button>
+                )}
+
+                {canScrollRight && (
+                  <button
+                    type="button"
+                    onClick={() => scrollActiveCourses('right')}
+                    aria-label="Geser ke kanan"
+                    style={{
+                      position: 'absolute',
+                      right: 10,
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      zIndex: 20,
+                      width: 36,
+                      height: 36,
+                      borderRadius: '50%',
+                      background: 'rgba(255, 255, 255, 0.95)',
+                      border: '1px solid var(--color-border)',
+                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      color: 'var(--color-text-primary)',
+                      transition: 'all 0.2s ease',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'translateY(-50%) scale(1.1)'
+                      e.currentTarget.style.background = '#ffffff'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'translateY(-50%) scale(1)'
+                      e.currentTarget.style.background = 'rgba(255, 255, 255, 0.95)'
+                    }}
+                  >
+                    <ChevronRight size={20} />
+                  </button>
+                )}
+
+                <div
+                  ref={activeCoursesRef}
                 onScroll={updateScrollButtons}
                 onWheel={(e) => {
                   if (e.deltaY !== 0 && activeCoursesRef.current) {
@@ -329,7 +404,7 @@ export default function BasecampPage() {
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUpOrLeave}
                 onMouseLeave={handleMouseUpOrLeave}
-                className="course-list-mobile hide-scrollbar"
+                className="course-list-mobile"
                 style={{
                   display: 'flex',
                   gap: 'var(--space-4)',
@@ -380,6 +455,7 @@ export default function BasecampPage() {
                     </div>
                   </Link>
                 ))}
+                </div>
               </div>
             </div>
           )}
