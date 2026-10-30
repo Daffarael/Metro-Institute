@@ -7,19 +7,19 @@ import { ArrowRight } from "lucide-react";
 export const INTERACTIVE_LINKS = [
   {
     heading: "Bootcamp",
-    subheading: "Program intensif siap kerja dengan jaminan karir.",
+    subheading: "Program komprehensif 12 minggu siap kerja dari nol.",
     imgSrc: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=800",
     href: "/login",
   },
   {
     heading: "Mini Course",
-    subheading: "Pelatihan singkat untuk kuasai skill spesifik.",
+    subheading: "Kuasai skill teknologi spesifik dalam waktu singkat.",
     imgSrc: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&q=80&w=800",
     href: "/login",
   },
   {
-    heading: "Webinar",
-    subheading: "Wawasan industri eksklusif dari praktisi ahli.",
+    heading: "Webinar & Workshop",
+    subheading: "Sesi live interaktif langsung bersama praktisi top industri.",
     imgSrc: "https://images.unsplash.com/photo-1540317580384-e5d43616b9aa?auto=format&fit=crop&q=80&w=800",
     href: "/login",
   },
@@ -33,8 +33,8 @@ interface InteractiveHoverLinksProps {
 
 export function InteractiveHoverLinks({
   links = INTERACTIVE_LINKS,
-  title = 'Eksplorasi Layanan',
-  subtitle = 'Pilih jalur akselerasi karir yang paling sesuai dengan kebutuhanmu.',
+  title = 'Eksplorasi Layanan Kami',
+  subtitle = 'Pilih jalur akselerasi karir yang paling pas dengan gaya dan kebutuhan belajarmu.',
 }: InteractiveHoverLinksProps) {
   return (
     <section className="bg-background py-16 px-4 md:px-8 w-full border-t border-gray-100">
@@ -100,7 +100,7 @@ function HoverLink({ heading, imgSrc, subheading, href }: LinkProps) {
       }}
       initial="initial"
       whileHover="whileHover"
-      className="group relative flex items-center justify-between border-b border-gray-200 py-6 transition-colors duration-500 hover:border-black md:py-8"
+      className="group relative flex items-center justify-between border-b border-gray-200 py-6 transition-colors duration-500 hover:border-[#03764F] md:py-8"
     >
       <div>
         <motion.span
@@ -113,7 +113,7 @@ function HoverLink({ heading, imgSrc, subheading, href }: LinkProps) {
             staggerChildren: 0.075,
             delayChildren: 0.25,
           }}
-          className="relative z-10 block text-3xl font-bold text-gray-400 transition-colors duration-500 group-hover:text-black md:text-5xl"
+          className="relative z-10 block text-3xl font-bold text-gray-400 transition-colors duration-500 group-hover:text-[#03764F] md:text-5xl"
         >
           {heading.split("").map((l, i) => (
             <motion.span
@@ -168,7 +168,7 @@ function HoverLink({ heading, imgSrc, subheading, href }: LinkProps) {
           transition={{ type: "spring" }}
           className="relative z-10 p-2 md:p-4"
         >
-          <ArrowRight className="size-6 text-black md:size-10" />
+          <ArrowRight className="size-6 text-[#03764F] md:size-10" />
         </motion.div>
       </div>
     </motion.a>

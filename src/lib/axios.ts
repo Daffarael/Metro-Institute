@@ -37,7 +37,16 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // Never attempt token refresh on auth endpoints (login, register, refresh, password reset)
+    const url = originalRequest?.url || ''
+    const isAuthRoute =
+      url.includes('/auth/login') ||
+      url.includes('/auth/register') ||
+      url.includes('/auth/refresh') ||
+      url.includes('/auth/forgot-password') ||
+      url.includes('/auth/reset-password')
+
+    if (error.response?.status === 401 && !originalRequest._retry && !isAuthRoute) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject })
@@ -65,7 +74,12 @@ api.interceptors.response.use(
       } catch (refreshError) {
         processQueue(refreshError, null)
         sessionStorage.removeItem('metro_access_token')
-        if (typeof window !== 'undefined') {
+        localStorage.removeItem('metro_access_token')
+        if (
+          typeof window !== 'undefined' &&
+          !window.location.pathname.startsWith('/login') &&
+          !window.location.pathname.startsWith('/register')
+        ) {
           window.location.href = '/login'
         }
         return Promise.reject(refreshError)

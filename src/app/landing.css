@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+.font-outfit {
+  font-family: var(--font-outfit), 'Outfit', sans-serif !important;
+}
+
 @theme {
   --animate-float: float 6s ease-in-out infinite;
   

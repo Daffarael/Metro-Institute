@@ -155,7 +155,7 @@ export function AnimatedNavFramer({ items = DEFAULT_NAV_ITEMS }: { items?: NavIt
       </div>
 
       {/* Actual nav */}
-      <div className="fixed top-6 inset-x-0 z-50 flex justify-center pointer-events-none">
+      <div className="fixed top-7 sm:top-8 inset-x-0 z-50 flex justify-center pointer-events-none">
         <div className="pointer-events-auto flex flex-col items-center">
           <AnimatePresence mode="wait">
             {/* ── Desktop: full animated pill ──────────────────────── */}
@@ -170,7 +170,7 @@ export function AnimatedNavFramer({ items = DEFAULT_NAV_ITEMS }: { items?: NavIt
               whileTap={!isExpanded ? { scale: 0.95 } : {}}
               onClick={handleNavClick}
               className={cn(
-                "flex items-center rounded-full border border-gray-200/50 bg-white/90 shadow-lg shadow-gray-200/50 backdrop-blur-md h-14",
+                "flex items-center rounded-full border border-gray-100 bg-white shadow-xl shadow-black/10 h-14",
                 // overflow-hidden only when collapsed — when expanded, let nav take its natural width
                 !isExpanded && "overflow-hidden cursor-pointer justify-center"
               )}
@@ -180,7 +180,6 @@ export function AnimatedNavFramer({ items = DEFAULT_NAV_ITEMS }: { items?: NavIt
                   src="/logo-metro-clean.png"
                   alt="Metro Institute"
                   className="h-10 w-auto"
-                  style={{ filter: "brightness(0) saturate(100%) invert(14%) sepia(12%) saturate(2135%) hue-rotate(192deg) brightness(95%) contrast(90%)" }}
                 />
               </motion.div>
 
@@ -196,8 +195,8 @@ export function AnimatedNavFramer({ items = DEFAULT_NAV_ITEMS }: { items?: NavIt
                     className={cn(
                       "text-[11px] font-bold tracking-[0.2em] uppercase transition-all whitespace-nowrap",
                       item.isHighlighted
-                        ? "ml-4 bg-[#22222E] text-white hover:bg-[#16161F] px-5 py-2.5 rounded-full shadow-md shadow-[#22222E]/20"
-                        : "px-2 py-1 text-gray-600 hover:text-gray-900"
+                        ? "ml-4 bg-[#03764F] text-white hover:bg-[#025a3c] px-5 py-2.5 rounded-full shadow-md shadow-[#03764F]/25 border border-[#03764F]"
+                        : "px-2 py-1 text-gray-600 hover:text-[#03764F]"
                     )}
                   >
                     {item.name}
@@ -233,7 +232,6 @@ export function AnimatedNavFramer({ items = DEFAULT_NAV_ITEMS }: { items?: NavIt
                   src="/logo-metro-clean.png"
                   alt="Metro Institute"
                   className="h-6 w-auto flex-shrink-0 object-contain"
-                  style={{ filter: "brightness(0) saturate(100%) invert(14%) sepia(12%) saturate(2135%) hue-rotate(192deg) brightness(95%) contrast(90%)" }}
                 />
                 <div className="w-px h-4 bg-gray-200 flex-shrink-0" />
                 <MenuToggle
@@ -265,8 +263,8 @@ export function AnimatedNavFramer({ items = DEFAULT_NAV_ITEMS }: { items?: NavIt
                         className={cn(
                           "flex items-center px-5 py-3.5 text-[12px] font-bold tracking-[0.15em] uppercase transition-colors border-b border-gray-100 last:border-0",
                           item.isHighlighted
-                            ? "text-white bg-[#22222E] hover:bg-[#16161F]"
-                            : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                            ? "text-white bg-[#03764F] hover:bg-[#025a3c]"
+                            : "text-gray-600 hover:bg-emerald-50 hover:text-[#03764F]"
                         )}
                       >
                         {item.name}

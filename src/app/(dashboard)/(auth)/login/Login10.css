@@ -1,6 +1,6 @@
 .login-10 {
-  background: radial-gradient(circle at 50% 0%, #ffffff 0%, #f3f4f6 60%, #e5e7eb 100%);
-  color: #212625;
+  background: radial-gradient(circle at 50% 10%, #F0FDF4 0%, #F7F7F9 55%, #E6EFEA 100%);
+  color: #063D2A;
   overflow: hidden;
   font-family: inherit;
   display: flex;
@@ -23,12 +23,12 @@
 .login-10 .card {
   position: relative;
   overflow: hidden;
-  width: 720px;
+  width: 760px;
   height: 640px;
   border-radius: 32px;
   background: #ffffff;
-  border: 6px solid #ffffff;
-  box-shadow: 0 24px 80px -12px rgba(34, 34, 46, 0.15), 0 0 40px rgba(34, 34, 46, 0.05);
+  border: 1px solid rgba(6, 61, 42, 0.08);
+  box-shadow: 0 24px 60px -12px rgba(6, 61, 42, 0.16), 0 8px 24px -4px rgba(0, 0, 0, 0.05);
 }
 
 .login-10 .card-bg {
@@ -44,6 +44,7 @@
   border-radius: 26px;
   transform: translateX(100%);
   transition: transform 0.75s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
 }
 
 .login-10 .card-bg::after {
@@ -56,13 +57,14 @@
 }
 
 .login-10 .card-bg[style*="url"]::after {
-  background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.5) 100%);
+  background: linear-gradient(180deg, rgba(6,61,42,0.3) 0%, rgba(6,61,42,0.8) 100%);
   opacity: 1;
 }
 
-/* Default: latar navy Metro Institute */
+/* Default: Latar Hijau Zamrud Metro Institute (#063D2A) */
 .login-10 .card-bg:not([style*="url"]) {
-  background: radial-gradient(circle at top right, #303046 0%, #22222E 40%, #16161F 100%) !important;
+  background-color: #063D2A !important;
+  background-image: radial-gradient(circle at 80% 20%, #0F4432 0%, #063D2A 60%, #042C1E 100%) !important;
 }
 
 .login-10 .card.register .card-bg {
@@ -156,55 +158,41 @@
   gap: 12px;
   color: #ffffff !important;
   text-align: center;
-  padding: 0 28px;
+  padding: 0 32px;
 }
 
 .login-10 .hero-logo {
-  height: 72px;
+  height: 60px;
   width: auto;
   object-fit: contain;
-  margin-bottom: 24px;
-  filter: invert(1) grayscale(1) brightness(2);
-  mix-blend-mode: screen;
-  opacity: 0.95;
+  margin-bottom: 20px;
+  filter: none;
+  mix-blend-mode: normal;
+  opacity: 1;
 }
 
 .login-10 .card h2 {
   margin: 0;
-  font-size: 22px;
-  font-weight: 700;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
 }
 
 .login-10 .hero h2 {
   color: #ffffff !important;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.25);
 }
 
 .login-10 .hero p {
-  margin: 0 0 6px;
-  opacity: 0.95;
-  line-height: 1.45;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.3);
-  color: #ffffff !important;
+  margin: 0 0 10px;
+  color: #CFE5D9 !important;
+  line-height: 1.5;
+  font-size: 14px;
+  max-width: 280px;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.2);
 }
 
-.login-10 .hero .switch {
-  padding: 12px 46px;
-  border-radius: 99px;
-  font-family: inherit;
-  font-size: 16px;
-  font-weight: 600;
-  color: #22222E;
-  border: none;
-  background: #ffffff;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.login-10 .hero .switch:hover {
-  background: #f0f0f0;
-}
+/* .login-10 .hero .switch is now handled by PopButton component */
 
 /* ---------- form ---------- */
 
@@ -215,17 +203,18 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 8px;
-  padding: 20px 32px;
+  gap: 10px;
+  padding: 24px 36px;
   height: 100%;
 }
 
 .login-10 .form h2 {
-  font-size: 24px;
-  font-weight: 700;
+  font-size: 26px;
+  font-weight: 800;
   text-align: center;
   margin-bottom: 2px;
-  text-shadow: none;
+  color: #063D2A;
+  letter-spacing: -0.02em;
 }
 
 .login-10 .form form {
@@ -244,32 +233,36 @@
 }
 
 .login-10 .form label {
-  font-size: 13px;
-  font-weight: 600;
-  color: #2a2e35;
+  font-size: 11px;
+  font-weight: 700;
+  color: #063D2A;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   margin-bottom: 2px;
 }
 
 .login-10 .form input:not([type="checkbox"]) {
   width: 100%;
   height: 44px;
-  border: 0;
+  border: 1.5px solid #E5E7EB;
   border-radius: 12px;
-  background: #eef0f5;
+  background: #F7F7F9;
   padding: 0 16px;
   font-family: inherit;
   font-size: 14px;
-  color: inherit;
+  color: #111827;
   outline: none;
-  transition: 0.2s;
+  transition: all 0.2s ease;
 }
 
 .login-10 .form input:not([type="checkbox"]):focus {
-  box-shadow: 0 0 0 2px var(--color-primary);
+  border-color: #03764F;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(3, 118, 79, 0.18);
 }
 
 .login-10 .form input::placeholder {
-  color: #a6acb8;
+  color: #9CA3AF;
 }
 
 .login-10 .password-field {
@@ -292,21 +285,21 @@
   height: 28px;
   border: 0;
   background: transparent;
-  color: #8b909a;
+  color: #9CA3AF;
   cursor: pointer;
   padding: 0;
   transition: 0.2s;
 }
 
 .login-10 .eye:hover {
-  color: #212625;
+  color: #063D2A;
 }
 
 .login-10 .remember-forgot {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 6px 0;
+  margin: 4px 0;
   font-size: 13px;
 }
 
@@ -314,59 +307,40 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #5b6169;
+  color: #4B5563;
   cursor: pointer;
   margin: 0;
+  font-weight: 500;
 }
 
 .login-10 .remember input {
   width: 16px;
   height: 16px;
-  accent-color: #22222E;
+  accent-color: #03764F;
   cursor: pointer;
   margin: 0;
 }
 
 .login-10 .forgot {
-  color: #22222E;
+  color: #03764F;
   font-weight: 600;
   font-size: 13px;
   cursor: pointer;
+  transition: color 0.2s;
 }
 
 .login-10 .forgot:hover {
+  color: #063D2A;
   text-decoration: underline;
 }
 
-.login-10 .form button[type="submit"] {
-  height: 44px;
-  width: 100%;
-  margin-top: 0;
-  border: 0;
-  background: #22222E;
-  border-radius: 12px;
-  color: #ffffff;
-  font-family: inherit;
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.login-10 .form button[type="submit"]:hover {
-  background: #16161F;
-}
-
-.login-10 .form button[type="submit"]:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
+/* .login-10 .form button[type="submit"] is now handled by PopButton component */
 
 .login-10 .or {
   text-align: center;
-  color: #9aa0ab;
-  font-size: 13px;
+  color: #9CA3AF;
+  font-size: 12px;
+  font-weight: 500;
   margin: 6px 0;
 }
 
@@ -380,31 +354,31 @@
   display: grid;
   place-items: center;
   width: 56px;
-  height: 46px;
+  height: 44px;
   padding: 0;
-  border: 0;
-  border-radius: 14px;
-  background: #eef0f5;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 12px;
+  background: #ffffff;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
 }
 
 .login-10 .social-btn:hover {
-  background: #e3e6ee;
-}
-
-.login-10 .social-btn svg {
-  height: 20px;
-  width: 20px;
+  background: #F9FAFB;
+  border-color: #D1D5DB;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
 }
 
 .login-10 .error-text {
-  color: #ef4444;
+  color: #DC2626;
   font-size: 11px;
   min-height: 12px;
   line-height: 12px;
   white-space: pre-wrap;
   margin-top: 0;
+  font-weight: 500;
 }
 
 .login-10 .mobile-switch {
@@ -420,6 +394,7 @@
   .login-10 {
     align-items: flex-start;
     overflow-y: auto;
+    background: #ffffff;
   }
 
   .login-10 .card {
@@ -448,7 +423,7 @@
     visibility: visible !important;
     height: auto !important;
     min-height: 100dvh;
-    padding: 48px 28px 40px;
+    padding: 68px 24px 40px;
     gap: 12px;
   }
 
@@ -474,12 +449,12 @@
     text-align: center;
     margin-top: 16px;
     font-size: 14px;
-    color: #5b6169;
+    color: #4B5563;
   }
 
   .login-10 .mobile-switch span {
-    color: #22222E;
-    font-weight: 600;
+    color: #03764F;
+    font-weight: 700;
     cursor: pointer;
     text-decoration: underline;
     margin-left: 4px;
@@ -487,14 +462,7 @@
   
   .login-10 .mobile-logo {
     display: block;
-    height: 48px;
-    width: 100%;
-    margin: 0 auto 16px auto;
-    background-color: #272737;
-    -webkit-mask: url(/logo-metro-clean.png) no-repeat center;
-    mask: url(/logo-metro-clean.png) no-repeat center;
-    -webkit-mask-size: contain;
-    mask-size: contain;
+    margin: 0 auto 12px auto;
+    text-align: center;
   }
 }
-

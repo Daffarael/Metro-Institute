@@ -1,8 +1,9 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, Outfit } from 'next/font/google'
 import '../landing.css'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
+const outfit = Outfit({ subsets: ['latin'], variable: '--font-outfit' })
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -24,7 +25,7 @@ export default function LandingLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="id" className={`${inter.variable} font-sans`} suppressHydrationWarning>
+    <html lang="id" className={`${inter.variable} ${outfit.variable} font-sans`} suppressHydrationWarning>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
       </head>

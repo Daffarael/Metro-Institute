@@ -12,6 +12,10 @@ export interface FeaturedBootcamp {
   price: number
   thumbnailUrl: string | null
   batchStatus: string
+  registrationStartDate?: string | null
+  registrationDeadline?: string | null
+  batchStartDate?: string | null
+  batchEndDate?: string | null
   rating: number
   mentorName: string | null
   outcomes: string[]
@@ -66,13 +70,30 @@ async function getHomepageData(): Promise<HomepageData> {
     stats: { totalMentees: 0, totalCertificates: 0, totalCourses: 0 },
   }
   try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/homepage`,
-      { cache: 'no-store' }
-    )
-    if (!res.ok) return empty
-    const json = await res.json()
-    return json.data ?? empty
+    const [homepageRes, bootcampsRes] = await Promise.all([
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/homepage`, { cache: 'no-store' }).then(r => r.ok ? r.json() : null).catch(() => null),
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/bootcamps`, { cache: 'no-store' }).then(r => r.ok ? r.json() : null).catch(() => null),
+    ])
+
+    const data: HomepageData = homepageRes?.data ?? empty
+    if (data.featuredBootcamps?.length && bootcampsRes?.data?.length) {
+      const bootcampMap = new Map<string, any>(bootcampsRes.data.map((b: any) => [b.id, b]))
+      data.featuredBootcamps = data.featuredBootcamps.map((fb: any) => {
+        const full = bootcampMap.get(fb.id)
+        if (full) {
+          return {
+            ...fb,
+            batchStatus: full.batchStatus ?? fb.batchStatus,
+            registrationStartDate: full.registrationStartDate ?? fb.registrationStartDate,
+            registrationDeadline: full.registrationDeadline ?? fb.registrationDeadline,
+            batchStartDate: full.batchStartDate ?? fb.batchStartDate,
+            batchEndDate: full.batchEndDate ?? fb.batchEndDate,
+          }
+        }
+        return fb
+      })
+    }
+    return data
   } catch {
     return empty
   }
