@@ -224,7 +224,7 @@ export function Scroll01({ items, title, subtitle }: Readonly<Scroll01Props>) {
   });
 
   return (
-    <div ref={wrapperRef} className="relative w-full" style={{ height: `${items.length * 60}vh` }}>
+    <div ref={wrapperRef} className="relative w-full" style={{ height: `${items.length * 45}vh` }}>
       {/* Mobile: scroll-locked section — full viewport width, N*60svh tall */}
       <div
         className="block md:hidden relative z-30 -mt-[80px]"
@@ -324,7 +324,7 @@ export function Scroll01({ items, title, subtitle }: Readonly<Scroll01Props>) {
       {/* Desktop view */}
       <div className="hidden md:block relative w-full h-full">
         {/* STICKY LAYER */}
-        <div className="sticky top-[80px] w-full min-h-[calc(100vh-80px)] flex flex-col justify-start pt-4 pointer-events-auto pb-16">
+        <div className="sticky top-[80px] w-full flex flex-col justify-start pt-4 pointer-events-auto pb-4">
           
           {/* Header */}
           <div className="bg-white text-center px-4 pb-8 pt-0 w-full flex flex-col items-center justify-center">
@@ -358,7 +358,7 @@ export function Scroll01({ items, title, subtitle }: Readonly<Scroll01Props>) {
           </div>
 
           {/* Progress Indicators (Dots) */}
-          <div className="flex items-center justify-center gap-2.5 mt-12 md:mt-16 pb-6">
+          <div className="flex items-center justify-center gap-2.5 mt-4 md:mt-6 pb-2">
             {items.map((_, index) => (
               <div
                 key={index}
