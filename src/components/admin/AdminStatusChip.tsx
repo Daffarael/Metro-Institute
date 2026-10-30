@@ -7,7 +7,7 @@ interface ChipStyle { color: string; label: string }
 const STATUS_MAP: Record<string, ChipStyle> = {
   // BootcampStatus
   DRAFT:          { color: '#6B7280', label: 'Draft' }, // Gray
-  PUBLISHED:      { color: '#0ea5e9', label: 'Tayang' }, // Sky blue
+  PUBLISHED:      { color: '#018556', label: 'Tayang' }, // Metro Green
   OPEN:           { color: '#018556', label: 'Buka Beli' }, // Green
   CLOSED:         { color: '#EF4444', label: 'Tutup Beli' }, // Red
   ONGOING:        { color: '#10B981', label: 'Berjalan' }, // Emerald
@@ -28,7 +28,7 @@ const STATUS_MAP: Record<string, ChipStyle> = {
   SUSPENDED:      { color: '#EF4444', label: 'Suspended' },
   // Types
   BOOTCAMP:       { color: '#018556', label: 'Bootcamp' },
-  MINI_COURSE:    { color: '#0ea5e9', label: 'Mini Course' },
+  MINI_COURSE:    { color: '#018556', label: 'Mini Course' },
 }
 
 interface AdminStatusChipProps {
@@ -54,11 +54,11 @@ export default function AdminStatusChip({ status, label, size = 'sm' }: AdminSta
       alignItems: 'center',
       padding: size === 'sm' ? '2px 8px' : '4px 10px',
       borderRadius: '4px',
-      border: '1px solid var(--color-border)',
+      border: '1px solid #e5e7eb',
       background: '#ffffff',
       color: style.color,
       fontSize: size === 'sm' ? '12px' : '13px',
-      fontWeight: 500,
+      fontWeight: 600,
       whiteSpace: 'nowrap',
       lineHeight: 1.4,
     }}>
