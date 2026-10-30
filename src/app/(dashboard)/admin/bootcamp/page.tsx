@@ -72,8 +72,8 @@ const FIELD_LABELS: Record<string, string> = { UI_UX: 'UI/UX', FRONTEND: 'Fronte
 const STATUS_OPTIONS = [
   { value: 'DRAFT', label: 'Draf' },
   { value: 'PUBLISHED', label: 'Tayang' },
-  { value: 'OPEN', label: 'Buka Pendaftaran' },
-  { value: 'CLOSED', label: 'Ditutup' },
+  { value: 'OPEN', label: 'Pendaftaran Dibuka' },
+  { value: 'CLOSED', label: 'Pendaftaran Ditutup' },
 ] as const
 
 // ─── Input / Select style helpers ─────────────────────────

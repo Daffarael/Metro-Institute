@@ -542,7 +542,7 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
                 render={({ field }) => (
                   <CleanCombobox
                     options={[
-                      { value: 'PUBLISHED', label: 'Buka Pendaftaran' },
+                      { value: 'PUBLISHED', label: 'Pendaftaran Dibuka' },
                       { value: 'DRAFT', label: 'Draf' },
                     ]}
                     allowClear={false}
@@ -718,8 +718,8 @@ export default function AdminWebinarsPage() {
           onChange={val => { setStatus(val); setPage(1) }}
           placeholder="Semua Status"
           options={[
-            { value: 'OPEN', label: 'Buka Pendaftaran' },
-            { value: 'CLOSED', label: 'Ditutup' },
+            { value: 'OPEN', label: 'Pendaftaran Dibuka' },
+            { value: 'CLOSED', label: 'Pendaftaran Ditutup' },
             { value: 'COMPLETED', label: 'Selesai' },
             { value: 'DRAFT', label: 'Draf' },
           ]}
@@ -810,7 +810,14 @@ export default function AdminWebinarsPage() {
 
                   {/* Status */}
                   <td style={{ padding: '14px 18px' }}>
-                    <AdminStatusChip status={getWebinarStatus(w)} />
+                    <AdminStatusChip
+                      status={getWebinarStatus(w)}
+                      label={
+                        getWebinarStatus(w) === 'CLOSED' && w.quota && (w._count?.registrations ?? 0) >= w.quota
+                          ? 'Kuota Penuh'
+                          : undefined
+                      }
+                    />
                   </td>
 
                   {/* Actions */}
