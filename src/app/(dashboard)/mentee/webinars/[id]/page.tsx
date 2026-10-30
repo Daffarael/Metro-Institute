@@ -197,6 +197,8 @@ export default function MenteeWebinarDetailPage() {
   // Sesi dinyatakan Selesai JIKA diakhiri manual oleh admin (isEnded = true / liveStatus = 'ENDED')
   // ATAU fallback pengaman 24 jam setelah waktu jadwal
   const isEnded = Boolean(webinar.isEnded) || webinar.liveStatus === 'ENDED' || currentTime > (scheduledStart.getTime() + 24 * 60 * 60 * 1000)
+  const registrationDeadline = new Date(scheduledStart.getTime() - 2 * 60 * 60 * 1000)
+  const isRegistrationClosed = isEnded || currentTime >= registrationDeadline.getTime()
   const isUpcoming = !isEnded && currentTime < openTime.getTime()
   const isLiveWindow = !isEnded && currentTime >= openTime.getTime()
   // Overtime: Sesi melewati jadwal durasi awal, namun admin belum mengakhiri sesi (masih diskusi/Q&A)
@@ -277,9 +279,11 @@ export default function MenteeWebinarDetailPage() {
                     ? '#D97706'
                     : isLiveWindow
                       ? 'var(--color-primary)'
-                      : isFull
+                      : isRegistrationClosed
                         ? '#DC2626'
-                        : 'var(--color-primary)',
+                        : isFull
+                          ? '#DC2626'
+                          : 'var(--color-primary)',
               }}>
                 {isEnded
                   ? 'Sesi Selesai'
@@ -287,9 +291,11 @@ export default function MenteeWebinarDetailPage() {
                     ? 'Live Berlangsung (Waktu Tambahan)'
                     : isLiveWindow
                       ? 'Live Berlangsung'
-                      : isFull
-                        ? 'Kuota Penuh'
-                        : 'Pendaftaran Dibuka'}
+                      : isRegistrationClosed
+                        ? 'Pendaftaran Ditutup'
+                        : isFull
+                          ? 'Kuota Penuh'
+                          : 'Pendaftaran Dibuka'}
               </span>
             </div>
 
@@ -987,6 +993,25 @@ export default function MenteeWebinarDetailPage() {
                   }}
                 >
                   <Lock size={16} strokeWidth={2} /> Sesi Selesai
+                </div>
+              ) : isRegistrationClosed ? (
+                /* Batas Pendaftaran H-2 Jam */
+                <div>
+                  <div
+                    style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                      width: '100%', padding: '12px 0',
+                      background: 'var(--color-bg)', color: '#dc2626',
+                      border: '1px solid var(--color-border-subtle)',
+                      borderRadius: 8, fontWeight: 700, fontSize: '14px',
+                      cursor: 'not-allowed',
+                    }}
+                  >
+                    <Lock size={16} strokeWidth={2} /> Pendaftaran Ditutup
+                  </div>
+                  <div style={{ textAlign: 'center', marginTop: 6, fontSize: '11.5px', color: 'var(--color-text-tertiary)' }}>
+                    Batas pendaftaran H-2 jam sebelum acara telah berakhir.
+                  </div>
                 </div>
               ) : isFull ? (
                 /* Kuota Penuh */

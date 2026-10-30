@@ -194,7 +194,9 @@ function WebinarCard({
 }: {
   webinar: WebinarItem
 }) {
-  const isEnded = Boolean(webinar.isEnded) || (new Date(webinar.scheduledAt).getTime() + 24 * 60 * 60 * 1000 < Date.now())
+  const scheduledTime = new Date(webinar.scheduledAt).getTime()
+  const isEnded = Boolean(webinar.isEnded) || (scheduledTime + 24 * 60 * 60 * 1000 < Date.now())
+  const isRegistrationClosed = isEnded || Date.now() >= (scheduledTime - 2 * 60 * 60 * 1000)
 
   return (
     <Link
@@ -328,9 +330,9 @@ function WebinarCard({
           <div
             style={{
               width: '100%', padding: '9px 12px', borderRadius: 8,
-              background: isEnded ? 'var(--color-bg)' : 'var(--color-primary)',
-              color: isEnded ? 'var(--color-text-tertiary)' : '#fff',
-              border: isEnded ? '1px solid var(--color-border-subtle)' : 'none',
+              background: (isEnded || (!webinar.isRegistered && isRegistrationClosed)) ? 'var(--color-bg)' : 'var(--color-primary)',
+              color: (isEnded || (!webinar.isRegistered && isRegistrationClosed)) ? 'var(--color-text-tertiary)' : '#fff',
+              border: (isEnded || (!webinar.isRegistered && isRegistrationClosed)) ? '1px solid var(--color-border-subtle)' : 'none',
               fontWeight: 600, fontSize: '12px',
               display: 'flex', alignItems: 'center',
               justifyContent: 'center', gap: 6,
@@ -341,9 +343,11 @@ function WebinarCard({
               ? 'Lihat Detail Sesi'
               : webinar.isRegistered
                 ? 'Akses Sesi ›'
-                : webinar.price === 0
-                  ? 'Daftar Gratis ›'
-                  : `Beli Tiket (${formatRupiah(webinar.price)})`}
+                : isRegistrationClosed
+                  ? 'Pendaftaran Ditutup'
+                  : webinar.price === 0
+                    ? 'Daftar Gratis ›'
+                    : `Beli Tiket (${formatRupiah(webinar.price)})`}
           </div>
         </div>
       </div>

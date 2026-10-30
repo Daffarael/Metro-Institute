@@ -542,8 +542,8 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
                 render={({ field }) => (
                   <CleanCombobox
                     options={[
-                      { value: 'PUBLISHED', label: 'Tayang (Terbuka)' },
-                      { value: 'DRAFT', label: 'Draf (Disimpan)' },
+                      { value: 'PUBLISHED', label: 'Buka Pendaftaran' },
+                      { value: 'DRAFT', label: 'Draf' },
                     ]}
                     allowClear={false}
                     value={field.value}
@@ -555,6 +555,9 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
                   />
                 )}
               />
+              <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 4, display: 'block' }}>
+                Webinar yang tayang otomatis berstatus Buka Pendaftaran, lalu otomatis Ditutup saat memasuki H-2 jam sebelum acara.
+              </span>
             </div>
             <div>
               <label style={labelStyle}>Template Sertifikat</label>
@@ -613,6 +616,16 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
       </motion.div>
     </motion.div>
   )
+}
+
+const getWebinarStatus = (w: WebinarItem): 'DRAFT' | 'OPEN' | 'CLOSED' | 'COMPLETED' => {
+  if (w.isEnded) return 'COMPLETED'
+  if (!w.isPublished) return 'DRAFT'
+  const scheduledTime = new Date(w.scheduledAt).getTime()
+  const isPastH2 = Date.now() >= (scheduledTime - 2 * 60 * 60 * 1000)
+  const isFull = Boolean(w.quota && (w._count?.registrations ?? 0) >= w.quota)
+  if (isPastH2 || isFull) return 'CLOSED'
+  return 'OPEN'
 }
 
 // ─── Main Admin Webinars Page ──────────────────────────────
@@ -705,7 +718,9 @@ export default function AdminWebinarsPage() {
           onChange={val => { setStatus(val); setPage(1) }}
           placeholder="Semua Status"
           options={[
-            { value: 'PUBLISHED', label: 'Tayang' },
+            { value: 'OPEN', label: 'Buka Pendaftaran' },
+            { value: 'CLOSED', label: 'Ditutup' },
+            { value: 'COMPLETED', label: 'Selesai' },
             { value: 'DRAFT', label: 'Draf' },
           ]}
           width={180}
@@ -795,17 +810,7 @@ export default function AdminWebinarsPage() {
 
                   {/* Status */}
                   <td style={{ padding: '14px 18px' }}>
-                    {w.isEnded ? (
-                      <span style={{
-                        display: 'inline-flex', alignItems: 'center', gap: 4,
-                        padding: '3px 8px', borderRadius: 6, fontSize: '11px', fontWeight: 700,
-                        background: '#f1f5f9', color: '#64748b', border: '1px solid #e2e8f0',
-                      }}>
-                        SELESAI
-                      </span>
-                    ) : (
-                      <AdminStatusChip status={w.isPublished ? 'PUBLISHED' : 'DRAFT'} />
-                    )}
+                    <AdminStatusChip status={getWebinarStatus(w)} />
                   </td>
 
                   {/* Actions */}
