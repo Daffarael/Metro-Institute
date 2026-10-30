@@ -37,7 +37,7 @@ export function InteractiveHoverLinks({
   subtitle = 'Pilih jalur akselerasi karir yang paling pas dengan gaya dan kebutuhan belajarmu.',
 }: InteractiveHoverLinksProps) {
   return (
-    <section className="bg-background pt-4 md:pt-8 pb-16 px-4 md:px-8 w-full border-t border-gray-100">
+    <section className="bg-background pt-16 md:pt-24 pb-16 px-4 md:px-8 w-full">
       <div className="mx-auto max-w-5xl">
         <div className="mb-12">
           <h2 className="text-3xl md:text-5xl font-bold text-gray-900 tracking-tight">{title}</h2>
