@@ -8,7 +8,8 @@ import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tansta
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Plus, Edit2, Layers, BarChart2, X, Target } from 'lucide-react'
+import { Plus, Edit2, Layers, BarChart2, X, Target, AlertCircle } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'motion/react'
 import api from '@/lib/axios'
 import { formatRupiah } from '@/lib/utils'
@@ -44,6 +45,7 @@ type CourseForm = z.infer<typeof miniCourseSchema>
 interface MiniCourse {
   id: string; title: string; field: string; level?: string; price: number
   accessDays: number; totalDuration: number; status?: string; isPublished?: boolean
+  totalChapters?: number; totalSessions?: number; hasCurriculum?: boolean
   descShort?: string; rating?: number; reviewCount?: number; enrollmentCount?: number
   certificateTemplateId?: string
   thumbnailUrl?: string
@@ -71,6 +73,7 @@ const inputStyle: React.CSSProperties = {
 
 // ─── Course Modal ──────────────────────────────────────────
 function CourseModal({ course, onClose }: { course?: MiniCourse; onClose: () => void }) {
+  const router = useRouter()
   const qc = useQueryClient()
   const isEdit = !!course
 
@@ -104,10 +107,13 @@ function CourseModal({ course, onClose }: { course?: MiniCourse; onClose: () => 
       isEdit
         ? api.patch(`/admin/courses/${course!.id}`, data).then(r => r.data)
         : api.post('/admin/courses', data).then(r => r.data),
-    onSuccess: () => {
-      toast.success(isEdit ? 'Mini course diperbarui.' : 'Mini course dibuat.')
+    onSuccess: (data: any) => {
+      toast.success(isEdit ? 'Mini course diperbarui.' : 'Mini course berhasil dibuat! Silakan tambahkan materi di menu Kurikulum.')
       qc.invalidateQueries({ queryKey: ['admin', 'courses']})
       onClose()
+      if (!isEdit && data?.data?.id) {
+        router.push(`/admin/mini-course/${data.data.id}/curriculum`)
+      }
     },
     onError: (err: any) => toast.error(err.response?.data?.message ?? 'Gagal menyimpan.'),
   })
@@ -174,7 +180,13 @@ function CourseModal({ course, onClose }: { course?: MiniCourse; onClose: () => 
             <X size={18} strokeWidth={2.5} />
           </button>
         </div>
-        <form onSubmit={handleSubmit(d => mutation.mutate(d))} style={{ padding: '0 32px 24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <form onSubmit={handleSubmit(d => {
+          if (d.status === 'PUBLISHED' && !(course as any)?.hasCurriculum) {
+            toast.error('Kurikulum belum dibuat. Tambahkan bab dan materi di menu Kurikulum terlebih dahulu sebelum mempublikasikan.')
+            return
+          }
+          mutation.mutate(d)
+        })} style={{ padding: '0 32px 24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
             <label style={labelStyle}>Judul <span style={{color: 'var(--color-error)'}}>*</span></label>
             <input {...register('title')} style={inputStyleClean} placeholder="Belajar Figma dari Nol" 
@@ -279,17 +291,37 @@ function CourseModal({ course, onClose }: { course?: MiniCourse; onClose: () => 
                   <CleanCombobox 
                     options={[
                       { value: 'DRAFT', label: 'Draf' },
-                      { value: 'PUBLISHED', label: 'Tayang' }
+                      { 
+                        value: 'PUBLISHED', 
+                        label: (course as any)?.hasCurriculum ? 'Tayang' : 'Tayang (Perlu Kurikulum)' 
+                      }
                     ]}
                     allowClear={false}
                     value={field.value as string} 
-                    onChange={field.onChange} 
+                    onChange={val => {
+                      if (val === 'PUBLISHED' && !(course as any)?.hasCurriculum) {
+                        toast.error('Kurikulum belum dibuat. Tambahkan minimal 1 bab dan materi di menu Kurikulum terlebih dahulu.')
+                        return
+                      }
+                      field.onChange(val)
+                    }} 
                     placeholder="Pilih Status"
                     width="100%"
                   />
                 )}
               />
               {errors.status && <p style={{ color: 'var(--color-error)', fontSize: '12px', marginTop: 4, fontWeight: 500 }}>{errors.status.message}</p>}
+              {!(course as any)?.hasCurriculum && (
+                <div style={{
+                  marginTop: 8, padding: '10px 14px', borderRadius: 10,
+                  background: '#FEF2F2', border: '1px solid #FEE2E2',
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  fontSize: '12.5px', color: '#991B1B'
+                }}>
+                  <AlertCircle size={16} color="#DC2626" style={{ flexShrink: 0 }} />
+                  <span>Kurikulum belum dibuat (0 materi). Tambahkan kurikulum di menu <b>Kurikulum</b> sebelum mempublikasikan.</span>
+                </div>
+              )}
             </div>
           )}
           <div>
@@ -487,6 +519,15 @@ export default function AdminMiniCoursePage() {
                     <td style={{ padding: 'var(--space-3) var(--space-4)', fontWeight: 600, maxWidth: 220 }}>
                       <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.title}</div>
                       {c.descShort && <div style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.descShort}</div>}
+                      {(c as any).totalSessions !== undefined && (
+                        <div style={{ fontSize: '11px', marginTop: 3 }}>
+                          {(c as any).totalSessions > 0 ? (
+                            <span style={{ color: 'var(--color-text-tertiary)', fontWeight: 400 }}>{(c as any).totalChapters || 1} Bab • {(c as any).totalSessions} Materi</span>
+                          ) : (
+                            <span style={{ color: '#DC2626', fontWeight: 600 }}>• Belum ada kurikulum</span>
+                          )}
+                        </div>
+                      )}
                     </td>
                     <td style={{ padding: 'var(--space-3) var(--space-4)', color: 'var(--color-text-secondary)', whiteSpace: 'nowrap' }}>
                       {FIELD_LABELS[c.field] ?? c.field}

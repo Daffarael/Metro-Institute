@@ -8,7 +8,7 @@ import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tansta
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Plus, Edit2, Users, CalendarDays, Layers, X, Target } from 'lucide-react'
+import { Plus, Edit2, Users, CalendarDays, Layers, X, Target, AlertCircle } from 'lucide-react'
 import api from '@/lib/axios'
 import ClassChallengeModal from '@/components/admin/ClassChallengeModal'
 import { formatRupiah, formatDate } from '@/lib/utils'
@@ -60,6 +60,9 @@ interface Bootcamp {
   thumbnailUrl?: string
   certificateTemplateId?: string
   isFeatured?: boolean
+  totalChapters?: number
+  totalSessions?: number
+  hasCurriculum?: boolean
   _count?: { registrations: number }
 }
 
@@ -202,7 +205,13 @@ function BootcampModal({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit(d => mutation.mutate(d))} style={{ padding: '0 32px 24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <form onSubmit={handleSubmit(d => {
+          if (d.status !== 'DRAFT' && !bootcamp?.hasCurriculum) {
+            toast.error('Kurikulum belum dibuat. Tambahkan bab dan materi di menu Silabus terlebih dahulu sebelum mempublikasikan.')
+            return
+          }
+          mutation.mutate(d)
+        })} style={{ padding: '0 32px 24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div>
             <label style={labelStyle}>Nama Bootcamp <span style={{color: 'var(--color-error)'}}>*</span></label>
             <input {...register('name')} style={inputStyleClean} placeholder="Bootcamp UI/UX Profesional Batch 3" 
@@ -232,9 +241,20 @@ function BootcampModal({
                   name="status"
                   render={({ field }) => (
                     <CleanCombobox 
-                      options={STATUS_OPTIONS.map(s => ({ value: s.value, label: s.label }))}
+                      options={STATUS_OPTIONS.map(s => ({
+                        value: s.value,
+                        label: (!bootcamp?.hasCurriculum && s.value !== 'DRAFT')
+                          ? `${s.label} (Perlu Kurikulum)`
+                          : s.label
+                      }))}
                       value={field.value as string} 
-                      onChange={field.onChange} 
+                      onChange={val => {
+                        if (val !== 'DRAFT' && !bootcamp?.hasCurriculum) {
+                          toast.error('Kurikulum belum dibuat. Tambahkan bab dan materi di menu Silabus terlebih dahulu.')
+                          return
+                        }
+                        field.onChange(val)
+                      }} 
                       placeholder="Pilih Status"
                       width="100%"
                       direction="down"
@@ -243,6 +263,17 @@ function BootcampModal({
                     />
                   )}
                 />
+                {!bootcamp?.hasCurriculum && (
+                  <div style={{
+                    marginTop: 8, padding: '10px 14px', borderRadius: 10,
+                    background: '#FEF2F2', border: '1px solid #FEE2E2',
+                    display: 'flex', alignItems: 'center', gap: 8,
+                    fontSize: '12.5px', color: '#991B1B'
+                  }}>
+                    <AlertCircle size={16} color="#DC2626" style={{ flexShrink: 0 }} />
+                    <span>Kurikulum belum dibuat (0 sesi). Tambahkan silabus di menu <b>Silabus</b> sebelum mempublikasikan.</span>
+                  </div>
+                )}
               </div>
             )}
             <div>
@@ -496,6 +527,15 @@ export default function AdminBootcampPage() {
                     </td>
                     <td style={{ padding: 'var(--space-3) var(--space-4)', fontWeight: 600, maxWidth: 200 }}>
                       <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{b.name}</div>
+                      {b.totalSessions !== undefined && (
+                        <div style={{ fontSize: '11px', marginTop: 3 }}>
+                          {b.totalSessions > 0 ? (
+                            <span style={{ color: 'var(--color-text-tertiary)', fontWeight: 400 }}>{b.totalChapters || 1} Bab • {b.totalSessions} Sesi</span>
+                          ) : (
+                            <span style={{ color: '#DC2626', fontWeight: 600 }}>• Belum ada kurikulum</span>
+                          )}
+                        </div>
+                      )}
                     </td>
                     <td style={{ padding: 'var(--space-3) var(--space-4)', color: 'var(--color-text-secondary)', whiteSpace: 'nowrap' }}>
                       {b.fields.map(f => FIELD_LABELS[f] ?? f).join(', ')}
