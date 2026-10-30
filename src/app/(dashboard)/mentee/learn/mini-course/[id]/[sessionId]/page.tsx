@@ -220,11 +220,11 @@ export default function CourseLearningPlayerPage() {
           {(currentSession.isCompleted || isCompleted) && (
             <div style={{
               display: 'flex', alignItems: 'center', gap: 6,
-              padding: '6px 14px', background: '#ecfdf5',
-              border: '1px solid #a7f3d0',
-              color: '#059669', borderRadius: 20, fontSize: '12px', fontWeight: 700
+              padding: '6px 14px', background: '#ffffff',
+              border: '1.5px solid var(--color-primary)',
+              color: 'var(--color-primary)', borderRadius: 20, fontSize: '12px', fontWeight: 700
             }}>
-              <CheckCircle2 size={15} /> Selesai
+              <CheckCircle2 size={15} color="var(--color-primary)" /> Selesai
             </div>
           )}
         </div>
@@ -256,15 +256,15 @@ export default function CourseLearningPlayerPage() {
                     width: 44,
                     height: 44,
                     borderRadius: 12,
-                    background: 'rgba(16, 185, 129, 0.1)',
-                    border: '1px solid rgba(16, 185, 129, 0.2)',
+                    background: 'var(--color-primary)',
+                    border: 'none', boxShadow: '0 2px 8px rgba(1, 133, 86, 0.25)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: 'var(--color-primary)',
+                    color: '#ffffff',
                     flexShrink: 0,
                   }}>
-                    <Award size={22} strokeWidth={2.2} />
+                    <Award size={22} color="#ffffff" strokeWidth={2.2} />
                   </div>
                   <div>
                     <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a', margin: '0 0 3px', letterSpacing: '-0.01em' }}>
@@ -354,13 +354,13 @@ export default function CourseLearningPlayerPage() {
                       gap: 6,
                       padding: '4px 10px',
                       borderRadius: 6,
-                      background: 'rgba(16, 185, 129, 0.08)',
+                      background: '#ffffff', border: '1px solid #e2e8f0',
                       color: 'var(--color-primary)',
                       fontSize: '12px',
                       fontWeight: 700,
                       letterSpacing: '0.02em',
                     }}>
-                      <BookOpen size={13} /> Modul Pembelajaran
+                      <BookOpen size={13} color="var(--color-primary)" /> Modul Pembelajaran
                     </span>
                     {parsedMaterials.length > 0 && (
                       <span style={{
@@ -474,7 +474,7 @@ export default function CourseLearningPlayerPage() {
                               width: 40,
                               height: 40,
                               borderRadius: 10,
-                              background: 'rgba(16, 185, 129, 0.08)',
+                              background: '#f8fafc', border: '1px solid #e2e8f0',
                               color: 'var(--color-primary)',
                               display: 'flex',
                               alignItems: 'center',
@@ -555,14 +555,7 @@ export default function CourseLearningPlayerPage() {
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 8 }}>
                     <span style={{
-                      padding: '4px 10px',
-                      borderRadius: 8,
-                      background: 'rgba(16, 185, 129, 0.1)',
-                      color: 'var(--color-primary)',
-                      fontSize: '12px',
-                      fontWeight: 700,
-                      letterSpacing: '0.02em'
-                    }}>
+                      padding: '4px 10px', borderRadius: 8, background: '#ffffff', border: '1px solid #e2e8f0', color: 'var(--color-primary)', fontSize: '12px', fontWeight: 700, letterSpacing: '0.02em' }}>
                       Sesi {currentSession.orderIndex || 1}
                     </span>
 
@@ -713,14 +706,14 @@ export default function CourseLearningPlayerPage() {
                         gap: 6,
                         padding: '9px 18px',
                         borderRadius: 10,
-                        background: 'rgba(16, 185, 129, 0.1)',
+                        background: '#ffffff',
                         color: 'var(--color-primary)',
-                        border: '1px solid rgba(16, 185, 129, 0.2)',
+                        border: '1.5px solid var(--color-primary)', boxShadow: '0 1px 2px rgba(0, 0, 0, 0.04)',
                         fontWeight: 700,
                         fontSize: '13px'
                       }}
                     >
-                      <CheckCircle2 size={16} /> Selesai ✓
+                      <CheckCircle2 size={16} color="var(--color-primary)" /> Selesai ✓
                     </div>
                   ) : currentSession.type === 'VIDEO' ? (
                     playedRatio >= 0.9 ? (
@@ -931,8 +924,7 @@ export default function CourseLearningPlayerPage() {
                           borderRadius: 12, background: '#f8fafc', display: 'flex', alignItems: 'flex-start', gap: 14
                         }}>
                           <div style={{
-                            padding: '3px 8px', background: 'rgba(16, 185, 129, 0.1)', color: 'var(--color-primary)',
-                            borderRadius: 6, fontSize: '11px', fontWeight: 700, fontFamily: 'monospace'
+                            padding: '3px 8px', background: '#f8fafc', border: '1px solid #e2e8f0', color: 'var(--color-primary)', borderRadius: 6, fontSize: '11px', fontWeight: 700, fontFamily: 'monospace'
                           }}>
                             {formatDuration(n.timestamp)}
                           </div>
@@ -1074,13 +1066,7 @@ export default function CourseLearningPlayerPage() {
                             style={{
                               display: 'flex', alignItems: 'flex-start', gap: 12,
                               padding: '12px 16px', textDecoration: 'none',
-                              background: isActive ? 'rgba(16, 185, 129, 0.05)' : 'transparent',
-                              borderRadius: 12, marginBottom: 4,
-                              border: isActive ? '1px solid rgba(16, 185, 129, 0.2)' : '1px solid transparent',
-                              transition: 'all 0.2s'
-                            }}
-                            onMouseEnter={(e) => { if(!isActive) e.currentTarget.style.background = 'var(--color-bg)' }}
-                            onMouseLeave={(e) => { if(!isActive) e.currentTarget.style.background = 'transparent' }}
+                              background: isActive ? '#ffffff' : 'transparent', borderRadius: 12, marginBottom: 4, border: isActive ? '1.5px solid var(--color-primary)' : '1px solid transparent', boxShadow: isActive ? '0 2px 6px rgba(0, 0, 0, 0.04)' : 'none', transition: 'all 0.2s' }} onMouseEnter={(e) => { if(!isActive) e.currentTarget.style.background = '#f8fafc' }} onMouseLeave={(e) => { if(!isActive) e.currentTarget.style.background = 'transparent' }}
                           >
                             <div style={{ marginTop: 2 }}>
                               {sess.isCompleted
@@ -1230,14 +1216,14 @@ function InteractiveQuiz({
             width: 48,
             height: 48,
             borderRadius: 12,
-            background: 'rgba(16, 185, 129, 0.08)',
+            background: 'var(--color-primary)', boxShadow: '0 2px 8px rgba(1, 133, 86, 0.25)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             marginBottom: 14,
           }}
         >
-          <HelpCircle size={24} color="var(--color-primary)" strokeWidth={1.8} />
+          <HelpCircle size={24} color="#ffffff" strokeWidth={1.8} />
         </div>
         <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#0f172a', marginBottom: 4, letterSpacing: '-0.01em' }}>
           Kuis: {title}
@@ -1388,7 +1374,7 @@ function InteractiveQuiz({
             width: 48,
             height: 48,
             borderRadius: 12,
-            background: 'rgba(16, 185, 129, 0.08)',
+            background: 'var(--color-primary)', boxShadow: '0 2px 8px rgba(1, 133, 86, 0.25)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -1472,7 +1458,7 @@ function InteractiveQuiz({
               style={{
                 padding: '3px 9px',
                 borderRadius: 6,
-                background: 'rgba(16, 185, 129, 0.1)',
+                background: '#ffffff', border: '1px solid #e2e8f0',
                 color: 'var(--color-primary)',
                 fontSize: '12px',
                 fontWeight: 700,
@@ -1544,7 +1530,7 @@ function InteractiveQuiz({
                   padding: '13px 16px',
                   borderRadius: 8,
                   border: isSelected ? '2px solid var(--color-primary)' : '1px solid #e2e8f0',
-                  background: isSelected ? 'rgba(16, 185, 129, 0.05)' : '#ffffff',
+                  background: '#ffffff',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
