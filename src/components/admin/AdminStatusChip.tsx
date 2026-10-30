@@ -8,9 +8,9 @@ const STATUS_MAP: Record<string, ChipStyle> = {
   // BootcampStatus
   DRAFT:          { color: '#4B5563', label: 'Draft' }, // Dark Gray
   PUBLISHED:      { color: '#018556', label: 'Tayang' }, // Metro Green
-  OPEN:           { color: '#018556', label: 'Buka Beli' }, // Green
-  CLOSED:         { color: '#DC2626', label: 'Tutup Beli' }, // Deep Red
-  ONGOING:        { color: '#018556', label: 'Berjalan' }, // Metro Green
+  OPEN:           { color: '#018556', label: 'Buka Pendaftaran' }, // Green
+  CLOSED:         { color: '#DC2626', label: 'Ditutup' }, // Deep Red
+  ONGOING:        { color: '#018556', label: 'Buka Pendaftaran' }, // Metro Green
   COMPLETED:      { color: '#1F2937', label: 'Selesai' }, // Deep Slate
   // RegistrationStatus
   ACTIVE:         { color: '#018556', label: 'Aktif' },

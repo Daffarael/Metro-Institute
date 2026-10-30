@@ -35,7 +35,7 @@ const bootcampSchema = z.object({
   purchaseCloseAt: z.string().min(1, 'Wajib diisi'),
   startDate:       z.string().min(1, 'Wajib diisi'),
   endDate:         z.string().min(1, 'Wajib diisi'),
-  status:          z.enum(['DRAFT', 'PUBLISHED', 'OPEN', 'ONGOING', 'CLOSED']),
+  status:          z.enum(['DRAFT', 'PUBLISHED', 'OPEN', 'CLOSED']),
   certificateTemplateId: z.string().optional().nullable(),
   thumbnailUrl:    z.string().optional().nullable(),
 })
@@ -72,9 +72,8 @@ const FIELD_LABELS: Record<string, string> = { UI_UX: 'UI/UX', FRONTEND: 'Fronte
 const STATUS_OPTIONS = [
   { value: 'DRAFT', label: 'Draft' },
   { value: 'PUBLISHED', label: 'Tayang' },
-  { value: 'OPEN', label: 'Buka Beli' },
-  { value: 'ONGOING', label: 'Berjalan' },
-  { value: 'CLOSED', label: 'Tutup Beli' },
+  { value: 'OPEN', label: 'Buka Pendaftaran' },
+  { value: 'CLOSED', label: 'Ditutup' },
 ] as const
 
 // ─── Input / Select style helpers ─────────────────────────
@@ -239,6 +238,7 @@ function BootcampModal({
                       placeholder="Pilih Status"
                       width="100%"
                       direction="down"
+                      allowClear={false}
                       style={{...inputStyleClean, padding: '12px 16px', background: '#fff'}}
                     />
                   )}
