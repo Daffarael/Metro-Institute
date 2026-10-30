@@ -311,7 +311,7 @@ export default function BootcampLearningPlayerPage() {
               border: 'none',
               color: '#ffffff', borderRadius: 20, fontSize: '12px', fontWeight: 700
             }}>
-              <CheckCircle2 size={15} color="#ffffff" /> Selesai
+              Selesai
             </div>
           )}
         </div>
@@ -344,7 +344,7 @@ export default function BootcampLearningPlayerPage() {
                     height: 44,
                     borderRadius: 12,
                     background: '#018556',
-                    border: 'none', boxShadow: '0 2px 8px rgba(1, 133, 86, 0.25)',
+                    border: 'none',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -985,13 +985,13 @@ export default function BootcampLearningPlayerPage() {
                       gap: 4,
                       padding: '4px 10px',
                       borderRadius: 8,
-                      background: 'rgba(245, 158, 11, 0.1)',
-                      border: '1px solid rgba(245, 158, 11, 0.2)',
+                      background: '#FAE653',
+                      border: 'none',
                       fontSize: '12px',
-                      fontWeight: 700,
-                      color: '#d97706'
+                      fontWeight: 800,
+                      color: '#018556'
                     }}>
-                      <Zap size={12} fill="#d97706" /> +{currentSession.xpReward > 0 ? currentSession.xpReward : 10} XP
+                      <Zap size={12} fill="#018556" color="#018556" /> +{currentSession.xpReward > 0 ? currentSession.xpReward : 10} XP
                     </span>
                   </div>
 
@@ -1120,12 +1120,12 @@ export default function BootcampLearningPlayerPage() {
                             borderRadius: 10,
                             background: '#018556',
                             color: '#ffffff',
-                            border: 'none', boxShadow: '0 2px 6px rgba(1, 133, 86, 0.25)',
+                            border: 'none',
                             fontWeight: 700,
                             fontSize: '13px'
                           }}
                         >
-                          <CheckCircle2 size={16} color="var(--color-primary)" /> {currentSession.type === 'LIVE' ? 'Hadir Terverifikasi ✓' : 'Selesai ✓'}
+                          {currentSession.type === 'LIVE' ? 'Hadir Terverifikasi' : 'Selesai'}
                         </div>
                       ) : currentSession.type === 'LIVE' ? (
                         <button
@@ -1261,9 +1261,7 @@ export default function BootcampLearningPlayerPage() {
                           style={{
                             fontSize: '12.5px',
                             fontWeight: 600,
-                            color: '#d97706',
-                            background: '#fef3c7',
-                            border: '1px solid #fde68a',
+                            color: '#018556', background: '#ffffff', border: '1px solid #e2e8f0',
                             padding: '7px 14px',
                             borderRadius: 10,
                             display: 'inline-flex',

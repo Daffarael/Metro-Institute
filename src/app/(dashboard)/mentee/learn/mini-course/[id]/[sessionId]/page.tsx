@@ -224,7 +224,7 @@ export default function CourseLearningPlayerPage() {
               border: 'none',
               color: '#ffffff', borderRadius: 20, fontSize: '12px', fontWeight: 700
             }}>
-              <CheckCircle2 size={15} color="#ffffff" /> Selesai
+              Selesai
             </div>
           )}
         </div>
@@ -257,7 +257,7 @@ export default function CourseLearningPlayerPage() {
                     height: 44,
                     borderRadius: 12,
                     background: '#018556',
-                    border: 'none', boxShadow: '0 2px 8px rgba(1, 133, 86, 0.25)',
+                    border: 'none',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -582,12 +582,12 @@ export default function CourseLearningPlayerPage() {
                       gap: 4,
                       padding: '4px 10px',
                       borderRadius: 8,
-                      background: '#fef3c7',
+                      background: '#FAE653',
                       fontSize: '12px',
-                      fontWeight: 700,
-                      color: '#b45309'
+                      fontWeight: 800,
+                      color: '#018556'
                     }}>
-                      <Zap size={13} fill="#f59e0b" color="#f59e0b" /> +{currentSession.xpReward > 0 ? currentSession.xpReward : 10} XP
+                      <Zap size={13} fill="#018556" color="#018556" /> +{currentSession.xpReward > 0 ? currentSession.xpReward : 10} XP
                     </span>
                   </div>
 
@@ -708,12 +708,12 @@ export default function CourseLearningPlayerPage() {
                         borderRadius: 10,
                         background: '#018556',
                         color: '#ffffff',
-                        border: 'none', boxShadow: '0 2px 6px rgba(1, 133, 86, 0.25)',
+                        border: 'none',
                         fontWeight: 700,
                         fontSize: '13px'
                       }}
                     >
-                      <CheckCircle2 size={16} color="#ffffff" /> Selesai ✓
+                      Selesai
                     </div>
                   ) : currentSession.type === 'VIDEO' ? (
                     playedRatio >= 0.9 ? (
@@ -824,9 +824,7 @@ export default function CourseLearningPlayerPage() {
                       style={{
                         fontSize: '12.5px',
                         fontWeight: 600,
-                        color: '#d97706',
-                        background: '#fef3c7',
-                        border: '1px solid #fde68a',
+                        color: '#018556', background: '#ffffff', border: '1px solid #e2e8f0',
                         padding: '7px 14px',
                         borderRadius: 10,
                         display: 'inline-flex',
