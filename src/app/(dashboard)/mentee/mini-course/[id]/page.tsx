@@ -6,8 +6,9 @@ import { useQuery, useMutation } from '@tanstack/react-query'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
-  Star, Users, Clock, ChevronDown, ChevronRight, PlayCircle,
-  FileText, CheckCircle2, Lock, Heart, Share2, Award, Shield, BookOpen, Infinity
+  Star, Users, Clock, ChevronDown, ChevronUp, ChevronRight, PlayCircle, Play,
+  FileText, CheckCircle2, Lock, Heart, Share2, Award, Shield, BookOpen, Infinity,
+  HelpCircle, FileEdit, Calendar
 } from 'lucide-react'
 import { toast } from 'sonner'
 import api from '@/lib/axios'
@@ -47,10 +48,15 @@ interface CourseDetail {
   }>
 }
 
-const SESSION_ICONS: Record<string, React.ReactNode> = {
-  VIDEO:      <PlayCircle size={14} strokeWidth={1.5} />,
-  ASSIGNMENT: <FileText size={14} strokeWidth={1.5} />,
-  QUIZ:       <CheckCircle2 size={14} strokeWidth={1.5} />,
+const getSessionIcon = (type: string, color: string) => {
+  switch (type) {
+    case 'LIVE': return <Calendar size={15} color={color} />
+    case 'VIDEO': return <Play size={15} color={color} />
+    case 'MATERIAL': return <FileText size={15} color={color} />
+    case 'QUIZ': return <HelpCircle size={15} color={color} />
+    case 'ASSIGNMENT': return <FileEdit size={15} color={color} />
+    default: return <Play size={15} color={color} />
+  }
 }
 
 export default function CourseDetailPage() {
@@ -58,7 +64,7 @@ export default function CourseDetailPage() {
   const router = useRouter()
   const { user } = useAuthStore()
   const { setSearchPlaceholder } = useUIStore()
-  const [openChapters, setOpenChapters] = useState<Set<string>>(new Set(['0']))
+  const [expandedChapter, setExpandedChapter] = useState<string | null>(null)
   const [isWishlisted, setIsWishlisted] = useState(false)
   const [activeTab, setActiveTab] = useState<'overview' | 'curriculum' | 'reviews'>('overview')
   const [reviewRating, setReviewRating] = useState<number>(0)
@@ -83,6 +89,12 @@ export default function CourseDetailPage() {
   })
 
   useEffect(() => { if (course) setIsWishlisted(course.isWishlisted) }, [course])
+
+  useEffect(() => {
+    if (course?.chapters?.[0]?.id && expandedChapter === null) {
+      setExpandedChapter(course.chapters[0].id)
+    }
+  }, [course?.chapters, expandedChapter])
 
   const wishlistMutation = useMutation({
     mutationFn: () =>
@@ -109,13 +121,7 @@ export default function CourseDetailPage() {
     onError: () => toast.error('Gagal memulai checkout.'),
   })
 
-  const toggleChapter = (idx: string) => {
-    setOpenChapters((prev) => {
-      const next = new Set(prev)
-      next.has(idx) ? next.delete(idx) : next.add(idx)
-      return next
-    })
-  }
+
 
   useEffect(() => {
     if (course) {
@@ -243,91 +249,113 @@ export default function CourseDetailPage() {
             )}
 
             {activeTab === 'curriculum' && (
-              <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-5)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 16 }}>
-                  <h2 style={{ fontSize: '18px', fontWeight: 700, letterSpacing: '-0.01em', color: 'var(--color-text-primary)' }}>
-                    Kurikulum
-                  </h2>
-                  <span style={{ fontSize: '13px', color: 'var(--color-text-tertiary)' }}>
-                    {course.chapters.length} bab · {totalSessions} sesi · {formatDuration(course.totalDuration)}
-                  </span>
-                </div>
-
-                <div style={{ border: '1px solid var(--color-border-subtle)', borderRadius: 10, overflow: 'hidden' }}>
-                  {course.chapters.map((chapter, idx) => {
-                    const isOpen = openChapters.has(String(idx))
-                    return (
-                      <div key={chapter.id} style={{ borderBottom: idx < course.chapters.length - 1 ? '1px solid var(--color-border-subtle)' : 'none' }}>
-                        <button
-                          onClick={() => toggleChapter(String(idx))}
-                          style={{
-                            width: '100%', display: 'flex', alignItems: 'center',
-                            justifyContent: 'space-between',
-                            padding: '14px 18px',
-                            background: isOpen ? 'var(--color-bg)' : 'var(--color-surface)',
-                            cursor: 'pointer', border: 'none',
-                            transition: 'background 0.15s ease',
-                          }}
-                        >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                            <ChevronDown
-                              size={15}
+              <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+                {course.chapters?.map((chapter) => {
+                  const isOpen = expandedChapter === chapter.id
+                  return (
+                    <div key={chapter.id} className="card" style={{
+                      overflow: 'hidden',
+                      transition: 'all 500ms cubic-bezier(0.4,0,0.2,1)',
+                      borderRadius: isOpen ? 16 : 12,
+                    }}>
+                      <button
+                        onClick={() => setExpandedChapter(isOpen ? null : chapter.id)}
+                        style={{ width: '100%', padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, fontSize: '14.5px', color: 'var(--color-text-primary)' }}
+                      >
+                        <span style={{ flex: 1, textAlign: 'left', lineHeight: 1.4, paddingRight: 16 }}>{chapter.title}</span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
+                          <span style={{ fontSize: '12px', color: 'var(--color-text-tertiary)', fontWeight: 400 }}>{chapter.sessions.length} sesi</span>
+                          <div style={{ display: 'flex', height: 28, width: 28, alignItems: 'center', justifyContent: 'center' }}>
+                            <ChevronUp
+                              size={16}
                               color="var(--color-text-tertiary)"
-                              strokeWidth={2}
                               style={{
-                                transform: isOpen ? 'rotate(0deg)' : 'rotate(-90deg)',
-                                transition: 'transform 0.2s ease',
-                                flexShrink: 0,
+                                transition: 'transform 500ms cubic-bezier(0.4,0,0.2,1)',
+                                transform: isOpen ? 'rotate(0deg)' : 'rotate(180deg)'
                               }}
                             />
-                            <span style={{ fontWeight: 600, fontSize: '14px', textAlign: 'left', color: 'var(--color-text-primary)' }}>
-                              {chapter.title}
-                            </span>
                           </div>
-                          <span style={{ fontSize: '12px', color: 'var(--color-text-tertiary)', whiteSpace: 'nowrap', marginLeft: 16 }}>
-                            {chapter.sessions.length} sesi
-                          </span>
-                        </button>
+                        </div>
+                      </button>
 
-                        {isOpen && (
-                          <div>
-                            {chapter.sessions.map((session) => (
-                              <div key={session.id} style={{
-                                display: 'flex', alignItems: 'center', gap: 12,
-                                padding: '11px 18px 11px 46px',
-                                borderTop: '1px solid var(--color-border-subtle)',
-                              }}>
-                                <span style={{ color: 'var(--color-text-tertiary)', flexShrink: 0 }}>
-                                  {SESSION_ICONS[session.type] || <PlayCircle size={14} strokeWidth={1.5} />}
-                                </span>
-                                <span style={{ fontSize: '13px', flex: 1, color: 'var(--color-text-primary)' }}>
-                                  {session.title}
-                                </span>
-                                {session.isFreePreview ? (
-                                  <span style={{
-                                    fontSize: '11px', fontWeight: 600,
-                                    color: 'var(--color-primary)',
-                                    background: 'rgba(var(--color-primary-rgb, 0,128,77), 0.08)',
-                                    padding: '2px 8px', borderRadius: 20,
-                                  }}>
-                                    Preview Gratis
-                                  </span>
-                                ) : course.isEnrolled ? null : (
-                                  <Lock size={12} color="var(--color-border)" strokeWidth={1.5} />
-                                )}
-                                {session.videoDuration && (
-                                  <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', whiteSpace: 'nowrap' }}>
-                                    {formatDuration(session.videoDuration)}
-                                  </span>
-                                )}
-                              </div>
-                            ))}
+                      <div
+                        style={{
+                          display: 'grid',
+                          transition: 'all 500ms cubic-bezier(0.4,0,0.2,1)',
+                          gridTemplateRows: isOpen ? '1fr' : '0fr',
+                          opacity: isOpen ? 1 : 0,
+                        }}
+                      >
+                        <div style={{ overflow: 'hidden' }}>
+                          <div style={{ padding: '0 8px 12px' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                              {chapter.sessions.map((session, idx: number) => {
+                                const canAccess = course.isEnrolled || session.isFreePreview
+                                const sessionContent = (
+                                  <div
+                                    key={session.id}
+                                    style={{
+                                      display: 'flex', alignItems: 'center', gap: 12,
+                                      padding: '10px 12px',
+                                      borderRadius: 10,
+                                      transition: 'all 500ms cubic-bezier(0.4,0,0.2,1)',
+                                      transform: isOpen ? 'translateY(0)' : 'translateY(16px)',
+                                      opacity: isOpen ? 1 : 0,
+                                      transitionDelay: isOpen ? `${idx * 75}ms` : '0ms',
+                                      cursor: canAccess ? 'pointer' : 'default',
+                                    }}
+                                    onMouseEnter={(e) => e.currentTarget.style.background = 'color-mix(in srgb, var(--color-text-primary) 3%, transparent)'}
+                                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                                  >
+                                    <div style={{
+                                      display: 'flex', height: 36, width: 36, flexShrink: 0,
+                                      alignItems: 'center', justifyContent: 'center',
+                                      borderRadius: 10, background: 'var(--color-bg)',
+                                      border: '1px solid var(--color-border-subtle)'
+                                    }}>
+                                      {getSessionIcon(session.type, session.type === 'LIVE' ? 'var(--color-primary)' : 'var(--color-text-tertiary)')}
+                                    </div>
+                                    <div style={{ flex: 1, minWidth: 0, paddingRight: 16 }}>
+                                      <div style={{ fontSize: '13.5px', fontWeight: 500, color: canAccess ? 'var(--color-text-primary)' : 'var(--color-text-secondary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                        {session.title}
+                                      </div>
+                                    </div>
+                                    {session.isFreePreview && !course.isEnrolled ? (
+                                      <span style={{
+                                        fontSize: '11px', fontWeight: 600,
+                                        color: 'var(--color-primary)',
+                                        background: 'rgba(1, 133, 86, 0.08)',
+                                        padding: '2px 8px', borderRadius: 20,
+                                        flexShrink: 0,
+                                      }}>
+                                        Preview Gratis
+                                      </span>
+                                    ) : session.videoDuration ? (
+                                      <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', flexShrink: 0 }}>
+                                        {formatDuration(session.videoDuration)}
+                                      </span>
+                                    ) : null}
+                                    {(!course.isEnrolled && !session.isFreePreview) && (
+                                      <Lock size={13} color="var(--color-text-tertiary)" style={{ flexShrink: 0, marginLeft: 4 }} />
+                                    )}
+                                  </div>
+                                )
+
+                                return canAccess ? (
+                                  <Link key={session.id} href={ROUTES.LEARN_COURSE_SESSION(id, session.id)} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
+                                    {sessionContent}
+                                  </Link>
+                                ) : (
+                                  sessionContent
+                                )
+                              })}
+                            </div>
                           </div>
-                        )}
+                        </div>
                       </div>
-                    )
-                  })}
-                </div>
+                    </div>
+                  )
+                })}
               </div>
             )}
 

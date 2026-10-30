@@ -8,7 +8,7 @@ import Link from 'next/link'
 import {
   ChevronLeft, ChevronRight, CheckCircle2, PlayCircle, FileText,
   MessageSquare, BookOpen, StickyNote, ChevronDown, Loader2,
-  Send, Plus, Clock, Zap, Upload, Download, Award, HelpCircle, RotateCcw,
+  Send, Plus, Clock, Zap, Upload, Download, Award, HelpCircle, FileEdit, RotateCcw,
   Lock
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -1004,7 +1004,7 @@ export default function CourseLearningPlayerPage() {
           boxShadow: '-4px 0 24px rgba(0,0,0,0.02)', zIndex: 10
         }}>
           <div style={{ padding: '24px', borderBottom: '1px solid var(--color-border-subtle)' }}>
-            <h3 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--color-text-primary)' }}>Kurikulum Kelas</h3>
+            <h3 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--color-text-primary)' }}>Kurikulum Mini Course</h3>
             <div style={{ marginTop: 16 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
                 <span style={{ fontSize: '13px', color: 'var(--color-text-secondary)', fontWeight: 500 }}>Progres Belajar</span>

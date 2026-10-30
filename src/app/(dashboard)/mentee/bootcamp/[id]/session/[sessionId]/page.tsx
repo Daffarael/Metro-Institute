@@ -8,7 +8,7 @@ import Link from 'next/link'
 import {
   ChevronLeft, ChevronRight, CheckCircle2, PlayCircle, FileText,
   MessageSquare, BookOpen, StickyNote, ChevronDown, Loader2,
-  Send, Plus, Clock, Zap, Upload, Download, Award, HelpCircle, RotateCcw,
+  Send, Plus, Clock, Zap, Upload, Download, Award, HelpCircle, FileEdit, RotateCcw,
   Video, ExternalLink, Calendar, Lock
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -1545,50 +1545,66 @@ export default function BootcampLearningPlayerPage() {
                     </div>
                   </button>
                   
-                  {isOpen && (
-                    <div style={{ padding: '8px 16px' }}>
-                      {chapter.sessions.map((sess, sIdx) => {
-                        const isActive = sess.id === sessionId
-                        return (
-                          <Link
-                            key={sess.id}
-                            href={ROUTES.LEARN_BOOTCAMP_SESSION(bootcampId, sess.id)}
-                            style={{
-                              display: 'flex', alignItems: 'flex-start', gap: 12,
-                              padding: '12px 16px', textDecoration: 'none',
-                              background: isActive ? '#ffffff' : 'transparent', borderRadius: 12, marginBottom: 4, border: isActive ? '1.5px solid var(--color-primary)' : '1px solid transparent', boxShadow: isActive ? '0 2px 6px rgba(0, 0, 0, 0.04)' : 'none', transition: 'all 0.2s' }} onMouseEnter={(e) => { if(!isActive) e.currentTarget.style.background = '#f8fafc' }} onMouseLeave={(e) => { if(!isActive) e.currentTarget.style.background = 'transparent' }}
-                          >
-                            <div style={{ marginTop: 2 }}>
-                              {sess.isCompleted
-                                ? <CheckCircle2 size={18} color="var(--color-primary)" />
-                                : sess.type === 'LIVE'
-                                ? <Video size={18} color={isActive ? 'var(--color-primary)' : '#cbd5e1'} />
-                                : <PlayCircle size={18} color={isActive ? 'var(--color-primary)' : '#cbd5e1'} />
-                              }
-                            </div>
-                            <div style={{ flex: 1 }}>
-                              <div style={{
-                                fontSize: '13px', fontWeight: isActive ? 700 : 500,
-                                color: isActive ? 'var(--color-primary)' : 'var(--color-text-secondary)',
-                                lineHeight: 1.4, marginBottom: 4
-                              }}>
-                                {sIdx + 1}. {sess.title}
+                  <div
+                    style={{
+                      display: 'grid',
+                      transition: 'all 400ms cubic-bezier(0.4, 0, 0.2, 1)',
+                      gridTemplateRows: isOpen ? '1fr' : '0fr',
+                      opacity: isOpen ? 1 : 0,
+                    }}
+                  >
+                    <div style={{ overflow: 'hidden' }}>
+                      <div style={{ padding: '8px 16px' }}>
+                        {chapter.sessions.map((sess, sIdx) => {
+                          const isActive = sess.id === sessionId
+                          return (
+                            <Link
+                              key={sess.id}
+                              href={ROUTES.LEARN_BOOTCAMP_SESSION(bootcampId, sess.id)}
+                              style={{
+                                display: 'flex', alignItems: 'flex-start', gap: 12,
+                                padding: '12px 16px', textDecoration: 'none',
+                                background: isActive ? '#ffffff' : 'transparent', borderRadius: 12, marginBottom: 4, border: isActive ? '1.5px solid var(--color-primary)' : '1px solid transparent', boxShadow: isActive ? '0 2px 6px rgba(0, 0, 0, 0.04)' : 'none', transition: 'all 0.2s'
+                              }}
+                              onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = '#f8fafc' }}
+                              onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = 'transparent' }}
+                            >
+                              <div style={{ marginTop: 2 }}>
+                                {sess.isCompleted
+                                  ? <CheckCircle2 size={18} color="var(--color-primary)" />
+                                  : sess.type === 'LIVE'
+                                  ? <Video size={18} color={isActive ? 'var(--color-primary)' : '#cbd5e1'} />
+                                  : sess.type === 'QUIZ'
+                                  ? <HelpCircle size={18} color={isActive ? 'var(--color-primary)' : '#cbd5e1'} />
+                                  : sess.type === 'ASSIGNMENT'
+                                  ? <FileEdit size={18} color={isActive ? 'var(--color-primary)' : '#cbd5e1'} />
+                                  : <PlayCircle size={18} color={isActive ? 'var(--color-primary)' : '#cbd5e1'} />
+                                }
                               </div>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '11px', color: 'var(--color-text-tertiary)' }}>
-                                <span style={{ textTransform: 'capitalize' }}>{sess.type.toLowerCase()}</span>
-                                {sess.videoDuration && (
-                                  <>
-                                    <span>•</span>
-                                    <span>{formatDuration(sess.videoDuration)}</span>
-                                  </>
-                                )}
+                              <div style={{ flex: 1 }}>
+                                <div style={{
+                                  fontSize: '13px', fontWeight: isActive ? 700 : 500,
+                                  color: isActive ? 'var(--color-primary)' : 'var(--color-text-secondary)',
+                                  lineHeight: 1.4, marginBottom: 4
+                                }}>
+                                  {sIdx + 1}. {sess.title}
+                                </div>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '11px', color: 'var(--color-text-tertiary)' }}>
+                                  <span style={{ textTransform: 'capitalize' }}>{sess.type.toLowerCase()}</span>
+                                  {sess.videoDuration && (
+                                    <>
+                                      <span>•</span>
+                                      <span>{formatDuration(sess.videoDuration)}</span>
+                                    </>
+                                  )}
+                                </div>
                               </div>
-                            </div>
-                          </Link>
-                        )
-                      })}
+                            </Link>
+                          )
+                        })}
+                      </div>
                     </div>
-                  )}
+                  </div>
                 </div>
               )
             })}
