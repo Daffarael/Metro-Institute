@@ -70,7 +70,7 @@ interface BootcampFilters {
 const FIELD_OPTS = ['UI_UX', 'FRONTEND', 'BACKEND', 'MOBILE'] as const
 const FIELD_LABELS: Record<string, string> = { UI_UX: 'UI/UX', FRONTEND: 'Frontend', BACKEND: 'Backend', MOBILE: 'Mobile' }
 const STATUS_OPTIONS = [
-  { value: 'DRAFT', label: 'Draft' },
+  { value: 'DRAFT', label: 'Draf' },
   { value: 'PUBLISHED', label: 'Tayang' },
   { value: 'OPEN', label: 'Buka Pendaftaran' },
   { value: 'CLOSED', label: 'Ditutup' },
@@ -371,7 +371,7 @@ export default function AdminBootcampPage() {
     mutationFn: ({ id, isFeatured }: { id: string; isFeatured: boolean }) =>
       api.patch(`/admin/bootcamps/${id}/featured`, { isFeatured }),
     onSuccess: () => {
-      toast.success('Status Featured diperbarui!')
+      toast.success('Status Unggulan diperbarui!')
       qc.invalidateQueries({ queryKey: ['admin', 'bootcamps'] })
     },
     onError: () => toast.error('Gagal memperbarui Featured.'),
@@ -534,7 +534,7 @@ export default function AdminBootcampPage() {
                           onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#374151' }}
                           title="Kelola Challenge Bank"
                         >
-                          <Target size={12} /> Challenge
+                          <Target size={12} /> Tantangan
                         </button>
                         <Link href={`/admin/bootcamp/${b.id}/schedules`} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 'var(--radius-md)', background: '#fff', color: '#374151', border: '1px solid #e5e7eb', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', fontSize: '12px', fontWeight: 600, textDecoration: 'none', transition: 'all 0.15s' }}
                           onMouseEnter={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.color = 'var(--color-primary)' }}
@@ -550,15 +550,15 @@ export default function AdminBootcampPage() {
                         </Link>
                         {/* Featured Toggle */}
                         <button
-                          title={b.isFeatured ? 'Hapus dari Featured (Landing Page)' : 'Tampilkan di Landing Page sebagai Featured'}
+                          title={b.isFeatured ? 'Hapus dari Unggulan (Landing Page)' : 'Tampilkan di Landing Page sebagai Unggulan'}
                           onClick={() => featuredMutation.mutate({ id: b.id, isFeatured: !b.isFeatured })}
                           style={{
                             display: 'flex', alignItems: 'center', gap: 4,
                             padding: '5px 10px', borderRadius: 'var(--radius-md)',
-                            border: `1px solid ${b.isFeatured ? '#F59E0B' : 'var(--color-border)'}`,
-                            background: b.isFeatured ? '#FEF3C7' : 'transparent',
+                            border: `1px solid ${b.isFeatured ? '#F59E0B' : '#e5e7eb'}`,
+                            background: b.isFeatured ? '#FEF3C7' : '#fff',
                             fontSize: '12px', fontWeight: 600, cursor: 'pointer',
-                            color: b.isFeatured ? '#D97706' : 'var(--color-text-tertiary)',
+                            color: b.isFeatured ? '#D97706' : '#374151',
                             transition: 'all 0.15s',
                           }}
                         >

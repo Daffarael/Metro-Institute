@@ -542,9 +542,10 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
                 render={({ field }) => (
                   <CleanCombobox
                     options={[
-                      { value: 'PUBLISHED', label: 'PUBLISHED (Terbuka)' },
-                      { value: 'DRAFT', label: 'DRAFT (Disimpan)' },
+                      { value: 'PUBLISHED', label: 'Tayang (Terbuka)' },
+                      { value: 'DRAFT', label: 'Draf (Disimpan)' },
                     ]}
+                    allowClear={false}
                     value={field.value}
                     onChange={field.onChange}
                     placeholder="Pilih Status"
@@ -704,8 +705,8 @@ export default function AdminWebinarsPage() {
           onChange={val => { setStatus(val); setPage(1) }}
           placeholder="Semua Status"
           options={[
-            { value: 'PUBLISHED', label: 'Published' },
-            { value: 'DRAFT', label: 'Draft' },
+            { value: 'PUBLISHED', label: 'Tayang' },
+            { value: 'DRAFT', label: 'Draf' },
           ]}
           width={180}
         />

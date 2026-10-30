@@ -278,9 +278,10 @@ function CourseModal({ course, onClose }: { course?: MiniCourse; onClose: () => 
                 render={({ field }) => (
                   <CleanCombobox 
                     options={[
-                      { value: 'DRAFT', label: 'DRAFT' },
-                      { value: 'PUBLISHED', label: 'PUBLISHED' }
+                      { value: 'DRAFT', label: 'Draf' },
+                      { value: 'PUBLISHED', label: 'Tayang' }
                     ]}
+                    allowClear={false}
                     value={field.value as string} 
                     onChange={field.onChange} 
                     placeholder="Pilih Status"
@@ -403,7 +404,7 @@ export default function AdminMiniCoursePage() {
     mutationFn: ({ id, isFeatured }: { id: string; isFeatured: boolean }) =>
       api.patch(`/admin/courses/${id}/featured`, { isFeatured }),
     onSuccess: () => {
-      toast.success('Status Featured diperbarui!')
+      toast.success('Status Unggulan diperbarui!')
       qc.invalidateQueries({ queryKey: ['admin', 'courses'] })
     },
     onError: () => toast.error('Gagal memperbarui Featured.'),
@@ -442,7 +443,7 @@ export default function AdminMiniCoursePage() {
           onChange={val => setFilters(f => ({ ...f, status: val || undefined, page: 1 }))}
           placeholder="Semua Status"
           options={[
-            { value: 'DRAFT', label: 'Draft' },
+            { value: 'DRAFT', label: 'Draf' },
             { value: 'PUBLISHED', label: 'Tayang' }
           ]}
           width={180}
@@ -519,7 +520,7 @@ export default function AdminMiniCoursePage() {
                           onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#374151' }}
                           title="Kelola Challenge Bank"
                         >
-                          <Target size={12} /> Challenge
+                          <Target size={12} /> Tantangan
                         </button>
                         <Link href={`/admin/mini-course/${c.id}/stats`} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 'var(--radius-md)', background: '#fff', color: '#374151', border: '1px solid #e5e7eb', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', fontSize: '12px', fontWeight: 600, textDecoration: 'none', transition: 'all 0.15s' }}
                           onMouseEnter={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.color = 'var(--color-primary)' }}
@@ -529,19 +530,19 @@ export default function AdminMiniCoursePage() {
                         </Link>
                         {/* Featured Toggle */}
                         <button
-                          title={c.isFeatured ? 'Hapus dari Featured (Landing Page)' : 'Tampilkan di Landing Page sebagai Featured'}
+                          title={c.isFeatured ? 'Hapus dari Unggulan (Landing Page)' : 'Tampilkan di Landing Page sebagai Unggulan'}
                           onClick={() => featuredMutation.mutate({ id: c.id, isFeatured: !c.isFeatured })}
                           style={{
                             display: 'flex', alignItems: 'center', gap: 4,
                             padding: '5px 10px', borderRadius: 'var(--radius-md)',
-                            border: `1px solid ${c.isFeatured ? '#F59E0B' : 'var(--color-border)'}`,
-                            background: c.isFeatured ? '#FEF3C7' : 'transparent',
+                            border: `1px solid ${c.isFeatured ? '#F59E0B' : '#e5e7eb'}`,
+                            background: c.isFeatured ? '#FEF3C7' : '#fff',
                             fontSize: '12px', fontWeight: 600, cursor: 'pointer',
-                            color: c.isFeatured ? '#D97706' : 'var(--color-text-tertiary)',
+                            color: c.isFeatured ? '#D97706' : '#374151',
                             transition: 'all 0.15s',
                           }}
                         >
-                          {c.isFeatured ? '⭐ Featured' : '☆ Feature'}
+                          {c.isFeatured ? '★ Unggulan' : '☆ Jadikan Unggulan'}
                         </button>
                       </div>
                     </td>

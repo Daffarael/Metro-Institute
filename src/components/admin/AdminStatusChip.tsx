@@ -6,7 +6,7 @@ interface ChipStyle { color: string; label: string }
 
 const STATUS_MAP: Record<string, ChipStyle> = {
   // BootcampStatus
-  DRAFT:          { color: '#4B5563', label: 'Draft' }, // Dark Gray
+  DRAFT:          { color: '#4B5563', label: 'Draf' }, // Dark Gray
   PUBLISHED:      { color: '#018556', label: 'Tayang' }, // Metro Green
   OPEN:           { color: '#018556', label: 'Buka Pendaftaran' }, // Green
   CLOSED:         { color: '#DC2626', label: 'Ditutup' }, // Deep Red
@@ -20,12 +20,12 @@ const STATUS_MAP: Record<string, ChipStyle> = {
   SUCCESS:        { color: '#018556', label: 'Berhasil' }, // Metro Green
   FAILED:         { color: '#DC2626', label: 'Gagal' },
   CANCELLED:      { color: '#4B5563', label: 'Dibatalkan' },
-  REFUNDED:       { color: '#8B5CF6', label: 'Refunded' }, // Purple
+  REFUNDED:       { color: '#8B5CF6', label: 'Dikembalikan' }, // Purple
   // AttemptStatus
   PENDING_REVIEW: { color: '#F59E0B', label: 'Belum Dinilai' },
   GRADED:         { color: '#10B981', label: 'Sudah Dinilai' },
   // UserStatus
-  SUSPENDED:      { color: '#EF4444', label: 'Suspended' },
+  SUSPENDED:      { color: '#DC2626', label: 'Ditangguhkan' },
   // Types
   BOOTCAMP:       { color: '#018556', label: 'Bootcamp' },
   MINI_COURSE:    { color: '#018556', label: 'Mini Course' },
@@ -45,8 +45,8 @@ export default function AdminStatusChip({ status, label, size = 'sm' }: AdminSta
   if (resolvedStatus === 'TRUE') resolvedStatus = 'PUBLISHED'
   if (resolvedStatus === 'FALSE') resolvedStatus = 'DRAFT'
 
-  const style = STATUS_MAP[resolvedStatus] ?? { color: '#6B7280', label: resolvedStatus || 'Draft' }
-  const displayLabel = label ?? (style.label || 'Draft')
+  const style = STATUS_MAP[resolvedStatus] ?? { color: '#6B7280', label: resolvedStatus || 'Draf' }
+  const displayLabel = label ?? (style.label || 'Draf')
 
   return (
     <span style={{
