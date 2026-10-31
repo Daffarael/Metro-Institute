@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
-import { Tag, Award, Heart } from "lucide-react";
+import { Tag, Award } from "lucide-react";
 import { PopButton } from "@/components/ui/PopButton";
 
 export const INTERACTIVE_LINKS = [
@@ -81,15 +82,6 @@ export function InteractiveHoverLinks({
   subtitle = "Pilih jalur akselerasi karir yang paling pas dengan gaya dan kebutuhan belajarmu.",
   onSelectService,
 }: InteractiveHoverLinksProps) {
-  const [favorites, setFavorites] = useState<Record<string, boolean>>({});
-
-  const toggleFavorite = (id: string) => {
-    setFavorites((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-  };
-
   return (
     <section className="bg-white py-20 md:py-28 px-4 sm:px-6 lg:px-8 w-full">
       <div className="mx-auto max-w-7xl">
@@ -131,7 +123,6 @@ export function InteractiveHoverLinks({
             const tag1 = item.tag1 || defaults.tag1;
             const tag2 = item.tag2 || defaults.tag2;
             const buttonText = item.buttonText || defaults.buttonText;
-            const isFav = !!favorites[item.heading || idx];
 
             return (
               <motion.div
@@ -179,41 +170,20 @@ export function InteractiveHoverLinks({
                   </div>
                 </div>
 
-                {/* Card Action Row - Signature Landing Page PopButton (Yellow 3D Button) */}
-                <div className="flex items-center gap-3 mt-6 pt-1 px-1">
+                {/* Card Action Row - Signature Landing Page PopButton navigating to /login */}
+                <div className="mt-6 pt-1 px-1">
                   <PopButton
-                    type="button"
+                    asChild
                     color="yellow"
                     size="default"
-                    onClick={() => {
-                      if (onSelectService) {
-                        onSelectService(item.heading);
-                      } else if (item.href) {
-                        window.location.href = item.href;
-                      }
-                    }}
-                    className="flex-1 text-xs sm:text-sm font-black shadow-sm"
+                    className="w-full text-xs sm:text-sm font-black shadow-sm"
                   >
-                    <span>{buttonText}</span>
-                  </PopButton>
-
-                  <PopButton
-                    type="button"
-                    color="white"
-                    size="default"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleFavorite(item.heading || String(idx));
-                    }}
-                    className={`w-11 h-11 p-0 shrink-0 ${
-                      isFav
-                        ? "text-red-500 !border-red-300"
-                        : "text-gray-400 hover:text-red-500"
-                    }`}
-                    aria-label="Simpan Layanan"
-                    title="Simpan ke Favorit"
-                  >
-                    <Heart className={`w-5 h-5 transition-transform duration-200 ${isFav ? "fill-red-500 text-red-500 scale-110" : ""}`} />
+                    <Link
+                      href="/login"
+                      onClick={() => onSelectService?.(item.heading)}
+                    >
+                      <span>{buttonText}</span>
+                    </Link>
                   </PopButton>
                 </div>
               </motion.div>

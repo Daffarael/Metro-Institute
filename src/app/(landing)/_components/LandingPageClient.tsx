@@ -750,21 +750,7 @@ export default function LandingPageClient({
             title={config['services_title'] || undefined}
             subtitle={config['services_subtitle'] || undefined}
             links={servicesItems}
-            onSelectService={(heading) => {
-              const upper = heading.toUpperCase();
-              if (upper.includes('BOOTCAMP')) {
-                setActiveTab('BOOTCAMP');
-              } else if (upper.includes('MINI')) {
-                setActiveTab('MINI COURSE');
-              } else if (upper.includes('WEBINAR') || upper.includes('WORKSHOP')) {
-                setActiveTab('WEBINAR');
-              }
-              const target = document.getElementById('programs');
-              if (target) {
-                target.scrollIntoView({ behavior: 'smooth' });
-              }
-            }}
-          />
+            />
         </div>
       )}
 
