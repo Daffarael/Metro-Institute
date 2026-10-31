@@ -5,6 +5,7 @@
 
 import { useState, useEffect } from 'react'
 import { AlertTriangle, X } from 'lucide-react'
+import TearButton from '@/components/ui/TearButton'
 
 interface AdminConfirmModalProps {
   isOpen: boolean
@@ -49,13 +50,12 @@ export default function AdminConfirmModal({
 
   const canConfirm = !confirmText || typed === confirmText
 
-  const btnColor = isDangerous ? 'var(--color-error)' : 'var(--color-primary)'
-  const btnBg    = isDangerous ? '#DC2626' : 'var(--color-primary)'
-
   return (
     <div style={{
       position: 'fixed', inset: 0,
-      background: 'rgba(0,0,0,0.45)',
+      background: 'rgba(0,0,0,0.5)',
+      backdropFilter: 'blur(3px)',
+      WebkitBackdropFilter: 'blur(3px)',
       zIndex: 'var(--z-modal)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       padding: 'var(--space-4)',
@@ -110,7 +110,7 @@ export default function AdminConfirmModal({
           fontSize: 'var(--text-sm)',
           color: 'var(--color-text-secondary)',
           lineHeight: 'var(--leading-relaxed)',
-          marginBottom: confirmText ? 'var(--space-4)' : 'var(--space-6)',
+          marginBottom: confirmText ? 'var(--space-4)' : (isDangerous ? 'var(--space-4)' : 'var(--space-6)'),
         }}>
           {description}
         </p>
@@ -143,46 +143,83 @@ export default function AdminConfirmModal({
         )}
 
         {/* Actions */}
-        <div style={{ display: 'flex', gap: 'var(--space-3)', justifyContent: 'flex-end' }}>
-          <button
-            onClick={onClose}
-            disabled={isLoading}
-            style={{
-              padding: '8px 16px',
-              borderRadius: 'var(--radius-md)',
-              border: '1px solid var(--color-border)',
-              background: 'transparent',
-              fontSize: 'var(--text-sm)',
-              fontWeight: 500,
-              color: 'var(--color-text-secondary)',
-              cursor: 'pointer',
-              transition: 'background var(--transition-fast)',
-            }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-bg)')}
-            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-          >
-            Batal
-          </button>
-          <button
-            onClick={onConfirm}
-            disabled={!canConfirm || isLoading}
-            style={{
-              padding: '8px 16px',
-              borderRadius: 'var(--radius-md)',
-              border: 'none',
-              background: !canConfirm ? 'var(--color-border)' : btnBg,
-              color: !canConfirm ? 'var(--color-text-disabled)' : '#fff',
-              fontSize: 'var(--text-sm)',
-              fontWeight: 600,
-              cursor: !canConfirm || isLoading ? 'not-allowed' : 'pointer',
-              transition: 'opacity var(--transition-fast)',
-              opacity: isLoading ? 0.7 : 1,
-              minWidth: 90,
-            }}
-          >
-            {isLoading ? 'Memproses...' : confirmLabel}
-          </button>
-        </div>
+        {isDangerous ? (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 'var(--space-4)' }}>
+            <TearButton
+              tone="danger"
+              label={confirmLabel}
+              description="Sobek tiket untuk menghapus"
+              stubLabel="Tear"
+              confirmedLabel="Dihapus"
+              confirmedDescription="Sedang menghapus..."
+              onConfirm={onConfirm}
+              disabled={!canConfirm || isLoading}
+            />
+
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={isLoading}
+              style={{
+                marginTop: 'var(--space-3)',
+                padding: '6px 14px',
+                borderRadius: 'var(--radius-md)',
+                border: 'none',
+                background: 'transparent',
+                fontSize: 'var(--text-xs)',
+                fontWeight: 500,
+                color: 'var(--color-text-tertiary)',
+                cursor: 'pointer',
+                transition: 'color var(--transition-fast)',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-text-primary)')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-tertiary)')}
+            >
+              Batal
+            </button>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', gap: 'var(--space-3)', justifyContent: 'flex-end' }}>
+            <button
+              onClick={onClose}
+              disabled={isLoading}
+              style={{
+                padding: '8px 16px',
+                borderRadius: 'var(--radius-md)',
+                border: '1px solid var(--color-border)',
+                background: 'transparent',
+                fontSize: 'var(--text-sm)',
+                fontWeight: 500,
+                color: 'var(--color-text-secondary)',
+                cursor: 'pointer',
+                transition: 'background var(--transition-fast)',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-bg)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+            >
+              Batal
+            </button>
+            <button
+              onClick={onConfirm}
+              disabled={!canConfirm || isLoading}
+              style={{
+                padding: '8px 16px',
+                borderRadius: 'var(--radius-md)',
+                border: 'none',
+                background: !canConfirm ? 'var(--color-border)' : 'var(--color-primary)',
+                color: !canConfirm ? 'var(--color-text-disabled)' : '#fff',
+                fontSize: 'var(--text-sm)',
+                fontWeight: 600,
+                cursor: !canConfirm || isLoading ? 'not-allowed' : 'pointer',
+                transition: 'opacity var(--transition-fast)',
+                opacity: isLoading ? 0.7 : 1,
+                minWidth: 90,
+              }}
+            >
+              {isLoading ? 'Memproses...' : confirmLabel}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )
