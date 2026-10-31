@@ -45,6 +45,7 @@ const SERVICE_DEFAULTS: Record<string, {
   tag1: string;
   tag2: string;
   buttonText: string;
+  subheading: string;
 }> = {
   bootcamp: {
     imgSrc: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=800",
@@ -52,6 +53,7 @@ const SERVICE_DEFAULTS: Record<string, {
     tag1: "Mentoring Intensif",
     tag2: "Portofolio Industri",
     buttonText: "Jelajahi Bootcamp",
+    subheading: "Program intensif bimbingan karir siap kerja dari nol.",
   },
   "mini course": {
     imgSrc: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=800",
@@ -59,6 +61,7 @@ const SERVICE_DEFAULTS: Record<string, {
     tag1: "Akses Fleksibel",
     tag2: "E-Sertifikat Resmi",
     buttonText: "Jelajahi Mini Course",
+    subheading: "Kuasai skill teknologi spesifik dalam waktu singkat.",
   },
   webinar: {
     imgSrc: "https://images.unsplash.com/photo-1540317580384-e5d43616b9aa?auto=format&fit=crop&q=80&w=800",
@@ -66,6 +69,7 @@ const SERVICE_DEFAULTS: Record<string, {
     tag1: "Q&A Interaktif",
     tag2: "Insight Expert",
     buttonText: "Jelajahi Webinar",
+    subheading: "Sesi live interaktif langsung bersama praktisi top industri.",
   },
 };
 
@@ -120,7 +124,15 @@ export function InteractiveHoverLinks({
 
             const imgSrc = item.imgSrc || defaults.imgSrc;
             const category = item.category || defaults.category;
-            const tag1 = item.tag1 || defaults.tag1;
+            const rawSubheading = item.subheading || defaults.subheading || "";
+            const subheading = rawSubheading
+              .replace(/12\s*minggu/gi, "")
+              .replace(/\s+/g, " ")
+              .replace("komprehensif siap kerja", "intensif bimbingan karir siap kerja")
+              .trim();
+
+            const rawTag1 = item.tag1 || defaults.tag1;
+            const tag1 = rawTag1.includes("12") ? "Mentoring Intensif" : rawTag1;
             const tag2 = item.tag2 || defaults.tag2;
             const buttonText = item.buttonText || defaults.buttonText;
 
@@ -153,7 +165,7 @@ export function InteractiveHoverLinks({
                       {category}
                     </span>
                     <p className="text-[13.5px] text-gray-600 mt-2.5 leading-relaxed line-clamp-2">
-                      {item.subheading}
+                      {subheading}
                     </p>
 
                     {/* Metadata Tags Row */}

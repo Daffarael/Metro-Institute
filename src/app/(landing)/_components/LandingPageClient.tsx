@@ -67,7 +67,19 @@ export default function LandingPageClient({
   const servicesItems = (() => {
     try {
       const parsed = JSON.parse(config['services_items'] || '[]')
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed.map((item: any) => ({
+          ...item,
+          subheading: item.subheading
+            ? item.subheading
+                .replace(/12\s*minggu/gi, '')
+                .replace(/\s+/g, ' ')
+                .replace('komprehensif siap kerja', 'intensif bimbingan karir siap kerja')
+                .trim()
+            : item.subheading,
+          tag1: item.tag1 && item.tag1.includes('12') ? 'Mentoring Intensif' : item.tag1,
+        }))
+      }
     } catch {
       // ignore
     }
