@@ -19,7 +19,7 @@ import { Trash2, Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const HEIGHT = 68
-const BODY_WIDTH = 236
+const BODY_WIDTH = 268
 const STUB_WIDTH = 76
 // How far (deg) the stub swings, about the foot of the perforation, before the last fibre gives.
 const TEAR_ANGLE = 34
@@ -96,7 +96,7 @@ export const TEAR_TONES = {
     paper: 'bg-red-600 text-white shadow-lg shadow-red-600/30',
     chip: 'bg-white/20 text-white',
     chipDone: 'bg-white text-red-600',
-    sub: 'text-white/80',
+    sub: 'text-white/85',
     stub: 'text-white/90',
     perforation: 'border-white/40',
   },
@@ -104,7 +104,7 @@ export const TEAR_TONES = {
     paper: 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900',
     chip: 'bg-white/10 dark:bg-zinc-900/10',
     chipDone: 'bg-white text-zinc-900 dark:bg-zinc-900 dark:text-white',
-    sub: 'text-white/55 dark:text-zinc-900/55',
+    sub: 'text-white/60 dark:text-zinc-900/60',
     stub: 'text-white/60 dark:text-zinc-900/60',
     perforation: 'border-white/30 dark:border-zinc-900/30',
   },
@@ -136,10 +136,10 @@ export default function TearButton({
   tone = 'danger',
   icon,
   label = 'Hapus',
-  description = 'Sobek tiket untuk menghapus',
+  description = 'Sobek untuk menghapus',
   stubLabel = 'Tear',
   confirmedLabel = 'Dihapus',
-  confirmedDescription = 'Sedang memproses...',
+  confirmedDescription = 'Sedang menghapus...',
   onConfirm,
   resetAfter = 0,
   className,
@@ -167,7 +167,7 @@ export default function TearButton({
     vx: 0,
     vy: 0,
     spin: 0,
-    // The hand's recent movement, for the throw.
+    // Pointer movements for flight throw
     px: 0,
     py: 0,
     pt: 0,
@@ -440,7 +440,7 @@ export default function TearButton({
     if (!s.held) return
     s.held = false
 
-    // If it was a quick tap or click with almost no drag, auto-tear for convenience
+    // Quick tap or click without dragging auto-tears cleanly
     const dist = Math.hypot(event.clientX - s.startPx, event.clientY - s.startPy)
     const duration = event.timeStamp - s.startTime
     if (dist < 8 && duration < 350) {
@@ -517,10 +517,10 @@ export default function TearButton({
               )}
               key={line.key}
             >
-              <span className="block truncate font-bold text-sm tracking-tight">
+              <span className="block truncate font-bold text-sm tracking-tight leading-snug">
                 {line.title}
               </span>
-              <span className={cn('block truncate text-xs font-normal', colors.sub)}>
+              <span className={cn('block text-xs font-normal whitespace-nowrap leading-tight mt-0.5', colors.sub)}>
                 {line.sub}
               </span>
             </span>

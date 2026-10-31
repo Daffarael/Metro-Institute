@@ -3,7 +3,7 @@
 // Modal konfirmasi untuk aksi destruktif (DELETE, SUSPEND, REMOVE)
 // Sesuai design_superadmin.md section 10
 
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { AlertTriangle, X } from 'lucide-react'
 import TearButton from '@/components/ui/TearButton'
 
@@ -19,6 +19,21 @@ interface AdminConfirmModalProps {
   onClose: () => void
   isDangerous?: boolean
   isLoading?: boolean
+}
+
+function renderFormattedDescription(text: string) {
+  // Bold words inside quotes like "tesssssssssssssss"
+  const parts = text.split(/(".*?")/)
+  return parts.map((part, index) => {
+    if (part.startsWith('"') && part.endsWith('"')) {
+      return (
+        <strong key={index} style={{ color: 'var(--color-text-primary)', fontWeight: 600 }}>
+          {part}
+        </strong>
+      )
+    }
+    return part
+  })
 }
 
 export default function AdminConfirmModal({
@@ -51,71 +66,110 @@ export default function AdminConfirmModal({
   const canConfirm = !confirmText || typed === confirmText
 
   return (
-    <div style={{
-      position: 'fixed', inset: 0,
-      background: 'rgba(0,0,0,0.5)',
-      backdropFilter: 'blur(3px)',
-      WebkitBackdropFilter: 'blur(3px)',
-      zIndex: 'var(--z-modal)',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      padding: 'var(--space-4)',
-    }}
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        background: 'rgba(0, 0, 0, 0.55)',
+        backdropFilter: 'blur(4px)',
+        WebkitBackdropFilter: 'blur(4px)',
+        zIndex: 'var(--z-modal)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 'var(--space-4)',
+      }}
       onClick={e => { if (e.target === e.currentTarget) onClose() }}
     >
-      <div style={{
-        background: 'var(--color-surface)',
-        borderRadius: 'var(--radius-xl)',
-        boxShadow: 'var(--shadow-xl)',
-        width: '100%',
-        maxWidth: 440,
-        padding: 'var(--space-6)',
-        animation: 'modal-in 150ms ease',
-      }}>
-        {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 'var(--space-4)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
-            <div style={{
-              width: 40, height: 40,
-              borderRadius: 'var(--radius-lg)',
-              background: isDangerous ? 'var(--color-error-bg)' : 'var(--color-warning-bg)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              flexShrink: 0,
-            }}>
-              <AlertTriangle size={20} color={isDangerous ? 'var(--color-error)' : 'var(--color-warning)'} />
+      <div
+        style={{
+          position: 'relative',
+          background: 'var(--color-surface)',
+          borderRadius: 24,
+          boxShadow: '0 24px 60px -12px rgba(0, 0, 0, 0.25)',
+          width: '100%',
+          maxWidth: 440,
+          padding: isDangerous ? '32px 28px 24px' : 'var(--space-6)',
+          animation: 'modal-in 150ms ease',
+        }}
+      >
+        {/* Top-Right Close Button */}
+        <button
+          onClick={onClose}
+          aria-label="Tutup modal"
+          style={{
+            position: 'absolute',
+            top: 16,
+            right: 16,
+            width: 32,
+            height: 32,
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: 'var(--color-text-tertiary)',
+            cursor: 'pointer',
+            border: 'none',
+            background: 'transparent',
+            transition: 'background var(--transition-fast), color var(--transition-fast)',
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.background = 'var(--color-bg)'
+            e.currentTarget.style.color = 'var(--color-text-primary)'
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.background = 'transparent'
+            e.currentTarget.style.color = 'var(--color-text-tertiary)'
+          }}
+        >
+          <X size={18} />
+        </button>
+
+        {/* Standard Header (only for non-destructive / standard confirmations) */}
+        {!isDangerous && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginBottom: 'var(--space-4)' }}>
+            <div
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: 'var(--radius-lg)',
+                background: 'var(--color-warning-bg)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}
+            >
+              <AlertTriangle size={20} color="var(--color-warning)" />
             </div>
             <h3 style={{ fontSize: 'var(--text-lg)', fontWeight: 700, color: 'var(--color-text-primary)' }}>
               {title}
             </h3>
           </div>
-          <button
-            onClick={onClose}
+        )}
+
+        {/* Description Text */}
+        <div
+          style={{
+            textAlign: isDangerous ? 'center' : 'left',
+            margin: isDangerous ? '6px auto 24px' : (confirmText ? '0 0 var(--space-4)' : '0 0 var(--space-6)'),
+            maxWidth: isDangerous ? 360 : undefined,
+          }}
+        >
+          <p
             style={{
-              width: 28, height: 28,
-              borderRadius: 'var(--radius-md)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: 'var(--color-text-tertiary)',
-              cursor: 'pointer',
-              border: 'none', background: 'transparent',
-              transition: 'background var(--transition-fast)',
+              fontSize: '14.5px',
+              color: 'var(--color-text-secondary)',
+              lineHeight: 1.6,
+              margin: 0,
+              textWrap: 'balance' as any,
             }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-bg)')}
-            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
           >
-            <X size={16} />
-          </button>
+            {renderFormattedDescription(description)}
+          </p>
         </div>
 
-        {/* Description */}
-        <p style={{
-          fontSize: 'var(--text-sm)',
-          color: 'var(--color-text-secondary)',
-          lineHeight: 'var(--leading-relaxed)',
-          marginBottom: confirmText ? 'var(--space-4)' : (isDangerous ? 'var(--space-4)' : 'var(--space-6)'),
-        }}>
-          {description}
-        </p>
-
-        {/* Confirm text input */}
+        {/* Confirm text input if requested */}
         {confirmText && (
           <div style={{ marginBottom: 'var(--space-5)' }}>
             <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-secondary)', marginBottom: 'var(--space-2)' }}>
@@ -144,11 +198,11 @@ export default function AdminConfirmModal({
 
         {/* Actions */}
         {isDangerous ? (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 'var(--space-4)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <TearButton
               tone="danger"
               label={confirmLabel}
-              description="Sobek tiket untuk menghapus"
+              description="Sobek untuk menghapus"
               stubLabel="Tear"
               confirmedLabel="Dihapus"
               confirmedDescription="Sedang menghapus..."
@@ -161,12 +215,12 @@ export default function AdminConfirmModal({
               onClick={onClose}
               disabled={isLoading}
               style={{
-                marginTop: 'var(--space-3)',
-                padding: '6px 14px',
-                borderRadius: 'var(--radius-md)',
+                marginTop: 18,
+                padding: '6px 18px',
+                borderRadius: 8,
                 border: 'none',
                 background: 'transparent',
-                fontSize: 'var(--text-xs)',
+                fontSize: '13px',
                 fontWeight: 500,
                 color: 'var(--color-text-tertiary)',
                 cursor: 'pointer',
