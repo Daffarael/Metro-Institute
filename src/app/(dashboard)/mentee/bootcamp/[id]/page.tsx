@@ -529,7 +529,7 @@ export default function BootcampDetailPage() {
                             Sesi Live Google Meet (Syarat Hadir 80%)
                           </div>
                           <div style={{ fontSize: '12px', color: '#475569', lineHeight: 1.45, marginTop: 2 }}>
-                            Durasi hadir dihitung otomatis oleh server Google Meet. Wajib aktif minimal 80% dari total menit sesi agar tercatat Hadir.
+                            Wajib aktif minimal 80% dari total menit sesi agar tercatat Hadir.
                           </div>
                         </div>
                       </div>
@@ -765,32 +765,34 @@ export default function BootcampDetailPage() {
                               {badgeIcon} {badgeText}
                             </span>
 
-                            <Link
-                              href={ROUTES.LEARN_BOOTCAMP_SESSION(id, s.id)}
-                              style={{
-                                padding: '8px 18px',
-                                borderRadius: 8,
-                                background: '#018556',
-                                color: '#ffffff',
-                                border: 'none',
-                                fontSize: '13px',
-                                fontWeight: 600,
-                                textDecoration: 'none',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: 6,
-                                cursor: 'pointer',
-                                transition: 'opacity 0.15s ease',
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.opacity = '0.9'
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.opacity = '1'
-                              }}
-                            >
-                              Masuk <ChevronRight size={14} />
-                            </Link>
+                            {!isPassed && (
+                              <Link
+                                href={ROUTES.LEARN_BOOTCAMP_SESSION(id, s.id)}
+                                style={{
+                                  padding: '8px 18px',
+                                  borderRadius: 8,
+                                  background: '#018556',
+                                  color: '#ffffff',
+                                  border: 'none',
+                                  fontSize: '13px',
+                                  fontWeight: 600,
+                                  textDecoration: 'none',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: 6,
+                                  cursor: 'pointer',
+                                  transition: 'opacity 0.15s ease',
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.opacity = '0.9'
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.opacity = '1'
+                                }}
+                              >
+                                Masuk <ChevronRight size={14} />
+                              </Link>
+                            )}
                           </div>
                         </div>
                       )
