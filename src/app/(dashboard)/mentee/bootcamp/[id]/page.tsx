@@ -51,16 +51,18 @@ export default function BootcampDetailPage() {
     enabled: Boolean(data?.isEnrolled),
   })
 
-  // Alur kelulusan bertahap: harus selesai yang sebelumnya baru bisa lanjut,
-  // kecuali sesi live kalau kelewat (isAbsent) tetap bisa lanjut tapi dihitung tidak hadir.
+  // Alur sinkronus bertahap:
+  // 1. Sesi sebelumnya harus tuntas (atau live terlewat) untuk membuka langkah berikutnya.
+  // 2. Sesi Live dan Modul dibuka BARENGAN saat jam jadwal sesi dimulai.
+  // 3. Kuis, Tugas, dan Video rekaman baru dibuka SETELAH Sesi Live selesai.
   const sessionUnlockMap = useMemo(() => {
-    const map: Record<string, boolean> = {}
+    const map: Record<string, { isUnlocked: boolean; lockedReason?: 'PREREQUISITE' | 'NOT_STARTED' | 'WAITING_LIVE_END'; unlockDate?: string }> = {}
     const list = attendanceData?.sessions || []
+    const now = Date.now()
     let canProceed = true
 
     for (let i = 0; i < list.length; i++) {
       const s = list[i]
-      map[s.id] = canProceed
 
       const isLive = s.type === 'LIVE'
       const isPresent = s.attendance?.status === 'PRESENT' || s.attendance?.status === 'MANUAL'
@@ -69,8 +71,35 @@ export default function BootcampDetailPage() {
       const isDone = s.isCompleted
       const isPassed = isLive ? (isPresent || isExcused) : isDone
 
-      const isCleared = isPassed || (isLive && isAbsent)
+      const liveScheduleTime = s.chapterLiveScheduledAt || s.liveScheduledAt
+      const scheduledMs = liveScheduleTime ? new Date(liveScheduleTime).getTime() : 0
+      const isScheduleStarted = scheduledMs ? now >= scheduledMs : true
 
+      const liveDurationMin = s.durationMinutes || 90
+      const liveEndMs = scheduledMs ? (scheduledMs + liveDurationMin * 60000) : 0
+      const isLiveEnded = s.isChapterLiveEnded || (liveEndMs ? now >= liveEndMs : true) || isAbsent || isPresent
+
+      let isUnlocked = canProceed
+      let lockedReason: 'PREREQUISITE' | 'NOT_STARTED' | 'WAITING_LIVE_END' | undefined
+
+      if (!canProceed) {
+        isUnlocked = false
+        lockedReason = 'PREREQUISITE'
+      } else if (!isScheduleStarted) {
+        isUnlocked = false
+        lockedReason = 'NOT_STARTED'
+      } else if ((s.type === 'QUIZ' || s.type === 'ASSIGNMENT' || s.type === 'VIDEO') && !isLiveEnded && !isPassed) {
+        isUnlocked = false
+        lockedReason = 'WAITING_LIVE_END'
+      }
+
+      map[s.id] = {
+        isUnlocked,
+        lockedReason,
+        unlockDate: liveScheduleTime,
+      }
+
+      const isCleared = isPassed || (isLive && isAbsent)
       if (!isCleared) {
         canProceed = false
       }
@@ -356,7 +385,8 @@ export default function BootcampDetailPage() {
                           <div style={{ padding: '0 8px 12px' }}>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                               {chapter.sessions.map((session, idx: number) => {
-                                const isUnlocked = sessionUnlockMap ? sessionUnlockMap[session.id] !== false : true
+                                const unlockInfo = sessionUnlockMap?.[session.id]
+                                const isUnlocked = unlockInfo ? unlockInfo.isUnlocked : true
                                 const sessionContent = (
                                   <div
                                     key={session.id}
@@ -373,7 +403,13 @@ export default function BootcampDetailPage() {
                                     onClick={(e) => {
                                       if (data.isEnrolled && !isUnlocked) {
                                         e.preventDefault()
-                                        toast.info('Selesaikan sesi sebelumnya terlebih dahulu untuk membuka sesi ini.')
+                                        if (unlockInfo?.lockedReason === 'NOT_STARTED') {
+                                          toast.info(`Sesi ini baru dibuka pada jadwal ${session.liveScheduledAt ? formatDate(session.liveScheduledAt) : 'sesi'}.`)
+                                        } else if (unlockInfo?.lockedReason === 'WAITING_LIVE_END') {
+                                          toast.info('Kuis & tugas otomatis terbuka setelah Sesi Live Google Meet selesai.')
+                                        } else {
+                                          toast.info('Selesaikan sesi sebelumnya terlebih dahulu untuk membuka sesi ini.')
+                                        }
                                       }
                                     }}
                                     onMouseEnter={(e) => {
@@ -645,7 +681,29 @@ export default function BootcampDetailPage() {
                       const isAbsent = s.attendance?.status === 'ABSENT'
                       const isDone = s.isCompleted
                       const isPassed = isLive ? (isPresent || isExcused) : isDone
-                      const isUnlocked = sessionUnlockMap ? sessionUnlockMap[s.id] !== false : true
+                      const unlockInfo = sessionUnlockMap?.[s.id]
+                      const isUnlocked = unlockInfo ? unlockInfo.isUnlocked : true
+
+                      const actionLabel = s.type === 'LIVE'
+                        ? 'Masuk Meet'
+                        : s.type === 'QUIZ'
+                        ? 'Mulai Kuis'
+                        : s.type === 'ASSIGNMENT'
+                        ? 'Kirim Tugas'
+                        : s.type === 'VIDEO'
+                        ? 'Tonton Video'
+                        : 'Pelajari'
+
+                      let lockedBadgeText = 'Terkunci'
+                      let lockedBadgeTitle = 'Selesaikan sesi sebelumnya terlebih dahulu'
+
+                      if (unlockInfo?.lockedReason === 'NOT_STARTED') {
+                        lockedBadgeText = s.liveScheduledAt ? `Dibuka ${formatDate(s.liveScheduledAt)}` : 'Terjadwal'
+                        lockedBadgeTitle = 'Sesi akan dibuka bersamaan saat jadwal pertemuan dimulai'
+                      } else if (unlockInfo?.lockedReason === 'WAITING_LIVE_END') {
+                        lockedBadgeText = 'Buka Pasca-Live'
+                        lockedBadgeTitle = 'Kuis & tugas otomatis terbuka setelah Sesi Live Google Meet selesai'
+                      }
 
                       // Type Label
                       const typeLabel = s.type === 'LIVE'
@@ -851,9 +909,9 @@ export default function BootcampDetailPage() {
                                   cursor: 'not-allowed',
                                   userSelect: 'none',
                                 }}
-                                title="Selesaikan sesi sebelumnya terlebih dahulu"
+                                title={lockedBadgeTitle}
                               >
-                                <Lock size={13} color="#94a3b8" /> Terkunci
+                                <Lock size={13} color="#94a3b8" /> {lockedBadgeText}
                               </div>
                             </div>
                           )}

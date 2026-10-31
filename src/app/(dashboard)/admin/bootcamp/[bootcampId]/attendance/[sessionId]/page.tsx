@@ -7,7 +7,7 @@ import Link from 'next/link'
 import {
   Users, CheckCircle2, XCircle, Clock, ShieldCheck, Search,
   Filter, ArrowLeft, RefreshCw, Edit3, X, Video, AlertCircle,
-  ExternalLink, Check
+  ExternalLink, Check, Upload, FileText, Loader2, FileSpreadsheet
 } from 'lucide-react'
 import api from '@/lib/axios'
 import AdminPageHeader from '@/components/admin/AdminPageHeader'
@@ -68,6 +68,100 @@ export default function SessionAttendancePage() {
   const [overrideStatus, setOverrideStatus] = useState<'PRESENT' | 'EXCUSED' | 'ABSENT'>('EXCUSED')
   const [overrideNotes, setOverrideNotes] = useState('')
   const [overrideDuration, setOverrideDuration] = useState<number>(90)
+
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false)
+  const [parsedCsvParticipants, setParsedCsvParticipants] = useState<Array<{ email: string; displayName: string; durationMinutes: number }>>([])
+  const [csvFileName, setCsvFileName] = useState('')
+
+  const syncCsvMutation = useMutation({
+    mutationFn: (participants: Array<{ email: string; displayName: string; durationMinutes: number }>) =>
+      api.post(`/admin/bootcamps/${params.bootcampId}/sessions/${params.sessionId}/attendance/sync`, {
+        participants,
+        conferenceId: 'ADMIN_CSV_IMPORT',
+      }).then(r => r.data),
+    onSuccess: (res: any) => {
+      toast.success(res.message || 'Presensi berhasil disinkronkan!')
+      queryClient.invalidateQueries({
+        queryKey: ['admin', 'bootcamp', params.bootcampId, 'session', params.sessionId, 'attendance'],
+      })
+      setIsUploadModalOpen(false)
+      setParsedCsvParticipants([])
+      setCsvFileName('')
+    },
+    onError: (err: any) => {
+      toast.error(err.response?.data?.message || 'Gagal memproses file CSV presensi')
+    },
+  })
+
+  const handleCsvFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setCsvFileName(file.name)
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      const text = event.target?.result as string
+      if (!text) return
+
+      try {
+        const lines = text.split(/\r?\n/).filter(line => line.trim().length > 0)
+        if (lines.length < 2) {
+          toast.error('File CSV kosong atau tidak memiliki baris data')
+          return
+        }
+
+        const header = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/['"]/g, ''))
+        const emailIdx = header.findIndex(h => h.includes('email') || h.includes('surel'))
+        const nameIdx = header.findIndex(h => h.includes('name') || h.includes('nama'))
+        const durationIdx = header.findIndex(h => h.includes('duration') || h.includes('durasi') || h.includes('min') || h.includes('menit') || h.includes('time in call'))
+
+        if (emailIdx === -1) {
+          toast.error('Kolom Email tidak ditemukan di file CSV. Pastikan ada kolom "Email"!')
+          return
+        }
+
+        const participants: Array<{ email: string; displayName: string; durationMinutes: number }> = []
+
+        for (let i = 1; i < lines.length; i++) {
+          const row = lines[i].split(',').map(cell => cell.trim().replace(/^["']|["']$/g, ''))
+          const email = row[emailIdx]?.trim()
+          if (!email || !email.includes('@')) continue
+
+          const name = nameIdx !== -1 && row[nameIdx] ? row[nameIdx] : email.split('@')[0]
+          
+          let durationMinutes = data?.session.durationMinutes || 90
+          if (durationIdx !== -1 && row[durationIdx]) {
+            const rawDur = row[durationIdx].toLowerCase()
+            if (rawDur.includes(':')) {
+              const parts = rawDur.split(':').map(Number)
+              if (parts.length === 3) durationMinutes = Math.round(parts[0] * 60 + parts[1] + parts[2] / 60)
+              else if (parts.length === 2) durationMinutes = Math.round(parts[0] + parts[1] / 60)
+            } else {
+              const matched = rawDur.match(/\d+/)
+              if (matched) durationMinutes = parseInt(matched[0], 10)
+            }
+          }
+
+          participants.push({
+            email,
+            displayName: name,
+            durationMinutes,
+          })
+        }
+
+        if (participants.length === 0) {
+          toast.error('Tidak ada data peserta valid yang ditemukan di file CSV')
+          return
+        }
+
+        setParsedCsvParticipants(participants)
+        toast.success(`Berhasil membaca ${participants.length} peserta dari file CSV`)
+      } catch (err) {
+        toast.error('Gagal membaca file CSV')
+      }
+    }
+    reader.readAsText(file)
+  }
 
   const { data, isLoading, isError, refetch, isFetching } = useQuery<AttendanceResponse>({
     queryKey: ['admin', 'bootcamp', params.bootcampId, 'session', params.sessionId, 'attendance'],
@@ -198,6 +292,25 @@ export default function SessionAttendancePage() {
         description={`Sistem presensi 100% otomatis via Google Workspace Meet API. Minimal hadir ${session.thresholdPct}% (${session.minRequiredMinutes} dari ${session.durationMinutes} menit).`}
         action={
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+            <button
+              onClick={() => setIsUploadModalOpen(true)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '8px 16px',
+                borderRadius: 'var(--radius-md)',
+                border: '1.5px solid #018556',
+                background: '#f0fdf4',
+                color: '#018556',
+                fontSize: '13px',
+                fontWeight: 700,
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+              }}
+            >
+              <Upload size={14} /> Upload CSV Presensi
+            </button>
             <button
               onClick={() => refetch()}
               disabled={isFetching}
@@ -735,6 +848,179 @@ export default function SessionAttendancePage() {
           </div>
         )}
       </div>
+
+      {/* ── Modal Upload CSV Presensi ───────────────────────── */}
+      {isUploadModalOpen && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(15, 23, 42, 0.65)',
+          backdropFilter: 'blur(4px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000,
+          padding: 16,
+        }}>
+          <div style={{
+            background: 'var(--color-surface)',
+            borderRadius: 'var(--radius-xl)',
+            border: '1px solid var(--color-border)',
+            width: '100%',
+            maxWidth: 520,
+            overflow: 'hidden',
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.15)',
+          }}>
+            <div style={{
+              padding: '18px 24px',
+              borderBottom: '1px solid var(--color-border)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              background: '#f8fafc',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div style={{ width: 36, height: 36, borderRadius: 10, background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <FileSpreadsheet size={18} color="#16a34a" />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '15.5px', fontWeight: 700, color: '#0f172a', margin: 0 }}>
+                    Upload CSV Presensi Google Meet
+                  </h3>
+                  <div style={{ fontSize: '12px', color: '#64748b', marginTop: 2 }}>
+                    Ekspor dari Ekstensi Chrome atau Google Workspace
+                  </div>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setIsUploadModalOpen(false)
+                  setParsedCsvParticipants([])
+                  setCsvFileName('')
+                }}
+                style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#64748b' }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div style={{ padding: '24px' }}>
+              <div style={{
+                border: '2px dashed #cbd5e1',
+                borderRadius: 12,
+                padding: '24px 16px',
+                textAlign: 'center',
+                background: '#f8fafc',
+                cursor: 'pointer',
+                position: 'relative',
+              }}>
+                <input
+                  type="file"
+                  accept=".csv,text/csv"
+                  onChange={handleCsvFileChange}
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    opacity: 0,
+                    cursor: 'pointer',
+                    width: '100%',
+                    height: '100%',
+                  }}
+                />
+                <Upload size={32} color="#018556" style={{ margin: '0 auto 10px' }} />
+                <div style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a' }}>
+                  {csvFileName ? csvFileName : 'Pilih atau Tarik File CSV ke Sini'}
+                </div>
+                <div style={{ fontSize: '12px', color: '#64748b', marginTop: 4 }}>
+                  Mendukung file CSV dari Google Meet Attendance Tracker / Google Sheets
+                </div>
+              </div>
+
+              {parsedCsvParticipants.length > 0 && (
+                <div style={{
+                  marginTop: 16,
+                  padding: '12px 16px',
+                  borderRadius: 10,
+                  background: '#f0fdf4',
+                  border: '1px solid #bbf7d0',
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '13px', fontWeight: 700, color: '#166534' }}>
+                    <CheckCircle2 size={16} color="#16a34a" />
+                    <span>Terdeteksi {parsedCsvParticipants.length} Data Peserta</span>
+                  </div>
+                  <div style={{ fontSize: '12px', color: '#15803d', marginTop: 4 }}>
+                    Sistem akan memverifikasi email mentee dan otomatis menghitung syarat hadir {session.thresholdPct}% (min. {session.minRequiredMinutes} menit).
+                  </div>
+                  <div style={{ maxHeight: 110, overflowY: 'auto', marginTop: 10, fontSize: '11.5px', color: '#334155', background: '#fff', borderRadius: 6, padding: '6px 10px', border: '1px solid #e2e8f0' }}>
+                    {parsedCsvParticipants.slice(0, 5).map((p, i) => (
+                      <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '2px 0' }}>
+                        <span>{p.displayName} ({p.email})</span>
+                        <span style={{ fontWeight: 600 }}>{p.durationMinutes} mnt</span>
+                      </div>
+                    ))}
+                    {parsedCsvParticipants.length > 5 && (
+                      <div style={{ color: '#64748b', fontStyle: 'italic', marginTop: 4 }}>
+                        + {parsedCsvParticipants.length - 5} peserta lainnya...
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 20 }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsUploadModalOpen(false)
+                    setParsedCsvParticipants([])
+                    setCsvFileName('')
+                  }}
+                  style={{
+                    padding: '8px 16px',
+                    borderRadius: 'var(--radius-md)',
+                    border: '1px solid var(--color-border)',
+                    background: 'transparent',
+                    color: 'var(--color-text-secondary)',
+                    fontSize: '13px',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Batal
+                </button>
+                <button
+                  type="button"
+                  disabled={parsedCsvParticipants.length === 0 || syncCsvMutation.isPending}
+                  onClick={() => syncCsvMutation.mutate(parsedCsvParticipants)}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    padding: '8px 20px',
+                    borderRadius: 'var(--radius-md)',
+                    border: 'none',
+                    background: '#018556',
+                    color: '#fff',
+                    fontSize: '13px',
+                    fontWeight: 700,
+                    cursor: (parsedCsvParticipants.length === 0 || syncCsvMutation.isPending) ? 'not-allowed' : 'pointer',
+                    opacity: (parsedCsvParticipants.length === 0 || syncCsvMutation.isPending) ? 0.6 : 1,
+                    transition: 'all 0.15s ease',
+                  }}
+                >
+                  {syncCsvMutation.isPending ? (
+                    <>
+                      <Loader2 size={14} className="animate-spin" /> Memproses Presensi...
+                    </>
+                  ) : (
+                    'Proses & Sinkronkan Presensi'
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── Override Modal ─────────────────────────────────────── */}
       {selectedAttendee && (

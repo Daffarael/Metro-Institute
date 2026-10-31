@@ -124,13 +124,13 @@ export default function BootcampLearningPlayerPage() {
   })
 
   const sessionUnlockMap = useMemo(() => {
-    const map: Record<string, boolean> = {}
+    const map: Record<string, { isUnlocked: boolean; lockedReason?: 'PREREQUISITE' | 'NOT_STARTED' | 'WAITING_LIVE_END' }> = {}
     const list = attendanceData?.sessions || []
+    const now = Date.now()
     let canProceed = true
 
     for (let i = 0; i < list.length; i++) {
       const s = list[i]
-      map[s.id] = canProceed
 
       const isLive = s.type === 'LIVE'
       const isPresent = s.attendance?.status === 'PRESENT' || s.attendance?.status === 'MANUAL'
@@ -139,8 +139,31 @@ export default function BootcampLearningPlayerPage() {
       const isDone = s.isCompleted
       const isPassed = isLive ? (isPresent || isExcused) : isDone
 
-      const isCleared = isPassed || (isLive && isAbsent)
+      const liveScheduleTime = s.chapterLiveScheduledAt || s.liveScheduledAt
+      const scheduledMs = liveScheduleTime ? new Date(liveScheduleTime).getTime() : 0
+      const isScheduleStarted = scheduledMs ? now >= scheduledMs : true
 
+      const liveDurationMin = s.durationMinutes || 90
+      const liveEndMs = scheduledMs ? (scheduledMs + liveDurationMin * 60000) : 0
+      const isLiveEnded = s.isChapterLiveEnded || (liveEndMs ? now >= liveEndMs : true) || isAbsent || isPresent
+
+      let isUnlocked = canProceed
+      let lockedReason: 'PREREQUISITE' | 'NOT_STARTED' | 'WAITING_LIVE_END' | undefined
+
+      if (!canProceed) {
+        isUnlocked = false
+        lockedReason = 'PREREQUISITE'
+      } else if (!isScheduleStarted) {
+        isUnlocked = false
+        lockedReason = 'NOT_STARTED'
+      } else if ((s.type === 'QUIZ' || s.type === 'ASSIGNMENT' || s.type === 'VIDEO') && !isLiveEnded && !isPassed) {
+        isUnlocked = false
+        lockedReason = 'WAITING_LIVE_END'
+      }
+
+      map[s.id] = { isUnlocked, lockedReason }
+
+      const isCleared = isPassed || (isLive && isAbsent)
       if (!isCleared) {
         canProceed = false
       }
@@ -1592,7 +1615,8 @@ export default function BootcampLearningPlayerPage() {
                       <div style={{ padding: '8px 16px' }}>
                         {chapter.sessions.map((sess, sIdx) => {
                           const isActive = sess.id === sessionId
-                          const isUnlocked = sessionUnlockMap ? sessionUnlockMap[sess.id] !== false : true
+                          const unlockInfo = sessionUnlockMap?.[sess.id]
+                          const isUnlocked = unlockInfo ? unlockInfo.isUnlocked : true
 
                           const content = (
                             <div
@@ -1607,7 +1631,13 @@ export default function BootcampLearningPlayerPage() {
                               onClick={(e) => {
                                 if (!isUnlocked) {
                                   e.preventDefault()
-                                  toast.info('Selesaikan sesi sebelumnya terlebih dahulu untuk membuka sesi ini.')
+                                  if (unlockInfo?.lockedReason === 'NOT_STARTED') {
+                                    toast.info(`Sesi ini baru dibuka pada jadwal ${sess.liveScheduledAt ? formatDate(sess.liveScheduledAt) : 'sesi'}.`)
+                                  } else if (unlockInfo?.lockedReason === 'WAITING_LIVE_END') {
+                                    toast.info('Kuis & tugas otomatis terbuka setelah Sesi Live Google Meet selesai.')
+                                  } else {
+                                    toast.info('Selesaikan sesi sebelumnya terlebih dahulu untuk membuka sesi ini.')
+                                  }
                                 }
                               }}
                               onMouseEnter={(e) => { if (!isActive && isUnlocked) e.currentTarget.style.background = '#f8fafc' }}
