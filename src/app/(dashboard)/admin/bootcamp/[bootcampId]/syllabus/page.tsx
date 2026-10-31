@@ -98,6 +98,9 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
     title: editSession?.title || '', 
     description: editSession?.description || '',
     type: editSession?.type || ('LIVE' as BootcampSession['type']), 
+    scheduledAt: editSession?.liveScheduledAt ? editSession.liveScheduledAt.slice(0, 16) : (editSession?.scheduledAt ? editSession.scheduledAt.slice(0, 16) : ''),
+    durationMin: editSession?.videoDuration ?? (editSession?.durationMin ?? 90),
+    meetingUrl: editSession?.liveUrl || (editSession?.meetingUrl || ''),
     videoUrl: editSession?.videoUrl || '', 
     materialUrl: editSession?.materials?.[0]?.url || '', 
     isPreview: editSession?.isFreePreview || false,
@@ -115,7 +118,12 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
 
   const mutation = useMutation({
     mutationFn: () => {
-      let payload: any = { ...form, quizOptions: (form.type === 'QUIZ' || form.type === 'ASSIGNMENT') ? quizOptions : null }
+      let payload: any = { 
+        ...form, 
+        durationMin: Number(form.durationMin) || 90,
+        xpReward: Number(form.xpReward) || 10,
+        quizOptions: (form.type === 'QUIZ' || form.type === 'ASSIGNMENT') ? quizOptions : null 
+      }
       if (editSession) {
         return api.put(`/admin/bootcamps/${bootcampId}/sessions/${editSession.id}`, payload)
       } else {
@@ -124,31 +132,27 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
       }
     },
     onSuccess: () => {
-      toast.success('Materi berhasil ditambahkan.')
+      toast.success(editSession ? 'Materi diperbarui.' : 'Materi berhasil ditambahkan.')
       qc.invalidateQueries({ queryKey: ['admin', 'bootcamp', bootcampId, 'syllabus'] })
+      qc.invalidateQueries({ queryKey: ['admin', 'bootcamp', bootcampId, 'schedules'] })
       onClose()
     },
-    onError: () => toast.error('Gagal menambah materi.'),
+    onError: () => toast.error('Gagal menyimpan materi.'),
   })
 
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={e => { if (e.target === e.currentTarget) onClose() }}>
-      <motion.div initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-xl)', width: '100%', maxWidth: form.type === 'QUIZ' ? 640 : 500, maxHeight: '90vh', overflowY: 'auto', padding: 'var(--space-6)', boxShadow: 'var(--shadow-2xl)' }}>
+      <motion.div initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-xl)', width: '100%', maxWidth: form.type === 'QUIZ' ? 640 : 540, maxHeight: '90vh', overflowY: 'auto', padding: 'var(--space-6)', boxShadow: 'var(--shadow-2xl)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 'var(--space-4)' }}>
-          <h3 style={{ fontWeight: 700, fontSize: 'var(--text-lg)' }}>Tambah Materi (Session)</h3>
+          <h3 style={{ fontWeight: 700, fontSize: 'var(--text-lg)' }}>{editSession ? 'Edit Sesi Materi' : 'Tambah Sesi Materi (Session)'}</h3>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><X size={20} color="var(--color-text-secondary)" /></button>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
           <div>
-            <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Judul Materi <span style={{ color: 'var(--color-error)' }}>*</span></label>
-            <input value={form.title} onChange={e => f('title', e.target.value)} placeholder="Contoh: Fundamental Design System" style={inputStyle} autoFocus />
+            <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Judul Materi / Sesi <span style={{ color: 'var(--color-error)' }}>*</span></label>
+            <input value={form.title} onChange={e => f('title', e.target.value)} placeholder="Contoh: Sesi 1 - Pengenalan Design System & Figma" style={inputStyle} autoFocus />
           </div>
-          {(form.type !== 'QUIZ' && form.type !== 'ASSIGNMENT') && (
-            <div>
-              <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Deskripsi Materi (Opsional)</label>
-              <textarea value={form.description} onChange={e => f('description', e.target.value)} placeholder="Tuliskan deskripsi materi atau modul di sini..." style={{...inputStyle, minHeight: 60}} />
-            </div>
-          )}
+
           <div>
             <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Jenis Materi</label>
             <div style={{ width: '100%' }}>
@@ -157,50 +161,108 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
                 onChange={val => f('type', val as any)}
                 placeholder="Pilih Jenis Materi"
                 options={[
-                  { value: 'LIVE', label: 'LIVE - Sesi Video Call / Webinar' },
-                  { value: 'MATERIAL', label: 'MATERIAL - Dokumen / PDF' },
-                  { value: 'QUIZ', label: 'QUIZ - Tugas / Kuis' },
+                  { value: 'LIVE', label: 'LIVE - Sesi Tatap Muka Google Meet' },
+                  { value: 'MATERIAL', label: 'MATERIAL - Modul Bacaan Teori / PDF' },
+                  { value: 'QUIZ', label: 'QUIZ - Kuis & Tugas Pendamping' },
+                  { value: 'VIDEO', label: 'VIDEO - Rekaman / Video Pendukung' },
                 ]}
                 width="100%"
+                direction="down"
               />
             </div>
           </div>
 
-          <div>
-            <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Reward XP</label>
-            <input 
-              type="number"
-              min={0}
-              value={form.xpReward} 
-              onChange={e => f('xpReward', Number(e.target.value))} 
-              placeholder="10" 
-              style={inputStyle} 
-            />
-            <p style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 4 }}>Poin XP yang diperoleh mentee setelah menyelesaikan sesi ini (default: 10 XP).</p>
-          </div>
-          
-
+          {/* Conditional Guidance & Fields for LIVE */}
           {form.type === 'LIVE' && (
-            <div style={{ padding: '12px', background: 'var(--color-bg)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', color: 'var(--color-text-secondary)', fontSize: 'var(--text-sm)' }}>
-              <strong style={{ display: 'block', color: 'var(--color-text-primary)', marginBottom: 4 }}>Live Session Terintegrasi</strong>
-              Sistem akan secara otomatis membuatkan ruang kelas Live (In-Platform) khusus untuk sesi ini setelah disimpan. Mentee tidak memerlukan link external.
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', padding: '16px', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '14px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <Video size={16} color="#16A34A" />
+                <span style={{ fontSize: '13px', fontWeight: 700, color: '#166534' }}>Pengaturan Live Google Meet (Cohort)</span>
+              </div>
+              <p style={{ margin: 0, fontSize: '12px', color: '#15803D', lineHeight: 1.45 }}>
+                Sesi live ini terikat jadwal. Modul materi akan dibuka bersamaan saat jam sesi tiba. Presensi minimal 80% durasi dicatat otomatis melalui ekstensi Metro Meet Tracker atau sinkronisasi CSV admin.
+              </p>
+
+              <div>
+                <label style={{ fontSize: '12px', fontWeight: 700, color: '#166534', display: 'block', marginBottom: 6 }}>Jadwal Pertemuan (Tanggal & Jam WIB) <span style={{ color: 'var(--color-error)' }}>*</span></label>
+                <input 
+                  type="datetime-local" 
+                  value={form.scheduledAt} 
+                  onChange={e => f('scheduledAt', e.target.value)} 
+                  style={{ ...inputStyle, background: '#fff' }} 
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: 700, color: '#166534', display: 'block', marginBottom: 6 }}>Durasi Sesi (Menit)</label>
+                  <input 
+                    type="number" 
+                    min={15} 
+                    max={480} 
+                    value={form.durationMin} 
+                    onChange={e => f('durationMin', Number(e.target.value))} 
+                    placeholder="90" 
+                    style={{ ...inputStyle, background: '#fff' }} 
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: 700, color: '#166534', display: 'block', marginBottom: 6 }}>Link Google Meet <span style={{ color: 'var(--color-error)' }}>*</span></label>
+                  <input 
+                    value={form.meetingUrl} 
+                    onChange={e => f('meetingUrl', e.target.value)} 
+                    placeholder="https://meet.google.com/xxx-xxxx-xxx" 
+                    style={{ ...inputStyle, background: '#fff' }} 
+                  />
+                </div>
+              </div>
             </div>
           )}
 
+          {/* Conditional Guidance & Fields for MATERIAL */}
+          {form.type === 'MATERIAL' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', padding: '16px', background: '#FEFCE8', border: '1px solid #FEF08A', borderRadius: '14px' }}>
+              <span style={{ fontSize: '12.5px', color: '#854D0E', fontWeight: 600 }}>
+                Modul bacaan teori ini akan otomatis terbuka bersamaan saat sesi live pertemuan dimulai.
+              </span>
+              <div>
+                <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Link Dokumen / Modul Google Drive <span style={{ color: 'var(--color-error)' }}>*</span></label>
+                <input value={form.materialUrl} onChange={e => f('materialUrl', e.target.value)} placeholder="Contoh: https://drive.google.com/file/d/..." style={{ ...inputStyle, background: '#fff' }} />
+              </div>
+            </div>
+          )}
+
+          {/* Conditional Guidance & Fields for VIDEO */}
+          {form.type === 'VIDEO' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', padding: '16px', background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: '14px' }}>
+              <span style={{ fontSize: '12.5px', color: '#1E40AF', fontWeight: 600 }}>
+                Video pembelajaran atau rekaman live pendukung yang dapat diputar ulang oleh mentee kapan saja.
+              </span>
+              <div>
+                <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Link Video (YouTube / Google Drive) <span style={{ color: 'var(--color-error)' }}>*</span></label>
+                <input value={form.videoUrl} onChange={e => f('videoUrl', e.target.value)} placeholder="Contoh: https://www.youtube.com/watch?v=..." style={{ ...inputStyle, background: '#fff' }} />
+              </div>
+            </div>
+          )}
+
+          {/* Conditional Guidance & Fields for QUIZ */}
           {(form.type === 'QUIZ' || form.type === 'ASSIGNMENT') && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
-              <div>
-                <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Deskripsi Tugas / Quiz</label>
-                <textarea value={form.assignmentDescription} onChange={e => f('assignmentDescription', e.target.value)} placeholder="Tuliskan deskripsi/instruksi tugas di sini..." style={{...inputStyle, minHeight: 80, resize: 'vertical'}} />
+              <div style={{ padding: '12px 14px', background: '#FAF5FF', border: '1px solid #E9D5FF', borderRadius: '12px', fontSize: '12.5px', color: '#6B21A8', fontWeight: 600 }}>
+                Kuis dan tugas pendamping ini otomatis terbuka setelah sesi live selesai diselenggarakan.
               </div>
               <div>
-                <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Tenggat Waktu (Deadline)</label>
+                <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Instruksi Tugas / Kuis</label>
+                <textarea value={form.assignmentDescription} onChange={e => f('assignmentDescription', e.target.value)} placeholder="Tuliskan petunjuk pengerjaan tugas atau kuis di sini..." style={{...inputStyle, minHeight: 80, resize: 'vertical'}} />
+              </div>
+              <div>
+                <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Tenggat Waktu Pengumpulan (Deadline)</label>
                 <input type="datetime-local" value={form.assignmentDeadline} onChange={e => f('assignmentDeadline', e.target.value)} style={inputStyle} />
               </div>
 
               <div style={{ padding: '20px', background: '#f8f9fc', borderRadius: '16px', border: '1px solid rgba(0,0,0,0.04)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                  <label style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>Daftar Soal Kuis</label>
+                  <label style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>Daftar Soal Kuis Pilihan Ganda</label>
                   <button type="button" onClick={() => setQuizOptions([...quizOptions, { id: Math.random().toString(36).substr(2, 9), question: '', options: [{ id: 'A', text: '', isCorrect: true }, { id: 'B', text: '', isCorrect: false }, { id: 'C', text: '', isCorrect: false }, { id: 'D', text: '', isCorrect: false }] }])} style={{ padding: '6px 12px', borderRadius: '8px', background: '#fff', border: '1px solid var(--color-border)', fontSize: '12px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
                     <Plus size={14} /> Tambah Soal
                   </button>
@@ -223,7 +285,7 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
                           newQuiz[qIndex].question = e.target.value;
                           setQuizOptions(newQuiz);
                         }}
-                        placeholder="Ketik pertanyaan di sini..."
+                        placeholder="Ketik pertanyaan kuis di sini..."
                         style={{ ...inputStyle, padding: '10px 14px', marginBottom: 16 }}
                       />
 
@@ -267,14 +329,25 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
             </div>
           )}
 
-          {form.type === 'MATERIAL' && (
-            <div>
-              <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Link Dokumen (Google Drive) <span style={{ color: 'var(--color-error)' }}>*</span></label>
-              <input value={form.materialUrl} onChange={e => f('materialUrl', e.target.value)} placeholder="Contoh: https://drive.google.com/file/d/..." style={inputStyle} />
-            </div>
-          )}
+          <div>
+            <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Deskripsi Materi (Opsional)</label>
+            <textarea value={form.description} onChange={e => f('description', e.target.value)} placeholder="Tuliskan ringkasan materi atau catatan untuk mentee di sini..." style={{...inputStyle, minHeight: 60}} />
+          </div>
 
+          <div>
+            <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Reward XP</label>
+            <input 
+              type="number"
+              min={0}
+              value={form.xpReward} 
+              onChange={e => f('xpReward', Number(e.target.value))} 
+              placeholder="10" 
+              style={inputStyle} 
+            />
+            <p style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 4 }}>Poin XP yang diperoleh mentee setelah menyelesaikan sesi ini (default: 10 XP).</p>
+          </div>
         </div>
+
         <div style={{ display: 'flex', gap: 'var(--space-3)', justifyContent: 'flex-end', marginTop: 'var(--space-6)' }}>
           <button onClick={onClose} style={{ padding: '10px 18px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', background: 'transparent', cursor: 'pointer', fontWeight: 600 }}>Batal</button>
           <button disabled={!form.title.trim() || mutation.isPending} onClick={() => mutation.mutate()} style={{ padding: '10px 18px', borderRadius: 'var(--radius-md)', border: 'none', background: 'var(--color-primary)', color: '#fff', fontWeight: 600, cursor: 'pointer', opacity: !form.title.trim() ? 0.5 : 1 }}>

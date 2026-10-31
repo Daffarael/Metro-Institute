@@ -27,10 +27,24 @@ import ImageUpload from '@/components/admin/ImageUpload'
 import { toast } from 'sonner'
 
 // ─── Schema (sesuai design_superadmin.md Zod Schemas) ─────
+const LEVEL_OPTIONS = [
+  { value: 'BEGINNER', label: 'Pemula (Beginner)' },
+  { value: 'INTERMEDIATE', label: 'Menengah (Intermediate)' },
+  { value: 'ADVANCED', label: 'Mahir (Advanced)' },
+] as const
+
+const LEVEL_LABELS: Record<string, string> = {
+  BEGINNER: 'Pemula',
+  INTERMEDIATE: 'Menengah',
+  ADVANCED: 'Mahir',
+}
+
 const bootcampSchema = z.object({
   name:            z.string().min(5, 'Minimal 5 karakter'),
   description:     z.string().min(20, 'Minimal 20 karakter'),
-  fields:          z.array(z.enum(['UI_UX', 'FRONTEND', 'BACKEND', 'MOBILE'])).min(1, 'Pilih minimal 1 bidang'),
+  field:           z.enum(['UI_UX', 'FRONTEND', 'BACKEND', 'MOBILE'], { error: () => ({ message: 'Pilih bidang' }) }),
+  level:           z.enum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED']),
+  quota:           z.number().min(1, 'Kuota minimal 1 peserta'),
   price:           z.number().min(0, 'Harga tidak boleh negatif'),
   purchaseOpenAt:  z.string().min(1, 'Wajib diisi'),
   purchaseCloseAt: z.string().min(1, 'Wajib diisi'),
@@ -101,9 +115,11 @@ function BootcampModal({
   const { register, handleSubmit, watch, setValue, control, formState: { errors } } = useForm<BootcampForm>({
     resolver: zodResolver(bootcampSchema),
     defaultValues: {
-      name:            bootcamp?.name ?? '',
+      name:            bootcamp?.name ?? (bootcamp?.title ?? ''),
       description:     bootcamp?.description ?? '',
-      fields:          bootcamp?.fields as any ?? [],
+      field:           (bootcamp?.field || bootcamp?.fields?.[0] || 'UI_UX') as any,
+      level:           ((bootcamp as any)?.level || 'BEGINNER') as any,
+      quota:           (bootcamp as any)?.quota ?? 50,
       price:           bootcamp?.price ?? 0,
       purchaseOpenAt:  bootcamp?.purchaseOpenAt?.slice(0, 10) ?? '',
       purchaseCloseAt: bootcamp?.purchaseCloseAt?.slice(0, 10) ?? '',
@@ -116,10 +132,15 @@ function BootcampModal({
   })
 
   const mutation = useMutation({
-    mutationFn: (data: BootcampForm) =>
-      isEdit
-        ? api.patch(`/admin/bootcamps/${bootcamp!.id}`, data).then(r => r.data)
-        : api.post('/admin/bootcamps', data).then(r => r.data),
+    mutationFn: (data: BootcampForm) => {
+      const payload = {
+        ...data,
+        fields: [data.field],
+      }
+      return isEdit
+        ? api.patch(`/admin/bootcamps/${bootcamp!.id}`, payload).then(r => r.data)
+        : api.post('/admin/bootcamps', payload).then(r => r.data)
+    },
     onSuccess: (data) => {
       toast.success(isEdit ? 'Bootcamp diperbarui.' : 'Bootcamp berhasil dibuat!')
       qc.invalidateQueries({ queryKey: ['admin', 'bootcamps'] })
@@ -211,11 +232,20 @@ function BootcampModal({
             toast.error('Kurikulum belum dibuat. Tambahkan bab dan materi di menu Silabus terlebih dahulu sebelum mempublikasikan.')
             return
           }
-          mutation.mutate(d)
-        })} style={{ padding: '0 32px 24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          mutation.mutate(d as BootcampForm)
+        })} style={{ padding: '0 32px 28px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          
+          {/* Synchronous Model Notice */}
+          <div style={{ padding: '12px 16px', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '14px', display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#16A34A', flexShrink: 0 }} />
+            <p style={{ margin: 0, fontSize: '12.5px', color: '#166534', fontWeight: 600, lineHeight: 1.4 }}>
+              Model Synchronous Cohort: Pembelajaran terjadwal live bersama satu angkatan, materi & penugasan terstruktur sesuai kalender.
+            </p>
+          </div>
+
           <div>
-            <label style={labelStyle}>Nama Bootcamp <span style={{color: 'var(--color-error)'}}>*</span></label>
-            <input {...register('name')} style={inputStyleClean} placeholder="Bootcamp UI/UX Profesional Batch 3" 
+            <label style={labelStyle}>Nama Bootcamp / Angkatan <span style={{color: 'var(--color-error)'}}>*</span></label>
+            <input {...register('name')} style={inputStyleClean} placeholder="Contoh: Bootcamp Fullstack Web Developer Batch 1" 
               onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
               onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
             />
@@ -223,7 +253,7 @@ function BootcampModal({
           </div>
 
           <div>
-            <label style={labelStyle}>Gambar Thumbnail</label>
+            <label style={labelStyle}>Gambar Thumbnail Banner</label>
             <Controller
               control={control}
               name="thumbnailUrl"
@@ -233,15 +263,129 @@ function BootcampModal({
             />
           </div>
 
-          <div className={isEdit ? "grid-cols-2" : ""} style={{ display: 'grid', gridTemplateColumns: isEdit ? '' : '1fr', gap: '20px' }}>
+          {/* Grid: Bidang, Tingkat, Kuota, Harga */}
+          <div className="grid-cols-2" style={{ display: 'grid', gap: '16px' }}>
+            <div>
+              <label style={labelStyle}>Bidang Keahlian <span style={{color: 'var(--color-error)'}}>*</span></label>
+              <Controller
+                control={control}
+                name="field"
+                render={({ field }) => (
+                  <CleanCombobox 
+                    options={FIELD_OPTS.map(f => ({ value: f, label: FIELD_LABELS[f] }))}
+                    value={field.value} 
+                    onChange={val => field.onChange(val)} 
+                    placeholder="Pilih Bidang"
+                    width="100%"
+                    direction="down"
+                    allowClear={false}
+                    style={{...inputStyleClean, padding: '12px 16px', background: '#fff'}}
+                  />
+                )}
+              />
+              {errors.field && <p style={{ fontSize: '12px', color: 'var(--color-error)', marginTop: 6, fontWeight: 500 }}>{errors.field.message}</p>}
+            </div>
+
+            <div>
+              <label style={labelStyle}>Tingkat / Level <span style={{color: 'var(--color-error)'}}>*</span></label>
+              <Controller
+                control={control}
+                name="level"
+                render={({ field }) => (
+                  <CleanCombobox 
+                    options={[...LEVEL_OPTIONS]}
+                    value={field.value} 
+                    onChange={val => field.onChange(val)} 
+                    placeholder="Pilih Level"
+                    width="100%"
+                    direction="down"
+                    allowClear={false}
+                    style={{...inputStyleClean, padding: '12px 16px', background: '#fff'}}
+                  />
+                )}
+              />
+            </div>
+
+            <div>
+              <label style={labelStyle}>Kuota Peserta (Mentee) <span style={{color: 'var(--color-error)'}}>*</span></label>
+              <input type="number" {...register('quota', { valueAsNumber: true })} style={inputStyleClean} placeholder="50" min={1} 
+                onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
+                onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
+              />
+              {errors.quota && <p style={{ fontSize: '12px', color: 'var(--color-error)', marginTop: 6, fontWeight: 500 }}>{errors.quota.message}</p>}
+            </div>
+
+            <div>
+              <label style={labelStyle}>Harga Pendaftaran (Rp) <span style={{color: 'var(--color-error)'}}>*</span></label>
+              <input type="number" {...register('price', { valueAsNumber: true })} style={inputStyleClean} placeholder="1500000" min={0} 
+                onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
+                onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
+              />
+              {errors.price && <p style={{ fontSize: '12px', color: 'var(--color-error)', marginTop: 6, fontWeight: 500 }}>{errors.price.message}</p>}
+            </div>
+          </div>
+
+          {/* Section: Periode Pendaftaran */}
+          <div style={{ padding: '18px 20px', background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '16px' }}>
+            <div style={{ marginBottom: 12 }}>
+              <span style={{ fontSize: '13px', fontWeight: 700, color: '#1E293B' }}>Periode Pendaftaran (Registration Window)</span>
+              <p style={{ margin: '2px 0 0', fontSize: '11.5px', color: '#64748B' }}>Mentee hanya dapat mendaftar dan membeli tiket selama periode ini dibuka.</p>
+            </div>
+            <div className="grid-cols-2" style={{ display: 'grid', gap: '16px' }}>
+              <div>
+                <label style={{ ...labelStyle, fontSize: '12px', marginBottom: 6 }}>Pendaftaran Dibuka <span style={{color: 'var(--color-error)'}}>*</span></label>
+                <input type="date" {...register('purchaseOpenAt')} style={{ ...inputStyleClean, background: '#fff' }} 
+                  onFocus={e => { e.currentTarget.style.borderColor = 'var(--color-primary)' }}
+                  onBlur={e => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
+                />
+                {errors.purchaseOpenAt && <p style={{ fontSize: '12px', color: 'var(--color-error)', marginTop: 4, fontWeight: 500 }}>{errors.purchaseOpenAt.message}</p>}
+              </div>
+              <div>
+                <label style={{ ...labelStyle, fontSize: '12px', marginBottom: 6 }}>Batas Pendaftaran (Ditutup) <span style={{color: 'var(--color-error)'}}>*</span></label>
+                <input type="date" {...register('purchaseCloseAt')} style={{ ...inputStyleClean, background: '#fff' }} 
+                  onFocus={e => { e.currentTarget.style.borderColor = 'var(--color-primary)' }}
+                  onBlur={e => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
+                />
+                {errors.purchaseCloseAt && <p style={{ fontSize: '12px', color: 'var(--color-error)', marginTop: 4, fontWeight: 500 }}>{errors.purchaseCloseAt.message}</p>}
+              </div>
+            </div>
+          </div>
+
+          {/* Section: Periode Pelaksanaan Kelas */}
+          <div style={{ padding: '18px 20px', background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '16px' }}>
+            <div style={{ marginBottom: 12 }}>
+              <span style={{ fontSize: '13px', fontWeight: 700, color: '#1E293B' }}>Periode Pelaksanaan Bootcamp (Cohort Period)</span>
+              <p style={{ margin: '2px 0 0', fontSize: '11.5px', color: '#64748B' }}>Masa aktif seluruh sesi live, materi silabus, dan proyek batch ini berjalan.</p>
+            </div>
+            <div className="grid-cols-2" style={{ display: 'grid', gap: '16px' }}>
+              <div>
+                <label style={{ ...labelStyle, fontSize: '12px', marginBottom: 6 }}>Bootcamp Dimulai <span style={{color: 'var(--color-error)'}}>*</span></label>
+                <input type="date" {...register('startDate')} style={{ ...inputStyleClean, background: '#fff' }} 
+                  onFocus={e => { e.currentTarget.style.borderColor = 'var(--color-primary)' }}
+                  onBlur={e => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
+                />
+                {errors.startDate && <p style={{ fontSize: '12px', color: 'var(--color-error)', marginTop: 4, fontWeight: 500 }}>{errors.startDate.message}</p>}
+              </div>
+              <div>
+                <label style={{ ...labelStyle, fontSize: '12px', marginBottom: 6 }}>Bootcamp Selesai <span style={{color: 'var(--color-error)'}}>*</span></label>
+                <input type="date" {...register('endDate')} style={{ ...inputStyleClean, background: '#fff' }} 
+                  onFocus={e => { e.currentTarget.style.borderColor = 'var(--color-primary)' }}
+                  onBlur={e => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
+                />
+                {errors.endDate && <p style={{ fontSize: '12px', color: 'var(--color-error)', marginTop: 4, fontWeight: 500 }}>{errors.endDate.message}</p>}
+              </div>
+            </div>
+          </div>
+
+          {/* Status & Template Sertifikat */}
+          <div className={isEdit ? "grid-cols-2" : ""} style={{ display: 'grid', gridTemplateColumns: isEdit ? '' : '1fr', gap: '16px' }}>
             {isEdit && (
               <div>
-                <label style={labelStyle}>Status</label>
+                <label style={labelStyle}>Status Publikasi</label>
                 <Controller
                   control={control}
                   name="status"
-                  render={({ field }) => (
-(() => {
+                  render={({ field }) => {
                     const hasCurr = !!bootcamp?.hasCurriculum
                     const availableOptions = STATUS_OPTIONS.filter(s => {
                       if (s.value === 'DRAFT') return true
@@ -260,104 +404,54 @@ function BootcampModal({
                         style={{...inputStyleClean, padding: '12px 16px', background: '#fff'}}
                       />
                     )
-                  })()
+                  }}
+                />
+                {!bootcamp?.hasCurriculum && (
+                  <p style={{ fontSize: '12px', color: '#64748b', marginTop: 6, whiteSpace: 'nowrap' }}>
+                    Tambahkan materi di{' '}
+                    {bootcamp?.id ? (
+                      <Link 
+                        href={`/admin/bootcamp/${bootcamp?.id}/syllabus`}
+                        style={{ color: '#018556', fontWeight: 600, textDecoration: 'none' }}
+                        onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
+                        onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
+                      >
+                        Silabus
+                      </Link>
+                    ) : (
+                      <span style={{ color: '#018556', fontWeight: 600 }}>Silabus</span>
+                    )}{' '}
+                    untuk mengaktifkan status Tayang.
+                  </p>
                 )}
-              />
-              {!bootcamp?.hasCurriculum && (
-                <p style={{ fontSize: '12px', color: '#64748b', marginTop: 6, whiteSpace: 'nowrap' }}>
-                  Tambahkan materi di{' '}
-                  {bootcamp?.id ? (
-                    <Link 
-                      href={`/admin/bootcamp/${bootcamp?.id}/syllabus`}
-                      style={{ color: '#018556', fontWeight: 600, textDecoration: 'none' }}
-                      onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
-                      onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
-                    >
-                      Silabus
-                    </Link>
-                  ) : (
-                    <span style={{ color: '#018556', fontWeight: 600 }}>Silabus</span>
-                  )}{' '}
-                  untuk mengaktifkan status Tayang.
-                </p>
-              )}
               </div>
             )}
-            <div>
-              <label style={labelStyle}>Harga (Rp) <span style={{color: 'var(--color-error)'}}>*</span></label>
-              <input type="number" {...register('price', { valueAsNumber: true })} style={inputStyleClean} placeholder="1500000" min={0} 
-                onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
-                onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
-              />
-            </div>
-          </div>
 
-          <div>
-            <label style={labelStyle}>Bidang <span style={{color: 'var(--color-error)'}}>*</span></label>
-            <FieldMultiSelect
-              options={FIELD_OPTS.map(f => ({ value: f, label: FIELD_LABELS[f] }))}
-              value={(watch('fields') as string[]) ?? []}
-              onChange={val => setValue('fields', val as any)}
-              placeholder="Pilih Bidang"
-            />
-            {errors.fields && <p style={{ fontSize: '12px', color: 'var(--color-error)', marginTop: 6, fontWeight: 500 }}>{errors.fields.message}</p>}
-          </div>
-
-          <div className="grid-cols-2" style={{ display: 'grid', gap: '20px' }}>
             <div>
-              <label style={labelStyle}>Buka Pembelian <span style={{color: 'var(--color-error)'}}>*</span></label>
-              <input type="date" {...register('purchaseOpenAt')} style={inputStyleClean} 
-                onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
-                onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
+              <label style={labelStyle}>Template E-Sertifikat Kelulusan</label>
+              <Controller
+                control={control}
+                name="certificateTemplateId"
+                render={({ field }) => (
+                  <CleanCombobox 
+                    options={[{ value: '', label: 'Tanpa Sertifikat' }, ...templateOptions]}
+                    value={field.value as string ?? ''} 
+                    onChange={val => field.onChange(val === '' ? null : val)} 
+                    placeholder="Pilih Template"
+                    width="100%"
+                    direction="down"
+                    style={{...inputStyleClean, padding: '12px 16px', background: '#fff'}}
+                  />
+                )}
               />
             </div>
-            <div>
-              <label style={labelStyle}>Tutup Pembelian <span style={{color: 'var(--color-error)'}}>*</span></label>
-              <input type="date" {...register('purchaseCloseAt')} style={inputStyleClean} 
-                onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
-                onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
-              />
-            </div>
-            <div>
-              <label style={labelStyle}>Tanggal Mulai <span style={{color: 'var(--color-error)'}}>*</span></label>
-              <input type="date" {...register('startDate')} style={inputStyleClean} 
-                onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
-                onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
-              />
-            </div>
-            <div>
-              <label style={labelStyle}>Tanggal Berakhir <span style={{color: 'var(--color-error)'}}>*</span></label>
-              <input type="date" {...register('endDate')} style={inputStyleClean} 
-                onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
-                onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
-              />
-            </div>
-          </div>
-
-          <div>
-            <label style={labelStyle}>Template Sertifikat</label>
-            <Controller
-              control={control}
-              name="certificateTemplateId"
-              render={({ field }) => (
-                <CleanCombobox 
-                  options={[{ value: '', label: 'Tanpa Sertifikat' }, ...templateOptions]}
-                  value={field.value as string ?? ''} 
-                  onChange={val => field.onChange(val === '' ? null : val)} 
-                  placeholder="Pilih Template"
-                  width="100%"
-                  direction="down"
-                  style={{...inputStyleClean, padding: '12px 16px', background: '#fff'}}
-                />
-              )}
-            />
           </div>
 
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 8 }}>
-              <label style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-secondary)' }}>Deskripsi <span style={{color: 'var(--color-error)'}}>*</span></label>
+              <label style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-secondary)' }}>Deskripsi Bootcamp <span style={{color: 'var(--color-error)'}}>*</span></label>
             </div>
-            <textarea {...register('description')} rows={3} style={{ ...inputStyleClean, resize: 'vertical' }} placeholder="Deskripsi bootcamp minimal 20 karakter..." 
+            <textarea {...register('description')} rows={3} style={{ ...inputStyleClean, resize: 'vertical' }} placeholder="Deskripsi lengkap tentang kurikulum, target capaian, dan fasilitas cohort bootcamp ini..." 
               onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
               onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
             />
@@ -530,7 +624,7 @@ export default function AdminBootcampPage() {
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--text-sm)' }}>
               <thead>
                 <tr style={{ background: 'var(--color-bg)', borderBottom: '1px solid var(--color-border)' }}>
-                  {['#', 'Nama', 'Bidang', 'Harga', 'Mentee', 'Buka Beli', 'Mulai', 'Status', 'Aksi'].map(h => (
+                  {['#', 'Nama Bootcamp', 'Bidang & Level', 'Harga', 'Mentee / Kuota', 'Pendaftaran', 'Pelaksanaan', 'Status', 'Aksi'].map(h => (
                     <th key={h} style={{ padding: 'var(--space-3) var(--space-4)', textAlign: 'left', fontWeight: 600, fontSize: 'var(--text-xs)', color: 'var(--color-text-tertiary)', letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>{h}</th>
                   ))}
                 </tr>
@@ -558,11 +652,13 @@ export default function AdminBootcampPage() {
                       )}
                     </td>
                     <td style={{ padding: 'var(--space-3) var(--space-4)', color: 'var(--color-text-secondary)', whiteSpace: 'nowrap' }}>
-                      {b.fields.map(f => FIELD_LABELS[f] ?? f).join(', ')}
+                      <div style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>{b.fields.map(f => FIELD_LABELS[f] ?? f).join(', ')}</div>
+                      <div style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 2 }}>{LEVEL_LABELS[(b as any).level] ?? 'Pemula'}</div>
                     </td>
                     <td style={{ padding: 'var(--space-3) var(--space-4)', fontWeight: 700, whiteSpace: 'nowrap' }}>{formatRupiah(b.price)}</td>
                     <td style={{ padding: 'var(--space-3) var(--space-4)', color: 'var(--color-text-secondary)' }}>
-                      {b._count?.registrations ?? 0}
+                      <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>{b._count?.registrations ?? 0}</span>
+                      <span style={{ fontSize: '12px', color: 'var(--color-text-tertiary)' }}> / {(b as any).quota || 50}</span>
                     </td>
                     <td style={{ padding: 'var(--space-3) var(--space-4)', color: 'var(--color-text-secondary)', whiteSpace: 'nowrap', fontSize: '12px' }}>
                       {formatDate(b.purchaseOpenAt)}
