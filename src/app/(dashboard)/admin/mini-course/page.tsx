@@ -343,7 +343,7 @@ function CourseModal({ course, onClose }: { course?: MiniCourse; onClose: () => 
                   onChange={val => field.onChange(val === '' ? null : val)} 
                   placeholder="Pilih Template"
                   width="100%"
-                  direction="up"
+                  direction="down"
                   style={{...inputStyleClean, padding: '12px 16px', background: '#fff'}}
                 />
               )}
