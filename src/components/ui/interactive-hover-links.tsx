@@ -167,11 +167,11 @@ export function InteractiveHoverLinks({
                     {/* Metadata Tags Row (Reference Style: from $240 / SFO) */}
                     <div className="flex items-center gap-4 mt-5 pt-4 border-t border-gray-100 text-[12.5px] font-semibold text-gray-700">
                       <div className="flex items-center gap-1.5">
-                        <Tag className="w-3.5 h-3.5 text-gray-400" />
+                        <Tag className="w-3.5 h-3.5 text-[#018556]" />
                         <span>{tag1}</span>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <Award className="w-3.5 h-3.5 text-gray-400" />
+                        <Award className="w-3.5 h-3.5 text-[#018556]" />
                         <span>{tag2}</span>
                       </div>
                     </div>
@@ -189,7 +189,7 @@ export function InteractiveHoverLinks({
                         window.location.href = item.href;
                       }
                     }}
-                    className="flex-1 py-3 px-5 rounded-full bg-[#111827] hover:bg-[#018556] text-white text-[13.5px] font-semibold text-center transition-all duration-200 shadow-sm hover:shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]"
+                    className="flex-1 py-3 px-5 rounded-full bg-[#018556] hover:bg-[#016B44] text-white text-[13.5px] font-bold text-center transition-all duration-200 shadow-[0_4px_14px_rgba(1,133,86,0.22)] hover:shadow-[0_6px_20px_rgba(1,133,86,0.32)] flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]"
                   >
                     <span>{buttonText}</span>
                   </button>
