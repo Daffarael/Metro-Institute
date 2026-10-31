@@ -496,17 +496,9 @@ export default function MenteeWebinarDetailPage() {
                     {webinar.attendance && (
                       <div style={{
                         padding: '16px 20px',
-                        borderRadius: 12,
-                        background: (webinar.attendance.status === 'PRESENT' || webinar.attendance.status === 'MANUAL')
-                          ? '#f0fdf4'
-                          : webinar.attendance.status === 'EXCUSED'
-                          ? '#eff6ff'
-                          : '#f8fafc',
-                        border: (webinar.attendance.status === 'PRESENT' || webinar.attendance.status === 'MANUAL')
-                          ? '1px solid #bbf7d0'
-                          : webinar.attendance.status === 'EXCUSED'
-                          ? '1px solid #bfdbfe'
-                          : '1px solid #e2e8f0',
+                        borderRadius: 14,
+                        background: '#ffffff',
+                        border: '1.5px solid #cbd5e1',
                         display: 'flex',
                         flexDirection: 'column',
                         gap: 12,
@@ -517,28 +509,28 @@ export default function MenteeWebinarDetailPage() {
                               <span style={{
                                 display: 'inline-flex', alignItems: 'center', gap: 6,
                                 padding: '4px 12px', borderRadius: 20,
-                                background: '#dcfce7', color: '#166534',
+                                background: '#018556', color: '#ffffff',
                                 fontSize: '12.5px', fontWeight: 700
                               }}>
-                                <CheckCircle2 size={15} color="#22c55e" /> Hadir Terverifikasi
+                                <CheckCircle2 size={15} color="#ffffff" /> Hadir Terverifikasi
                               </span>
                             ) : webinar.attendance.status === 'EXCUSED' ? (
                               <span style={{
                                 display: 'inline-flex', alignItems: 'center', gap: 6,
                                 padding: '4px 12px', borderRadius: 20,
-                                background: '#dbeafe', color: '#1e40af',
+                                background: '#2563eb', color: '#ffffff',
                                 fontSize: '12.5px', fontWeight: 700
                               }}>
-                                <Award size={15} color="#3b82f6" /> Izin Disetujui
+                                <Award size={15} color="#ffffff" /> Izin Disetujui
                               </span>
                             ) : (
                               <span style={{
                                 display: 'inline-flex', alignItems: 'center', gap: 6,
                                 padding: '4px 12px', borderRadius: 20,
-                                background: '#f1f5f9', border: '1px solid #cbd5e1',
-                                color: '#475569', fontSize: '12.5px', fontWeight: 600
+                                background: '#475569', color: '#ffffff',
+                                fontSize: '12.5px', fontWeight: 700
                               }}>
-                                <Clock size={15} color="#64748b" /> Durasi Kurang
+                                <Clock size={15} color="#ffffff" /> Durasi Kurang
                               </span>
                             )}
 

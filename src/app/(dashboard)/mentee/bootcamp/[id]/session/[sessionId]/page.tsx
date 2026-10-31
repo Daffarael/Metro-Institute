@@ -516,18 +516,11 @@ export default function BootcampLearningPlayerPage() {
                 {/* Status Kehadiran Google Meet Otomatis */}
                 {currentSession.attendance ? (
                   <div style={{
-                    padding: '14px 18px',
-                    borderRadius: 12,
-                    background: (currentSession.attendance.status === 'PRESENT' || currentSession.attendance.status === 'MANUAL')
-                      ? '#f0fdf4'
-                      : currentSession.attendance.status === 'EXCUSED'
-                      ? '#eff6ff'
-                      : '#f8fafc',
-                    border: (currentSession.attendance.status === 'PRESENT' || currentSession.attendance.status === 'MANUAL')
-                      ? '1px solid #bbf7d0'
-                      : currentSession.attendance.status === 'EXCUSED'
-                      ? '1px solid #bfdbfe'
-                      : '1px solid #e2e8f0',
+                    padding: '16px 20px',
+                    borderRadius: 14,
+                    background: '#ffffff',
+                    border: '1.5px solid #cbd5e1',
+                    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.03)',
                   }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, marginBottom: 8 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -536,43 +529,42 @@ export default function BootcampLearningPlayerPage() {
                             display: 'inline-flex',
                             alignItems: 'center',
                             gap: 6,
-                            padding: '3px 10px',
+                            padding: '4px 12px',
                             borderRadius: 20,
-                            background: '#dcfce7',
-                            color: '#166534',
+                            background: '#018556',
+                            color: '#ffffff',
                             fontSize: '12px',
                             fontWeight: 700,
                           }}>
-                            <CheckCircle2 size={14} color="#22c55e" /> Hadir Terverifikasi
+                            <CheckCircle2 size={14} color="#ffffff" /> Hadir Terverifikasi
                           </span>
                         ) : currentSession.attendance.status === 'EXCUSED' ? (
                           <span style={{
                             display: 'inline-flex',
                             alignItems: 'center',
                             gap: 6,
-                            padding: '3px 10px',
+                            padding: '4px 12px',
                             borderRadius: 20,
-                            background: '#dbeafe',
-                            color: '#1e40af',
+                            background: '#2563eb',
+                            color: '#ffffff',
                             fontSize: '12px',
                             fontWeight: 700,
                           }}>
-                            <Award size={14} color="#3b82f6" /> Izin Disetujui
+                            <Award size={14} color="#ffffff" /> Izin Disetujui
                           </span>
                         ) : (
                           <span style={{
                             display: 'inline-flex',
                             alignItems: 'center',
                             gap: 6,
-                            padding: '3px 10px',
+                            padding: '4px 12px',
                             borderRadius: 20,
-                            background: '#f1f5f9',
-                            border: '1px solid #cbd5e1',
-                            color: '#475569',
+                            background: '#475569',
+                            color: '#ffffff',
                             fontSize: '12px',
-                            fontWeight: 600,
+                            fontWeight: 700,
                           }}>
-                            <Clock size={14} color="#64748b" /> Durasi Kurang
+                            <Clock size={14} color="#ffffff" /> Durasi Kurang
                           </span>
                         )}
 
@@ -592,10 +584,10 @@ export default function BootcampLearningPlayerPage() {
                         width: `${Math.min(100, Math.round((currentSession.attendance.durationMinutes / (currentSession.attendance.sessionDurationMinutes || 90)) * 100))}%`,
                         height: '100%',
                         background: (currentSession.attendance.status === 'PRESENT' || currentSession.attendance.status === 'MANUAL')
-                          ? '#22c55e'
+                          ? '#018556'
                           : currentSession.attendance.status === 'EXCUSED'
-                          ? '#3b82f6'
-                          : '#94a3b8',
+                          ? '#2563eb'
+                          : '#475569',
                         borderRadius: 4,
                       }} />
                     </div>

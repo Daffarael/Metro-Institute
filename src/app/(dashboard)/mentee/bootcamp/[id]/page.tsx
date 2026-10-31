@@ -389,9 +389,10 @@ export default function BootcampDetailPage() {
                 {attendanceData?.certificate?.isUnlocked ? (
                   <div style={{
                     padding: '24px 28px',
-                    borderRadius: 14,
-                    background: 'linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)',
-                    border: '1px solid #86efac',
+                    borderRadius: 16,
+                    background: '#ffffff',
+                    border: '2px solid #018556',
+                    boxShadow: '0 2px 8px rgba(1, 133, 86, 0.08)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
@@ -448,8 +449,8 @@ export default function BootcampDetailPage() {
                     padding: '24px 28px',
                     borderRadius: 16,
                     background: '#ffffff',
-                    border: '1px solid #e2e8f0',
-                    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.02)',
+                    border: '1.5px solid #cbd5e1',
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
                   }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16, marginBottom: 16 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
@@ -457,9 +458,8 @@ export default function BootcampDetailPage() {
                           width: 44,
                           height: 44,
                           borderRadius: 12,
-                          background: '#f8fafc',
-                          border: '1px solid #e2e8f0',
-                          color: '#475569',
+                          background: '#0f172a',
+                          color: '#ffffff',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
@@ -473,39 +473,39 @@ export default function BootcampDetailPage() {
                               E-Sertifikat Kelulusan
                             </div>
                             <span style={{
-                              padding: '2px 9px',
+                              padding: '3px 10px',
                               borderRadius: 20,
-                              background: '#f1f5f9',
-                              border: '1px solid #e2e8f0',
-                              color: '#475569',
+                              background: '#ffffff',
+                              border: '1.5px solid #0f172a',
+                              color: '#0f172a',
                               fontSize: '11.5px',
-                              fontWeight: 600,
+                              fontWeight: 700,
                             }}>
                               Terkunci · {attendanceData?.attendedCount || 0}/{attendanceData?.totalSessions || 0} Sesi
                             </span>
                           </div>
-                          <div style={{ fontSize: '13px', color: '#64748b', lineHeight: 1.4 }}>
+                          <div style={{ fontSize: '13px', color: '#475569', lineHeight: 1.4 }}>
                             Wajib hadir minimal 80% pada seluruh sesi live Google Meet untuk menerbitkan e-sertifikat resmi.
                           </div>
                         </div>
                       </div>
 
                       <div style={{ textAlign: 'right' }}>
-                        <div style={{ fontSize: '22px', fontWeight: 800, color: 'var(--color-primary)', lineHeight: 1 }}>
+                        <div style={{ fontSize: '24px', fontWeight: 800, color: '#018556', lineHeight: 1 }}>
                           {attendanceData?.totalSessions ? Math.round(((attendanceData?.attendedCount || 0) / attendanceData.totalSessions) * 100) : 0}%
                         </div>
-                        <div style={{ fontSize: '11.5px', color: '#64748b', fontWeight: 500, marginTop: 4 }}>
+                        <div style={{ fontSize: '11.5px', color: '#64748b', fontWeight: 600, marginTop: 4 }}>
                           Kehadiran
                         </div>
                       </div>
                     </div>
 
                     {/* Progress Bar */}
-                    <div style={{ width: '100%', height: 8, background: '#f1f5f9', borderRadius: 999, overflow: 'hidden', marginBottom: 18 }}>
+                    <div style={{ width: '100%', height: 8, background: '#e2e8f0', borderRadius: 999, overflow: 'hidden', marginBottom: 18 }}>
                       <div style={{
                         width: `${attendanceData?.totalSessions ? Math.round(((attendanceData?.attendedCount || 0) / attendanceData.totalSessions) * 100) : 0}%`,
                         height: '100%',
-                        background: 'linear-gradient(90deg, #018556 0%, #10b981 100%)',
+                        background: '#018556',
                         borderRadius: 999,
                         transition: 'width 0.4s ease',
                       }} />
@@ -516,22 +516,22 @@ export default function BootcampDetailPage() {
                       <div style={{
                         padding: '16px 20px',
                         borderRadius: 12,
-                        background: '#f8fafc',
-                        border: '1px solid #e2e8f0',
+                        background: '#ffffff',
+                        border: '1.5px solid #cbd5e1',
                       }}>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, marginBottom: 10 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <AlertCircle size={16} color="#64748b" />
-                            <span style={{ fontSize: '13px', fontWeight: 700, color: '#1e293b' }}>
+                            <AlertCircle size={16} color="#0f172a" />
+                            <span style={{ fontSize: '13.5px', fontWeight: 800, color: '#0f172a' }}>
                               Belum Memenuhi Syarat ({attendanceData.missingSessions.length} sesi belum tuntas)
                             </span>
                           </div>
-                          <span style={{ fontSize: '11.5px', color: '#64748b', fontWeight: 500 }}>
+                          <span style={{ fontSize: '12px', color: '#475569', fontWeight: 600 }}>
                             Selesaikan presensi sesi berikut:
                           </span>
                         </div>
 
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                           {attendanceData.missingSessions.slice(0, 3).map((ms: any) => (
                             <div
                               key={ms.id}
@@ -539,29 +539,29 @@ export default function BootcampDetailPage() {
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'space-between',
-                                padding: '8px 12px',
+                                padding: '10px 14px',
                                 borderRadius: 8,
                                 background: '#ffffff',
-                                border: '1px solid #e2e8f0',
-                                fontSize: '12.5px',
+                                border: '1px solid #cbd5e1',
+                                fontSize: '13px',
                               }}
                             >
-                              <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0, flex: 1 }}>
-                                <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#94a3b8', flexShrink: 0 }} />
-                                <span style={{ fontWeight: 600, color: '#1e293b', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flex: 1 }}>
+                                <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#475569', flexShrink: 0 }} />
+                                <span style={{ fontWeight: 700, color: '#0f172a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                   {ms.title}
                                 </span>
-                                <span style={{ color: '#64748b', fontSize: '11.5px', flexShrink: 0 }}>
+                                <span style={{ color: '#64748b', fontSize: '12px', flexShrink: 0 }}>
                                   ({ms.chapterTitle})
                                 </span>
                               </div>
                               <span style={{
                                 fontSize: '11px',
-                                fontWeight: 600,
-                                color: '#64748b',
-                                padding: '2px 8px',
+                                fontWeight: 700,
+                                color: '#ffffff',
+                                padding: '3px 10px',
                                 borderRadius: 6,
-                                background: '#f1f5f9',
+                                background: '#475569',
                                 flexShrink: 0,
                                 marginLeft: 8,
                               }}>
@@ -570,7 +570,7 @@ export default function BootcampDetailPage() {
                             </div>
                           ))}
                           {attendanceData.missingSessions.length > 3 && (
-                            <div style={{ fontSize: '11.5px', color: '#64748b', textAlign: 'center', marginTop: 4, fontWeight: 500 }}>
+                            <div style={{ fontSize: '12px', color: '#64748b', textAlign: 'center', marginTop: 4, fontWeight: 600 }}>
                               + {attendanceData.missingSessions.length - 3} sesi lainnya tercantum pada daftar presensi di bawah
                             </div>
                           )}
@@ -582,24 +582,24 @@ export default function BootcampDetailPage() {
 
                 {/* ── Checklist Kehadiran Sesi ─────────────────────── */}
                 <div style={{
-                  border: '1px solid #e2e8f0',
+                  border: '1.5px solid #cbd5e1',
                   borderRadius: 14,
                   overflow: 'hidden',
                   background: '#ffffff',
-                  boxShadow: '0 1px 3px rgba(0, 0, 0, 0.02)',
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
                 }}>
                   <div style={{
                     padding: '16px 22px',
-                    borderBottom: '1px solid #e2e8f0',
-                    background: '#f8fafc',
+                    borderBottom: '1.5px solid #cbd5e1',
+                    background: '#ffffff',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
                   }}>
-                    <span style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a' }}>
+                    <span style={{ fontSize: '14.5px', fontWeight: 800, color: '#0f172a' }}>
                       Daftar Kehadiran Sesi Pembelajaran
                     </span>
-                    <span style={{ fontSize: '12px', color: '#64748b', fontWeight: 500 }}>
+                    <span style={{ fontSize: '12px', color: '#475569', fontWeight: 600 }}>
                       Minimal hadir 80% per sesi
                     </span>
                   </div>
@@ -614,147 +614,141 @@ export default function BootcampDetailPage() {
                         <div
                           key={s.id}
                           style={{
-                            padding: '14px 20px',
-                            borderBottom: idx === attendanceData.sessions.length - 1 ? 'none' : '1px solid #f1f5f9',
+                            padding: '16px 22px',
+                            borderBottom: idx === attendanceData.sessions.length - 1 ? 'none' : '1px solid #e2e8f0',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'space-between',
                             flexWrap: 'wrap',
                             gap: 12,
                             background: '#ffffff',
-                            transition: 'background 0.15s ease',
                           }}
-                          onMouseEnter={(e) => e.currentTarget.style.background = '#f8fafc'}
-                          onMouseLeave={(e) => e.currentTarget.style.background = '#ffffff'}
                         >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: '1 1 260px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 14, flex: '1 1 260px' }}>
                             <div style={{
-                              width: 34,
-                              height: 34,
+                              width: 36,
+                              height: 36,
                               borderRadius: '50%',
-                              background: isPresent ? '#f0fdf4' : isExcused ? '#eff6ff' : isAbsent ? '#f1f5f9' : '#f8fafc',
-                              color: isPresent ? '#166534' : isExcused ? '#1e40af' : isAbsent ? '#475569' : '#94a3b8',
-                              border: isPresent ? '1px solid #bbf7d0' : isExcused ? '1px solid #bfdbfe' : isAbsent ? '1px solid #e2e8f0' : '1px solid #e2e8f0',
+                              background: isPresent ? '#018556' : isExcused ? '#2563eb' : isAbsent ? '#475569' : '#ffffff',
+                              color: isPresent || isExcused || isAbsent ? '#ffffff' : '#64748b',
+                              border: isPresent || isExcused || isAbsent ? 'none' : '1.5px solid #cbd5e1',
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
                               flexShrink: 0,
                             }}>
-                              {isPresent ? <CheckCircle2 size={16} /> : isExcused ? <ShieldCheck size={16} /> : isAbsent ? <XCircle size={16} /> : <Clock size={16} />}
+                              {isPresent ? <CheckCircle2 size={18} /> : isExcused ? <ShieldCheck size={18} /> : isAbsent ? <XCircle size={18} /> : <Clock size={18} />}
                             </div>
                             <div>
-                              <div style={{ fontSize: '13.5px', fontWeight: 600, color: '#0f172a' }}>
+                              <div style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a' }}>
                                 {s.title}
                               </div>
-                              <div style={{ fontSize: '12px', color: '#64748b' }}>
+                              <div style={{ fontSize: '12px', color: '#475569', marginTop: 2 }}>
                                 {s.chapterTitle} {s.type === 'LIVE' ? '· Sesi Live Google Meet' : ''}
                               </div>
                             </div>
                           </div>
 
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
                             {/* Duration or schedule info */}
                             {s.attendance?.durationMinutes > 0 ? (
-                              <div style={{ textAlign: 'right', fontSize: '12px' }}>
-                                <div style={{ fontWeight: 700, color: isPresent ? '#166534' : isExcused ? '#1e40af' : '#475569' }}>
+                              <div style={{ textAlign: 'right', fontSize: '12.5px' }}>
+                                <div style={{ fontWeight: 800, color: isPresent ? '#018556' : isExcused ? '#2563eb' : '#475569' }}>
                                   {s.attendance.durationMinutes} / {s.durationMinutes} menit
                                 </div>
-                                <div style={{ color: '#94a3b8', fontSize: '11px' }}>
+                                <div style={{ color: '#64748b', fontSize: '11px', fontWeight: 500 }}>
                                   min. {s.minRequiredMinutes} mnt
                                 </div>
                               </div>
                             ) : s.liveScheduledAt ? (
-                              <div style={{ textAlign: 'right', fontSize: '12px', color: '#64748b' }}>
+                              <div style={{ textAlign: 'right', fontSize: '12px', color: '#475569', fontWeight: 500 }}>
                                 {formatDate(s.liveScheduledAt)}
                               </div>
                             ) : null}
 
-                            {/* Status badge */}
+                            {/* Status badge - SOLID COLORS, NO FADED BACKGROUND */}
                             {isPresent ? (
                               <span style={{
                                 display: 'inline-flex',
                                 alignItems: 'center',
-                                gap: 5,
-                                padding: '4px 10px',
+                                gap: 6,
+                                padding: '5px 12px',
                                 borderRadius: 20,
-                                background: '#f0fdf4',
-                                border: '1px solid #bbf7d0',
-                                color: '#166534',
+                                background: '#018556',
+                                color: '#ffffff',
                                 fontSize: '12px',
                                 fontWeight: 700,
                               }}>
-                                <CheckCircle2 size={12} color="#16a34a" /> Hadir
+                                <CheckCircle2 size={13} color="#ffffff" /> Hadir
                               </span>
                             ) : isExcused ? (
                               <span style={{
                                 display: 'inline-flex',
                                 alignItems: 'center',
-                                gap: 5,
-                                padding: '4px 10px',
+                                gap: 6,
+                                padding: '5px 12px',
                                 borderRadius: 20,
-                                background: '#eff6ff',
-                                border: '1px solid #bfdbfe',
-                                color: '#1e40af',
+                                background: '#2563eb',
+                                color: '#ffffff',
                                 fontSize: '12px',
                                 fontWeight: 700,
                               }}>
-                                <ShieldCheck size={12} color="#2563eb" /> Izin
+                                <ShieldCheck size={13} color="#ffffff" /> Izin
                               </span>
                             ) : isAbsent ? (
                               <span style={{
                                 display: 'inline-flex',
                                 alignItems: 'center',
-                                gap: 5,
-                                padding: '4px 10px',
+                                gap: 6,
+                                padding: '5px 12px',
                                 borderRadius: 20,
-                                background: '#f8fafc',
-                                border: '1px solid #cbd5e1',
-                                color: '#475569',
+                                background: '#475569',
+                                color: '#ffffff',
                                 fontSize: '12px',
-                                fontWeight: 600,
+                                fontWeight: 700,
                               }}>
-                                <XCircle size={12} color="#64748b" /> Tidak Hadir
+                                <XCircle size={13} color="#ffffff" /> Tidak Hadir
                               </span>
                             ) : (
                               <span style={{
                                 display: 'inline-flex',
                                 alignItems: 'center',
-                                gap: 5,
-                                padding: '4px 10px',
+                                gap: 6,
+                                padding: '4px 12px',
                                 borderRadius: 20,
                                 background: '#ffffff',
-                                border: '1px solid #e2e8f0',
-                                color: '#64748b',
+                                border: '1.5px solid #cbd5e1',
+                                color: '#475569',
                                 fontSize: '12px',
-                                fontWeight: 500,
+                                fontWeight: 600,
                               }}>
-                                <Clock size={12} color="#94a3b8" /> Terjadwal
+                                <Clock size={13} color="#64748b" /> Terjadwal
                               </span>
                             )}
 
-                            {/* Link to Session */}
+                            {/* Solid Masuk Button - SOLID GREEN, WHITE TEXT, NO FADED BORDER/BG */}
                             <Link
                               href={ROUTES.LEARN_BOOTCAMP_SESSION(id, s.id)}
                               style={{
-                                padding: '6px 14px',
+                                padding: '7px 18px',
                                 borderRadius: 8,
-                                background: '#ffffff',
-                                border: '1px solid #cbd5e1',
-                                color: '#1e293b',
-                                fontSize: '12px',
-                                fontWeight: 600,
+                                background: '#018556',
+                                color: '#ffffff',
+                                border: 'none',
+                                fontSize: '12.5px',
+                                fontWeight: 700,
                                 textDecoration: 'none',
-                                transition: 'all 0.15s ease',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                transition: 'opacity 0.15s ease',
                               }}
                               onMouseEnter={(e) => {
-                                e.currentTarget.style.borderColor = 'var(--color-primary)'
-                                e.currentTarget.style.color = 'var(--color-primary)'
-                                e.currentTarget.style.background = 'rgba(1, 133, 86, 0.04)'
+                                e.currentTarget.style.opacity = '0.9'
                               }}
                               onMouseLeave={(e) => {
-                                e.currentTarget.style.borderColor = '#cbd5e1'
-                                e.currentTarget.style.color = '#1e293b'
-                                e.currentTarget.style.background = '#ffffff'
+                                e.currentTarget.style.opacity = '1'
                               }}
                             >
                               Masuk
