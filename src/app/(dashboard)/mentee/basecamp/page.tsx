@@ -271,49 +271,9 @@ export default function BasecampPage() {
             <div className="card" style={{ padding: 0, overflow: 'hidden', boxShadow: '0 1px 2px rgba(0,0,0,0.03)', border: '1px solid var(--color-border-subtle)' }}>
               <div style={{ padding: 'var(--space-4) var(--space-5)', borderBottom: '1px solid var(--color-border-subtle)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-primary)' }}>Kelas Aktif</span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <Link href={ROUTES.MY_COURSES} style={{ fontSize: '12px', color: 'var(--color-primary)', fontWeight: 500, display: 'flex', alignItems: 'center', gap: 4, textDecoration: 'none' }}>
+                <Link href={ROUTES.MY_COURSES} style={{ fontSize: '12px', color: 'var(--color-primary)', fontWeight: 500, display: 'flex', alignItems: 'center', gap: 4, textDecoration: 'none' }}>
                   Lihat semua <ArrowRight size={12} />
                 </Link>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <button
-                      type="button"
-                      onClick={() => scrollActiveCourses('left')}
-                      disabled={!canScrollLeft}
-                      title="Geser ke kiri"
-                      style={{
-                        width: 28, height: 28, borderRadius: 8,
-                        border: '1px solid var(--color-border)',
-                        background: '#ffffff',
-                        color: canScrollLeft ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        cursor: canScrollLeft ? 'pointer' : 'not-allowed',
-                        opacity: canScrollLeft ? 1 : 0.35,
-                        transition: 'all 0.15s ease',
-                      }}
-                    >
-                      <ChevronLeft size={15} />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => scrollActiveCourses('right')}
-                      disabled={!canScrollRight}
-                      title="Geser ke kanan"
-                      style={{
-                        width: 28, height: 28, borderRadius: 8,
-                        border: '1px solid var(--color-border)',
-                        background: '#ffffff',
-                        color: canScrollRight ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        cursor: canScrollRight ? 'pointer' : 'not-allowed',
-                        opacity: canScrollRight ? 1 : 0.35,
-                        transition: 'all 0.15s ease',
-                      }}
-                    >
-                      <ChevronRight size={15} />
-                    </button>
-                  </div>
-                </div>
               </div>
               <div style={{ position: 'relative' }}>
                 {canScrollLeft && (
