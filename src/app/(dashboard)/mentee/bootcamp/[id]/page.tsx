@@ -7,7 +7,7 @@ import Link from 'next/link'
 import {
   Star, Users, Clock, ChevronRight, Play, Lock, Heart,
   CheckCircle2, Calendar, Zap, User, ChevronDown, ChevronUp, Share2, PlayCircle,
-  FileText, HelpCircle, FileEdit, Award, ShieldCheck, XCircle, AlertCircle
+  FileText, HelpCircle, FileEdit, Award, ShieldCheck, XCircle, AlertCircle, Video
 } from 'lucide-react'
 import api from '@/lib/axios'
 import { useAuthStore } from '@/stores/auth.store'
@@ -467,8 +467,8 @@ export default function BootcampDetailPage() {
                         </div>
                         <div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 4 }}>
-                            <div style={{ fontSize: '16px', fontWeight: 700, color: '#0f172a' }}>
-                              E-Sertifikat Kelulusan
+                            <div style={{ fontSize: '16px', fontWeight: 800, color: '#0f172a' }}>
+                              Status Kelulusan & E-Sertifikat
                             </div>
                             <span style={{
                               padding: '3px 10px',
@@ -479,11 +479,11 @@ export default function BootcampDetailPage() {
                               fontSize: '11.5px',
                               fontWeight: 700,
                             }}>
-                              Terkunci · {attendanceData?.attendedCount || 0}/{attendanceData?.totalSessions || 0} Sesi
+                              Terkunci · {attendanceData?.attendedCount || 0} dari {attendanceData?.totalSessions || 0} Sesi Tuntas
                             </span>
                           </div>
-                          <div style={{ fontSize: '13px', color: '#475569', lineHeight: 1.4 }}>
-                            Wajib hadir minimal 80% pada seluruh sesi live Google Meet untuk menerbitkan e-sertifikat resmi.
+                          <div style={{ fontSize: '13px', color: '#475569', lineHeight: 1.5 }}>
+                            Syarat Penerbitan: Tuntaskan 100% seluruh sesi (hadir min. 80% pada setiap sesi Live Google Meet, serta selesaikan semua materi, kuis, dan tugas praktik).
                           </div>
                         </div>
                       </div>
@@ -493,7 +493,7 @@ export default function BootcampDetailPage() {
                           {attendanceData?.totalSessions ? Math.round(((attendanceData?.attendedCount || 0) / attendanceData.totalSessions) * 100) : 0}%
                         </div>
                         <div style={{ fontSize: '11.5px', color: '#64748b', fontWeight: 600, marginTop: 4 }}>
-                          Kehadiran
+                          Progres Kelulusan
                         </div>
                       </div>
                     </div>
@@ -509,6 +509,46 @@ export default function BootcampDetailPage() {
                       }} />
                     </div>
 
+                    {/* Panduan Keterangan Syarat Presensi & Belajar */}
+                    <div style={{
+                      padding: '14px 18px',
+                      borderRadius: 12,
+                      background: '#ffffff',
+                      border: '1px solid #cbd5e1',
+                      display: 'grid',
+                      gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+                      gap: 16,
+                      marginBottom: attendanceData?.missingSessions && attendanceData.missingSessions.length > 0 ? 14 : 0,
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                        <div style={{ width: 28, height: 28, borderRadius: 8, background: '#018556', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
+                          <Video size={15} color="#ffffff" />
+                        </div>
+                        <div>
+                          <div style={{ fontSize: '13px', fontWeight: 800, color: '#0f172a' }}>
+                            Sesi Live Google Meet (Syarat Hadir 80%)
+                          </div>
+                          <div style={{ fontSize: '12px', color: '#475569', lineHeight: 1.45, marginTop: 2 }}>
+                            Durasi hadir dihitung otomatis oleh server Google Meet. Wajib aktif minimal 80% dari total menit sesi agar tercatat Hadir.
+                          </div>
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                        <div style={{ width: 28, height: 28, borderRadius: 8, background: '#018556', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
+                          <FileText size={15} color="#ffffff" />
+                        </div>
+                        <div>
+                          <div style={{ fontSize: '13px', fontWeight: 800, color: '#0f172a' }}>
+                            Sesi Mandiri (Materi, Kuis & Tugas)
+                          </div>
+                          <div style={{ fontSize: '12px', color: '#475569', lineHeight: 1.45, marginTop: 2 }}>
+                            Tonton video pembelajaran min. 90%, baca dokumen materi, kerjakan kuis evaluasi, atau kirimkan tugas praktik untuk menuntaskannya.
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
                     {/* Missing sessions notice if any */}
                     {attendanceData?.missingSessions && attendanceData.missingSessions.length > 0 && (
                       <div style={{
@@ -521,55 +561,67 @@ export default function BootcampDetailPage() {
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                             <AlertCircle size={16} color="#0f172a" />
                             <span style={{ fontSize: '13.5px', fontWeight: 800, color: '#0f172a' }}>
-                              Belum Memenuhi Syarat ({attendanceData.missingSessions.length} sesi belum tuntas)
+                              Belum Memenuhi Syarat Kelulusan ({attendanceData.missingSessions.length} sesi belum tuntas)
                             </span>
                           </div>
                           <span style={{ fontSize: '12px', color: '#475569', fontWeight: 600 }}>
-                            Selesaikan presensi sesi berikut:
+                            Selesaikan aktivitas atau presensi sesi berikut:
                           </span>
                         </div>
 
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                          {attendanceData.missingSessions.slice(0, 3).map((ms: any) => (
-                            <div
-                              key={ms.id}
-                              style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'space-between',
-                                padding: '10px 14px',
-                                borderRadius: 8,
-                                background: '#ffffff',
-                                border: '1px solid #cbd5e1',
-                                fontSize: '13px',
-                              }}
-                            >
-                              <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flex: 1 }}>
-                                <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#475569', flexShrink: 0 }} />
-                                <span style={{ fontWeight: 700, color: '#0f172a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                  {ms.title}
-                                </span>
-                                <span style={{ color: '#64748b', fontSize: '12px', flexShrink: 0 }}>
-                                  ({ms.chapterTitle})
+                          {attendanceData.missingSessions.slice(0, 3).map((ms: any) => {
+                            const typeLabel = ms.type === 'LIVE'
+                              ? 'Live Google Meet (Belum Hadir)'
+                              : ms.type === 'QUIZ'
+                              ? 'Kuis Belum Dikerjakan'
+                              : ms.type === 'ASSIGNMENT'
+                              ? 'Tugas Belum Dikirim'
+                              : ms.type === 'VIDEO'
+                              ? 'Video Belum Ditonton'
+                              : 'Materi Belum Selesai'
+
+                            return (
+                              <div
+                                key={ms.id}
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'space-between',
+                                  padding: '10px 14px',
+                                  borderRadius: 8,
+                                  background: '#ffffff',
+                                  border: '1px solid #cbd5e1',
+                                  fontSize: '13px',
+                                }}
+                              >
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flex: 1 }}>
+                                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#475569', flexShrink: 0 }} />
+                                  <span style={{ fontWeight: 700, color: '#0f172a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                    {ms.title}
+                                  </span>
+                                  <span style={{ color: '#64748b', fontSize: '12px', flexShrink: 0 }}>
+                                    ({ms.chapterTitle})
+                                  </span>
+                                </div>
+                                <span style={{
+                                  fontSize: '11px',
+                                  fontWeight: 700,
+                                  color: '#ffffff',
+                                  padding: '4px 10px',
+                                  borderRadius: 6,
+                                  background: '#475569',
+                                  flexShrink: 0,
+                                  marginLeft: 8,
+                                }}>
+                                  {typeLabel}
                                 </span>
                               </div>
-                              <span style={{
-                                fontSize: '11px',
-                                fontWeight: 700,
-                                color: '#ffffff',
-                                padding: '3px 10px',
-                                borderRadius: 6,
-                                background: '#475569',
-                                flexShrink: 0,
-                                marginLeft: 8,
-                              }}>
-                                Belum Hadir
-                              </span>
-                            </div>
-                          ))}
+                            )
+                          })}
                           {attendanceData.missingSessions.length > 3 && (
                             <div style={{ fontSize: '12px', color: '#64748b', textAlign: 'center', marginTop: 4, fontWeight: 600 }}>
-                              + {attendanceData.missingSessions.length - 3} sesi lainnya tercantum pada daftar presensi di bawah
+                              + {attendanceData.missingSessions.length - 3} sesi lainnya tercantum pada daftar sesi di bawah
                             </div>
                           )}
                         </div>
@@ -584,7 +636,7 @@ export default function BootcampDetailPage() {
                   borderRadius: 14,
                   overflow: 'hidden',
                   background: '#ffffff',
-                                  }}>
+                }}>
                   <div style={{
                     padding: '16px 22px',
                     borderBottom: '1.5px solid #cbd5e1',
@@ -592,20 +644,86 @@ export default function BootcampDetailPage() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: 8,
                   }}>
-                    <span style={{ fontSize: '14.5px', fontWeight: 800, color: '#0f172a' }}>
-                      Daftar Kehadiran Sesi Pembelajaran
-                    </span>
-                    <span style={{ fontSize: '12px', color: '#475569', fontWeight: 600 }}>
-                      Minimal hadir 80% per sesi
-                    </span>
+                    <div>
+                      <div style={{ fontSize: '14.5px', fontWeight: 800, color: '#0f172a' }}>
+                        Daftar Sesi Pembelajaran & Status Kehadiran
+                      </div>
+                      <div style={{ fontSize: '12px', color: '#475569', marginTop: 2 }}>
+                        Total {attendanceData?.totalSessions || 0} sesi kurikulum bootcamp
+                      </div>
+                    </div>
+                    <div style={{ fontSize: '12px', color: '#475569', fontWeight: 600 }}>
+                      Sesi Live: min. hadir 80% · Sesi Mandiri: tonton video / kuis / tugas
+                    </div>
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     {attendanceData?.sessions?.map((s: any, idx: number) => {
+                      const isLive = s.type === 'LIVE'
                       const isPresent = s.attendance?.status === 'PRESENT' || s.attendance?.status === 'MANUAL'
                       const isExcused = s.attendance?.status === 'EXCUSED'
                       const isAbsent = s.attendance?.status === 'ABSENT'
+                      const isDone = s.isCompleted
+
+                      // Status label & badge
+                      let badgeBg = '#ffffff'
+                      let badgeColor = '#475569'
+                      let badgeBorder = '1.5px solid #cbd5e1'
+                      let badgeText = 'Terjadwal'
+                      let badgeIcon = <Clock size={13} color="#64748b" />
+
+                      if (isLive) {
+                        if (isPresent) {
+                          badgeBg = '#018556'
+                          badgeColor = '#ffffff'
+                          badgeBorder = 'none'
+                          badgeText = 'Hadir Live'
+                          badgeIcon = <CheckCircle2 size={13} color="#ffffff" />
+                        } else if (isExcused) {
+                          badgeBg = '#2563eb'
+                          badgeColor = '#ffffff'
+                          badgeBorder = 'none'
+                          badgeText = 'Izin Disetujui'
+                          badgeIcon = <ShieldCheck size={13} color="#ffffff" />
+                        } else if (isAbsent) {
+                          badgeBg = '#475569'
+                          badgeColor = '#ffffff'
+                          badgeBorder = 'none'
+                          badgeText = 'Tidak Hadir'
+                          badgeIcon = <XCircle size={13} color="#ffffff" />
+                        } else {
+                          badgeText = 'Belum Dimulai'
+                        }
+                      } else {
+                        if (isDone) {
+                          badgeBg = '#018556'
+                          badgeColor = '#ffffff'
+                          badgeBorder = 'none'
+                          badgeText = 'Selesai'
+                          badgeIcon = <CheckCircle2 size={13} color="#ffffff" />
+                        } else {
+                          if (s.type === 'QUIZ') badgeText = 'Kuis Belum Selesai'
+                          else if (s.type === 'ASSIGNMENT') badgeText = 'Tugas Belum Kirim'
+                          else if (s.type === 'VIDEO') badgeText = 'Video Belum Selesai'
+                          else badgeText = 'Materi Belum Dibaca'
+                        }
+                      }
+
+                      // Type Label
+                      const typeLabel = s.type === 'LIVE'
+                        ? 'Sesi Live Google Meet'
+                        : s.type === 'QUIZ'
+                        ? 'Kuis Evaluasi'
+                        : s.type === 'ASSIGNMENT'
+                        ? 'Tugas Praktik'
+                        : s.type === 'VIDEO'
+                        ? 'Video Pembelajaran'
+                        : 'Materi / Dokumen'
+
+                      const isPassed = isLive ? (isPresent || isExcused) : isDone
 
                       return (
                         <div
@@ -621,109 +739,93 @@ export default function BootcampDetailPage() {
                             background: '#ffffff',
                           }}
                         >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 14, flex: '1 1 260px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 14, flex: '1 1 280px' }}>
                             <div style={{
                               width: 36,
                               height: 36,
                               borderRadius: '50%',
-                              background: isPresent ? '#018556' : isExcused ? '#2563eb' : isAbsent ? '#475569' : '#ffffff',
-                              color: isPresent || isExcused || isAbsent ? '#ffffff' : '#64748b',
-                              border: isPresent || isExcused || isAbsent ? 'none' : '1.5px solid #cbd5e1',
+                              background: isPassed ? '#018556' : isLive && isAbsent ? '#475569' : '#ffffff',
+                              color: isPassed || (isLive && isAbsent) ? '#ffffff' : '#64748b',
+                              border: isPassed || (isLive && isAbsent) ? 'none' : '1.5px solid #cbd5e1',
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
                               flexShrink: 0,
                             }}>
-                              {isPresent ? <CheckCircle2 size={18} /> : isExcused ? <ShieldCheck size={18} /> : isAbsent ? <XCircle size={18} /> : <Clock size={18} />}
+                              {isPassed ? <CheckCircle2 size={18} /> : isLive && isAbsent ? <XCircle size={18} /> : <Clock size={18} />}
                             </div>
                             <div>
                               <div style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a' }}>
                                 {s.title}
                               </div>
-                              <div style={{ fontSize: '12px', color: '#475569', marginTop: 2 }}>
-                                {s.chapterTitle} {s.type === 'LIVE' ? '· Sesi Live Google Meet' : ''}
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 3, flexWrap: 'wrap' }}>
+                                <span style={{
+                                  fontSize: '11px',
+                                  fontWeight: 700,
+                                  color: isLive ? '#018556' : '#475569',
+                                  background: '#ffffff',
+                                  border: isLive ? '1.5px solid #018556' : '1px solid #cbd5e1',
+                                  padding: '1px 7px',
+                                  borderRadius: 4,
+                                }}>
+                                  {typeLabel}
+                                </span>
+                                <span style={{ fontSize: '12px', color: '#64748b' }}>
+                                  {s.chapterTitle}
+                                </span>
                               </div>
                             </div>
                           </div>
 
                           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
                             {/* Duration or schedule info */}
-                            {s.attendance?.durationMinutes > 0 ? (
-                              <div style={{ textAlign: 'right', fontSize: '12.5px' }}>
-                                <div style={{ fontWeight: 800, color: isPresent ? '#018556' : isExcused ? '#2563eb' : '#475569' }}>
-                                  {s.attendance.durationMinutes} / {s.durationMinutes} menit
+                            {isLive ? (
+                              s.attendance?.durationMinutes > 0 ? (
+                                <div style={{ textAlign: 'right', fontSize: '12.5px' }}>
+                                  <div style={{ fontWeight: 800, color: isPresent ? '#018556' : isExcused ? '#2563eb' : '#475569' }}>
+                                    {s.attendance.durationMinutes} / {s.durationMinutes} menit
+                                  </div>
+                                  <div style={{ color: '#64748b', fontSize: '11px', fontWeight: 500 }}>
+                                    min. {s.minRequiredMinutes} mnt (80%)
+                                  </div>
                                 </div>
-                                <div style={{ color: '#64748b', fontSize: '11px', fontWeight: 500 }}>
-                                  min. {s.minRequiredMinutes} mnt
+                              ) : s.liveScheduledAt ? (
+                                <div style={{ textAlign: 'right', fontSize: '12px', color: '#475569', fontWeight: 500 }}>
+                                  <div>{formatDate(s.liveScheduledAt)}</div>
+                                  <div style={{ color: '#64748b', fontSize: '11px' }}>Syarat hadir min. 80%</div>
                                 </div>
-                              </div>
-                            ) : s.liveScheduledAt ? (
-                              <div style={{ textAlign: 'right', fontSize: '12px', color: '#475569', fontWeight: 500 }}>
-                                {formatDate(s.liveScheduledAt)}
-                              </div>
-                            ) : null}
-
-                            {/* Status badge - SOLID COLORS, NO FADED BACKGROUND */}
-                            {isPresent ? (
-                              <span style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: 6,
-                                padding: '5px 12px',
-                                borderRadius: 20,
-                                background: '#018556',
-                                color: '#ffffff',
-                                fontSize: '12px',
-                                fontWeight: 700,
-                              }}>
-                                <CheckCircle2 size={13} color="#ffffff" /> Hadir
-                              </span>
-                            ) : isExcused ? (
-                              <span style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: 6,
-                                padding: '5px 12px',
-                                borderRadius: 20,
-                                background: '#2563eb',
-                                color: '#ffffff',
-                                fontSize: '12px',
-                                fontWeight: 700,
-                              }}>
-                                <ShieldCheck size={13} color="#ffffff" /> Izin
-                              </span>
-                            ) : isAbsent ? (
-                              <span style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: 6,
-                                padding: '5px 12px',
-                                borderRadius: 20,
-                                background: '#475569',
-                                color: '#ffffff',
-                                fontSize: '12px',
-                                fontWeight: 700,
-                              }}>
-                                <XCircle size={13} color="#ffffff" /> Tidak Hadir
-                              </span>
+                              ) : null
                             ) : (
-                              <span style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: 6,
-                                padding: '4px 12px',
-                                borderRadius: 20,
-                                background: '#ffffff',
-                                border: '1.5px solid #cbd5e1',
-                                color: '#475569',
-                                fontSize: '12px',
-                                fontWeight: 600,
-                              }}>
-                                <Clock size={13} color="#64748b" /> Terjadwal
-                              </span>
+                              s.videoDuration ? (
+                                <div style={{ textAlign: 'right', fontSize: '12px', color: '#475569', fontWeight: 500 }}>
+                                  <div style={{ fontWeight: 700 }}>{formatDuration(s.videoDuration)}</div>
+                                  <div style={{ color: '#64748b', fontSize: '11px' }}>Tonton min. 90%</div>
+                                </div>
+                              ) : (
+                                <div style={{ textAlign: 'right', fontSize: '11.5px', color: '#64748b' }}>
+                                  {s.type === 'QUIZ' ? 'Passing grade 80%' : s.type === 'ASSIGNMENT' ? 'Kirim tugas praktik' : 'Baca modul'}
+                                </div>
+                              )
                             )}
 
-                            {/* Solid Masuk Button - SOLID GREEN, WHITE TEXT, NO FADED BORDER/BG */}
+                            {/* Status badge */}
+                            <span style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 6,
+                              padding: '5px 12px',
+                              borderRadius: 20,
+                              background: badgeBg,
+                              border: badgeBorder,
+                              color: badgeColor,
+                              fontSize: '12px',
+                              fontWeight: 700,
+                              whiteSpace: 'nowrap',
+                            }}>
+                              {badgeIcon} {badgeText}
+                            </span>
+
+                            {/* Solid Masuk Button */}
                             <Link
                               href={ROUTES.LEARN_BOOTCAMP_SESSION(id, s.id)}
                               style={{
