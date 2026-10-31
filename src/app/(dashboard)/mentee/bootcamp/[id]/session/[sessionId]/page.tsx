@@ -117,6 +117,38 @@ export default function BootcampLearningPlayerPage() {
     enabled: activeTab === 'qna',
   })
 
+  const { data: attendanceData } = useQuery({
+    queryKey: ['my-bootcamp-attendance', bootcampId],
+    queryFn: () => api.get(`/bootcamps/${bootcampId}/my-attendance`).then((r) => r.data.data),
+    enabled: Boolean(bootcampId),
+  })
+
+  const sessionUnlockMap = useMemo(() => {
+    const map: Record<string, boolean> = {}
+    const list = attendanceData?.sessions || []
+    let canProceed = true
+
+    for (let i = 0; i < list.length; i++) {
+      const s = list[i]
+      map[s.id] = canProceed
+
+      const isLive = s.type === 'LIVE'
+      const isPresent = s.attendance?.status === 'PRESENT' || s.attendance?.status === 'MANUAL'
+      const isExcused = s.attendance?.status === 'EXCUSED'
+      const isAbsent = s.attendance?.status === 'ABSENT'
+      const isDone = s.isCompleted
+      const isPassed = isLive ? (isPresent || isExcused) : isDone
+
+      const isCleared = isPassed || (isLive && isAbsent)
+
+      if (!isCleared) {
+        canProceed = false
+      }
+    }
+
+    return map
+  }, [attendanceData?.sessions])
+
   const completeMutation = useMutation({
     mutationFn: () => api.post(`/bootcamps/${bootcampId}/sessions/${sessionId}/complete`).then((r) => r.data),
     onSuccess: () => {
@@ -1046,7 +1078,7 @@ export default function BootcampLearningPlayerPage() {
                       )}
 
                       {nextSessionId && (
-                        isSessionCompleted ? (
+                        (isSessionCompleted || (currentSession.type === 'LIVE' && currentSession.attendance?.status === 'ABSENT')) ? (
                           <Link
                             href={ROUTES.LEARN_BOOTCAMP_SESSION(bootcampId, nextSessionId)}
                             style={{ textDecoration: 'none' }}
@@ -1560,34 +1592,46 @@ export default function BootcampLearningPlayerPage() {
                       <div style={{ padding: '8px 16px' }}>
                         {chapter.sessions.map((sess, sIdx) => {
                           const isActive = sess.id === sessionId
-                          return (
-                            <Link
+                          const isUnlocked = sessionUnlockMap ? sessionUnlockMap[sess.id] !== false : true
+
+                          const content = (
+                            <div
                               key={sess.id}
-                              href={ROUTES.LEARN_BOOTCAMP_SESSION(bootcampId, sess.id)}
                               style={{
                                 display: 'flex', alignItems: 'flex-start', gap: 12,
-                                padding: '12px 16px', textDecoration: 'none',
-                                background: isActive ? '#ffffff' : 'transparent', borderRadius: 12, marginBottom: 4, border: isActive ? '1.5px solid var(--color-primary)' : '1px solid transparent', boxShadow: isActive ? '0 2px 6px rgba(0, 0, 0, 0.04)' : 'none', transition: 'all 0.2s'
+                                padding: '12px 16px',
+                                background: isActive ? '#ffffff' : 'transparent', borderRadius: 12, marginBottom: 4, border: isActive ? '1.5px solid var(--color-primary)' : '1px solid transparent', boxShadow: isActive ? '0 2px 6px rgba(0, 0, 0, 0.04)' : 'none', transition: 'all 0.2s',
+                                opacity: isUnlocked ? 1 : 0.55,
+                                cursor: isUnlocked ? 'pointer' : 'not-allowed',
                               }}
-                              onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = '#f8fafc' }}
+                              onClick={(e) => {
+                                if (!isUnlocked) {
+                                  e.preventDefault()
+                                  toast.info('Selesaikan sesi sebelumnya terlebih dahulu untuk membuka sesi ini.')
+                                }
+                              }}
+                              onMouseEnter={(e) => { if (!isActive && isUnlocked) e.currentTarget.style.background = '#f8fafc' }}
                               onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = 'transparent' }}
                             >
                               <div style={{ marginTop: 2 }}>
-                                {sess.isCompleted
-                                  ? <CheckCircle2 size={18} color="var(--color-primary)" />
-                                  : sess.type === 'LIVE'
-                                  ? <Video size={18} color={isActive ? 'var(--color-primary)' : '#cbd5e1'} />
-                                  : sess.type === 'QUIZ'
-                                  ? <HelpCircle size={18} color={isActive ? 'var(--color-primary)' : '#cbd5e1'} />
-                                  : sess.type === 'ASSIGNMENT'
-                                  ? <FileEdit size={18} color={isActive ? 'var(--color-primary)' : '#cbd5e1'} />
-                                  : <PlayCircle size={18} color={isActive ? 'var(--color-primary)' : '#cbd5e1'} />
-                                }
+                                {!isUnlocked ? (
+                                  <Lock size={17} color="#94a3b8" />
+                                ) : sess.isCompleted ? (
+                                  <CheckCircle2 size={18} color="var(--color-primary)" />
+                                ) : sess.type === 'LIVE' ? (
+                                  <Video size={18} color={isActive ? 'var(--color-primary)' : '#cbd5e1'} />
+                                ) : sess.type === 'QUIZ' ? (
+                                  <HelpCircle size={18} color={isActive ? 'var(--color-primary)' : '#cbd5e1'} />
+                                ) : sess.type === 'ASSIGNMENT' ? (
+                                  <FileEdit size={18} color={isActive ? 'var(--color-primary)' : '#cbd5e1'} />
+                                ) : (
+                                  <PlayCircle size={18} color={isActive ? 'var(--color-primary)' : '#cbd5e1'} />
+                                )}
                               </div>
                               <div style={{ flex: 1 }}>
                                 <div style={{
                                   fontSize: '13px', fontWeight: isActive ? 700 : 500,
-                                  color: isActive ? 'var(--color-primary)' : 'var(--color-text-secondary)',
+                                  color: isActive ? 'var(--color-primary)' : isUnlocked ? 'var(--color-text-secondary)' : '#94a3b8',
                                   lineHeight: 1.4, marginBottom: 4
                                 }}>
                                   {sIdx + 1}. {sess.title}
@@ -1600,9 +1644,23 @@ export default function BootcampLearningPlayerPage() {
                                       <span>{formatDuration(sess.videoDuration)}</span>
                                     </>
                                   )}
+                                  {!isUnlocked && (
+                                    <>
+                                      <span>•</span>
+                                      <span style={{ color: '#94a3b8', fontWeight: 600 }}>Terkunci</span>
+                                    </>
+                                  )}
                                 </div>
                               </div>
+                            </div>
+                          )
+
+                          return isUnlocked ? (
+                            <Link key={sess.id} href={ROUTES.LEARN_BOOTCAMP_SESSION(bootcampId, sess.id)} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
+                              {content}
                             </Link>
+                          ) : (
+                            content
                           )
                         })}
                       </div>

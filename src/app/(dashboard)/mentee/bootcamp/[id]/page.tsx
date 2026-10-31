@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
@@ -50,6 +50,34 @@ export default function BootcampDetailPage() {
     queryFn: () => api.get(`/bootcamps/${id}/my-attendance`).then((r) => r.data.data),
     enabled: Boolean(data?.isEnrolled),
   })
+
+  // Alur kelulusan bertahap: harus selesai yang sebelumnya baru bisa lanjut,
+  // kecuali sesi live kalau kelewat (isAbsent) tetap bisa lanjut tapi dihitung tidak hadir.
+  const sessionUnlockMap = useMemo(() => {
+    const map: Record<string, boolean> = {}
+    const list = attendanceData?.sessions || []
+    let canProceed = true
+
+    for (let i = 0; i < list.length; i++) {
+      const s = list[i]
+      map[s.id] = canProceed
+
+      const isLive = s.type === 'LIVE'
+      const isPresent = s.attendance?.status === 'PRESENT' || s.attendance?.status === 'MANUAL'
+      const isExcused = s.attendance?.status === 'EXCUSED'
+      const isAbsent = s.attendance?.status === 'ABSENT'
+      const isDone = s.isCompleted
+      const isPassed = isLive ? (isPresent || isExcused) : isDone
+
+      const isCleared = isPassed || (isLive && isAbsent)
+
+      if (!isCleared) {
+        canProceed = false
+      }
+    }
+
+    return map
+  }, [attendanceData?.sessions])
 
   const submitReviewMutation = useMutation({
     mutationFn: () => api.post(`/bootcamps/${id}/reviews`, { rating: reviewRating, content: reviewContent }),
@@ -328,6 +356,7 @@ export default function BootcampDetailPage() {
                           <div style={{ padding: '0 8px 12px' }}>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                               {chapter.sessions.map((session, idx: number) => {
+                                const isUnlocked = sessionUnlockMap ? sessionUnlockMap[session.id] !== false : true
                                 const sessionContent = (
                                   <div
                                     key={session.id}
@@ -337,11 +366,19 @@ export default function BootcampDetailPage() {
                                       borderRadius: 10,
                                       transition: 'all 500ms cubic-bezier(0.4,0,0.2,1)',
                                       transform: isOpen ? 'translateY(0)' : 'translateY(16px)',
-                                      opacity: isOpen ? 1 : 0,
+                                      opacity: isOpen ? (isUnlocked ? 1 : 0.6) : 0,
                                       transitionDelay: isOpen ? `${idx * 75}ms` : '0ms',
-                                      cursor: data.isEnrolled ? 'pointer' : 'default',
+                                      cursor: !data.isEnrolled ? 'default' : isUnlocked ? 'pointer' : 'not-allowed',
                                     }}
-                                    onMouseEnter={(e) => e.currentTarget.style.background = 'color-mix(in srgb, var(--color-text-primary) 3%, transparent)'}
+                                    onClick={(e) => {
+                                      if (data.isEnrolled && !isUnlocked) {
+                                        e.preventDefault()
+                                        toast.info('Selesaikan sesi sebelumnya terlebih dahulu untuk membuka sesi ini.')
+                                      }
+                                    }}
+                                    onMouseEnter={(e) => {
+                                      if (isUnlocked) e.currentTarget.style.background = 'color-mix(in srgb, var(--color-text-primary) 3%, transparent)'
+                                    }}
                                     onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                                   >
                                     <div style={{
@@ -353,7 +390,7 @@ export default function BootcampDetailPage() {
                                       {getSessionIcon(session.type, session.type === 'LIVE' ? 'var(--color-primary)' : 'var(--color-text-tertiary)')}
                                     </div>
                                     <div style={{ flex: 1, minWidth: 0, paddingRight: 16 }}>
-                                      <div style={{ fontSize: '13.5px', fontWeight: 500, color: data.isEnrolled ? 'var(--color-text-primary)' : 'var(--color-text-secondary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                      <div style={{ fontSize: '13.5px', fontWeight: 500, color: !data.isEnrolled ? 'var(--color-text-secondary)' : isUnlocked ? 'var(--color-text-primary)' : '#94a3b8', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                         {session.title}
                                       </div>
                                     </div>
@@ -362,11 +399,15 @@ export default function BootcampDetailPage() {
                                     ) : session.videoDuration ? (
                                       <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', flexShrink: 0 }}>{formatDuration(session.videoDuration)}</span>
                                     ) : null}
-                                    {!data.isEnrolled && <Lock size={13} color="var(--color-text-tertiary)" style={{ flexShrink: 0, marginLeft: 4 }} />}
+                                    {!data.isEnrolled ? (
+                                      <Lock size={13} color="var(--color-text-tertiary)" style={{ flexShrink: 0, marginLeft: 4 }} />
+                                    ) : !isUnlocked ? (
+                                      <Lock size={13} color="#94a3b8" style={{ flexShrink: 0, marginLeft: 4 }} />
+                                    ) : null}
                                   </div>
                                 )
 
-                                return data.isEnrolled ? (
+                                return data.isEnrolled && isUnlocked ? (
                                   <Link key={session.id} href={ROUTES.LEARN_BOOTCAMP_SESSION(id, session.id)} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
                                     {sessionContent}
                                   </Link>
@@ -604,6 +645,7 @@ export default function BootcampDetailPage() {
                       const isAbsent = s.attendance?.status === 'ABSENT'
                       const isDone = s.isCompleted
                       const isPassed = isLive ? (isPresent || isExcused) : isDone
+                      const isUnlocked = sessionUnlockMap ? sessionUnlockMap[s.id] !== false : true
 
                       // Type Label
                       const typeLabel = s.type === 'LIVE'
@@ -689,7 +731,7 @@ export default function BootcampDetailPage() {
                             <div style={{
                               fontSize: '14.5px',
                               fontWeight: 600,
-                              color: '#0f172a',
+                              color: isUnlocked ? '#0f172a' : '#64748b',
                               whiteSpace: 'nowrap',
                               overflow: 'hidden',
                               textOverflow: 'ellipsis',
@@ -719,7 +761,7 @@ export default function BootcampDetailPage() {
                             </div>
                           </div>
 
-                          {/* Right: Status Badge, Green Checkmark, or Red Cross */}
+                          {/* Right: Selesai Checkmark, Terlewat Red Cross, Izin Badge, or Single Action Button */}
                           {isPassed && !isExcused ? (
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', flexShrink: 0, paddingRight: 8 }}>
                               <img
@@ -746,56 +788,73 @@ export default function BootcampDetailPage() {
                                 }}
                               />
                             </div>
-                          ) : (
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
+                          ) : isExcused ? (
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', flexShrink: 0 }}>
                               <span style={{
-                                width: 110,
-                                height: 32,
+                                padding: '6px 14px',
                                 borderRadius: 20,
-                                background: badgeBg,
-                                border: badgeBorder,
-                                color: badgeColor,
+                                background: '#2563eb',
+                                color: '#ffffff',
                                 fontSize: '12px',
                                 fontWeight: 600,
                                 display: 'inline-flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                textAlign: 'center',
-                                whiteSpace: 'nowrap',
-                                boxSizing: 'border-box',
-                                flexShrink: 0,
                               }}>
-                                {badgeText}
+                                Izin Disetujui
                               </span>
-
-                              {!isPassed && (
-                                <Link
-                                  href={ROUTES.LEARN_BOOTCAMP_SESSION(id, s.id)}
-                                  style={{
-                                    padding: '7px 16px',
-                                    borderRadius: 8,
-                                    background: '#018556',
-                                    color: '#ffffff',
-                                    border: 'none',
-                                    fontSize: '12.5px',
-                                    fontWeight: 600,
-                                    textDecoration: 'none',
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    gap: 5,
-                                    cursor: 'pointer',
-                                    transition: 'opacity 0.15s ease',
-                                  }}
-                                  onMouseEnter={(e) => {
-                                    e.currentTarget.style.opacity = '0.9'
-                                  }}
-                                  onMouseLeave={(e) => {
-                                    e.currentTarget.style.opacity = '1'
-                                  }}
-                                >
-                                  Masuk <ChevronRight size={14} />
-                                </Link>
-                              )}
+                            </div>
+                          ) : isUnlocked ? (
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', flexShrink: 0 }}>
+                              <Link
+                                href={ROUTES.LEARN_BOOTCAMP_SESSION(id, s.id)}
+                                style={{
+                                  padding: '7px 18px',
+                                  borderRadius: 8,
+                                  background: '#018556',
+                                  color: '#ffffff',
+                                  border: 'none',
+                                  fontSize: '12.5px',
+                                  fontWeight: 600,
+                                  textDecoration: 'none',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: 6,
+                                  cursor: 'pointer',
+                                  transition: 'all 0.15s ease',
+                                  boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.background = '#016d46'
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.background = '#018556'
+                                }}
+                              >
+                                Selesaikan <ChevronRight size={14} />
+                              </Link>
+                            </div>
+                          ) : (
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', flexShrink: 0 }}>
+                              <div
+                                style={{
+                                  padding: '7px 16px',
+                                  borderRadius: 8,
+                                  background: '#f8fafc',
+                                  border: '1px solid #e2e8f0',
+                                  color: '#94a3b8',
+                                  fontSize: '12.5px',
+                                  fontWeight: 600,
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: 6,
+                                  cursor: 'not-allowed',
+                                  userSelect: 'none',
+                                }}
+                                title="Selesaikan sesi sebelumnya terlebih dahulu"
+                              >
+                                <Lock size={13} color="#94a3b8" /> Terkunci
+                              </div>
                             </div>
                           )}
                         </div>
