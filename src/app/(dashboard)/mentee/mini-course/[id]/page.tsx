@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion } from 'motion/react'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { useParams, useRouter } from 'next/navigation'
@@ -90,11 +90,13 @@ export default function CourseDetailPage() {
 
   useEffect(() => { if (course) setIsWishlisted(course.isWishlisted) }, [course])
 
+  const hasInitializedChapterRef = useRef(false)
   useEffect(() => {
-    if (course?.chapters?.[0]?.id && expandedChapter === null) {
+    if (course?.chapters?.[0]?.id && !hasInitializedChapterRef.current) {
+      hasInitializedChapterRef.current = true
       setExpandedChapter(course.chapters[0].id)
     }
-  }, [course?.chapters, expandedChapter])
+  }, [course?.chapters])
 
   const wishlistMutation = useMutation({
     mutationFn: () =>

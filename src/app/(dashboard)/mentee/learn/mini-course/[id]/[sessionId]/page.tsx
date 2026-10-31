@@ -1053,8 +1053,16 @@ export default function CourseLearningPlayerPage() {
                     </div>
                   </button>
                   
-                  {isOpen && (
-                    <div style={{ padding: '8px 16px' }}>
+                  <div
+                    style={{
+                      display: 'grid',
+                      transition: 'all 400ms cubic-bezier(0.4, 0, 0.2, 1)',
+                      gridTemplateRows: isOpen ? '1fr' : '0fr',
+                      opacity: isOpen ? 1 : 0,
+                    }}
+                  >
+                    <div style={{ overflow: 'hidden' }}>
+                      <div style={{ padding: '8px 16px' }}>
                       {chapter.sessions.map((sess, sIdx) => {
                         const isActive = sess.id === sessionId
                         return (
@@ -1090,10 +1098,11 @@ export default function CourseLearningPlayerPage() {
                         )
                       })}
                     </div>
-                  )}
+                  </div>
                 </div>
-              )
-            })}
+              </div>
+            )
+          })}
           </div>
         </div>
 
