@@ -684,61 +684,38 @@ export default function BootcampDetailPage() {
                             e.currentTarget.style.background = '#ffffff'
                           }}
                         >
-                          {/* Left: Icon + Title & Meta */}
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 14, flex: 1, minWidth: 0 }}>
+                          {/* Left: Title & Meta */}
+                          <div style={{ flex: 1, minWidth: 0 }}>
                             <div style={{
-                              width: 40,
-                              height: 40,
-                              borderRadius: 10,
-                              background: isPassed ? '#018556' : isLive && isAbsent ? '#475569' : '#f1f5f9',
-                              color: isPassed || (isLive && isAbsent) ? '#ffffff' : '#64748b',
-                              border: isPassed || (isLive && isAbsent) ? 'none' : '1px solid #e2e8f0',
+                              fontSize: '14.5px',
+                              fontWeight: 600,
+                              color: '#0f172a',
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                            }}>
+                              {s.title}
+                            </div>
+                            <div style={{
                               display: 'flex',
                               alignItems: 'center',
-                              justifyContent: 'center',
-                              flexShrink: 0,
+                              gap: 8,
+                              marginTop: 4,
+                              fontSize: '12.5px',
+                              color: '#64748b',
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
                             }}>
-                              {isPassed ? (
-                                <CheckCircle2 size={20} color="#ffffff" strokeWidth={2.2} />
-                              ) : isLive && isAbsent ? (
-                                <XCircle size={20} color="#ffffff" strokeWidth={2.2} />
-                              ) : (
-                                getSessionIcon(s.type, s.type === 'LIVE' ? '#018556' : '#64748b')
+                              <span style={{ fontWeight: 500, color: '#475569' }}>{s.chapterTitle}</span>
+                              <span>•</span>
+                              <span>{typeLabel}</span>
+                              {detailText && (
+                                <>
+                                  <span>•</span>
+                                  <span>{detailText}</span>
+                                </>
                               )}
-                            </div>
-
-                            <div style={{ flex: 1, minWidth: 0 }}>
-                              <div style={{
-                                fontSize: '14.5px',
-                                fontWeight: 600,
-                                color: '#0f172a',
-                                whiteSpace: 'nowrap',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                              }}>
-                                {s.title}
-                              </div>
-                              <div style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 8,
-                                marginTop: 4,
-                                fontSize: '12.5px',
-                                color: '#64748b',
-                                whiteSpace: 'nowrap',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                              }}>
-                                <span style={{ fontWeight: 500, color: '#475569' }}>{s.chapterTitle}</span>
-                                <span>•</span>
-                                <span>{typeLabel}</span>
-                                {detailText && (
-                                  <>
-                                    <span>•</span>
-                                    <span>{detailText}</span>
-                                  </>
-                                )}
-                              </div>
                             </div>
                           </div>
 
