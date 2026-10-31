@@ -150,7 +150,8 @@ input, textarea, select {
 .dashboard-content {
   grid-column: 2;
   padding: var(--space-6);
-  overflow-x: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 /* Auth layout */
@@ -963,8 +964,8 @@ input[type="number"] {
 .dashboard-content {
   grid-column: 2;
   padding: var(--space-6) var(--space-7);
+  overflow-x: hidden;
   overflow-y: auto;
-  overflow-x: auto;
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -1231,12 +1232,10 @@ input[type="number"] {
    Responsive Grid Basecamp
    ========================================================================== */
 .basecamp-grid {
-  grid-template-columns: 1fr 300px;
-}
-@media (max-width: 1080px) {
-  .basecamp-grid {
-    grid-template-columns: 1fr;
-  }
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: var(--space-5);
+  align-items: start;
 }
 .detail-layout-grid {
   grid-template-columns: 1fr 320px;
@@ -1265,7 +1264,7 @@ input[type="number"] {
   top: 80px;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 800px) {
   .basecamp-grid {
     grid-template-columns: 1fr;
   }

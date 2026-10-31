@@ -161,7 +161,7 @@ export default function BasecampPage() {
       <div className="basecamp-grid" style={{ display: 'grid', gap: 'var(--space-5)', alignItems: 'start' }}>
 
         {/* Left Column */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-5)' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-5)', minWidth: 0, width: '100%', overflow: 'hidden' }}>
 
           {/* Continue / Empty State */}
           {data?.continueLearning ? (
@@ -181,8 +181,7 @@ export default function BasecampPage() {
                 style={{ textDecoration: 'none', display: 'block' }}
               >
                 <div style={{
-                  position: 'relative', height: 180, background: '#111',
-                  display: 'flex', alignItems: 'flex-end', padding: 'var(--space-5)',
+                  position: 'relative', height: 140, background: '#111', display: 'flex', alignItems: 'flex-end', padding: 'var(--space-4) var(--space-5)', width: '100%',
                 }}>
                   <div style={{ position: 'absolute', inset: 0 }}>
                     {data.continueLearning.thumbnail
@@ -200,18 +199,18 @@ export default function BasecampPage() {
                         {data.continueLearning.title}
                       </h3>
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'var(--space-2)' }}>
-                      <div style={{ position: 'relative', width: 52, height: 52 }}>
-                        <svg width="52" height="52" viewBox="0 0 52 52" style={{ transform: 'rotate(-90deg)' }}>
-                          <circle cx="26" cy="26" r="22" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="4" />
-                          <circle cx="26" cy="26" r="22" fill="none" stroke="white" strokeWidth="4"
-                            strokeDasharray="138" strokeDashoffset={138 - (138 * data.continueLearning.progress) / 100} />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
+                      <div style={{ position: 'relative', width: 44, height: 44 }}>
+                        <svg width="44" height="44" viewBox="0 0 44 44" style={{ transform: 'rotate(-90deg)' }}>
+                          <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="3.5" />
+                          <circle cx="22" cy="22" r="18" fill="none" stroke="white" strokeWidth="3.5"
+                            strokeDasharray="113" strokeDashoffset={113 - (113 * data.continueLearning.progress) / 100} />
                         </svg>
-                        <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '11px', fontWeight: 700 }}>
+                        <span style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '10px', fontWeight: 700 }}>
                           {data.continueLearning.progress}%
                         </span>
                       </div>
-                      <span style={{ background: 'white', color: '#0a0a0a', padding: '5px 14px', borderRadius: 'var(--radius-full)', fontSize: '12px', fontWeight: 700 }}>
+                      <span style={{ background: 'white', color: '#0a0a0a', padding: '6px 14px', borderRadius: 'var(--radius-full)', fontSize: '12px', fontWeight: 700 }}>
                         Lanjutkan
                       </span>
                     </div>
@@ -489,7 +488,7 @@ export default function BasecampPage() {
         </div>
 
         {/* Right Column */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-5)' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-5)', width: 280, minWidth: 280, flexShrink: 0 }}>
 
           {/* Misi Hari Ini */}
           <div className="card" style={{ padding: 0, overflow: 'hidden', boxShadow: '0 1px 2px rgba(0,0,0,0.03)', border: '1px solid var(--color-border-subtle)' }}>
