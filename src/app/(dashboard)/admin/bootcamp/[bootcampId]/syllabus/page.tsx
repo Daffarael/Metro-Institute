@@ -83,7 +83,7 @@ function AddChapterModal({ bootcampId, onClose }: any) {
         <input value={title} onChange={e => setTitle(e.target.value)} placeholder="Contoh: Pengenalan UI/UX" style={inputStyle} autoFocus onKeyDown={e => e.key === 'Enter' && title.trim() && mutation.mutate()} />
         <div style={{ display: 'flex', gap: 'var(--space-3)', justifyContent: 'flex-end', marginTop: 'var(--space-5)' }}>
           <button onClick={onClose} style={{ padding: '10px 18px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', background: 'transparent', cursor: 'pointer', fontWeight: 600 }}>Batal</button>
-          <button disabled={!title.trim() || mutation.isPending} onClick={() => mutation.mutate()} style={{ padding: '10px 18px', borderRadius: 'var(--radius-md)', border: 'none', background: 'var(--color-primary)', color: '#fff', fontWeight: 600, cursor: 'pointer', opacity: !title.trim() ? 0.5 : 1 }}>
+          <button disabled={!title.trim() || mutation.isPending} onClick={() => mutation.mutate()} style={{ padding: '10px 18px', borderRadius: 'var(--radius-md)', border: 'none', background: !title.trim() ? '#E2E8F0' : '#018556', color: !title.trim() ? '#94A3B8' : '#fff', fontWeight: 600, cursor: !title.trim() ? 'not-allowed' : 'pointer', transition: 'all 0.2s ease', boxShadow: title.trim() ? '0 2px 8px rgba(1,133,86,0.25)' : 'none' }}>
             {mutation.isPending ? 'Menyimpan...' : 'Simpan Bab'}
           </button>
         </div>
@@ -172,30 +172,26 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
             </div>
           </div>
 
-          {/* Conditional Guidance & Fields for LIVE */}
+          {/* Fields for LIVE */}
           {form.type === 'LIVE' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', padding: '16px', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '14px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <Video size={16} color="#16A34A" />
-                <span style={{ fontSize: '13px', fontWeight: 700, color: '#166534' }}>Pengaturan Live Google Meet (Cohort)</span>
-              </div>
-              <p style={{ margin: 0, fontSize: '12px', color: '#15803D', lineHeight: 1.45 }}>
-                Sesi live ini terikat jadwal. Modul materi akan dibuka bersamaan saat jam sesi tiba. Presensi minimal 80% durasi dicatat otomatis melalui ekstensi Metro Meet Tracker atau sinkronisasi CSV admin.
-              </p>
-
+            <>
               <div>
-                <label style={{ fontSize: '12px', fontWeight: 700, color: '#166534', display: 'block', marginBottom: 6 }}>Jadwal Pertemuan (Tanggal & Jam WIB) <span style={{ color: 'var(--color-error)' }}>*</span></label>
+                <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>
+                  Jadwal Pertemuan (Tanggal & Jam WIB) <span style={{ color: 'var(--color-error)' }}>*</span>
+                </label>
                 <input 
                   type="datetime-local" 
                   value={form.scheduledAt} 
                   onChange={e => f('scheduledAt', e.target.value)} 
-                  style={{ ...inputStyle, background: '#fff' }} 
+                  style={inputStyle} 
                 />
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', gap: '12px' }}>
                 <div>
-                  <label style={{ fontSize: '12px', fontWeight: 700, color: '#166534', display: 'block', marginBottom: 6 }}>Durasi Sesi (Menit)</label>
+                  <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>
+                    Durasi (Menit)
+                  </label>
                   <input 
                     type="number" 
                     min={15} 
@@ -203,80 +199,97 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
                     value={form.durationMin} 
                     onChange={e => f('durationMin', Number(e.target.value))} 
                     placeholder="90" 
-                    style={{ ...inputStyle, background: '#fff' }} 
+                    style={inputStyle} 
                   />
                 </div>
                 <div>
-                  <label style={{ fontSize: '12px', fontWeight: 700, color: '#166534', display: 'block', marginBottom: 6 }}>Link Google Meet <span style={{ color: 'var(--color-error)' }}>*</span></label>
+                  <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>
+                    Link Google Meet <span style={{ color: 'var(--color-error)' }}>*</span>
+                  </label>
                   <input 
                     value={form.meetingUrl} 
                     onChange={e => f('meetingUrl', e.target.value)} 
                     placeholder="https://meet.google.com/xxx-xxxx-xxx" 
-                    style={{ ...inputStyle, background: '#fff' }} 
+                    style={inputStyle} 
                   />
                 </div>
               </div>
-            </div>
+            </>
           )}
 
-          {/* Conditional Guidance & Fields for MATERIAL */}
+          {/* Fields for MATERIAL */}
           {form.type === 'MATERIAL' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', padding: '16px', background: '#FEFCE8', border: '1px solid #FEF08A', borderRadius: '14px' }}>
-              <span style={{ fontSize: '12.5px', color: '#854D0E', fontWeight: 600 }}>
-                Modul bacaan teori ini akan otomatis terbuka bersamaan saat sesi live pertemuan dimulai.
-              </span>
-              <div>
-                <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Link Dokumen / Modul Google Drive <span style={{ color: 'var(--color-error)' }}>*</span></label>
-                <input value={form.materialUrl} onChange={e => f('materialUrl', e.target.value)} placeholder="Contoh: https://drive.google.com/file/d/..." style={{ ...inputStyle, background: '#fff' }} />
-              </div>
+            <div>
+              <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>
+                Link Dokumen / Modul Google Drive <span style={{ color: 'var(--color-error)' }}>*</span>
+              </label>
+              <input 
+                value={form.materialUrl} 
+                onChange={e => f('materialUrl', e.target.value)} 
+                placeholder="Contoh: https://drive.google.com/file/d/..." 
+                style={inputStyle} 
+              />
             </div>
           )}
 
-          {/* Conditional Guidance & Fields for VIDEO */}
+          {/* Fields for VIDEO */}
           {form.type === 'VIDEO' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', padding: '16px', background: '#EFF6FF', border: '1px solid #BFDBFE', borderRadius: '14px' }}>
-              <span style={{ fontSize: '12.5px', color: '#1E40AF', fontWeight: 600 }}>
-                Video pembelajaran atau rekaman live pendukung yang dapat diputar ulang oleh mentee kapan saja.
-              </span>
-              <div>
-                <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Link Video (YouTube / Google Drive) <span style={{ color: 'var(--color-error)' }}>*</span></label>
-                <input value={form.videoUrl} onChange={e => f('videoUrl', e.target.value)} placeholder="Contoh: https://www.youtube.com/watch?v=..." style={{ ...inputStyle, background: '#fff' }} />
-              </div>
+            <div>
+              <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>
+                Link Video (YouTube / Google Drive) <span style={{ color: 'var(--color-error)' }}>*</span>
+              </label>
+              <input 
+                value={form.videoUrl} 
+                onChange={e => f('videoUrl', e.target.value)} 
+                placeholder="Contoh: https://www.youtube.com/watch?v=..." 
+                style={inputStyle} 
+              />
             </div>
           )}
 
-          {/* Conditional Guidance & Fields for QUIZ */}
+          {/* Fields for QUIZ / ASSIGNMENT */}
           {(form.type === 'QUIZ' || form.type === 'ASSIGNMENT') && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
-              <div style={{ padding: '12px 14px', background: '#FAF5FF', border: '1px solid #E9D5FF', borderRadius: '12px', fontSize: '12.5px', color: '#6B21A8', fontWeight: 600 }}>
-                Kuis dan tugas pendamping ini otomatis terbuka setelah sesi live selesai diselenggarakan.
+              <div>
+                <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>
+                  Instruksi Tugas / Kuis
+                </label>
+                <textarea 
+                  value={form.assignmentDescription} 
+                  onChange={e => f('assignmentDescription', e.target.value)} 
+                  placeholder="Tuliskan petunjuk pengerjaan tugas atau kuis di sini..." 
+                  style={{ ...inputStyle, minHeight: 80, resize: 'vertical' }} 
+                />
               </div>
               <div>
-                <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Instruksi Tugas / Kuis</label>
-                <textarea value={form.assignmentDescription} onChange={e => f('assignmentDescription', e.target.value)} placeholder="Tuliskan petunjuk pengerjaan tugas atau kuis di sini..." style={{...inputStyle, minHeight: 80, resize: 'vertical'}} />
-              </div>
-              <div>
-                <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Tenggat Waktu Pengumpulan (Deadline)</label>
-                <input type="datetime-local" value={form.assignmentDeadline} onChange={e => f('assignmentDeadline', e.target.value)} style={inputStyle} />
+                <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>
+                  Tenggat Waktu Pengumpulan (Deadline)
+                </label>
+                <input 
+                  type="datetime-local" 
+                  value={form.assignmentDeadline} 
+                  onChange={e => f('assignmentDeadline', e.target.value)} 
+                  style={inputStyle} 
+                />
               </div>
 
-              <div style={{ padding: '20px', background: '#f8f9fc', borderRadius: '16px', border: '1px solid rgba(0,0,0,0.04)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                  <label style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>Daftar Soal Kuis Pilihan Ganda</label>
-                  <button type="button" onClick={() => setQuizOptions([...quizOptions, { id: Math.random().toString(36).substr(2, 9), question: '', options: [{ id: 'A', text: '', isCorrect: true }, { id: 'B', text: '', isCorrect: false }, { id: 'C', text: '', isCorrect: false }, { id: 'D', text: '', isCorrect: false }] }])} style={{ padding: '6px 12px', borderRadius: '8px', background: '#fff', border: '1px solid var(--color-border)', fontSize: '12px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <Plus size={14} /> Tambah Soal
+              <div style={{ padding: '16px', background: '#f9fafb', borderRadius: '14px', border: '1px solid var(--color-border)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+                  <label style={{ fontSize: '13px', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>Daftar Soal Kuis Pilihan Ganda</label>
+                  <button type="button" onClick={() => setQuizOptions([...quizOptions, { id: Math.random().toString(36).substr(2, 9), question: '', options: [{ id: 'A', text: '', isCorrect: true }, { id: 'B', text: '', isCorrect: false }, { id: 'C', text: '', isCorrect: false }, { id: 'D', text: '', isCorrect: false }] }])} style={{ padding: '5px 12px', borderRadius: '8px', background: '#fff', border: '1px solid var(--color-border)', fontSize: '12px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <Plus size={13} /> Tambah Soal
                   </button>
                 </div>
                 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
                   {quizOptions.map((q, qIndex) => (
-                    <div key={q.id} style={{ background: '#fff', padding: '16px', borderRadius: '12px', border: '1px solid var(--color-border)', position: 'relative' }}>
+                    <div key={q.id} style={{ background: '#fff', padding: '14px', borderRadius: '10px', border: '1px solid var(--color-border)', position: 'relative' }}>
                       {quizOptions.length > 1 && (
-                        <button type="button" onClick={() => setQuizOptions(quizOptions.filter((_, i) => i !== qIndex))} style={{ position: 'absolute', top: 12, right: 12, background: 'rgba(255,59,48,0.1)', color: 'var(--color-error)', border: 'none', borderRadius: '6px', width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+                        <button type="button" onClick={() => setQuizOptions(quizOptions.filter((_, i) => i !== qIndex))} style={{ position: 'absolute', top: 10, right: 10, background: 'rgba(255,59,48,0.1)', color: 'var(--color-error)', border: 'none', borderRadius: '6px', width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
                           <Trash2 size={12} />
                         </button>
                       )}
-                      <h4 style={{ fontSize: '13px', fontWeight: 700, marginBottom: 12, color: 'var(--color-text-primary)' }}>Soal {qIndex + 1}</h4>
+                      <h4 style={{ fontSize: '12.5px', fontWeight: 700, marginBottom: 10, color: 'var(--color-text-primary)' }}>Soal {qIndex + 1}</h4>
                       
                       <input
                         value={q.question}
@@ -286,13 +299,13 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
                           setQuizOptions(newQuiz);
                         }}
                         placeholder="Ketik pertanyaan kuis di sini..."
-                        style={{ ...inputStyle, padding: '10px 14px', marginBottom: 16 }}
+                        style={{ ...inputStyle, padding: '8px 12px', marginBottom: 12 }}
                       />
 
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                         {q.options.map((opt: any, optIndex: number) => (
-                          <div key={opt.id} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                            <div style={{ width: 28, height: 28, borderRadius: '6px', background: 'var(--color-bg)', border: '1px solid var(--color-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 600, color: 'var(--color-text-secondary)', flexShrink: 0 }}>
+                          <div key={opt.id} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                            <div style={{ width: 26, height: 26, borderRadius: '6px', background: 'var(--color-bg)', border: '1px solid var(--color-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 600, color: 'var(--color-text-secondary)', flexShrink: 0 }}>
                               {['A', 'B', 'C', 'D'][optIndex] || optIndex + 1}
                             </div>
                             <input
@@ -303,9 +316,9 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
                                 setQuizOptions(newQuiz);
                               }}
                               placeholder={`Pilihan ${['A', 'B', 'C', 'D'][optIndex] ?? optIndex + 1}...`}
-                              style={{ ...inputStyle, flex: 1, padding: '8px 12px', fontSize: '13px' }}
+                              style={{ ...inputStyle, flex: 1, padding: '7px 10px', fontSize: '12.5px' }}
                             />
-                            <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', padding: '0 4px', height: 28 }}>
+                            <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', padding: '0 4px', height: 26 }}>
                               <input 
                                 type="radio" 
                                 name={`correct-${q.id}`} 
@@ -316,7 +329,7 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
                                   newQuiz[qIndex].options[optIndex].isCorrect = true;
                                   setQuizOptions(newQuiz);
                                 }}
-                                style={{ width: 16, height: 16, accentColor: 'var(--color-success)' }} 
+                                style={{ width: 16, height: 16, accentColor: '#018556' }} 
                               />
                             </label>
                           </div>
@@ -349,8 +362,23 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
         </div>
 
         <div style={{ display: 'flex', gap: 'var(--space-3)', justifyContent: 'flex-end', marginTop: 'var(--space-6)' }}>
-          <button onClick={onClose} style={{ padding: '10px 18px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', background: 'transparent', cursor: 'pointer', fontWeight: 600 }}>Batal</button>
-          <button disabled={!form.title.trim() || mutation.isPending} onClick={() => mutation.mutate()} style={{ padding: '10px 18px', borderRadius: 'var(--radius-md)', border: 'none', background: 'var(--color-primary)', color: '#fff', fontWeight: 600, cursor: 'pointer', opacity: !form.title.trim() ? 0.5 : 1 }}>
+          <button onClick={onClose} style={{ padding: '10px 20px', borderRadius: '12px', border: '1px solid var(--color-border)', background: '#fff', cursor: 'pointer', fontWeight: 600, fontSize: '14px', color: 'var(--color-text-secondary)' }}>Batal</button>
+          <button 
+            disabled={!form.title.trim() || mutation.isPending} 
+            onClick={() => mutation.mutate()} 
+            style={{ 
+              padding: '10px 22px', 
+              borderRadius: '12px', 
+              border: 'none', 
+              background: !form.title.trim() ? '#E2E8F0' : '#018556', 
+              color: !form.title.trim() ? '#94A3B8' : '#ffffff', 
+              fontWeight: 700, 
+              fontSize: '14px',
+              cursor: !form.title.trim() ? 'not-allowed' : 'pointer',
+              transition: 'all 0.2s ease',
+              boxShadow: form.title.trim() ? '0 2px 8px rgba(1,133,86,0.25)' : 'none'
+            }}
+          >
             {mutation.isPending ? 'Menyimpan...' : 'Simpan Materi'}
           </button>
         </div>

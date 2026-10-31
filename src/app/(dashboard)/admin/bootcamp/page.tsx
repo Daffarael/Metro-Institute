@@ -234,14 +234,6 @@ function BootcampModal({
           }
           mutation.mutate(d as BootcampForm)
         })} style={{ padding: '0 32px 28px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          
-          {/* Synchronous Model Notice */}
-          <div style={{ padding: '12px 16px', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '14px', display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#16A34A', flexShrink: 0 }} />
-            <p style={{ margin: 0, fontSize: '12.5px', color: '#166534', fontWeight: 600, lineHeight: 1.4 }}>
-              Model Synchronous Cohort: Pembelajaran terjadwal live bersama satu angkatan, materi & penugasan terstruktur sesuai kalender.
-            </p>
-          </div>
 
           <div>
             <label style={labelStyle}>Nama Bootcamp / Angkatan <span style={{color: 'var(--color-error)'}}>*</span></label>
@@ -325,55 +317,43 @@ function BootcampModal({
             </div>
           </div>
 
-          {/* Section: Periode Pendaftaran */}
-          <div style={{ padding: '18px 20px', background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '16px' }}>
-            <div style={{ marginBottom: 12 }}>
-              <span style={{ fontSize: '13px', fontWeight: 700, color: '#1E293B' }}>Periode Pendaftaran (Registration Window)</span>
-              <p style={{ margin: '2px 0 0', fontSize: '11.5px', color: '#64748B' }}>Mentee hanya dapat mendaftar dan membeli tiket selama periode ini dibuka.</p>
+          {/* Grid Tanggal Pendaftaran */}
+          <div className="grid-cols-2" style={{ display: 'grid', gap: '16px' }}>
+            <div>
+              <label style={labelStyle}>Pendaftaran Dibuka <span style={{color: 'var(--color-error)'}}>*</span></label>
+              <input type="date" {...register('purchaseOpenAt')} style={inputStyleClean} 
+                onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
+                onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
+              />
+              {errors.purchaseOpenAt && <p style={{ fontSize: '12px', color: 'var(--color-error)', marginTop: 4, fontWeight: 500 }}>{errors.purchaseOpenAt.message}</p>}
             </div>
-            <div className="grid-cols-2" style={{ display: 'grid', gap: '16px' }}>
-              <div>
-                <label style={{ ...labelStyle, fontSize: '12px', marginBottom: 6 }}>Pendaftaran Dibuka <span style={{color: 'var(--color-error)'}}>*</span></label>
-                <input type="date" {...register('purchaseOpenAt')} style={{ ...inputStyleClean, background: '#fff' }} 
-                  onFocus={e => { e.currentTarget.style.borderColor = 'var(--color-primary)' }}
-                  onBlur={e => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
-                />
-                {errors.purchaseOpenAt && <p style={{ fontSize: '12px', color: 'var(--color-error)', marginTop: 4, fontWeight: 500 }}>{errors.purchaseOpenAt.message}</p>}
-              </div>
-              <div>
-                <label style={{ ...labelStyle, fontSize: '12px', marginBottom: 6 }}>Batas Pendaftaran (Ditutup) <span style={{color: 'var(--color-error)'}}>*</span></label>
-                <input type="date" {...register('purchaseCloseAt')} style={{ ...inputStyleClean, background: '#fff' }} 
-                  onFocus={e => { e.currentTarget.style.borderColor = 'var(--color-primary)' }}
-                  onBlur={e => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
-                />
-                {errors.purchaseCloseAt && <p style={{ fontSize: '12px', color: 'var(--color-error)', marginTop: 4, fontWeight: 500 }}>{errors.purchaseCloseAt.message}</p>}
-              </div>
+            <div>
+              <label style={labelStyle}>Batas Pendaftaran (Ditutup) <span style={{color: 'var(--color-error)'}}>*</span></label>
+              <input type="date" {...register('purchaseCloseAt')} style={inputStyleClean} 
+                onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
+                onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
+              />
+              {errors.purchaseCloseAt && <p style={{ fontSize: '12px', color: 'var(--color-error)', marginTop: 4, fontWeight: 500 }}>{errors.purchaseCloseAt.message}</p>}
             </div>
           </div>
 
-          {/* Section: Periode Pelaksanaan Kelas */}
-          <div style={{ padding: '18px 20px', background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '16px' }}>
-            <div style={{ marginBottom: 12 }}>
-              <span style={{ fontSize: '13px', fontWeight: 700, color: '#1E293B' }}>Periode Pelaksanaan Bootcamp (Cohort Period)</span>
-              <p style={{ margin: '2px 0 0', fontSize: '11.5px', color: '#64748B' }}>Masa aktif seluruh sesi live, materi silabus, dan proyek batch ini berjalan.</p>
+          {/* Grid Tanggal Pelaksanaan Bootcamp */}
+          <div className="grid-cols-2" style={{ display: 'grid', gap: '16px' }}>
+            <div>
+              <label style={labelStyle}>Tanggal Mulai Pelaksanaan <span style={{color: 'var(--color-error)'}}>*</span></label>
+              <input type="date" {...register('startDate')} style={inputStyleClean} 
+                onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
+                onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
+              />
+              {errors.startDate && <p style={{ fontSize: '12px', color: 'var(--color-error)', marginTop: 4, fontWeight: 500 }}>{errors.startDate.message}</p>}
             </div>
-            <div className="grid-cols-2" style={{ display: 'grid', gap: '16px' }}>
-              <div>
-                <label style={{ ...labelStyle, fontSize: '12px', marginBottom: 6 }}>Bootcamp Dimulai <span style={{color: 'var(--color-error)'}}>*</span></label>
-                <input type="date" {...register('startDate')} style={{ ...inputStyleClean, background: '#fff' }} 
-                  onFocus={e => { e.currentTarget.style.borderColor = 'var(--color-primary)' }}
-                  onBlur={e => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
-                />
-                {errors.startDate && <p style={{ fontSize: '12px', color: 'var(--color-error)', marginTop: 4, fontWeight: 500 }}>{errors.startDate.message}</p>}
-              </div>
-              <div>
-                <label style={{ ...labelStyle, fontSize: '12px', marginBottom: 6 }}>Bootcamp Selesai <span style={{color: 'var(--color-error)'}}>*</span></label>
-                <input type="date" {...register('endDate')} style={{ ...inputStyleClean, background: '#fff' }} 
-                  onFocus={e => { e.currentTarget.style.borderColor = 'var(--color-primary)' }}
-                  onBlur={e => { e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
-                />
-                {errors.endDate && <p style={{ fontSize: '12px', color: 'var(--color-error)', marginTop: 4, fontWeight: 500 }}>{errors.endDate.message}</p>}
-              </div>
+            <div>
+              <label style={labelStyle}>Tanggal Selesai Pelaksanaan <span style={{color: 'var(--color-error)'}}>*</span></label>
+              <input type="date" {...register('endDate')} style={inputStyleClean} 
+                onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
+                onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
+              />
+              {errors.endDate && <p style={{ fontSize: '12px', color: 'var(--color-error)', marginTop: 4, fontWeight: 500 }}>{errors.endDate.message}</p>}
             </div>
           </div>
 
@@ -471,8 +451,7 @@ function BootcampModal({
             </button>
             <button type="submit" disabled={mutation.isPending} style={{ 
               padding: '12px 24px', borderRadius: '12px', border: 'none', 
-              background: 'var(--color-primary)', color: '#fff', fontSize: '14px', fontWeight: 600, 
-              cursor: 'pointer', opacity: mutation.isPending ? 0.7 : 1, transition: 'all 0.2s',
+              background: '#018556', color: '#fff', fontSize: '14px', fontWeight: 700, cursor: 'pointer', opacity: mutation.isPending ? 0.7 : 1, transition: 'all 0.2s',
               boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
             }}
             onMouseEnter={e => { if (!mutation.isPending) e.currentTarget.style.filter = 'brightness(1.1)' }}
