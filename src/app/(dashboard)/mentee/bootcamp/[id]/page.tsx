@@ -719,7 +719,7 @@ export default function BootcampDetailPage() {
                             </div>
                           </div>
 
-                          {/* Right: Status Badge or Green Checkmark */}
+                          {/* Right: Status Badge, Green Checkmark, or Red Cross */}
                           {isPassed && !isExcused ? (
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', flexShrink: 0, paddingRight: 8 }}>
                               <img
@@ -733,51 +733,40 @@ export default function BootcampDetailPage() {
                                 }}
                               />
                             </div>
+                          ) : isLive && isAbsent ? (
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', flexShrink: 0, paddingRight: 8 }}>
+                              <img
+                                src="/red-cross.png"
+                                alt="Tidak Hadir"
+                                style={{
+                                  width: 26,
+                                  height: 26,
+                                  objectFit: 'contain',
+                                  display: 'block',
+                                }}
+                              />
+                            </div>
                           ) : (
                             <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
-                              {isLive && isAbsent ? (
-                                <div
-                                  title="Sesi Live Terlewat (Tidak Hadir)"
-                                  style={{
-                                    width: 110,
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    flexShrink: 0,
-                                  }}
-                                >
-                                  <img
-                                    src="/red-cross.png"
-                                    alt="Tidak Hadir"
-                                    style={{
-                                      width: 26,
-                                      height: 26,
-                                      objectFit: 'contain',
-                                      display: 'block',
-                                    }}
-                                  />
-                                </div>
-                              ) : (
-                                <span style={{
-                                  width: 110,
-                                  height: 32,
-                                  borderRadius: 20,
-                                  background: badgeBg,
-                                  border: badgeBorder,
-                                  color: badgeColor,
-                                  fontSize: '12px',
-                                  fontWeight: 600,
-                                  display: 'inline-flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  textAlign: 'center',
-                                  whiteSpace: 'nowrap',
-                                  boxSizing: 'border-box',
-                                  flexShrink: 0,
-                                }}>
-                                  {badgeText}
-                                </span>
-                              )}
+                              <span style={{
+                                width: 110,
+                                height: 32,
+                                borderRadius: 20,
+                                background: badgeBg,
+                                border: badgeBorder,
+                                color: badgeColor,
+                                fontSize: '12px',
+                                fontWeight: 600,
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                textAlign: 'center',
+                                whiteSpace: 'nowrap',
+                                boxSizing: 'border-box',
+                                flexShrink: 0,
+                              }}>
+                                {badgeText}
+                              </span>
 
                               {!isPassed && (
                                 <Link

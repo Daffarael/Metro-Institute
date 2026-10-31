@@ -470,7 +470,19 @@ export default function BootcampLearningPlayerPage() {
                   </div>
 
                   {/* Actions: Join Live button on header right */}
-                  {currentSession.liveUrl ? (
+                  {currentSession.attendance?.status === 'ABSENT' ? (
+                    <div style={{
+                      padding: '7px 16px',
+                      background: '#f8fafc',
+                      borderRadius: 8,
+                      border: '1px solid #e2e8f0',
+                      color: '#64748b',
+                      fontSize: '12.5px',
+                      fontWeight: 500
+                    }}>
+                      Sesi live telah berakhir
+                    </div>
+                  ) : currentSession.liveUrl ? (
                     <a
                       href={currentSession.liveUrl.startsWith('http') ? currentSession.liveUrl : `https://${currentSession.liveUrl}`}
                       target="_blank"
