@@ -648,6 +648,18 @@ export default function AdminMiniCoursePage() {
           />
         )}
       </AnimatePresence>
+
+      {/* Confirm Delete Modal */}
+      <AdminConfirmModal
+        isOpen={!!deleteTarget}
+        title="Hapus Mini Course"
+        description={`Apakah Anda yakin ingin menghapus mini course "${deleteTarget?.title}"? Semua bab, materi kurikulum, dan data di dalamnya akan dihapus secara permanen.`}
+        confirmLabel="Hapus Mini Course"
+        isDangerous={true}
+        isLoading={deleteMutation.isPending}
+        onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
+        onClose={() => setDeleteTarget(null)}
+      />
     </div>
   )
 }
