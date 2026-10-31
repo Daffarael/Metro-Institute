@@ -312,7 +312,7 @@ function CourseModal({ course, onClose }: { course?: MiniCourse; onClose: () => 
               />
               {errors.status && <p style={{ color: 'var(--color-error)', fontSize: '12px', marginTop: 4, fontWeight: 500 }}>{errors.status.message}</p>}
               {!(course as any)?.hasCurriculum && (
-                <p style={{ fontSize: '12px', color: '#64748b', marginTop: 6, lineHeight: 1.4 }}>
+                <p style={{ fontSize: '12px', color: '#64748b', marginTop: 6, whiteSpace: 'nowrap' }}>
                   Tambahkan materi di{' '}
                   {(course as any)?.id ? (
                     <Link 

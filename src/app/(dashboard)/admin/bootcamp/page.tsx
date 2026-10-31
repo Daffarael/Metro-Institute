@@ -264,7 +264,7 @@ function BootcampModal({
                 )}
               />
               {!bootcamp?.hasCurriculum && (
-                <p style={{ fontSize: '12px', color: '#64748b', marginTop: 6, lineHeight: 1.4 }}>
+                <p style={{ fontSize: '12px', color: '#64748b', marginTop: 6, whiteSpace: 'nowrap' }}>
                   Tambahkan materi di{' '}
                   {bootcamp?.id ? (
                     <Link 
