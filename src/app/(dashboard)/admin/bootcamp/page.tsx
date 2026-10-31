@@ -264,31 +264,22 @@ function BootcampModal({
                 )}
               />
               {!bootcamp?.hasCurriculum && (
-                <div style={{
-                  marginTop: 7,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  fontSize: '12px',
-                  color: '#64748b',
-                }}>
-                  <span>Silabus belum diisi. Status Tayang dinonaktifkan.</span>
-                  {bootcamp?.id && (
+                <p style={{ fontSize: '12px', color: '#64748b', marginTop: 6, lineHeight: 1.4 }}>
+                  Tambahkan materi di{' '}
+                  {bootcamp?.id ? (
                     <Link 
                       href={`/admin/bootcamp/${bootcamp?.id}/syllabus`}
-                      style={{
-                        color: '#018556',
-                        fontWeight: 600,
-                        textDecoration: 'none',
-                        whiteSpace: 'nowrap',
-                      }}
+                      style={{ color: '#018556', fontWeight: 600, textDecoration: 'none' }}
                       onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
                       onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
                     >
-                      Buka Silabus &rarr;
+                      Silabus
                     </Link>
-                  )}
-                </div>
+                  ) : (
+                    <span style={{ color: '#018556', fontWeight: 600 }}>Silabus</span>
+                  )}{' '}
+                  untuk mengaktifkan status Tayang.
+                </p>
               )}
               </div>
             )}

@@ -312,31 +312,22 @@ function CourseModal({ course, onClose }: { course?: MiniCourse; onClose: () => 
               />
               {errors.status && <p style={{ color: 'var(--color-error)', fontSize: '12px', marginTop: 4, fontWeight: 500 }}>{errors.status.message}</p>}
               {!(course as any)?.hasCurriculum && (
-                <div style={{
-                  marginTop: 7,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  fontSize: '12px',
-                  color: '#64748b',
-                }}>
-                  <span>Kurikulum belum diisi. Status Tayang dinonaktifkan.</span>
-                  {(course as any)?.id && (
+                <p style={{ fontSize: '12px', color: '#64748b', marginTop: 6, lineHeight: 1.4 }}>
+                  Tambahkan materi di{' '}
+                  {(course as any)?.id ? (
                     <Link 
                       href={`/admin/mini-course/${(course as any)?.id}/curriculum`}
-                      style={{
-                        color: '#018556',
-                        fontWeight: 600,
-                        textDecoration: 'none',
-                        whiteSpace: 'nowrap',
-                      }}
+                      style={{ color: '#018556', fontWeight: 600, textDecoration: 'none' }}
                       onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
                       onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
                     >
-                      Buka Kurikulum &rarr;
+                      Kurikulum
                     </Link>
-                  )}
-                </div>
+                  ) : (
+                    <span style={{ color: '#018556', fontWeight: 600 }}>Kurikulum</span>
+                  )}{' '}
+                  untuk mengaktifkan status Tayang.
+                </p>
               )}
             </div>
           )}
