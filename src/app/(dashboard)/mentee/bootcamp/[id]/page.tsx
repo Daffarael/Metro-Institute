@@ -743,14 +743,14 @@ export default function BootcampDetailPage() {
                           </div>
 
                           {/* Right: Status Badge or Green Checkmark */}
-                          {isPassed ? (
-                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', flexShrink: 0, paddingRight: 6 }}>
+                          {isPassed && !isExcused ? (
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', flexShrink: 0, paddingRight: 8 }}>
                               <img
                                 src="/green-check.png"
                                 alt="Selesai"
                                 style={{
-                                  width: 28,
-                                  height: 28,
+                                  width: 26,
+                                  height: 26,
                                   objectFit: 'contain',
                                   display: 'block',
                                 }}
@@ -778,32 +778,34 @@ export default function BootcampDetailPage() {
                                 {badgeText}
                               </span>
 
-                              <Link
-                                href={ROUTES.LEARN_BOOTCAMP_SESSION(id, s.id)}
-                                style={{
-                                  padding: '7px 16px',
-                                  borderRadius: 8,
-                                  background: '#018556',
-                                  color: '#ffffff',
-                                  border: 'none',
-                                  fontSize: '12.5px',
-                                  fontWeight: 600,
-                                  textDecoration: 'none',
-                                  display: 'inline-flex',
-                                  alignItems: 'center',
-                                  gap: 5,
-                                  cursor: 'pointer',
-                                  transition: 'opacity 0.15s ease',
-                                }}
-                                onMouseEnter={(e) => {
-                                  e.currentTarget.style.opacity = '0.9'
-                                }}
-                                onMouseLeave={(e) => {
-                                  e.currentTarget.style.opacity = '1'
-                                }}
-                              >
-                                Masuk <ChevronRight size={14} />
-                              </Link>
+                              {!isPassed && (
+                                <Link
+                                  href={ROUTES.LEARN_BOOTCAMP_SESSION(id, s.id)}
+                                  style={{
+                                    padding: '7px 16px',
+                                    borderRadius: 8,
+                                    background: '#018556',
+                                    color: '#ffffff',
+                                    border: 'none',
+                                    fontSize: '12.5px',
+                                    fontWeight: 600,
+                                    textDecoration: 'none',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: 5,
+                                    cursor: 'pointer',
+                                    transition: 'opacity 0.15s ease',
+                                  }}
+                                  onMouseEnter={(e) => {
+                                    e.currentTarget.style.opacity = '0.9'
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    e.currentTarget.style.opacity = '1'
+                                  }}
+                                >
+                                  Masuk <ChevronRight size={14} />
+                                </Link>
+                              )}
                             </div>
                           )}
                         </div>
