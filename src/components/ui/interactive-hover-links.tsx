@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Tag, Award, Heart } from "lucide-react";
+import { PopButton } from "@/components/ui/PopButton";
 
 export const INTERACTIVE_LINKS = [
   {
@@ -142,7 +143,7 @@ export function InteractiveHoverLinks({
                 className="bg-white rounded-[32px] p-4 sm:p-5 border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1"
               >
                 <div>
-                  {/* Card Image Banner (No badge pill) */}
+                  {/* Card Image Banner */}
                   <div className="w-full h-[220px] sm:h-[235px] rounded-[24px] overflow-hidden relative mb-5 bg-gray-100">
                     <img
                       src={imgSrc}
@@ -152,9 +153,9 @@ export function InteractiveHoverLinks({
                     />
                   </div>
 
-                  {/* Card Content */}
+                  {/* Card Content - Title stays pure black, no green on hover */}
                   <div className="px-1">
-                    <h3 className="text-[22px] font-extrabold text-gray-900 tracking-tight group-hover:text-[#018556] transition-colors">
+                    <h3 className="text-[22px] font-extrabold text-gray-900 tracking-tight">
                       {item.heading}
                     </h3>
                     <span className="text-[12.5px] font-medium text-gray-400 mt-0.5 block">
@@ -164,24 +165,26 @@ export function InteractiveHoverLinks({
                       {item.subheading}
                     </p>
 
-                    {/* Metadata Tags Row (Reference Style: from $240 / SFO) */}
+                    {/* Metadata Tags Row */}
                     <div className="flex items-center gap-4 mt-5 pt-4 border-t border-gray-100 text-[12.5px] font-semibold text-gray-700">
                       <div className="flex items-center gap-1.5">
-                        <Tag className="w-3.5 h-3.5 text-[#018556]" />
+                        <Tag className="w-3.5 h-3.5 text-gray-400" />
                         <span>{tag1}</span>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <Award className="w-3.5 h-3.5 text-[#018556]" />
+                        <Award className="w-3.5 h-3.5 text-gray-400" />
                         <span>{tag2}</span>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Card Action Row */}
+                {/* Card Action Row - Signature Landing Page PopButton (Yellow 3D Button) */}
                 <div className="flex items-center gap-3 mt-6 pt-1 px-1">
-                  <button
+                  <PopButton
                     type="button"
+                    color="yellow"
+                    size="default"
                     onClick={() => {
                       if (onSelectService) {
                         onSelectService(item.heading);
@@ -189,27 +192,29 @@ export function InteractiveHoverLinks({
                         window.location.href = item.href;
                       }
                     }}
-                    className="flex-1 py-3 px-5 rounded-full bg-[#018556] hover:bg-[#016B44] text-white text-[13.5px] font-bold text-center transition-all duration-200 shadow-[0_4px_14px_rgba(1,133,86,0.22)] hover:shadow-[0_6px_20px_rgba(1,133,86,0.32)] flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]"
+                    className="flex-1 text-xs sm:text-sm font-black shadow-sm"
                   >
                     <span>{buttonText}</span>
-                  </button>
+                  </PopButton>
 
-                  <button
+                  <PopButton
                     type="button"
+                    color="white"
+                    size="default"
                     onClick={(e) => {
                       e.stopPropagation();
                       toggleFavorite(item.heading || String(idx));
                     }}
-                    className={`w-11 h-11 rounded-full border flex items-center justify-center transition-all duration-200 cursor-pointer shrink-0 active:scale-90 ${
+                    className={`w-11 h-11 p-0 shrink-0 ${
                       isFav
-                        ? "bg-red-50 border-red-200 text-red-500 shadow-sm"
-                        : "border-gray-200 hover:border-red-200 hover:bg-red-50 text-gray-400 hover:text-red-500"
+                        ? "text-red-500 !border-red-300"
+                        : "text-gray-400 hover:text-red-500"
                     }`}
                     aria-label="Simpan Layanan"
                     title="Simpan ke Favorit"
                   >
                     <Heart className={`w-5 h-5 transition-transform duration-200 ${isFav ? "fill-red-500 text-red-500 scale-110" : ""}`} />
-                  </button>
+                  </PopButton>
                 </div>
               </motion.div>
             );
