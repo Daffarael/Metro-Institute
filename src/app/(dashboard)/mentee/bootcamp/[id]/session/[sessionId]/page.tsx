@@ -435,8 +435,8 @@ export default function BootcampLearningPlayerPage() {
                       gap: 6,
                       padding: '5px 12px',
                       borderRadius: 8,
-                      background: 'rgba(239, 68, 68, 0.08)',
-                      color: '#ef4444',
+                      background: '#dc2626',
+                      color: '#ffffff',
                       fontSize: '12px',
                       fontWeight: 700,
                       letterSpacing: '0.04em',
@@ -445,9 +445,8 @@ export default function BootcampLearningPlayerPage() {
                         width: 7,
                         height: 7,
                         borderRadius: '50%',
-                        background: '#ef4444',
-                        display: 'inline-block',
-                        boxShadow: '0 0 0 2px rgba(239, 68, 68, 0.25)'
+                        background: '#ffffff',
+                        display: 'inline-block'
                       }} />
                       LIVE SESSION
                     </span>
@@ -612,7 +611,7 @@ export default function BootcampLearningPlayerPage() {
                     <Clock size={16} color="#64748b" style={{ flexShrink: 0 }} />
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
                       <span style={{ fontSize: '13px', fontWeight: 700, color: '#1e293b' }}>
-                        Presensi 100% Otomatis via Google Meet:
+                        Presensi Sesi Live Google Meet:
                       </span>
                       <span style={{ fontSize: '12.5px', color: '#64748b', lineHeight: 1.4 }}>
                         Tidak perlu mengisi formulir manual atau presensi chat. Cukup masuk menggunakan email akun yang terdaftar.
