@@ -518,7 +518,7 @@ export default function BootcampDetailPage() {
                       display: 'grid',
                       gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
                       gap: 16,
-                      marginBottom: attendanceData?.missingSessions && attendanceData.missingSessions.length > 0 ? 14 : 0,
+                      
                     }}>
                       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
                         <div style={{ width: 28, height: 28, borderRadius: 8, background: '#018556', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
@@ -549,84 +549,6 @@ export default function BootcampDetailPage() {
                       </div>
                     </div>
 
-                    {/* Missing sessions notice if any */}
-                    {attendanceData?.missingSessions && attendanceData.missingSessions.length > 0 && (
-                      <div style={{
-                        padding: '16px 20px',
-                        borderRadius: 12,
-                        background: '#ffffff',
-                        border: '1.5px solid #cbd5e1',
-                      }}>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <AlertCircle size={16} color="#0f172a" />
-                            <span style={{ fontSize: '13.5px', fontWeight: 800, color: '#0f172a' }}>
-                              Belum Memenuhi Syarat Kelulusan ({attendanceData.missingSessions.length} sesi belum tuntas)
-                            </span>
-                          </div>
-                          <span style={{ fontSize: '12px', color: '#475569', fontWeight: 600 }}>
-                            Selesaikan aktivitas atau presensi sesi berikut:
-                          </span>
-                        </div>
-
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                          {attendanceData.missingSessions.slice(0, 3).map((ms: any) => {
-                            const typeLabel = ms.type === 'LIVE'
-                              ? 'Live Google Meet (Belum Hadir)'
-                              : ms.type === 'QUIZ'
-                              ? 'Kuis Belum Dikerjakan'
-                              : ms.type === 'ASSIGNMENT'
-                              ? 'Tugas Belum Dikirim'
-                              : ms.type === 'VIDEO'
-                              ? 'Video Belum Ditonton'
-                              : 'Materi Belum Selesai'
-
-                            return (
-                              <div
-                                key={ms.id}
-                                style={{
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'space-between',
-                                  padding: '10px 14px',
-                                  borderRadius: 8,
-                                  background: '#ffffff',
-                                  border: '1px solid #cbd5e1',
-                                  fontSize: '13px',
-                                }}
-                              >
-                                <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flex: 1 }}>
-                                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#475569', flexShrink: 0 }} />
-                                  <span style={{ fontWeight: 700, color: '#0f172a', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                    {ms.title}
-                                  </span>
-                                  <span style={{ color: '#64748b', fontSize: '12px', flexShrink: 0 }}>
-                                    ({ms.chapterTitle})
-                                  </span>
-                                </div>
-                                <span style={{
-                                  fontSize: '11px',
-                                  fontWeight: 700,
-                                  color: '#ffffff',
-                                  padding: '4px 10px',
-                                  borderRadius: 6,
-                                  background: '#475569',
-                                  flexShrink: 0,
-                                  marginLeft: 8,
-                                }}>
-                                  {typeLabel}
-                                </span>
-                              </div>
-                            )
-                          })}
-                          {attendanceData.missingSessions.length > 3 && (
-                            <div style={{ fontSize: '12px', color: '#64748b', textAlign: 'center', marginTop: 4, fontWeight: 600 }}>
-                              + {attendanceData.missingSessions.length - 3} sesi lainnya tercantum pada daftar sesi di bawah
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    )}
                   </div>
                 )}
 
