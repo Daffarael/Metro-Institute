@@ -742,59 +742,70 @@ export default function BootcampDetailPage() {
                             </div>
                           </div>
 
-                          {/* Right: Status Badge & Button */}
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
-                            <span style={{
-                              width: 110,
-                              height: 32,
-                              borderRadius: 20,
-                              background: badgeBg,
-                              border: badgeBorder,
-                              color: badgeColor,
-                              fontSize: '12px',
-                              fontWeight: 600,
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              textAlign: 'center',
-                              whiteSpace: 'nowrap',
-                              boxSizing: 'border-box',
-                              flexShrink: 0,
-                            }}>
-                              {badgeText}
-                            </span>
-
-                            <div style={{ width: 84, display: 'flex', justifyContent: 'flex-end', flexShrink: 0 }}>
-                              {!isPassed && (
-                                <Link
-                                  href={ROUTES.LEARN_BOOTCAMP_SESSION(id, s.id)}
-                                  style={{
-                                    padding: '7px 16px',
-                                    borderRadius: 8,
-                                    background: '#018556',
-                                    color: '#ffffff',
-                                    border: 'none',
-                                    fontSize: '12.5px',
-                                    fontWeight: 600,
-                                    textDecoration: 'none',
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    gap: 5,
-                                    cursor: 'pointer',
-                                    transition: 'opacity 0.15s ease',
-                                  }}
-                                  onMouseEnter={(e) => {
-                                    e.currentTarget.style.opacity = '0.9'
-                                  }}
-                                  onMouseLeave={(e) => {
-                                    e.currentTarget.style.opacity = '1'
-                                  }}
-                                >
-                                  Masuk <ChevronRight size={14} />
-                                </Link>
-                              )}
+                          {/* Right: Status Badge or Green Checkmark */}
+                          {isPassed ? (
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', flexShrink: 0, paddingRight: 6 }}>
+                              <img
+                                src="/green-check.png"
+                                alt="Selesai"
+                                style={{
+                                  width: 28,
+                                  height: 28,
+                                  objectFit: 'contain',
+                                  display: 'block',
+                                }}
+                              />
                             </div>
-                          </div>
+                          ) : (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
+                              <span style={{
+                                width: 110,
+                                height: 32,
+                                borderRadius: 20,
+                                background: badgeBg,
+                                border: badgeBorder,
+                                color: badgeColor,
+                                fontSize: '12px',
+                                fontWeight: 600,
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                textAlign: 'center',
+                                whiteSpace: 'nowrap',
+                                boxSizing: 'border-box',
+                                flexShrink: 0,
+                              }}>
+                                {badgeText}
+                              </span>
+
+                              <Link
+                                href={ROUTES.LEARN_BOOTCAMP_SESSION(id, s.id)}
+                                style={{
+                                  padding: '7px 16px',
+                                  borderRadius: 8,
+                                  background: '#018556',
+                                  color: '#ffffff',
+                                  border: 'none',
+                                  fontSize: '12.5px',
+                                  fontWeight: 600,
+                                  textDecoration: 'none',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: 5,
+                                  cursor: 'pointer',
+                                  transition: 'opacity 0.15s ease',
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.opacity = '0.9'
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.opacity = '1'
+                                }}
+                              >
+                                Masuk <ChevronRight size={14} />
+                              </Link>
+                            </div>
+                          )}
                         </div>
                       )
                     })}
