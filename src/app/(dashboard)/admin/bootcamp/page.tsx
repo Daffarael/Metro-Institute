@@ -8,7 +8,8 @@ import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tansta
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Plus, Edit2, Users, CalendarDays, Layers, X, Target, AlertCircle, Info } from 'lucide-react'
+import { Plus, Edit2, Users, CalendarDays, Layers, X, Target, AlertCircle, Trash2 } from 'lucide-react'
+import AdminConfirmModal from '@/components/admin/AdminConfirmModal'
 import api from '@/lib/axios'
 import ClassChallengeModal from '@/components/admin/ClassChallengeModal'
 import { formatRupiah, formatDate } from '@/lib/utils'
@@ -264,43 +265,27 @@ function BootcampModal({
               />
               {!bootcamp?.hasCurriculum && (
                 <div style={{
-                  marginTop: 10,
-                  padding: '11px 14px',
-                  borderRadius: 10,
-                  background: '#F8FAFC',
-                  border: '1px solid #E2E8F0',
+                  marginTop: 7,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  gap: 12,
                   fontSize: '12px',
-                  color: '#475569',
-                  lineHeight: 1.4
+                  color: '#64748b',
                 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-                    <Info size={16} color="#018556" style={{ flexShrink: 0 }} />
-                    <span>Tambahkan sesi di menu <b>Silabus</b> untuk membuka opsi status <b>Tayang</b>.</span>
-                  </div>
+                  <span>Silabus belum diisi. Status Tayang dinonaktifkan.</span>
                   {bootcamp?.id && (
                     <Link 
                       href={`/admin/bootcamp/${bootcamp?.id}/syllabus`}
                       style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        padding: '4px 10px',
-                        fontSize: '11px',
-                        fontWeight: 600,
                         color: '#018556',
-                        background: '#E6F4EF',
-                        borderRadius: 6,
+                        fontWeight: 600,
                         textDecoration: 'none',
                         whiteSpace: 'nowrap',
-                        transition: 'all 0.15s ease'
                       }}
-                      onMouseEnter={e => e.currentTarget.style.background = '#D1EBE2'}
-                      onMouseLeave={e => e.currentTarget.style.background = '#E6F4EF'}
+                      onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
+                      onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
                     >
-                      Buka Silabus →
+                      Buka Silabus &rarr;
                     </Link>
                   )}
                 </div>
@@ -426,6 +411,19 @@ export default function AdminBootcampPage() {
   const [filters, setFilters] = useState<BootcampFilters>({ page: 1, limit: 10 })
   const [search, setSearch] = useState('')
   const [modal, setModal] = useState<null | 'new' | Bootcamp>(null)
+  const [deleteTarget, setDeleteTarget] = useState<Bootcamp | null>(null)
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => api.delete(`/admin/bootcamps/${id}`),
+    onSuccess: () => {
+      toast.success('Bootcamp berhasil dihapus.')
+      qc.invalidateQueries({ queryKey: ['admin', 'bootcamps'] })
+      setDeleteTarget(null)
+    },
+    onError: (err: any) => {
+      toast.error(err.response?.data?.message || 'Gagal menghapus bootcamp.')
+    },
+  })
   const [challengeTarget, setChallengeTarget] = useState<Bootcamp | null>(null)
   const qc = useQueryClient()
 
@@ -635,6 +633,29 @@ export default function AdminBootcampPage() {
                         >
                           {b.isFeatured ? '⭐ Featured' : '☆ Feature'}
                         </button>
+                        {/* Delete Button */}
+                        <button
+                          onClick={() => setDeleteTarget(b)}
+                          title="Hapus Bootcamp"
+                          style={{
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            width: 28, height: 28, borderRadius: 'var(--radius-md)', border: '1px solid #fee2e2',
+                            background: '#fff', color: '#ef4444', cursor: 'pointer', transition: 'all 0.15s',
+                            boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                          }}
+                          onMouseEnter={e => {
+                            e.currentTarget.style.background = '#fef2f2'
+                            e.currentTarget.style.color = '#dc2626'
+                            e.currentTarget.style.borderColor = '#fca5a5'
+                          }}
+                          onMouseLeave={e => {
+                            e.currentTarget.style.background = '#fff'
+                            e.currentTarget.style.color = '#ef4444'
+                            e.currentTarget.style.borderColor = '#fee2e2'
+                          }}
+                        >
+                          <Trash2 size={13} />
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -677,6 +698,17 @@ export default function AdminBootcampPage() {
           />
         )}
       </AnimatePresence>
+      {/* Confirm Delete Modal */}
+      <AdminConfirmModal
+        isOpen={!!deleteTarget}
+        title="Hapus Bootcamp"
+        description={`Apakah Anda yakin ingin menghapus bootcamp "${deleteTarget?.name}"? Semua bab, materi sesi, dan data pendaftar di dalamnya akan dihapus secara permanen.`}
+        confirmLabel="Hapus Bootcamp"
+        isDangerous={true}
+        isLoading={deleteMutation.isPending}
+        onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
+        onClose={() => setDeleteTarget(null)}
+      />
     </div>
   )
 }

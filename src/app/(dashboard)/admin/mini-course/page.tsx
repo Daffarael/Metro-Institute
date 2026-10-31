@@ -8,7 +8,7 @@ import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tansta
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Plus, Edit2, Layers, BarChart2, X, Target, AlertCircle, Info } from 'lucide-react'
+import { Plus, Edit2, Layers, BarChart2, X, Target, AlertCircle, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'motion/react'
 import api from '@/lib/axios'
@@ -313,43 +313,27 @@ function CourseModal({ course, onClose }: { course?: MiniCourse; onClose: () => 
               {errors.status && <p style={{ color: 'var(--color-error)', fontSize: '12px', marginTop: 4, fontWeight: 500 }}>{errors.status.message}</p>}
               {!(course as any)?.hasCurriculum && (
                 <div style={{
-                  marginTop: 10,
-                  padding: '11px 14px',
-                  borderRadius: 10,
-                  background: '#F8FAFC',
-                  border: '1px solid #E2E8F0',
+                  marginTop: 7,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  gap: 12,
                   fontSize: '12px',
-                  color: '#475569',
-                  lineHeight: 1.4
+                  color: '#64748b',
                 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-                    <Info size={16} color="#018556" style={{ flexShrink: 0 }} />
-                    <span>Tambahkan materi di menu <b>Kurikulum</b> untuk membuka opsi status <b>Tayang</b>.</span>
-                  </div>
+                  <span>Kurikulum belum diisi. Status Tayang dinonaktifkan.</span>
                   {(course as any)?.id && (
                     <Link 
                       href={`/admin/mini-course/${(course as any)?.id}/curriculum`}
                       style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        padding: '4px 10px',
-                        fontSize: '11px',
-                        fontWeight: 600,
                         color: '#018556',
-                        background: '#E6F4EF',
-                        borderRadius: 6,
+                        fontWeight: 600,
                         textDecoration: 'none',
                         whiteSpace: 'nowrap',
-                        transition: 'all 0.15s ease'
                       }}
-                      onMouseEnter={e => e.currentTarget.style.background = '#D1EBE2'}
-                      onMouseLeave={e => e.currentTarget.style.background = '#E6F4EF'}
+                      onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
+                      onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
                     >
-                      Buka Kurikulum →
+                      Buka Kurikulum &rarr;
                     </Link>
                   )}
                 </div>
@@ -616,6 +600,29 @@ export default function AdminMiniCoursePage() {
                           }}
                         >
                           {c.isFeatured ? '★ Unggulan' : '☆ Jadikan Unggulan'}
+                        </button>
+                        {/* Delete Button */}
+                        <button
+                          onClick={() => setDeleteTarget(c)}
+                          title="Hapus Mini Course"
+                          style={{
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            width: 28, height: 28, borderRadius: 'var(--radius-md)', border: '1px solid #fee2e2',
+                            background: '#fff', color: '#ef4444', cursor: 'pointer', transition: 'all 0.15s',
+                            boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                          }}
+                          onMouseEnter={e => {
+                            e.currentTarget.style.background = '#fef2f2'
+                            e.currentTarget.style.color = '#dc2626'
+                            e.currentTarget.style.borderColor = '#fca5a5'
+                          }}
+                          onMouseLeave={e => {
+                            e.currentTarget.style.background = '#fff'
+                            e.currentTarget.style.color = '#ef4444'
+                            e.currentTarget.style.borderColor = '#fee2e2'
+                          }}
+                        >
+                          <Trash2 size={13} />
                         </button>
                       </div>
                     </td>
