@@ -522,12 +522,12 @@ export default function BootcampLearningPlayerPage() {
                       ? '#f0fdf4'
                       : currentSession.attendance.status === 'EXCUSED'
                       ? '#eff6ff'
-                      : '#fff1f2',
+                      : '#f8fafc',
                     border: (currentSession.attendance.status === 'PRESENT' || currentSession.attendance.status === 'MANUAL')
                       ? '1px solid #bbf7d0'
                       : currentSession.attendance.status === 'EXCUSED'
                       ? '1px solid #bfdbfe'
-                      : '1px solid #fecdd3',
+                      : '1px solid #e2e8f0',
                   }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, marginBottom: 8 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -566,12 +566,13 @@ export default function BootcampLearningPlayerPage() {
                             gap: 6,
                             padding: '3px 10px',
                             borderRadius: 20,
-                            background: '#ffe4e6',
-                            color: '#9f1239',
+                            background: '#f1f5f9',
+                            border: '1px solid #cbd5e1',
+                            color: '#475569',
                             fontSize: '12px',
-                            fontWeight: 700,
+                            fontWeight: 600,
                           }}>
-                            <Clock size={14} color="#f43f5e" /> Durasi Kurang
+                            <Clock size={14} color="#64748b" /> Durasi Kurang
                           </span>
                         )}
 
@@ -594,7 +595,7 @@ export default function BootcampLearningPlayerPage() {
                           ? '#22c55e'
                           : currentSession.attendance.status === 'EXCUSED'
                           ? '#3b82f6'
-                          : '#f43f5e',
+                          : '#94a3b8',
                         borderRadius: 4,
                       }} />
                     </div>

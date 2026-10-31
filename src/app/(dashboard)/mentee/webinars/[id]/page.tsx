@@ -501,12 +501,12 @@ export default function MenteeWebinarDetailPage() {
                           ? '#f0fdf4'
                           : webinar.attendance.status === 'EXCUSED'
                           ? '#eff6ff'
-                          : '#fff1f2',
+                          : '#f8fafc',
                         border: (webinar.attendance.status === 'PRESENT' || webinar.attendance.status === 'MANUAL')
                           ? '1px solid #bbf7d0'
                           : webinar.attendance.status === 'EXCUSED'
                           ? '1px solid #bfdbfe'
-                          : '1px solid #fecdd3',
+                          : '1px solid #e2e8f0',
                         display: 'flex',
                         flexDirection: 'column',
                         gap: 12,
@@ -535,10 +535,10 @@ export default function MenteeWebinarDetailPage() {
                               <span style={{
                                 display: 'inline-flex', alignItems: 'center', gap: 6,
                                 padding: '4px 12px', borderRadius: 20,
-                                background: '#ffe4e6', color: '#9f1239',
-                                fontSize: '12.5px', fontWeight: 700
+                                background: '#f1f5f9', border: '1px solid #cbd5e1',
+                                color: '#475569', fontSize: '12.5px', fontWeight: 600
                               }}>
-                                <Clock size={15} color="#f43f5e" /> Durasi Kurang
+                                <Clock size={15} color="#64748b" /> Durasi Kurang
                               </span>
                             )}
 
@@ -563,7 +563,7 @@ export default function MenteeWebinarDetailPage() {
                               ? '#22c55e'
                               : webinar.attendance.status === 'EXCUSED'
                               ? '#3b82f6'
-                              : '#f43f5e',
+                              : '#94a3b8',
                             borderRadius: 4
                           }} />
                         </div>
