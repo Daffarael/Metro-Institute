@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Tag, Award, Heart, Sparkles, BookOpen, Video, ArrowUpRight } from "lucide-react";
+import { Tag, Award, Heart } from "lucide-react";
 
 export const INTERACTIVE_LINKS = [
   {
@@ -10,7 +10,6 @@ export const INTERACTIVE_LINKS = [
     subheading: "Program komprehensif 12 minggu siap kerja dari nol.",
     imgSrc: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=800",
     category: "Intensif Siap Kerja",
-    badge: "Cohort Sync",
     tag1: "12 Minggu",
     tag2: "Portofolio Industri",
     buttonText: "Jelajahi Bootcamp",
@@ -21,7 +20,6 @@ export const INTERACTIVE_LINKS = [
     subheading: "Kuasai skill teknologi spesifik dalam waktu singkat.",
     imgSrc: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=800",
     category: "Skill Spesifik",
-    badge: "Self-Paced",
     tag1: "Akses Fleksibel",
     tag2: "E-Sertifikat Resmi",
     buttonText: "Jelajahi Mini Course",
@@ -32,7 +30,6 @@ export const INTERACTIVE_LINKS = [
     subheading: "Sesi live interaktif langsung bersama praktisi top industri.",
     imgSrc: "https://images.unsplash.com/photo-1540317580384-e5d43616b9aa?auto=format&fit=crop&q=80&w=800",
     category: "Live Session",
-    badge: "Live Praktisi",
     tag1: "Q&A Interaktif",
     tag2: "Insight Expert",
     buttonText: "Jelajahi Webinar",
@@ -43,7 +40,6 @@ export const INTERACTIVE_LINKS = [
 const SERVICE_DEFAULTS: Record<string, {
   imgSrc: string;
   category: string;
-  badge: string;
   tag1: string;
   tag2: string;
   buttonText: string;
@@ -51,7 +47,6 @@ const SERVICE_DEFAULTS: Record<string, {
   bootcamp: {
     imgSrc: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=800",
     category: "Intensif Siap Kerja",
-    badge: "Cohort Sync",
     tag1: "12 Minggu",
     tag2: "Portofolio Industri",
     buttonText: "Jelajahi Bootcamp",
@@ -59,7 +54,6 @@ const SERVICE_DEFAULTS: Record<string, {
   "mini course": {
     imgSrc: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=800",
     category: "Skill Spesifik",
-    badge: "Self-Paced",
     tag1: "Akses Fleksibel",
     tag2: "E-Sertifikat Resmi",
     buttonText: "Jelajahi Mini Course",
@@ -67,7 +61,6 @@ const SERVICE_DEFAULTS: Record<string, {
   webinar: {
     imgSrc: "https://images.unsplash.com/photo-1540317580384-e5d43616b9aa?auto=format&fit=crop&q=80&w=800",
     category: "Live Session",
-    badge: "Live Praktisi",
     tag1: "Q&A Interaktif",
     tag2: "Insight Expert",
     buttonText: "Jelajahi Webinar",
@@ -97,10 +90,10 @@ export function InteractiveHoverLinks({
   };
 
   return (
-    <section className="bg-[#FAFBF9] py-20 md:py-28 px-4 sm:px-6 lg:px-8 w-full border-t border-b border-gray-100">
+    <section className="bg-white py-20 md:py-28 px-4 sm:px-6 lg:px-8 w-full">
       <div className="mx-auto max-w-7xl">
-        {/* Section Header */}
-        <div className="mb-12 md:mb-16">
+        {/* Section Header (Centered) */}
+        <div className="text-center max-w-3xl mx-auto mb-14 md:mb-20">
           <motion.h2 
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -115,7 +108,7 @@ export function InteractiveHoverLinks({
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.4, delay: 0.1 }}
-            className="text-gray-500 text-base md:text-lg mt-3 max-w-2xl leading-relaxed"
+            className="text-gray-500 text-base md:text-lg mt-3 mx-auto leading-relaxed"
           >
             {subtitle}
           </motion.p>
@@ -134,7 +127,6 @@ export function InteractiveHoverLinks({
 
             const imgSrc = item.imgSrc || defaults.imgSrc;
             const category = item.category || defaults.category;
-            const badge = item.badge || defaults.badge;
             const tag1 = item.tag1 || defaults.tag1;
             const tag2 = item.tag2 || defaults.tag2;
             const buttonText = item.buttonText || defaults.buttonText;
@@ -150,7 +142,7 @@ export function InteractiveHoverLinks({
                 className="bg-white rounded-[32px] p-4 sm:p-5 border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1"
               >
                 <div>
-                  {/* Card Image Banner */}
+                  {/* Card Image Banner (No badge pill) */}
                   <div className="w-full h-[220px] sm:h-[235px] rounded-[24px] overflow-hidden relative mb-5 bg-gray-100">
                     <img
                       src={imgSrc}
@@ -158,10 +150,6 @@ export function InteractiveHoverLinks({
                       className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                       loading="lazy"
                     />
-                    {/* Badge Pill */}
-                    <div className="absolute top-3.5 left-3.5 bg-white/95 backdrop-blur-md px-3 py-1 rounded-full text-[11px] font-bold text-gray-800 shadow-sm border border-white/60 tracking-wide uppercase">
-                      {badge}
-                    </div>
                   </div>
 
                   {/* Card Content */}
