@@ -8,7 +8,7 @@ import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tansta
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Plus, Edit2, Layers, BarChart2, X, Target, AlertCircle } from 'lucide-react'
+import { Plus, Edit2, Layers, BarChart2, X, Target, AlertCircle, Info } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'motion/react'
 import api from '@/lib/axios'
@@ -287,39 +287,71 @@ function CourseModal({ course, onClose }: { course?: MiniCourse; onClose: () => 
               <Controller
                 control={control}
                 name="status"
-                render={({ field }) => (
-                  <CleanCombobox 
-                    options={[
-                      { value: 'DRAFT', label: 'Draf' },
-                      { 
-                        value: 'PUBLISHED', 
-                        label: (course as any)?.hasCurriculum ? 'Tayang' : 'Tayang (Perlu Kurikulum)' 
-                      }
-                    ]}
-                    allowClear={false}
-                    value={field.value as string} 
-                    onChange={val => {
-                      if (val === 'PUBLISHED' && !(course as any)?.hasCurriculum) {
-                        toast.error('Kurikulum belum dibuat. Tambahkan minimal 1 bab dan materi di menu Kurikulum terlebih dahulu.')
-                        return
-                      }
-                      field.onChange(val)
-                    }} 
-                    placeholder="Pilih Status"
-                    width="100%"
-                  />
-                )}
+                render={({ field }) => {
+                  const hasCurr = !!(course as any)?.hasCurriculum
+                  const statusOptions = hasCurr
+                    ? [
+                        { value: 'DRAFT', label: 'Draf' },
+                        { value: 'PUBLISHED', label: 'Tayang' },
+                      ]
+                    : [
+                        { value: 'DRAFT', label: 'Draf' },
+                      ]
+
+                  return (
+                    <CleanCombobox 
+                      options={statusOptions}
+                      allowClear={false}
+                      value={field.value as string} 
+                      onChange={val => field.onChange(val)} 
+                      placeholder="Pilih Status"
+                      width="100%"
+                    />
+                  )
+                }}
               />
               {errors.status && <p style={{ color: 'var(--color-error)', fontSize: '12px', marginTop: 4, fontWeight: 500 }}>{errors.status.message}</p>}
               {!(course as any)?.hasCurriculum && (
                 <div style={{
-                  marginTop: 8, padding: '10px 14px', borderRadius: 10,
-                  background: '#FEF2F2', border: '1px solid #FEE2E2',
-                  display: 'flex', alignItems: 'center', gap: 8,
-                  fontSize: '12.5px', color: '#991B1B'
+                  marginTop: 10,
+                  padding: '11px 14px',
+                  borderRadius: 10,
+                  background: '#F8FAFC',
+                  border: '1px solid #E2E8F0',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: 12,
+                  fontSize: '12px',
+                  color: '#475569',
+                  lineHeight: 1.4
                 }}>
-                  <AlertCircle size={16} color="#DC2626" style={{ flexShrink: 0 }} />
-                  <span>Kurikulum belum dibuat (0 materi). Tambahkan kurikulum di menu <b>Kurikulum</b> sebelum mempublikasikan.</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+                    <Info size={16} color="#018556" style={{ flexShrink: 0 }} />
+                    <span>Tambahkan materi di menu <b>Kurikulum</b> untuk membuka opsi status <b>Tayang</b>.</span>
+                  </div>
+                  {(course as any)?.id && (
+                    <Link 
+                      href={`/admin/mini-course/${(course as any)?.id}/curriculum`}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        padding: '4px 10px',
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        color: '#018556',
+                        background: '#E6F4EF',
+                        borderRadius: 6,
+                        textDecoration: 'none',
+                        whiteSpace: 'nowrap',
+                        transition: 'all 0.15s ease'
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.background = '#D1EBE2'}
+                      onMouseLeave={e => e.currentTarget.style.background = '#E6F4EF'}
+                    >
+                      Buka Kurikulum →
+                    </Link>
+                  )}
                 </div>
               )}
             </div>

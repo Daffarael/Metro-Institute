@@ -8,7 +8,7 @@ import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tansta
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Plus, Edit2, Users, CalendarDays, Layers, X, Target, AlertCircle } from 'lucide-react'
+import { Plus, Edit2, Users, CalendarDays, Layers, X, Target, AlertCircle, Info } from 'lucide-react'
 import api from '@/lib/axios'
 import ClassChallengeModal from '@/components/admin/ClassChallengeModal'
 import { formatRupiah, formatDate } from '@/lib/utils'
@@ -240,40 +240,71 @@ function BootcampModal({
                   control={control}
                   name="status"
                   render={({ field }) => (
-                    <CleanCombobox 
-                      options={STATUS_OPTIONS.map(s => ({
-                        value: s.value,
-                        label: (!bootcamp?.hasCurriculum && s.value !== 'DRAFT')
-                          ? `${s.label} (Perlu Kurikulum)`
-                          : s.label
-                      }))}
-                      value={field.value as string} 
-                      onChange={val => {
-                        if (val !== 'DRAFT' && !bootcamp?.hasCurriculum) {
-                          toast.error('Kurikulum belum dibuat. Tambahkan bab dan materi di menu Silabus terlebih dahulu.')
-                          return
-                        }
-                        field.onChange(val)
-                      }} 
-                      placeholder="Pilih Status"
-                      width="100%"
-                      direction="down"
-                      allowClear={false}
-                      style={{...inputStyleClean, padding: '12px 16px', background: '#fff'}}
-                    />
-                  )}
-                />
-                {!bootcamp?.hasCurriculum && (
-                  <div style={{
-                    marginTop: 8, padding: '10px 14px', borderRadius: 10,
-                    background: '#FEF2F2', border: '1px solid #FEE2E2',
-                    display: 'flex', alignItems: 'center', gap: 8,
-                    fontSize: '12.5px', color: '#991B1B'
-                  }}>
-                    <AlertCircle size={16} color="#DC2626" style={{ flexShrink: 0 }} />
-                    <span>Kurikulum belum dibuat (0 sesi). Tambahkan silabus di menu <b>Silabus</b> sebelum mempublikasikan.</span>
-                  </div>
+(() => {
+                    const hasCurr = !!bootcamp?.hasCurriculum
+                    const availableOptions = STATUS_OPTIONS.filter(s => {
+                      if (s.value === 'DRAFT') return true
+                      return hasCurr
+                    })
+
+                    return (
+                      <CleanCombobox 
+                        options={availableOptions}
+                        value={field.value as string} 
+                        onChange={val => field.onChange(val)} 
+                        placeholder="Pilih Status"
+                        width="100%"
+                        direction="down"
+                        allowClear={false}
+                        style={{...inputStyleClean, padding: '12px 16px', background: '#fff'}}
+                      />
+                    )
+                  })()
                 )}
+              />
+              {!bootcamp?.hasCurriculum && (
+                <div style={{
+                  marginTop: 10,
+                  padding: '11px 14px',
+                  borderRadius: 10,
+                  background: '#F8FAFC',
+                  border: '1px solid #E2E8F0',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  gap: 12,
+                  fontSize: '12px',
+                  color: '#475569',
+                  lineHeight: 1.4
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+                    <Info size={16} color="#018556" style={{ flexShrink: 0 }} />
+                    <span>Tambahkan sesi di menu <b>Silabus</b> untuk membuka opsi status <b>Tayang</b>.</span>
+                  </div>
+                  {bootcamp?.id && (
+                    <Link 
+                      href={`/admin/bootcamp/${bootcamp?.id}/syllabus`}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        padding: '4px 10px',
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        color: '#018556',
+                        background: '#E6F4EF',
+                        borderRadius: 6,
+                        textDecoration: 'none',
+                        whiteSpace: 'nowrap',
+                        transition: 'all 0.15s ease'
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.background = '#D1EBE2'}
+                      onMouseLeave={e => e.currentTarget.style.background = '#E6F4EF'}
+                    >
+                      Buka Silabus →
+                    </Link>
+                  )}
+                </div>
+              )}
               </div>
             )}
             <div>
