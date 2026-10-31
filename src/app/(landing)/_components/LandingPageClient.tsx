@@ -860,7 +860,7 @@ export default function LandingPageClient({
           transition={{ duration: 1 }}
           className="w-full flex justify-center mt-10 md:mt-16 px-4 select-none pointer-events-none overflow-hidden"
         >
-          <h2 className="text-[10.5vw] sm:text-[12.5vw] md:text-[14vw] font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white/20 to-transparent whitespace-nowrap leading-[0.75]">
+          <h2 className="text-[13.5vw] md:text-[14vw] font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white/20 to-transparent whitespace-nowrap leading-[0.75]">
             Metro Institute
           </h2>
         </motion.div>
