@@ -458,14 +458,15 @@ export default function BootcampDetailPage() {
                           width: 44,
                           height: 44,
                           borderRadius: 12,
-                          background: '#0f172a',
-                          color: '#ffffff',
+                          background: '#018556',
+                          color: '#FAE653',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
                           flexShrink: 0,
+                          boxShadow: '0 2px 6px rgba(1, 133, 86, 0.25)',
                         }}>
-                          <Lock size={20} />
+                          <Lock size={20} color="#FAE653" strokeWidth={2.2} />
                         </div>
                         <div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: 4 }}>
