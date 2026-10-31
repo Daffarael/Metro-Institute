@@ -554,34 +554,48 @@ export default function BootcampDetailPage() {
 
                 {/* ── Checklist Kehadiran Sesi ─────────────────────── */}
                 <div style={{
-                  border: '1.5px solid #cbd5e1',
-                  borderRadius: 14,
+                  border: '1px solid #e2e8f0',
+                  borderRadius: 16,
                   overflow: 'hidden',
                   background: '#ffffff',
                 }}>
+                  {/* Header */}
                   <div style={{
-                    padding: '16px 22px',
-                    borderBottom: '1.5px solid #cbd5e1',
+                    padding: '20px 24px',
+                    borderBottom: '1px solid #f1f5f9',
                     background: '#ffffff',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     flexWrap: 'wrap',
-                    gap: 8,
+                    gap: 12,
                   }}>
                     <div>
-                      <div style={{ fontSize: '14.5px', fontWeight: 800, color: '#0f172a' }}>
-                        Daftar Sesi Pembelajaran & Status Kehadiran
+                      <div style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a' }}>
+                        Daftar Sesi Pembelajaran ({attendanceData?.totalSessions || 0} Sesi)
                       </div>
-                      <div style={{ fontSize: '12px', color: '#475569', marginTop: 2 }}>
-                        Total {attendanceData?.totalSessions || 0} sesi kurikulum bootcamp
+                      <div style={{ fontSize: '13px', color: '#64748b', marginTop: 3 }}>
+                        Selesaikan seluruh sesi untuk memenuhi syarat 100% kelulusan sertifikat.
                       </div>
                     </div>
-                    <div style={{ fontSize: '12px', color: '#475569', fontWeight: 600 }}>
-                      Sesi Live: min. hadir 80% · Sesi Mandiri: tonton video / kuis / tugas
+                    <div style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      padding: '6px 14px',
+                      borderRadius: 20,
+                      background: '#f8fafc',
+                      border: '1px solid #e2e8f0',
+                      fontSize: '12px',
+                      fontWeight: 600,
+                      color: '#334155',
+                    }}>
+                      <CheckCircle2 size={14} color="#018556" strokeWidth={2.2} />
+                      <span>{attendanceData?.attendedCount || 0} / {attendanceData?.totalSessions || 0} Selesai</span>
                     </div>
                   </div>
 
+                  {/* List Sesi */}
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     {attendanceData?.sessions?.map((s: any, idx: number) => {
                       const isLive = s.type === 'LIVE'
@@ -589,54 +603,11 @@ export default function BootcampDetailPage() {
                       const isExcused = s.attendance?.status === 'EXCUSED'
                       const isAbsent = s.attendance?.status === 'ABSENT'
                       const isDone = s.isCompleted
-
-                      // Status label & badge
-                      let badgeBg = '#ffffff'
-                      let badgeColor = '#475569'
-                      let badgeBorder = '1.5px solid #cbd5e1'
-                      let badgeText = 'Terjadwal'
-                      let badgeIcon = <Clock size={13} color="#64748b" />
-
-                      if (isLive) {
-                        if (isPresent) {
-                          badgeBg = '#018556'
-                          badgeColor = '#ffffff'
-                          badgeBorder = 'none'
-                          badgeText = 'Hadir Live'
-                          badgeIcon = <CheckCircle2 size={13} color="#ffffff" />
-                        } else if (isExcused) {
-                          badgeBg = '#2563eb'
-                          badgeColor = '#ffffff'
-                          badgeBorder = 'none'
-                          badgeText = 'Izin Disetujui'
-                          badgeIcon = <ShieldCheck size={13} color="#ffffff" />
-                        } else if (isAbsent) {
-                          badgeBg = '#475569'
-                          badgeColor = '#ffffff'
-                          badgeBorder = 'none'
-                          badgeText = 'Tidak Hadir'
-                          badgeIcon = <XCircle size={13} color="#ffffff" />
-                        } else {
-                          badgeText = 'Belum Dimulai'
-                        }
-                      } else {
-                        if (isDone) {
-                          badgeBg = '#018556'
-                          badgeColor = '#ffffff'
-                          badgeBorder = 'none'
-                          badgeText = 'Selesai'
-                          badgeIcon = <CheckCircle2 size={13} color="#ffffff" />
-                        } else {
-                          if (s.type === 'QUIZ') badgeText = 'Kuis Belum Selesai'
-                          else if (s.type === 'ASSIGNMENT') badgeText = 'Tugas Belum Kirim'
-                          else if (s.type === 'VIDEO') badgeText = 'Video Belum Selesai'
-                          else badgeText = 'Materi Belum Dibaca'
-                        }
-                      }
+                      const isPassed = isLive ? (isPresent || isExcused) : isDone
 
                       // Type Label
                       const typeLabel = s.type === 'LIVE'
-                        ? 'Sesi Live Google Meet'
+                        ? 'Sesi Live Meet'
                         : s.type === 'QUIZ'
                         ? 'Kuis Evaluasi'
                         : s.type === 'ASSIGNMENT'
@@ -645,123 +616,169 @@ export default function BootcampDetailPage() {
                         ? 'Video Pembelajaran'
                         : 'Materi / Dokumen'
 
-                      const isPassed = isLive ? (isPresent || isExcused) : isDone
+                      // Status label & badge styling
+                      let badgeBg = '#f8fafc'
+                      let badgeColor = '#475569'
+                      let badgeBorder = '1px solid #cbd5e1'
+                      let badgeText = isLive ? 'Terjadwal' : 'Belum Selesai'
+                      let badgeIcon = <Clock size={13} color="#64748b" strokeWidth={2} />
+
+                      if (isLive) {
+                        if (isPresent) {
+                          badgeBg = '#018556'
+                          badgeColor = '#ffffff'
+                          badgeBorder = 'none'
+                          badgeText = 'Hadir Live'
+                          badgeIcon = <CheckCircle2 size={13} color="#ffffff" strokeWidth={2.2} />
+                        } else if (isExcused) {
+                          badgeBg = '#2563eb'
+                          badgeColor = '#ffffff'
+                          badgeBorder = 'none'
+                          badgeText = 'Izin Disetujui'
+                          badgeIcon = <ShieldCheck size={13} color="#ffffff" strokeWidth={2.2} />
+                        } else if (isAbsent) {
+                          badgeBg = '#475569'
+                          badgeColor = '#ffffff'
+                          badgeBorder = 'none'
+                          badgeText = 'Tidak Hadir'
+                          badgeIcon = <XCircle size={13} color="#ffffff" strokeWidth={2.2} />
+                        }
+                      } else {
+                        if (isDone) {
+                          badgeBg = '#018556'
+                          badgeColor = '#ffffff'
+                          badgeBorder = 'none'
+                          badgeText = 'Selesai'
+                          badgeIcon = <CheckCircle2 size={13} color="#ffffff" strokeWidth={2.2} />
+                        }
+                      }
+
+                      // Additional details for subtitle
+                      let detailText = ''
+                      if (isLive) {
+                        if (s.attendance?.durationMinutes > 0) {
+                          detailText = `${s.attendance.durationMinutes}/${s.durationMinutes} mnt`
+                        } else if (s.liveScheduledAt) {
+                          detailText = formatDate(s.liveScheduledAt)
+                        } else {
+                          detailText = 'Min. hadir 80%'
+                        }
+                      } else if (s.videoDuration) {
+                        detailText = formatDuration(s.videoDuration)
+                      } else if (s.type === 'QUIZ') {
+                        detailText = 'Passing grade 80%'
+                      }
 
                       return (
                         <div
                           key={s.id}
                           style={{
-                            padding: '16px 22px',
-                            borderBottom: idx === attendanceData.sessions.length - 1 ? 'none' : '1px solid #e2e8f0',
+                            padding: '16px 24px',
+                            borderBottom: idx === attendanceData.sessions.length - 1 ? 'none' : '1px solid #f1f5f9',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'space-between',
-                            flexWrap: 'wrap',
-                            gap: 12,
+                            gap: 16,
                             background: '#ffffff',
+                            transition: 'background 0.15s ease',
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = '#f8fafc'
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = '#ffffff'
                           }}
                         >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 14, flex: '1 1 280px' }}>
+                          {/* Left: Icon + Title & Meta */}
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 14, flex: 1, minWidth: 0 }}>
                             <div style={{
-                              width: 36,
-                              height: 36,
-                              borderRadius: '50%',
-                              background: isPassed ? '#018556' : isLive && isAbsent ? '#475569' : '#ffffff',
+                              width: 40,
+                              height: 40,
+                              borderRadius: 10,
+                              background: isPassed ? '#018556' : isLive && isAbsent ? '#475569' : '#f1f5f9',
                               color: isPassed || (isLive && isAbsent) ? '#ffffff' : '#64748b',
-                              border: isPassed || (isLive && isAbsent) ? 'none' : '1.5px solid #cbd5e1',
+                              border: isPassed || (isLive && isAbsent) ? 'none' : '1px solid #e2e8f0',
                               display: 'flex',
                               alignItems: 'center',
                               justifyContent: 'center',
                               flexShrink: 0,
                             }}>
-                              {isPassed ? <CheckCircle2 size={18} /> : isLive && isAbsent ? <XCircle size={18} /> : <Clock size={18} />}
+                              {isPassed ? (
+                                <CheckCircle2 size={20} color="#ffffff" strokeWidth={2.2} />
+                              ) : isLive && isAbsent ? (
+                                <XCircle size={20} color="#ffffff" strokeWidth={2.2} />
+                              ) : (
+                                getSessionIcon(s.type, s.type === 'LIVE' ? '#018556' : '#64748b')
+                              )}
                             </div>
-                            <div>
-                              <div style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a' }}>
+
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div style={{
+                                fontSize: '14.5px',
+                                fontWeight: 600,
+                                color: '#0f172a',
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                              }}>
                                 {s.title}
                               </div>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 3, flexWrap: 'wrap' }}>
-                                <span style={{
-                                  fontSize: '11px',
-                                  fontWeight: 700,
-                                  color: isLive ? '#018556' : '#475569',
-                                  background: '#ffffff',
-                                  border: isLive ? '1.5px solid #018556' : '1px solid #cbd5e1',
-                                  padding: '1px 7px',
-                                  borderRadius: 4,
-                                }}>
-                                  {typeLabel}
-                                </span>
-                                <span style={{ fontSize: '12px', color: '#64748b' }}>
-                                  {s.chapterTitle}
-                                </span>
+                              <div style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 8,
+                                marginTop: 4,
+                                fontSize: '12.5px',
+                                color: '#64748b',
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                              }}>
+                                <span style={{ fontWeight: 500, color: '#475569' }}>{s.chapterTitle}</span>
+                                <span>•</span>
+                                <span>{typeLabel}</span>
+                                {detailText && (
+                                  <>
+                                    <span>•</span>
+                                    <span>{detailText}</span>
+                                  </>
+                                )}
                               </div>
                             </div>
                           </div>
 
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                            {/* Duration or schedule info */}
-                            {isLive ? (
-                              s.attendance?.durationMinutes > 0 ? (
-                                <div style={{ textAlign: 'right', fontSize: '12.5px' }}>
-                                  <div style={{ fontWeight: 800, color: isPresent ? '#018556' : isExcused ? '#2563eb' : '#475569' }}>
-                                    {s.attendance.durationMinutes} / {s.durationMinutes} menit
-                                  </div>
-                                  <div style={{ color: '#64748b', fontSize: '11px', fontWeight: 500 }}>
-                                    min. {s.minRequiredMinutes} mnt (80%)
-                                  </div>
-                                </div>
-                              ) : s.liveScheduledAt ? (
-                                <div style={{ textAlign: 'right', fontSize: '12px', color: '#475569', fontWeight: 500 }}>
-                                  <div>{formatDate(s.liveScheduledAt)}</div>
-                                  <div style={{ color: '#64748b', fontSize: '11px' }}>Syarat hadir min. 80%</div>
-                                </div>
-                              ) : null
-                            ) : (
-                              s.videoDuration ? (
-                                <div style={{ textAlign: 'right', fontSize: '12px', color: '#475569', fontWeight: 500 }}>
-                                  <div style={{ fontWeight: 700 }}>{formatDuration(s.videoDuration)}</div>
-                                  <div style={{ color: '#64748b', fontSize: '11px' }}>Tonton min. 90%</div>
-                                </div>
-                              ) : (
-                                <div style={{ textAlign: 'right', fontSize: '11.5px', color: '#64748b' }}>
-                                  {s.type === 'QUIZ' ? 'Passing grade 80%' : s.type === 'ASSIGNMENT' ? 'Kirim tugas praktik' : 'Baca modul'}
-                                </div>
-                              )
-                            )}
-
-                            {/* Status badge */}
+                          {/* Right: Status Badge & Button */}
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
                             <span style={{
                               display: 'inline-flex',
                               alignItems: 'center',
                               gap: 6,
-                              padding: '5px 12px',
+                              padding: '6px 14px',
                               borderRadius: 20,
                               background: badgeBg,
                               border: badgeBorder,
                               color: badgeColor,
                               fontSize: '12px',
-                              fontWeight: 700,
+                              fontWeight: 600,
                               whiteSpace: 'nowrap',
                             }}>
                               {badgeIcon} {badgeText}
                             </span>
 
-                            {/* Solid Masuk Button */}
                             <Link
                               href={ROUTES.LEARN_BOOTCAMP_SESSION(id, s.id)}
                               style={{
-                                padding: '7px 18px',
+                                padding: '8px 18px',
                                 borderRadius: 8,
                                 background: '#018556',
                                 color: '#ffffff',
                                 border: 'none',
-                                fontSize: '12.5px',
-                                fontWeight: 700,
+                                fontSize: '13px',
+                                fontWeight: 600,
                                 textDecoration: 'none',
                                 display: 'inline-flex',
                                 alignItems: 'center',
-                                justifyContent: 'center',
+                                gap: 6,
                                 cursor: 'pointer',
                                 transition: 'opacity 0.15s ease',
                               }}
@@ -772,7 +789,7 @@ export default function BootcampDetailPage() {
                                 e.currentTarget.style.opacity = '1'
                               }}
                             >
-                              Masuk
+                              Masuk <ChevronRight size={14} />
                             </Link>
                           </div>
                         </div>
