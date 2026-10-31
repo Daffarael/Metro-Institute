@@ -531,7 +531,7 @@ export default function AdminMiniCoursePage() {
                           {(c as any).totalSessions > 0 ? (
                             <span style={{ color: 'var(--color-text-tertiary)', fontWeight: 400 }}>{(c as any).totalChapters || 1} Bab • {(c as any).totalSessions} Materi</span>
                           ) : (
-                            <span style={{ color: '#DC2626', fontWeight: 600 }}>• Belum ada kurikulum</span>
+                            <span style={{ color: '#ef4444', fontWeight: 500 }}>Belum ada kurikulum</span>
                           )}
                         </div>
                       )}

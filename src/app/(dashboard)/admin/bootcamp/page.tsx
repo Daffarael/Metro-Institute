@@ -552,7 +552,7 @@ export default function AdminBootcampPage() {
                           {b.totalSessions > 0 ? (
                             <span style={{ color: 'var(--color-text-tertiary)', fontWeight: 400 }}>{b.totalChapters || 1} Bab • {b.totalSessions} Sesi</span>
                           ) : (
-                            <span style={{ color: '#DC2626', fontWeight: 600 }}>• Belum ada kurikulum</span>
+                            <span style={{ color: '#ef4444', fontWeight: 500 }}>Belum ada silabus</span>
                           )}
                         </div>
                       )}
