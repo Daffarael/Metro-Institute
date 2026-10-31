@@ -414,7 +414,7 @@ export default function BootcampDetailPage() {
                       </div>
                       <div>
                         <div style={{ fontSize: '17px', fontWeight: 800, color: '#166534', lineHeight: 1.3 }}>
-                          E-Sertifikat Kelulusan Terbuka! 🎓
+                          E-Sertifikat Kelulusan Terbuka!
                         </div>
                         <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#15803d' }}>
                           Selamat! Kamu telah menyelesaikan seluruh syarat kehadiran 100%. Sertifikat resmi Metro Institute siap diunduh.
@@ -621,35 +621,30 @@ export default function BootcampDetailPage() {
                       let badgeColor = '#475569'
                       let badgeBorder = '1px solid #cbd5e1'
                       let badgeText = isLive ? 'Terjadwal' : 'Belum Selesai'
-                      let badgeIcon = <Clock size={13} color="#64748b" strokeWidth={2} />
 
                       if (isLive) {
                         if (isPresent) {
                           badgeBg = '#018556'
                           badgeColor = '#ffffff'
-                          badgeBorder = 'none'
+                          badgeBorder = '1px solid #018556'
                           badgeText = 'Hadir Live'
-                          badgeIcon = <CheckCircle2 size={13} color="#ffffff" strokeWidth={2.2} />
                         } else if (isExcused) {
                           badgeBg = '#2563eb'
                           badgeColor = '#ffffff'
-                          badgeBorder = 'none'
+                          badgeBorder = '1px solid #2563eb'
                           badgeText = 'Izin Disetujui'
-                          badgeIcon = <ShieldCheck size={13} color="#ffffff" strokeWidth={2.2} />
                         } else if (isAbsent) {
                           badgeBg = '#475569'
                           badgeColor = '#ffffff'
-                          badgeBorder = 'none'
+                          badgeBorder = '1px solid #475569'
                           badgeText = 'Tidak Hadir'
-                          badgeIcon = <XCircle size={13} color="#ffffff" strokeWidth={2.2} />
                         }
                       } else {
                         if (isDone) {
                           badgeBg = '#018556'
                           badgeColor = '#ffffff'
-                          badgeBorder = 'none'
+                          badgeBorder = '1px solid #018556'
                           badgeText = 'Selesai'
-                          badgeIcon = <CheckCircle2 size={13} color="#ffffff" strokeWidth={2.2} />
                         }
                       }
 
@@ -750,49 +745,55 @@ export default function BootcampDetailPage() {
                           {/* Right: Status Badge & Button */}
                           <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
                             <span style={{
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: 6,
-                              padding: '6px 14px',
+                              width: 110,
+                              height: 32,
                               borderRadius: 20,
                               background: badgeBg,
                               border: badgeBorder,
                               color: badgeColor,
                               fontSize: '12px',
                               fontWeight: 600,
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              textAlign: 'center',
                               whiteSpace: 'nowrap',
+                              boxSizing: 'border-box',
+                              flexShrink: 0,
                             }}>
-                              {badgeIcon} {badgeText}
+                              {badgeText}
                             </span>
 
-                            {!isPassed && (
-                              <Link
-                                href={ROUTES.LEARN_BOOTCAMP_SESSION(id, s.id)}
-                                style={{
-                                  padding: '8px 18px',
-                                  borderRadius: 8,
-                                  background: '#018556',
-                                  color: '#ffffff',
-                                  border: 'none',
-                                  fontSize: '13px',
-                                  fontWeight: 600,
-                                  textDecoration: 'none',
-                                  display: 'inline-flex',
-                                  alignItems: 'center',
-                                  gap: 6,
-                                  cursor: 'pointer',
-                                  transition: 'opacity 0.15s ease',
-                                }}
-                                onMouseEnter={(e) => {
-                                  e.currentTarget.style.opacity = '0.9'
-                                }}
-                                onMouseLeave={(e) => {
-                                  e.currentTarget.style.opacity = '1'
-                                }}
-                              >
-                                Masuk <ChevronRight size={14} />
-                              </Link>
-                            )}
+                            <div style={{ width: 84, display: 'flex', justifyContent: 'flex-end', flexShrink: 0 }}>
+                              {!isPassed && (
+                                <Link
+                                  href={ROUTES.LEARN_BOOTCAMP_SESSION(id, s.id)}
+                                  style={{
+                                    padding: '7px 16px',
+                                    borderRadius: 8,
+                                    background: '#018556',
+                                    color: '#ffffff',
+                                    border: 'none',
+                                    fontSize: '12.5px',
+                                    fontWeight: 600,
+                                    textDecoration: 'none',
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: 5,
+                                    cursor: 'pointer',
+                                    transition: 'opacity 0.15s ease',
+                                  }}
+                                  onMouseEnter={(e) => {
+                                    e.currentTarget.style.opacity = '0.9'
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    e.currentTarget.style.opacity = '1'
+                                  }}
+                                >
+                                  Masuk <ChevronRight size={14} />
+                                </Link>
+                              )}
+                            </div>
                           </div>
                         </div>
                       )
