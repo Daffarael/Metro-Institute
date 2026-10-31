@@ -1,7 +1,5 @@
 import { useRef, useState } from "react";
 import { motion, useScroll, useMotionValueEvent, MotionValue } from "framer-motion";
-import Link from "next/link";
-import { PopButton } from "@/components/ui/PopButton";
 
 type Scroll01Item = {
   title: string;
@@ -192,18 +190,6 @@ function ScrubbedItem({
         <p className="text-[#1F2937] text-xs sm:text-sm font-medium leading-relaxed my-2 line-clamp-3">
           {parsed.summary}
         </p>
-
-        {/* Footer / Action */}
-        <div className="pt-4 mt-3 border-t border-dashed border-gray-200 flex items-center justify-end">
-          <PopButton asChild color="yellow" size="default">
-            <Link
-              href="/login"
-              className="text-xs sm:text-sm font-black shadow-sm shrink-0 px-5"
-            >
-              <span>Lihat Proyek</span>
-            </Link>
-          </PopButton>
-        </div>
       </div>
     </article>
   );
@@ -286,16 +272,6 @@ export function Scroll01({ items, title, subtitle }: Readonly<Scroll01Props>) {
                       <p className="text-xs font-black text-[#063D2A]">{parsed.author} · {parsed.role}</p>
                     </div>
                     <p className="text-[#1F2937] text-xs text-center mt-2 leading-relaxed line-clamp-3 font-medium">{parsed.summary}</p>
-                    <div className="mt-3">
-                      <PopButton asChild color="yellow" size="default">
-                        <Link
-                          href="/login"
-                          className="text-xs sm:text-sm font-black shadow-sm shrink-0 px-5"
-                        >
-                          <span>Lihat Proyek</span>
-                        </Link>
-                      </PopButton>
-                    </div>
                   </motion.div>
                 );
               })}

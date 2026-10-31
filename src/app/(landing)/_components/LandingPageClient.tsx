@@ -124,25 +124,6 @@ export default function LandingPageClient({
     }
   })
 
-  const fallbackBootcamps = mappedBootcamps.length === 0 ? [{
-    type: 'BOOTCAMP',
-    badge: 'BOOTCAMP',
-    title: 'Bootcamp FTI Batch 1',
-    partner: 'Metro Institute × FTI Universitas Andalas',
-    batch: 'Batch 1',
-    description: 'Bootcamp komprehensif yang diselenggarakan oleh Metro Institute dan Fakultas Teknologi Informasi Universitas Andalas.',
-    thumbnailUrl: 'https://res.cloudinary.com/czmvfqaw/image/upload/v1791482069/metro-institute/admin-uploads/wl0zijrrup91xsympwxo.jpg',
-    points: [
-      'Live Session Bersama Mentor Expert',
-      'Kurikulum Berbasis Proyek Industri',
-      'E-Sertifikat Kelulusan Resmi',
-      'Portofolio Siap Kerja',
-    ],
-    schedule: 'Pendaftaran Dibuka',
-    price: 25000,
-    priceFormatted: 'Rp 25.000',
-    link: '/login?redirect=/mentee/bootcamp',
-  }] : []
 
   const mappedCourses = featuredCourses.map(c => ({
     type: 'MINI COURSE',
@@ -164,25 +145,6 @@ export default function LandingPageClient({
     link: `/login?redirect=/mentee/mini-course/${c.id}`, 
   }))
 
-  const fallbackCourses = mappedCourses.length === 0 ? [{
-    type: 'MINI COURSE',
-    badge: 'MINI COURSE',
-    title: 'Belajar Figma dari nol',
-    partner: 'Metro Institute',
-    batch: 'Self-Paced Course',
-    description: 'Kuasai skill teknologi spesifik dalam waktu singkat dengan studi kasus praktis dan bimbingan terstruktur.',
-    thumbnailUrl: 'https://res.cloudinary.com/czmvfqaw/image/upload/v1791528614/metro-institute/admin-uploads/wezorbsyv1opufuftoby.jpg',
-    points: [
-      'Video on Demand Berkualitas Tinggi',
-      'Akses Belajar Fleksibel Kapan Saja',
-      'E-Sertifikat Kelulusan Resmi',
-      'Praktik Mandiri & Studi Kasus Nyata',
-    ],
-    schedule: 'Pendaftaran Dibuka',
-    price: 500000,
-    priceFormatted: 'Rp 500.000',
-    link: '/login?redirect=/mentee/mini-course',
-  }] : []
 
   const mappedWebinars = featuredWebinars.map(w => {
     const now = new Date()
@@ -211,33 +173,11 @@ export default function LandingPageClient({
     }
   })
 
-  const fallbackWebinars = mappedWebinars.length === 0 ? [{
-    type: 'WEBINAR',
-    badge: 'WEBINAR & WORKSHOP',
-    title: 'Cara Tembus Kerja Di Unicorn',
-    partner: 'Metro Institute',
-    batch: 'Pendaftaran Sudah Ditutup',
-    description: 'Sesi webinar & workshop interaktif berkala bersama praktisi industri teknologi ternama.',
-    thumbnailUrl: 'https://res.cloudinary.com/czmvfqaw/image/upload/v1791718492/metro-institute/admin-uploads/nmoauggo8vbulpwxye0t.jpg',
-    points: [
-      'Speaker: Alex Pratama (Ex-Unicorn)',
-      'Live Session & Diskusi Interaktif',
-      'Rekaman & Materi Pembelajaran',
-      'E-Sertifikat Kehadiran Resmi',
-    ],
-    schedule: 'Pendaftaran Sudah Ditutup',
-    price: 0,
-    priceFormatted: 'Gratis',
-    link: '/login?redirect=/mentee/webinars',
-  }] : []
 
   const allProgramItems = [
     ...mappedBootcamps,
-    ...fallbackBootcamps,
     ...mappedCourses,
-    ...fallbackCourses,
     ...mappedWebinars,
-    ...fallbackWebinars,
   ]
   const activeProducts = allProgramItems.filter(p => {
     const tab = (activeTab || '').toUpperCase()
@@ -585,14 +525,14 @@ export default function LandingPageClient({
           >
             {activeProducts.length === 0 ? (
               /* ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ Empty state ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ */
-              <div className="flex flex-col items-center justify-center h-full min-h-[500px] gap-3 text-center px-6 py-24">
-                <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mb-2">
-                  <svg width="26" height="26" fill="none" stroke="#D1D5DB" strokeWidth="1.5" viewBox="0 0 24 24">
+              <div className="flex flex-col items-center justify-center h-full min-h-[360px] gap-3 text-center px-6 py-16 bg-gray-50/70 border border-dashed border-gray-200 rounded-[32px] my-4">
+                <div className="w-14 h-14 rounded-full bg-white shadow-sm border border-gray-100 flex items-center justify-center mb-1">
+                  <svg width="26" height="26" fill="none" stroke="#9CA3AF" strokeWidth="1.5" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
                   </svg>
                 </div>
-                <p className="text-gray-500 text-sm font-semibold">Program segera hadir</p>
-                <p className="text-gray-400 text-xs max-w-xs">Kami sedang menyiapkan program terbaik untuk kamu. Pantau terus ya!</p>
+                <p className="text-gray-700 text-sm font-semibold">Belum ada program untuk kategori ini</p>
+                <p className="text-gray-400 text-xs max-w-xs">Program baru akan segera dibuka. Pantau terus update terbaru dari kami!</p>
               </div>
             ) : (
               <>
