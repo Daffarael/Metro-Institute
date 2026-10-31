@@ -9,10 +9,10 @@ import { PopButton } from "@/components/ui/PopButton";
 export const INTERACTIVE_LINKS = [
   {
     heading: "Bootcamp",
-    subheading: "Program komprehensif 12 minggu siap kerja dari nol.",
+    subheading: "Program intensif bimbingan karir siap kerja dari nol.",
     imgSrc: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=800",
     category: "Intensif Siap Kerja",
-    tag1: "12 Minggu",
+    tag1: "Mentoring Intensif",
     tag2: "Portofolio Industri",
     buttonText: "Jelajahi Bootcamp",
     href: "/login",
@@ -49,7 +49,7 @@ const SERVICE_DEFAULTS: Record<string, {
   bootcamp: {
     imgSrc: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=800",
     category: "Intensif Siap Kerja",
-    tag1: "12 Minggu",
+    tag1: "Mentoring Intensif",
     tag2: "Portofolio Industri",
     buttonText: "Jelajahi Bootcamp",
   },

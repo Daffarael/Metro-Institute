@@ -72,7 +72,7 @@ export default function LandingPageClient({
       // ignore
     }
     return [
-      { heading: 'Bootcamp', subheading: 'Program komprehensif 12 minggu siap kerja dari nol.' },
+      { heading: 'Bootcamp', subheading: 'Program intensif bimbingan karir siap kerja dari nol.' },
       { heading: 'Mini Course', subheading: 'Kuasai skill teknologi spesifik dalam waktu singkat.' },
       { heading: 'Webinar & Workshop', subheading: 'Sesi live interaktif langsung bersama praktisi top industri.' },
     ]
