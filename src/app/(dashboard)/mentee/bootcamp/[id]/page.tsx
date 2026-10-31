@@ -392,7 +392,6 @@ export default function BootcampDetailPage() {
                     borderRadius: 16,
                     background: '#ffffff',
                     border: '2px solid #018556',
-                    boxShadow: '0 2px 8px rgba(1, 133, 86, 0.08)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
@@ -450,7 +449,6 @@ export default function BootcampDetailPage() {
                     borderRadius: 16,
                     background: '#ffffff',
                     border: '1.5px solid #cbd5e1',
-                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
                   }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 16, marginBottom: 16 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
@@ -464,7 +462,6 @@ export default function BootcampDetailPage() {
                           alignItems: 'center',
                           justifyContent: 'center',
                           flexShrink: 0,
-                          boxShadow: '0 2px 6px rgba(1, 133, 86, 0.25)',
                         }}>
                           <Lock size={20} color="#FAE653" strokeWidth={2.2} />
                         </div>
@@ -587,8 +584,7 @@ export default function BootcampDetailPage() {
                   borderRadius: 14,
                   overflow: 'hidden',
                   background: '#ffffff',
-                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.04)',
-                }}>
+                                  }}>
                   <div style={{
                     padding: '16px 22px',
                     borderBottom: '1.5px solid #cbd5e1',

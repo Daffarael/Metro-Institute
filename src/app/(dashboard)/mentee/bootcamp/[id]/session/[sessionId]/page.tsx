@@ -520,7 +520,6 @@ export default function BootcampLearningPlayerPage() {
                     borderRadius: 14,
                     background: '#ffffff',
                     border: '1.5px solid #cbd5e1',
-                    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.03)',
                   }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8, marginBottom: 8 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
