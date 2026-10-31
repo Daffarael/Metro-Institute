@@ -118,3 +118,13 @@
 .admin-panel-container .btn:not(:disabled):not(.no-anim):active {
   transform: scale(0.98);
 }
+
+/* Form controls, dropdowns, and comboboxes stay completely stable */
+.admin-panel-container .no-anim,
+.admin-panel-container [role="combobox"],
+.admin-panel-container .no-anim:hover,
+.admin-panel-container [role="combobox"]:hover,
+.admin-panel-container .no-anim:active,
+.admin-panel-container [role="combobox"]:active {
+  transform: none !important;
+}

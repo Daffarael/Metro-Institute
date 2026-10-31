@@ -55,9 +55,12 @@ export default function CleanCombobox({
   return (
     <div ref={containerRef} style={{ position: 'relative', width, minWidth: 160 }}>
 
-      {/* Trigger — button biasa, bukan div+input */}
+      {/* Trigger — no-anim prevents unwanted button scale in admin panels */}
       <button
         type="button"
+        role="combobox"
+        aria-expanded={isOpen}
+        className="no-anim"
         onClick={() => setIsOpen(o => !o)}
         suppressHydrationWarning
         style={{
@@ -66,14 +69,26 @@ export default function CleanCombobox({
           justifyContent: 'space-between',
           width: '100%',
           background: '#fff',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+          boxShadow: isOpen 
+            ? '0 0 0 2px rgba(1, 133, 86, 0.15), 0 1px 3px rgba(0,0,0,0.06)' 
+            : '0 1px 3px rgba(0,0,0,0.06)',
           borderRadius: 'var(--radius-md)',
           padding: '8px 12px',
           cursor: 'pointer',
           border: 'none',
           outline: 'none',
           gap: 8,
+          transform: 'none',
+          transition: 'background-color 0.15s ease, box-shadow 0.15s ease',
           ...style
+        }}
+        onMouseEnter={e => {
+          e.currentTarget.style.transform = 'none'
+          e.currentTarget.style.backgroundColor = '#fafafa'
+        }}
+        onMouseLeave={e => {
+          e.currentTarget.style.transform = 'none'
+          e.currentTarget.style.backgroundColor = '#fff'
         }}
       >
         <span style={{
@@ -153,6 +168,7 @@ function ComboboxDropdownItem({ label, isSelected, onClick }: { label: string; i
   return (
     <button
       type="button"
+      className="no-anim"
       onClick={e => { e.preventDefault(); onClick() }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -172,6 +188,7 @@ function ComboboxDropdownItem({ label, isSelected, onClick }: { label: string; i
         textAlign: 'left',
         transition: 'background 0.12s ease',
         outline: 'none',
+        transform: 'none',
       }}
     >
       {label}
@@ -190,6 +207,7 @@ function ClearDropdownItem({ onClick }: { onClick: () => void }) {
   return (
     <button
       type="button"
+      className="no-anim"
       onClick={e => { e.preventDefault(); onClick() }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -211,7 +229,8 @@ function ClearDropdownItem({ onClick }: { onClick: () => void }) {
         transition: 'all 150ms ease',
         outline: 'none',
         borderBottom: '1px solid var(--color-border-subtle)',
-        marginBottom: '4px'
+        marginBottom: '4px',
+        transform: 'none',
       }}
     >
       Hapus pilihan

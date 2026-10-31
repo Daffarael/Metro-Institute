@@ -52,9 +52,12 @@ export default function FieldMultiSelect({
   return (
     <div ref={containerRef} style={{ position: 'relative', width: '100%' }}>
 
-      {/* Trigger — persis gaya CleanCombobox */}
+      {/* Trigger — no-anim prevents scaling */}
       <button
         type="button"
+        role="combobox"
+        aria-expanded={open}
+        className="no-anim"
         onClick={() => setOpen(o => !o)}
         style={{
           display: 'flex',
@@ -63,7 +66,9 @@ export default function FieldMultiSelect({
           width: '100%',
           minHeight: 44,
           background: '#fff',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+          boxShadow: open
+            ? '0 0 0 2px rgba(1, 133, 86, 0.15), 0 1px 3px rgba(0,0,0,0.06)'
+            : '0 1px 3px rgba(0,0,0,0.06)',
           borderRadius: 12,
           padding: selectedOptions.length > 0 ? '8px 12px' : '10px 12px',
           cursor: 'pointer',
@@ -72,6 +77,16 @@ export default function FieldMultiSelect({
           gap: 8,
           flexWrap: 'wrap',
           textAlign: 'left',
+          transform: 'none',
+          transition: 'background-color 0.15s ease, box-shadow 0.15s ease',
+        }}
+        onMouseEnter={e => {
+          e.currentTarget.style.transform = 'none'
+          e.currentTarget.style.backgroundColor = '#fafafa'
+        }}
+        onMouseLeave={e => {
+          e.currentTarget.style.transform = 'none'
+          e.currentTarget.style.backgroundColor = '#fff'
         }}
       >
         {/* Selected badges or placeholder */}
@@ -140,7 +155,7 @@ export default function FieldMultiSelect({
         </div>
       </button>
 
-      {/* Dropdown — persis gaya CleanCombobox */}
+      {/* Dropdown */}
       <div style={{
         position: 'absolute',
         top: 'calc(100% + 4px)',
@@ -184,6 +199,7 @@ function DropdownItem({ label, isSelected, onClick }: { label: string; isSelecte
   return (
     <button
       type="button"
+      className="no-anim"
       onClick={e => { e.preventDefault(); onClick() }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -202,6 +218,7 @@ function DropdownItem({ label, isSelected, onClick }: { label: string; isSelecte
         cursor: 'pointer',
         textAlign: 'left',
         transition: 'background 0.12s ease',
+        transform: 'none',
       }}
     >
       {label}
