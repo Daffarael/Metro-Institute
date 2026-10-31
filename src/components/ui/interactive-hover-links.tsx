@@ -85,14 +85,14 @@ export function InteractiveHoverLinks({
   return (
     <section className="bg-white py-20 md:py-28 px-4 sm:px-6 lg:px-8 w-full">
       <div className="mx-auto max-w-7xl">
-        {/* Section Header (Centered) */}
+        {/* Section Header (Centered - Color synced with Karya Mentee: #063D2A & #1F2937) */}
         <div className="text-center max-w-3xl mx-auto mb-14 md:mb-20">
           <motion.h2 
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.4 }}
-            className="text-3xl md:text-5xl font-extrabold text-gray-900 tracking-tight"
+            className="text-3xl md:text-5xl font-black text-[#063D2A] tracking-tight leading-[1.15]"
           >
             {title}
           </motion.h2>
@@ -101,7 +101,7 @@ export function InteractiveHoverLinks({
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.4, delay: 0.1 }}
-            className="text-gray-500 text-base md:text-lg mt-3 mx-auto leading-relaxed"
+            className="text-[#1F2937] text-base md:text-lg mt-3 mx-auto leading-relaxed font-medium max-w-2xl"
           >
             {subtitle}
           </motion.p>
