@@ -165,7 +165,7 @@ export default function BootcampListPage() {
   )
 }
 
-// Hanging Signboard Component - Mirip desain & animasi 'Gratis' di Landing Page Ebook
+// Hanging Signboard Component - Compact, Mirip desain & animasi 'Gratis' di Landing Page Ebook
 function HangingSignboard({ status }: { status: string }) {
   const isOpen = status === 'OPEN'
   const isOngoing = status === 'ONGOING'
@@ -181,67 +181,67 @@ function HangingSignboard({ status }: { status: string }) {
     <motion.div
       animate={{ rotate: [-3.5, 3.5, -3.5] }}
       transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
-      style={{ transformOrigin: '50% 8px' }}
+      style={{ transformOrigin: '50% 6px' }}
       whileHover={{ scale: 1.05, rotate: 6, transition: { duration: 0.3 } }}
-      className="origin-top select-none cursor-pointer drop-shadow-md"
+      className="origin-top select-none cursor-pointer drop-shadow-sm flex-shrink-0"
     >
       <svg
-        width="120"
-        height="66"
-        viewBox="0 0 160 90"
+        width="92"
+        height="46"
+        viewBox="0 0 140 70"
         xmlns="http://www.w3.org/2000/svg"
         style={{ overflow: 'visible', display: 'block' }}
       >
         {/* Top Peg */}
-        <circle cx="80" cy="8" r="5" fill="#F3F4F6" stroke="#D1D5DB" strokeWidth="1.5" />
-        <circle cx="80" cy="8" r="2" fill="#9CA3AF" />
+        <circle cx="70" cy="6" r="4.5" fill="#F3F4F6" stroke="#D1D5DB" strokeWidth="1.2" />
+        <circle cx="70" cy="6" r="1.8" fill="#9CA3AF" />
 
         {/* Strings */}
-        <line x1="80" y1="8" x2="32" y2="34" stroke="#9CA3AF" strokeWidth="2" />
-        <line x1="80" y1="8" x2="128" y2="34" stroke="#9CA3AF" strokeWidth="2" />
+        <line x1="70" y1="6" x2="24" y2="22" stroke="#9CA3AF" strokeWidth="1.8" />
+        <line x1="70" y1="6" x2="116" y2="22" stroke="#9CA3AF" strokeWidth="1.8" />
 
         {/* Board Outer */}
-        <rect x="8" y="26" width="144" height="58" rx="8" fill={bg} stroke={stroke} strokeWidth="1.5" />
+        <rect x="6" y="16" width="128" height="50" rx="6" fill={bg} stroke={stroke} strokeWidth="1.2" />
 
         {/* Board Inner Details (Silver border) */}
-        <rect x="13" y="31" width="134" height="48" rx="5" fill="none" stroke="#F3F4F6" strokeWidth="1" strokeOpacity="0.9" />
+        <rect x="10" y="20" width="120" height="42" rx="4" fill="none" stroke="#F3F4F6" strokeWidth="0.8" strokeOpacity="0.9" />
 
         {/* Corner Accents */}
-        <path d="M 16 36 A 3 3 0 0 1 19 33" fill="none" stroke="#F3F4F6" strokeWidth="1" strokeOpacity="0.9" />
-        <path d="M 144 36 A 3 3 0 0 0 141 33" fill="none" stroke="#F3F4F6" strokeWidth="1" strokeOpacity="0.9" />
-        <path d="M 16 74 A 3 3 0 0 0 19 77" fill="none" stroke="#F3F4F6" strokeWidth="1" strokeOpacity="0.9" />
-        <path d="M 144 74 A 3 3 0 0 1 141 77" fill="none" stroke="#F3F4F6" strokeWidth="1" strokeOpacity="0.9" />
+        <path d="M 13 25 A 2.5 2.5 0 0 1 15.5 22.5" fill="none" stroke="#F3F4F6" strokeWidth="0.8" strokeOpacity="0.9" />
+        <path d="M 127 25 A 2.5 2.5 0 0 0 124.5 22.5" fill="none" stroke="#F3F4F6" strokeWidth="0.8" strokeOpacity="0.9" />
+        <path d="M 13 57 A 2.5 2.5 0 0 0 15.5 59.5" fill="none" stroke="#F3F4F6" strokeWidth="0.8" strokeOpacity="0.9" />
+        <path d="M 127 57 A 2.5 2.5 0 0 1 124.5 59.5" fill="none" stroke="#F3F4F6" strokeWidth="0.8" strokeOpacity="0.9" />
 
         {/* Screws/Pegs */}
-        <circle cx="32" cy="36" r="3" fill="#F3F4F6" stroke="#D1D5DB" strokeWidth="1" />
-        <circle cx="32" cy="36" r="1" fill="#9CA3AF" />
-        <circle cx="128" cy="36" r="3" fill="#F3F4F6" stroke="#D1D5DB" strokeWidth="1" />
-        <circle cx="128" cy="36" r="1" fill="#9CA3AF" />
+        <circle cx="24" cy="23" r="2.5" fill="#F3F4F6" stroke="#D1D5DB" strokeWidth="0.8" />
+        <circle cx="24" cy="23" r="1" fill="#9CA3AF" />
+        <circle cx="116" cy="23" r="2.5" fill="#F3F4F6" stroke="#D1D5DB" strokeWidth="0.8" />
+        <circle cx="116" cy="23" r="1" fill="#9CA3AF" />
 
         {/* Subtitle */}
         <text
-          x="80"
-          y="48"
+          x="70"
+          y="34"
           fontFamily="Georgia, 'Times New Roman', serif"
-          fontSize="8.5"
+          fontSize="7.5"
           fill={subColor}
           textAnchor="middle"
           fontWeight="bold"
-          letterSpacing="1.5"
+          letterSpacing="1.2"
         >
           {subText}
         </text>
 
         {/* Main Text */}
         <text
-          x="80"
-          y="68"
+          x="70"
+          y="51"
           fontFamily="Georgia, 'Times New Roman', serif"
-          fontSize="16"
+          fontSize="14"
           fill="#FFFFFF"
           textAnchor="middle"
           fontWeight="bold"
-          letterSpacing="2"
+          letterSpacing="1.5"
         >
           {mainText}
         </text>
@@ -299,22 +299,42 @@ function BootcampCard({ bootcamp }: { bootcamp: Bootcamp }) {
         {/* Content Area */}
         <div style={{ padding: '16px 20px 20px', display: 'flex', flexDirection: 'column', flex: 1 }}>
           
-          {/* Hanging Signboard - Desain & Animasi Mirip Ebook Landing Page */}
-          {bootcamp.batchStatus && (
-            <div style={{ marginBottom: 12, display: 'flex', justifyContent: 'flex-start' }}>
-              <HangingSignboard status={bootcamp.batchStatus} />
+          {/* Header Row: Field & Level (Left) · Hanging Signboard (Right) */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 8,
+            marginBottom: 8,
+            minHeight: 46,
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0, overflow: 'hidden' }}>
+              <span style={{
+                fontSize: '12px',
+                fontWeight: 600,
+                color: 'var(--color-text-secondary)',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}>
+                {FIELD_LABELS[bootcamp.field]}
+              </span>
+              <span style={{ fontSize: '12px', color: 'var(--color-border)', lineHeight: 0, flexShrink: 0 }}>•</span>
+              <span style={{
+                fontSize: '12px',
+                fontWeight: 500,
+                color: 'var(--color-text-tertiary)',
+                whiteSpace: 'nowrap',
+                flexShrink: 0,
+              }}>
+                {LEVEL_LABELS[bootcamp.level]}
+              </span>
             </div>
-          )}
 
-          {/* Meta: Field · Level */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-            <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-secondary)' }}>
-              {FIELD_LABELS[bootcamp.field]}
-            </span>
-            <span style={{ fontSize: '14px', color: 'var(--color-border)', lineHeight: 0 }}>•</span>
-            <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--color-text-tertiary)' }}>
-              {LEVEL_LABELS[bootcamp.level]}
-            </span>
+            {/* Hanging Signboard - Compact right-aligned */}
+            {bootcamp.batchStatus && (
+              <HangingSignboard status={bootcamp.batchStatus} />
+            )}
           </div>
 
           {/* Title */}
