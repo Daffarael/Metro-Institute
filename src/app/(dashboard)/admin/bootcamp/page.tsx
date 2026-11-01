@@ -358,9 +358,9 @@ function BootcampModal({
           </div>
 
           {/* Status & Template Sertifikat */}
-          <div className={isEdit ? "grid-cols-2" : ""} style={{ display: 'grid', gridTemplateColumns: isEdit ? '' : '1fr', gap: '16px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isEdit ? 'repeat(2, minmax(0, 1fr))' : '1fr', gap: '16px' }}>
             {isEdit && (
-              <div>
+              <div style={{ minWidth: 0 }}>
                 <label style={labelStyle}>Status Publikasi</label>
                 <Controller
                   control={control}
@@ -387,7 +387,7 @@ function BootcampModal({
                   }}
                 />
                 {!bootcamp?.hasCurriculum && (
-                  <p style={{ fontSize: '12px', color: '#64748b', marginTop: 6, whiteSpace: 'nowrap' }}>
+                  <p style={{ fontSize: '12px', color: '#64748b', marginTop: 6, lineHeight: 1.4 }}>
                     Tambahkan materi di{' '}
                     {bootcamp?.id ? (
                       <Link 
@@ -407,7 +407,7 @@ function BootcampModal({
               </div>
             )}
 
-            <div>
+            <div style={{ minWidth: 0 }}>
               <label style={labelStyle}>Template E-Sertifikat Kelulusan</label>
               <Controller
                 control={control}
