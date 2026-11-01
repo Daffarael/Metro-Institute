@@ -452,8 +452,8 @@ function SortableSessionItem({ session, setDeleteTarget }: { session: BootcampSe
       <div {...attributes} {...listeners} style={{ cursor: 'grab', display: 'flex', padding: 4, borderRadius: 4 }}>
         <GripVertical size={16} color="var(--color-text-tertiary)" />
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, borderRadius: 8, background: typeConfig.bg, color: typeConfig.color, border: typeConfig.border || 'none', flexShrink: 0 }}>
-        <Icon size={16} strokeWidth={2.4} />
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, borderRadius: 'var(--radius-md)', background: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-text-secondary)', flexShrink: 0 }}>
+        <Icon size={16} strokeWidth={2} />
       </div>
       <span style={{ flex: 1, fontSize: 'var(--text-sm)', fontWeight: 500 }}>{session.title}</span>
       <span style={{ padding: '4px 12px', borderRadius: 'var(--radius-full)', background: typeConfig.bg, color: typeConfig.color, border: typeConfig.border || 'none', fontSize: '11px', fontWeight: 800, letterSpacing: '0.03em' }}>
