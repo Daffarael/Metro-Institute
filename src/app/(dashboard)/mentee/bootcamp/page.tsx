@@ -168,14 +168,43 @@ export default function BootcampListPage() {
 // Hanging Signboard Component - Compact, Mirip desain & animasi 'Gratis' di Landing Page Ebook
 function HangingSignboard({ status }: { status: string }) {
   const isOpen = status === 'OPEN'
+  const isClosed = status === 'CLOSED'
   const isOngoing = status === 'ONGOING'
   const isComingSoon = status === 'COMING_SOON'
 
-  const bg = isOpen ? '#063D2A' : isOngoing ? '#1E293B' : isComingSoon ? '#1E1B4B' : '#450A0A'
-  const stroke = isOpen ? '#018556' : isOngoing ? '#475467' : isComingSoon ? '#6366F1' : '#DC2626'
-  const subText = isOpen ? 'PENDAFTARAN' : isOngoing ? 'BATCH' : isComingSoon ? 'BATCH' : 'PENDAFTARAN'
-  const mainText = isOpen ? 'DIBUKA' : isOngoing ? 'BERJALAN' : isComingSoon ? 'SEGERA' : 'DITUTUP'
-  const subColor = isOpen ? '#D1FAE5' : isOngoing ? '#94A3B8' : isComingSoon ? '#C7D2FE' : '#FCA5A5'
+  // Konfigurasi visual & teks untuk setiap status (OPEN, CLOSED, COMING_SOON, ONGOING)
+  const config = isClosed
+    ? {
+        bg: '#450A0A',
+        stroke: '#DC2626',
+        subText: 'PENDAFTARAN',
+        mainText: 'DITUTUP',
+        subColor: '#FECACA',
+      }
+    : isComingSoon
+    ? {
+        bg: '#1E1B4B',
+        stroke: '#6366F1',
+        subText: 'SEGERA',
+        mainText: 'DATANG',
+        subColor: '#C7D2FE',
+      }
+    : isOngoing
+    ? {
+        bg: '#0F172A',
+        stroke: '#0284C7',
+        subText: 'SEDANG',
+        mainText: 'BERJALAN',
+        subColor: '#BAE6FD',
+      }
+    : {
+        // Default OPEN
+        bg: '#063D2A',
+        stroke: '#018556',
+        subText: 'PENDAFTARAN',
+        mainText: 'DIBUKA',
+        subColor: '#D1FAE5',
+      }
 
   return (
     <motion.div
@@ -201,7 +230,7 @@ function HangingSignboard({ status }: { status: string }) {
         <line x1="70" y1="6" x2="116" y2="22" stroke="#9CA3AF" strokeWidth="1.8" />
 
         {/* Board Outer */}
-        <rect x="6" y="16" width="128" height="50" rx="6" fill={bg} stroke={stroke} strokeWidth="1.2" />
+        <rect x="6" y="16" width="128" height="50" rx="6" fill={config.bg} stroke={config.stroke} strokeWidth="1.2" />
 
         {/* Board Inner Details (Silver border) */}
         <rect x="10" y="20" width="120" height="42" rx="4" fill="none" stroke="#F3F4F6" strokeWidth="0.8" strokeOpacity="0.9" />
@@ -224,12 +253,12 @@ function HangingSignboard({ status }: { status: string }) {
           y="34"
           fontFamily="Georgia, 'Times New Roman', serif"
           fontSize="7.5"
-          fill={subColor}
+          fill={config.subColor}
           textAnchor="middle"
           fontWeight="bold"
           letterSpacing="1.2"
         >
-          {subText}
+          {config.subText}
         </text>
 
         {/* Main Text */}
@@ -243,7 +272,7 @@ function HangingSignboard({ status }: { status: string }) {
           fontWeight="bold"
           letterSpacing="1.5"
         >
-          {mainText}
+          {config.mainText}
         </text>
       </svg>
     </motion.div>
