@@ -431,7 +431,7 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
 }
 
 // ─── Sortable Session Item ─────────────────────────────────
-function SortableSessionItem({ session, setDeleteTarget }: { session: BootcampSession; setDeleteTarget: any }) {
+function SortableSessionItem({ session, index, setDeleteTarget }: { session: BootcampSession; index?: number; setDeleteTarget: any }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: `session-${session.id}`,
     data: { type: 'session', session }
@@ -445,32 +445,64 @@ function SortableSessionItem({ session, setDeleteTarget }: { session: BootcampSe
   }
 
   const typeConfig = SESSION_TYPE_COLORS[session.type] ?? { bg: 'var(--color-surface)', color: 'var(--color-text-secondary)', border: '1px solid var(--color-border)', icon: LayoutTemplate }
-  const Icon = typeConfig.icon
 
   return (
-    <div ref={setNodeRef} style={{ ...style, display: 'flex', alignItems: 'center', gap: 'var(--space-3)', padding: 'var(--space-3) var(--space-4)', borderBottom: '1px solid var(--color-border-subtle)', background: isDragging ? 'var(--color-bg)' : 'transparent', transition: 'background 0.2s' }}>
+    <div
+      ref={setNodeRef}
+      style={{
+        ...style,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 'var(--space-3)',
+        padding: 'var(--space-3) var(--space-4)',
+        borderBottom: '1px solid var(--color-border-subtle)',
+        background: isDragging ? 'var(--color-bg)' : 'transparent',
+        transition: 'background var(--transition-fast)'
+      }}
+      onMouseEnter={e => { if (!isDragging) e.currentTarget.style.background = 'var(--color-bg)' }}
+      onMouseLeave={e => { if (!isDragging) e.currentTarget.style.background = 'transparent' }}
+    >
       <div {...attributes} {...listeners} style={{ cursor: 'grab', display: 'flex', padding: 4, borderRadius: 4 }}>
-        <GripVertical size={16} color="var(--color-text-tertiary)" />
+        <GripVertical size={16} color="var(--color-text-tertiary)" style={{ flexShrink: 0 }} />
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, borderRadius: 'var(--radius-md)', background: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-text-secondary)', flexShrink: 0 }}>
-        <Icon size={16} strokeWidth={2} />
-      </div>
+      {index !== undefined && (
+        <span style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-tertiary)', width: 24, textAlign: 'center', fontWeight: 700 }}>
+          {index + 1}
+        </span>
+      )}
       <span style={{ flex: 1, fontSize: 'var(--text-sm)', fontWeight: 500 }}>{session.title}</span>
-      <span style={{ padding: '4px 12px', borderRadius: 'var(--radius-full)', background: typeConfig.bg, color: typeConfig.color, border: typeConfig.border || '1px solid var(--color-border)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.03em' }}>
+      <span style={{ padding: '3px 10px', borderRadius: 'var(--radius-full)', background: typeConfig.bg, color: typeConfig.color, border: typeConfig.border || '1px solid var(--color-border)', fontSize: '11px', fontWeight: 700 }}>
         {session.type}
       </span>
+      {session.isPreview && (
+        <span style={{ padding: '2px 8px', borderRadius: 'var(--radius-full)', background: 'var(--color-accent-light)', color: '#856404', fontSize: '11px', fontWeight: 600 }}>
+          Preview
+        </span>
+      )}
 
-      <button onClick={() => setDeleteTarget({ type: 'session', id: session.id, edit: true, session })} style={{ width: 28, height: 28, borderRadius: 6, border: 'none', background: '#018556', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFFFFF', boxShadow: '0 1px 2px rgba(1,133,86,0.2)', transition: 'all 0.15s ease' }} onMouseOver={e => { e.currentTarget.style.background = '#016b44' }} onMouseOut={e => { e.currentTarget.style.background = '#018556' }} title="Edit Materi">
-        <Edit size={14} strokeWidth={2.2} />
+      <button
+        onClick={() => setDeleteTarget({ type: 'session', id: session.id, edit: true, session })}
+        style={{ width: 28, height: 28, borderRadius: 'var(--radius-md)', border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-tertiary)', transition: 'color 0.15s ease' }}
+        onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-primary)')}
+        onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-tertiary)')}
+        title="Edit Materi"
+      >
+        <Edit size={15} />
       </button>
-      <button onClick={() => setDeleteTarget({ type: 'session', id: session.id })} style={{ width: 28, height: 28, borderRadius: 6, border: 'none', background: '#DC2626', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFFFFF', boxShadow: '0 1px 2px rgba(220,38,38,0.2)', transition: 'all 0.15s ease' }} onMouseOver={e => { e.currentTarget.style.background = '#B91C1C' }} onMouseOut={e => { e.currentTarget.style.background = '#DC2626' }} title="Hapus Materi">
-        <Trash2 size={14} strokeWidth={2.2} />
+
+      <button
+        onClick={() => setDeleteTarget({ type: 'session', id: session.id })}
+        style={{ width: 28, height: 28, borderRadius: 'var(--radius-md)', border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-tertiary)', transition: 'color 0.15s ease' }}
+        onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-error)')}
+        onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-tertiary)')}
+        title="Hapus Materi"
+      >
+        <Trash2 size={15} />
       </button>
     </div>
   )
 }
 
-// ─── Sortable Chapter Item ─────────────────────────────────
 function SortableChapterItem({ chapter, bootcampId, setDeleteTarget, onAddSession }: any) {
   const [expanded, setExpanded] = useState(true)
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -505,8 +537,8 @@ function SortableChapterItem({ chapter, bootcampId, setDeleteTarget, onAddSessio
         <button onClick={() => onAddSession(chapter.id)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', background: 'var(--color-surface)', fontSize: '12px', fontWeight: 600, cursor: 'pointer', color: 'var(--color-text-secondary)', transition: 'all 0.2s' }} onMouseOver={e => { e.currentTarget.style.color = 'var(--color-text-primary)'; e.currentTarget.style.borderColor = 'var(--color-border-heavy)' }} onMouseOut={e => { e.currentTarget.style.color = 'var(--color-text-secondary)'; e.currentTarget.style.borderColor = 'var(--color-border)' }}>
           <Plus size={14} /> Tambah
         </button>
-        <button onClick={() => setDeleteTarget({ type: 'chapter', id: chapter.id })} style={{ width: 28, height: 28, borderRadius: 6, border: 'none', background: '#DC2626', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFFFFF', boxShadow: '0 1px 2px rgba(220,38,38,0.2)', transition: 'all 0.15s ease' }} onMouseOver={e => { e.currentTarget.style.background = '#B91C1C' }} onMouseOut={e => { e.currentTarget.style.background = '#DC2626' }} title="Hapus Bab">
-          <Trash2 size={14} strokeWidth={2.2} />
+        <button onClick={() => setDeleteTarget({ type: 'chapter', id: chapter.id })} style={{ width: 28, height: 28, borderRadius: 'var(--radius-md)', border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-tertiary)', transition: 'color 0.15s ease' }} onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-error)')} onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-tertiary)')} title="Hapus Bab">
+          <Trash2 size={15} />
         </button>
       </div>
 
@@ -521,8 +553,8 @@ function SortableChapterItem({ chapter, bootcampId, setDeleteTarget, onAddSessio
                     Belum ada materi di bab ini. Klik tombol "Tambah" di atas.
                   </div>
                 ) : (
-                  chapter.sessions.map((session: any) => (
-                    <SortableSessionItem key={`session-${session.id}`} session={session} setDeleteTarget={setDeleteTarget} />
+                  chapter.sessions.map((session: any, index: number) => (
+                    <SortableSessionItem key={`session-${session.id}`} session={session} index={index} setDeleteTarget={setDeleteTarget} />
                   ))
                 )}
               </SortableContext>
