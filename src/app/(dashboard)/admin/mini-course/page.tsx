@@ -526,15 +526,7 @@ export default function AdminMiniCoursePage() {
                     <td style={{ padding: 'var(--space-3) var(--space-4)', fontWeight: 600, maxWidth: 220 }}>
                       <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.title}</div>
                       {c.descShort && <div style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.descShort}</div>}
-                      {(c as any).totalSessions !== undefined && (
-                        <div style={{ fontSize: '11px', marginTop: 3 }}>
-                          {(c as any).totalSessions > 0 ? (
-                            <span style={{ color: 'var(--color-text-tertiary)', fontWeight: 400 }}>{(c as any).totalChapters || 1} Bab • {(c as any).totalSessions} Materi</span>
-                          ) : (
-                            <span style={{ color: '#ef4444', fontWeight: 500 }}>Belum ada kurikulum</span>
-                          )}
-                        </div>
-                      )}
+
                     </td>
                     <td style={{ padding: 'var(--space-3) var(--space-4)', color: 'var(--color-text-secondary)', whiteSpace: 'nowrap' }}>
                       {FIELD_LABELS[c.field] ?? c.field}
