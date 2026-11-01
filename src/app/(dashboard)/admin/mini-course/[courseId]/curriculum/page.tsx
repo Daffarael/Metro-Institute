@@ -22,10 +22,10 @@ interface CourseSession {
 }
 interface MiniCourse { id: string; title: string }
 
-const SESSION_TYPE_COLORS: Record<string, { bg: string; color: string }> = {
-  VIDEO:     { bg: '#EFF6FF', color: '#2563EB' },
-  MATERIAL:  { bg: '#FEF3C7', color: '#D97706' },
-  QUIZ: { bg: '#F5F3FF', color: '#7C3AED' },
+const SESSION_TYPE_COLORS: Record<string, { bg: string; color: string; border?: string }> = {
+  VIDEO:     { bg: '#DCFCE7', color: '#018556', border: '1.5px solid #018556' },
+  MATERIAL:  { bg: '#FEF08A', color: '#854D0E', border: '1.5px solid #FACC15' },
+  QUIZ:      { bg: '#FEE2E2', color: '#DC2626', border: '1.5px solid #DC2626' },
 }
 
 const inputStyle: React.CSSProperties = {
@@ -418,7 +418,7 @@ export default function MiniCourseCurriculumPage() {
                   <GripVertical size={16} color="var(--color-text-tertiary)" style={{ cursor: 'grab', flexShrink: 0 }} />
                   <span style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-tertiary)', width: 24, textAlign: 'center', fontWeight: 700 }}>{i + 1}</span>
                   <span style={{ flex: 1, fontSize: 'var(--text-sm)', fontWeight: 500 }}>{s.title}</span>
-                  <span style={{ padding: '2px 8px', borderRadius: 'var(--radius-full)', background: tc.bg, color: tc.color, fontSize: '11px', fontWeight: 600 }}>{s.type}</span>
+                  <span style={{ padding: '3px 10px', borderRadius: 'var(--radius-full)', background: tc.bg, color: tc.color, border: tc.border || 'none', fontSize: '11px', fontWeight: 800 }}>{s.type}</span>
                   {s.isFreePreview && <span style={{ padding: '2px 8px', borderRadius: 'var(--radius-full)', background: 'var(--color-accent-light)', color: '#856404', fontSize: '11px', fontWeight: 600 }}>Preview</span>}
                   
                   <button onClick={() => setEditSession(s)} style={{ width: 28, height: 28, borderRadius: 'var(--radius-md)', border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-tertiary)' }}

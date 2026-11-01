@@ -47,9 +47,9 @@ interface Bootcamp { id: string; name?: string; title?: string }
 
 const SESSION_TYPE_COLORS: Record<string, { bg: string; color: string; border?: string; icon: any }> = {
   LIVE:      { bg: '#FEF08A', color: '#018556', border: '1.5px solid #FACC15', icon: Video },
-  VIDEO:     { bg: '#BFDBFE', color: '#1D4ED8', border: '1.5px solid #3B82F6', icon: Video },
-  MATERIAL:  { bg: '#FDE68A', color: '#B45309', border: '1.5px solid #F59E0B', icon: FileText },
-  QUIZ:      { bg: '#DDD6FE', color: '#6D28D9', border: '1.5px solid #8B5CF6', icon: Target },
+  MATERIAL:  { bg: '#FEF08A', color: '#854D0E', border: '1.5px solid #FACC15', icon: FileText },
+  VIDEO:     { bg: '#DCFCE7', color: '#018556', border: '1.5px solid #018556', icon: Video },
+  QUIZ:      { bg: '#FEE2E2', color: '#DC2626', border: '1.5px solid #DC2626', icon: Target },
 }
 
 const inputStyle: React.CSSProperties = {
@@ -283,8 +283,8 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
                   {quizOptions.map((q, qIndex) => (
                     <div key={q.id} style={{ background: '#fff', padding: '14px', borderRadius: '10px', border: '1px solid var(--color-border)', position: 'relative' }}>
                       {quizOptions.length > 1 && (
-                        <button type="button" onClick={() => setQuizOptions(quizOptions.filter((_, i) => i !== qIndex))} style={{ position: 'absolute', top: 10, right: 10, background: 'rgba(255,59,48,0.1)', color: 'var(--color-error)', border: 'none', borderRadius: '6px', width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-                          <Trash2 size={12} />
+                        <button type="button" onClick={() => setQuizOptions(quizOptions.filter((_, i) => i !== qIndex))} style={{ position: 'absolute', top: 10, right: 10, background: '#DC2626', color: '#FFFFFF', border: 'none', borderRadius: '6px', width: 26, height: 26, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 4px rgba(220,38,38,0.25)', transition: 'all 0.2s ease' }} onMouseOver={e => { e.currentTarget.style.background = '#B91C1C' }} onMouseOut={e => { e.currentTarget.style.background = '#DC2626' }} title="Hapus Soal">
+                          <Trash2 size={13} strokeWidth={2.5} />
                         </button>
                       )}
                       <h4 style={{ fontSize: '12.5px', fontWeight: 700, marginBottom: 10, color: 'var(--color-text-primary)' }}>Soal {qIndex + 1}</h4>
@@ -460,11 +460,11 @@ function SortableSessionItem({ session, setDeleteTarget }: { session: BootcampSe
         {session.type}
       </span>
 
-      <button onClick={() => setDeleteTarget({ type: 'session', id: session.id, edit: true, session })} style={{ width: 32, height: 32, borderRadius: 'var(--radius-md)', border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-secondary)' }} title="Edit Materi">
-        <Edit size={15} />
+      <button onClick={() => setDeleteTarget({ type: 'session', id: session.id, edit: true, session })} style={{ width: 32, height: 32, borderRadius: 'var(--radius-md)', border: '1px solid #018556', background: '#F0FDF4', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#018556', transition: 'all 0.2s ease' }} onMouseOver={e => { e.currentTarget.style.background = '#DCFCE7' }} onMouseOut={e => { e.currentTarget.style.background = '#F0FDF4' }} title="Edit Materi">
+        <Edit size={15} strokeWidth={2.2} />
       </button>
-      <button onClick={() => setDeleteTarget({ type: 'session', id: session.id })} style={{ width: 32, height: 32, borderRadius: 'var(--radius-md)', border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-tertiary)' }} title="Hapus Materi">
-        <Trash2 size={15} />
+      <button onClick={() => setDeleteTarget({ type: 'session', id: session.id })} style={{ width: 32, height: 32, borderRadius: 'var(--radius-md)', border: '1px solid #DC2626', background: '#FEF2F2', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#DC2626', transition: 'all 0.2s ease' }} onMouseOver={e => { e.currentTarget.style.background = '#FEE2E2' }} onMouseOut={e => { e.currentTarget.style.background = '#FEF2F2' }} title="Hapus Materi">
+        <Trash2 size={15} strokeWidth={2.2} />
       </button>
     </div>
   )
@@ -502,11 +502,11 @@ function SortableChapterItem({ chapter, bootcampId, setDeleteTarget, onAddSessio
         <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-secondary)', background: 'var(--color-surface)', padding: '4px 10px', borderRadius: 'var(--radius-full)', border: '1px solid var(--color-border-subtle)' }}>
           {chapter.sessions.length} Materi
         </span>
-        <button onClick={() => onAddSession(chapter.id)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', background: 'var(--color-surface)', fontSize: '12px', fontWeight: 600, cursor: 'pointer', color: 'var(--color-text-secondary)', transition: 'all 0.2s' }} onMouseOver={e => { e.currentTarget.style.color = 'var(--color-text-primary)'; e.currentTarget.style.borderColor = 'var(--color-border-heavy)' }} onMouseOut={e => { e.currentTarget.style.color = 'var(--color-text-secondary)'; e.currentTarget.style.borderColor = 'var(--color-border)' }}>
-          <Plus size={14} /> Tambah
+        <button onClick={() => onAddSession(chapter.id)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 'var(--radius-md)', border: '1.5px solid #018556', background: '#F0FDF4', fontSize: '12px', fontWeight: 700, cursor: 'pointer', color: '#018556', transition: 'all 0.2s' }} onMouseOver={e => { e.currentTarget.style.background = '#DCFCE7' }} onMouseOut={e => { e.currentTarget.style.background = '#F0FDF4' }}>
+          <Plus size={14} strokeWidth={2.5} /> Tambah
         </button>
-        <button onClick={() => setDeleteTarget({ type: 'chapter', id: chapter.id })} style={{ width: 30, height: 30, borderRadius: 'var(--radius-md)', border: '1px solid transparent', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-tertiary)', transition: 'all 0.2s' }} title="Hapus Bab" onMouseOver={e => { e.currentTarget.style.color = 'var(--color-error)'; e.currentTarget.style.background = '#FEE2E2' }} onMouseOut={e => { e.currentTarget.style.color = 'var(--color-text-tertiary)'; e.currentTarget.style.background = 'transparent' }}>
-          <Trash2 size={15} />
+        <button onClick={() => setDeleteTarget({ type: 'chapter', id: chapter.id })} style={{ width: 30, height: 30, borderRadius: 'var(--radius-md)', border: '1px solid #DC2626', background: '#FEF2F2', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#DC2626', transition: 'all 0.2s' }} title="Hapus Bab" onMouseOver={e => { e.currentTarget.style.background = '#FEE2E2' }} onMouseOut={e => { e.currentTarget.style.background = '#FEF2F2' }}>
+          <Trash2 size={15} strokeWidth={2.2} />
         </button>
       </div>
 
