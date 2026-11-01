@@ -620,15 +620,6 @@ export default function AdminBootcampPage() {
                     </td>
                     <td style={{ padding: 'var(--space-3) var(--space-4)', fontWeight: 600, minWidth: 220 }}>
                       <div style={{ color: 'var(--color-text-primary)', lineHeight: 1.4 }}>{b.name}</div>
-                      {b.totalSessions !== undefined && (
-                        <div style={{ fontSize: '11px', marginTop: 3 }}>
-                          {b.totalSessions > 0 ? (
-                            <span style={{ color: 'var(--color-text-tertiary)', fontWeight: 400 }}>{b.totalChapters || 1} Bab • {b.totalSessions} Sesi</span>
-                          ) : (
-                            <span style={{ color: '#ef4444', fontWeight: 500 }}>Belum ada silabus</span>
-                          )}
-                        </div>
-                      )}
                     </td>
                     <td style={{ padding: 'var(--space-3) var(--space-4)', color: 'var(--color-text-secondary)', whiteSpace: 'nowrap' }}>
                       <div style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>{b.fields.map(f => FIELD_LABELS[f] ?? f).join(', ')}</div>
