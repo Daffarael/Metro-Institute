@@ -166,11 +166,13 @@ export default function BootcampDetailPage() {
   if (isLoading) return (
     <div style={{ maxWidth: 960, margin: '0 auto' }}>
       <div className="skeleton" style={{ height: 300, borderRadius: 16, marginBottom: 'var(--space-6)' }} />
-      <div className="detail-layout-grid" style={{ display: 'grid', gap: 'var(--space-6)' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+      <div className="detail-layout-grid">
+        <div className="detail-hero" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
           {Array.from({ length: 4 }).map((_, i) => <div key={i} className="skeleton" style={{ height: 80, borderRadius: 12 }} />)}
         </div>
-        <div className="skeleton" style={{ height: 380, borderRadius: 16 }} />
+        <div className="detail-sidebar">
+          <div className="skeleton" style={{ height: 380, borderRadius: 16 }} />
+        </div>
       </div>
     </div>
   )
@@ -183,10 +185,10 @@ export default function BootcampDetailPage() {
   return (
     <div style={{ maxWidth: 1100, margin: '0 auto' }} className="animate-fade-in">
       {/* Main layout */}
-      <div className="detail-layout-grid" style={{ display: 'grid', gap: 48 }}>
+            <div className="detail-layout-grid">
         
-        {/* ── LEFT ──────────────────────────────────────── */}
-        <div>
+        {/* ── HERO (Title, Meta, Badges) ────────────────── */}
+        <div className="detail-hero">
           {/* Hero */}
           <div style={{ marginBottom: 'var(--space-8)' }}>
             {/* Breadcrumb */}
@@ -194,18 +196,19 @@ export default function BootcampDetailPage() {
               display: 'flex', alignItems: 'center', gap: 6,
               marginBottom: 28, fontSize: '13px',
               color: 'var(--color-text-tertiary)',
+              minWidth: 0,
             }}>
-              <Link href={ROUTES.BOOTCAMP_LIST} style={{ color: 'var(--color-text-secondary)', textDecoration: 'none' }}>
+              <Link href={ROUTES.BOOTCAMP_LIST} style={{ color: 'var(--color-text-secondary)', textDecoration: 'none', flexShrink: 0 }}>
                 Bootcamp
               </Link>
-              <ChevronRight size={13} strokeWidth={1.5} />
-              <span style={{ color: 'var(--color-text-primary)', fontWeight: 500, maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <ChevronRight size={13} strokeWidth={1.5} style={{ flexShrink: 0 }} />
+              <span style={{ color: 'var(--color-text-primary)', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>
                 {data.title}
               </span>
             </nav>
 
             {/* Eyebrow */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '6px 8px', marginBottom: 12 }}>
               <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-secondary)' }}>
                 {FIELD_LABELS[data.field]}
               </span>
@@ -230,7 +233,7 @@ export default function BootcampDetailPage() {
 
             {/* Title */}
             <h1 style={{
-              fontSize: '28px', fontWeight: 800, lineHeight: 1.25,
+              fontSize: 'clamp(22px, 4vw, 28px)', fontWeight: 800, lineHeight: 1.25,
               color: 'var(--color-text-primary)',
               letterSpacing: '-0.02em', marginBottom: 14,
             }}>
@@ -281,7 +284,174 @@ export default function BootcampDetailPage() {
             </div>
 
           </div>
+        </div>
 
+        {/* ── RIGHT (Purchase Card) ─────────────────────── */}
+        <div className="detail-sidebar">
+          <div style={{
+            border: '1px solid var(--color-border-subtle)',
+            borderRadius: 12, overflow: 'hidden',
+            background: 'var(--color-surface)',
+          }}>
+            {/* Thumbnail */}
+            <div style={{
+              height: 160, background: 'var(--color-bg)',
+              borderBottom: '1px solid var(--color-border-subtle)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              overflow: 'hidden',
+            }}>
+              {data.thumbnailUrl
+                ? <img src={data.thumbnailUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                : <Users size={40} color="var(--color-border)" strokeWidth={1} />
+              }
+            </div>
+
+            <div style={{ padding: '20px' }}>
+              {/* Price */}
+              <div style={{
+                fontSize: '26px', fontWeight: 800,
+                color: 'var(--color-text-primary)',
+                letterSpacing: '-0.02em',
+                marginBottom: 16,
+              }}>
+                {formatRupiah(data.price)}
+              </div>
+
+              {/* CTA */}
+              {data.isEnrolled ? (
+                (!data.batchStartDate || new Date(data.batchStartDate) <= new Date()) ? (
+                  <>
+                    <Link href={ROUTES.LEARN_BOOTCAMP(id)} style={{ textDecoration: 'none', display: 'block' }}>
+                      <motion.div
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        style={{
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                          width: '100%', padding: '12px 0',
+                          background: 'var(--color-primary)', color: '#fff',
+                          borderRadius: 8, fontWeight: 700, fontSize: '14px',
+                        }}
+                      >
+                        <PlayCircle size={16} strokeWidth={2} /> Lanjut Belajar
+                      </motion.div>
+                    </Link>
+                    {attendanceData && (
+                      <div style={{
+                        marginTop: 10,
+                        padding: '10px 12px',
+                        borderRadius: 8,
+                        background: attendanceData.allSessionsAttended ? '#f0fdf4' : '#f8fafc',
+                        border: attendanceData.allSessionsAttended ? '1px solid #bbf7d0' : '1px solid #e2e8f0',
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12px', fontWeight: 700, color: attendanceData.allSessionsAttended ? '#166534' : '#475569', marginBottom: 4 }}>
+                          <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                            {attendanceData.allSessionsAttended ? <Award size={14} color="#22c55e" /> : <Lock size={14} color="#64748b" />}
+                            Presensi Sertifikat
+                          </span>
+                          <span>{attendanceData.attendedCount} / {attendanceData.totalSessions} Sesi</span>
+                        </div>
+                        <div style={{ width: '100%', height: 4, background: '#e2e8f0', borderRadius: 2, overflow: 'hidden' }}>
+                          <div style={{ width: `${Math.round(((attendanceData.attendedCount || 0) / (attendanceData.totalSessions || 1)) * 100)}%`, height: '100%', background: attendanceData.allSessionsAttended ? '#22c55e' : 'var(--color-primary)', borderRadius: 2 }} />
+                        </div>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div
+                    style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                      width: '100%', padding: '12px 0',
+                      background: 'var(--color-bg)', color: 'var(--color-text-secondary)',
+                      border: '1px solid var(--color-border-subtle)',
+                      borderRadius: 8, fontWeight: 700, fontSize: '14px',
+                      cursor: 'not-allowed',
+                    }}
+                  >
+                    <Lock size={16} strokeWidth={2} /> Belum Dimulai
+                  </div>
+                )
+              ) : (
+                <motion.button
+                  whileHover={(!enrollMutation.isPending && canEnroll) ? { scale: 1.02 } : {}}
+                  whileTap={(!enrollMutation.isPending && canEnroll) ? { scale: 0.98 } : {}}
+                  onClick={() => enrollMutation.mutate()}
+                  disabled={!canEnroll || enrollMutation.isPending}
+                  style={{
+                    width: '100%', padding: '12px 0',
+                    background: 'var(--color-primary)', color: '#fff',
+                    border: 'none', borderRadius: 8,
+                    fontWeight: 700, fontSize: '14px',
+                    cursor: (!canEnroll || enrollMutation.isPending) ? 'not-allowed' : 'pointer',
+                    opacity: (!canEnroll || enrollMutation.isPending) ? 0.6 : 1,
+                  }}
+                >
+                  {enrollMutation.isPending ? 'Memproses...' : (canEnroll ? 'Daftar Sekarang' : data.batchStatus === 'CLOSED' ? 'Pendaftaran Ditutup' : 'Segera Tersedia')}
+                </motion.button>
+              )}
+
+              {/* Secondary CTAs */}
+              {!data.isEnrolled && (
+                <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+                  <motion.button
+                    whileHover={!wishlistMutation.isPending ? { scale: 1.02, backgroundColor: 'var(--color-surface)' } : {}}
+                    whileTap={!wishlistMutation.isPending ? { scale: 0.98 } : {}}
+                    onClick={() => wishlistMutation.mutate()}
+                    disabled={wishlistMutation.isPending}
+                    style={{
+                      flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                      padding: '10px 0', fontSize: '13px', fontWeight: 600,
+                      color: data.isWishlisted ? 'var(--color-error)' : 'var(--color-text-secondary)',
+                      background: 'var(--color-bg)',
+                      border: '1px solid var(--color-border-subtle)',
+                      borderRadius: 8, cursor: 'pointer',
+                    }}
+                  >
+                    <Heart size={14} strokeWidth={1.5} fill={data.isWishlisted ? 'currentColor' : 'none'} />
+                    {data.isWishlisted ? 'Disimpan' : 'Simpan'}
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.05, backgroundColor: 'var(--color-surface)' }}
+                    whileTap={{ scale: 0.95 }}
+                    style={{
+                      width: 44, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      background: 'var(--color-bg)',
+                      border: '1px solid var(--color-border-subtle)',
+                      borderRadius: 8, cursor: 'pointer', flexShrink: 0,
+                      color: 'var(--color-text-secondary)',
+                    }}
+                    onClick={() => { navigator.clipboard.writeText(window.location.href); toast.success('Link disalin!') }}
+                  >
+                    <Share2 size={14} strokeWidth={1.5} />
+                  </motion.button>
+                </div>
+              )}
+
+              {/* Divider */}
+              <div style={{ height: 1, background: 'var(--color-border-subtle)', margin: '18px 0' }} />
+
+              {/* Info */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <p style={{ fontSize: '12px', fontWeight: 700, color: 'var(--color-text-tertiary)', letterSpacing: '0.04em', textTransform: 'uppercase', margin: '0 0 4px' }}>
+                  Fasilitas Bootcamp
+                </p>
+                {[
+                  { icon: Zap,      text: 'XP dari setiap sesi', color: 'var(--color-xp)' },
+                  { icon: Users,    text: `${data.enrollmentCount} peserta terdaftar`, color: 'var(--color-text-tertiary)' },
+                  { icon: Clock,    text: formatDuration(data.totalDuration), color: 'var(--color-text-tertiary)' },
+                  ...(data.batchStartDate ? [{ icon: Calendar, text: `Mulai: ${formatDate(data.batchStartDate)}`, color: 'var(--color-text-tertiary)' }] : []),
+                ].map((item, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: '13px', color: 'var(--color-text-secondary)' }}>
+                    <item.icon size={14} strokeWidth={1.5} color={item.color} />
+                    {item.text}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ── TABS (Overview, Kurikulum, Ulasan) ────────── */}
+        <div className="detail-tabs">
           {/* CardTabs — browser-tab style */}
           <CardTabs
             items={[
@@ -995,169 +1165,6 @@ export default function BootcampDetailPage() {
           </CardTabs>
         </div>
 
-        {/* ── RIGHT (Purchase Card) ───────────────────────── */}
-        <div style={{ position: 'sticky', top: 32, alignSelf: 'start' }}>
-          <div style={{
-            border: '1px solid var(--color-border-subtle)',
-            borderRadius: 12, overflow: 'hidden',
-            background: 'var(--color-surface)',
-          }}>
-            {/* Thumbnail */}
-            <div style={{
-              height: 160, background: 'var(--color-bg)',
-              borderBottom: '1px solid var(--color-border-subtle)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              overflow: 'hidden',
-            }}>
-              {data.thumbnailUrl
-                ? <img src={data.thumbnailUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                : <Users size={40} color="var(--color-border)" strokeWidth={1} />
-              }
-            </div>
-
-            <div style={{ padding: '20px' }}>
-              {/* Price */}
-              <div style={{
-                fontSize: '26px', fontWeight: 800,
-                color: 'var(--color-text-primary)',
-                letterSpacing: '-0.02em',
-                marginBottom: 16,
-              }}>
-                {formatRupiah(data.price)}
-              </div>
-
-              {/* CTA */}
-              {data.isEnrolled ? (
-                (!data.batchStartDate || new Date(data.batchStartDate) <= new Date()) ? (
-                  <>
-                    <Link href={ROUTES.LEARN_BOOTCAMP(id)} style={{ textDecoration: 'none', display: 'block' }}>
-                      <motion.div
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        style={{
-                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                          width: '100%', padding: '12px 0',
-                          background: 'var(--color-primary)', color: '#fff',
-                          borderRadius: 8, fontWeight: 700, fontSize: '14px',
-                        }}
-                      >
-                        <PlayCircle size={16} strokeWidth={2} /> Lanjut Belajar
-                      </motion.div>
-                    </Link>
-                    {attendanceData && (
-                      <div style={{
-                        marginTop: 10,
-                        padding: '10px 12px',
-                        borderRadius: 8,
-                        background: attendanceData.allSessionsAttended ? '#f0fdf4' : '#f8fafc',
-                        border: attendanceData.allSessionsAttended ? '1px solid #bbf7d0' : '1px solid #e2e8f0',
-                      }}>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12px', fontWeight: 700, color: attendanceData.allSessionsAttended ? '#166534' : '#475569', marginBottom: 4 }}>
-                          <span style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                            {attendanceData.allSessionsAttended ? <Award size={14} color="#22c55e" /> : <Lock size={14} color="#64748b" />}
-                            Presensi Sertifikat
-                          </span>
-                          <span>{attendanceData.attendedCount} / {attendanceData.totalSessions} Sesi</span>
-                        </div>
-                        <div style={{ width: '100%', height: 4, background: '#e2e8f0', borderRadius: 2, overflow: 'hidden' }}>
-                          <div style={{ width: `${Math.round(((attendanceData.attendedCount || 0) / (attendanceData.totalSessions || 1)) * 100)}%`, height: '100%', background: attendanceData.allSessionsAttended ? '#22c55e' : 'var(--color-primary)', borderRadius: 2 }} />
-                        </div>
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <div
-                    style={{
-                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                      width: '100%', padding: '12px 0',
-                      background: 'var(--color-bg)', color: 'var(--color-text-secondary)',
-                      border: '1px solid var(--color-border-subtle)',
-                      borderRadius: 8, fontWeight: 700, fontSize: '14px',
-                      cursor: 'not-allowed',
-                    }}
-                  >
-                    <Lock size={16} strokeWidth={2} /> Belum Dimulai
-                  </div>
-                )
-              ) : (
-                <motion.button
-                  whileHover={(!enrollMutation.isPending && canEnroll) ? { scale: 1.02 } : {}}
-                  whileTap={(!enrollMutation.isPending && canEnroll) ? { scale: 0.98 } : {}}
-                  onClick={() => enrollMutation.mutate()}
-                  disabled={!canEnroll || enrollMutation.isPending}
-                  style={{
-                    width: '100%', padding: '12px 0',
-                    background: 'var(--color-primary)', color: '#fff',
-                    border: 'none', borderRadius: 8,
-                    fontWeight: 700, fontSize: '14px',
-                    cursor: (!canEnroll || enrollMutation.isPending) ? 'not-allowed' : 'pointer',
-                    opacity: (!canEnroll || enrollMutation.isPending) ? 0.6 : 1,
-                  }}
-                >
-                  {enrollMutation.isPending ? 'Memproses...' : (canEnroll ? 'Daftar Sekarang' : data.batchStatus === 'CLOSED' ? 'Pendaftaran Ditutup' : 'Segera Tersedia')}
-                </motion.button>
-              )}
-
-              {/* Secondary CTAs */}
-              {!data.isEnrolled && (
-                <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-                  <motion.button
-                    whileHover={!wishlistMutation.isPending ? { scale: 1.02, backgroundColor: 'var(--color-surface)' } : {}}
-                    whileTap={!wishlistMutation.isPending ? { scale: 0.98 } : {}}
-                    onClick={() => wishlistMutation.mutate()}
-                    disabled={wishlistMutation.isPending}
-                    style={{
-                      flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                      padding: '10px 0', fontSize: '13px', fontWeight: 600,
-                      color: data.isWishlisted ? 'var(--color-error)' : 'var(--color-text-secondary)',
-                      background: 'var(--color-bg)',
-                      border: '1px solid var(--color-border-subtle)',
-                      borderRadius: 8, cursor: 'pointer',
-                    }}
-                  >
-                    <Heart size={14} strokeWidth={1.5} fill={data.isWishlisted ? 'currentColor' : 'none'} />
-                    {data.isWishlisted ? 'Disimpan' : 'Simpan'}
-                  </motion.button>
-                  <motion.button
-                    whileHover={{ scale: 1.05, backgroundColor: 'var(--color-surface)' }}
-                    whileTap={{ scale: 0.95 }}
-                    style={{
-                      width: 44, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      background: 'var(--color-bg)',
-                      border: '1px solid var(--color-border-subtle)',
-                      borderRadius: 8, cursor: 'pointer', flexShrink: 0,
-                      color: 'var(--color-text-secondary)',
-                    }}
-                    onClick={() => { navigator.clipboard.writeText(window.location.href); toast.success('Link disalin!') }}
-                  >
-                    <Share2 size={14} strokeWidth={1.5} />
-                  </motion.button>
-                </div>
-              )}
-
-              {/* Divider */}
-              <div style={{ height: 1, background: 'var(--color-border-subtle)', margin: '18px 0' }} />
-
-              {/* Info */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                <p style={{ fontSize: '12px', fontWeight: 700, color: 'var(--color-text-tertiary)', letterSpacing: '0.04em', textTransform: 'uppercase', margin: '0 0 4px' }}>
-                  Fasilitas Bootcamp
-                </p>
-                {[
-                  { icon: Zap,      text: 'XP dari setiap sesi', color: 'var(--color-xp)' },
-                  { icon: Users,    text: `${data.enrollmentCount} peserta terdaftar`, color: 'var(--color-text-tertiary)' },
-                  { icon: Clock,    text: formatDuration(data.totalDuration), color: 'var(--color-text-tertiary)' },
-                  ...(data.batchStartDate ? [{ icon: Calendar, text: `Mulai: ${formatDate(data.batchStartDate)}`, color: 'var(--color-text-tertiary)' }] : []),
-                ].map((item, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: '13px', color: 'var(--color-text-secondary)' }}>
-                    <item.icon size={14} strokeWidth={1.5} color={item.color} />
-                    {item.text}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   )

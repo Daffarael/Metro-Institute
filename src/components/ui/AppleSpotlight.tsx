@@ -88,6 +88,16 @@ const SpotlightPlaceholder = ({ text, className = '' }: SpotlightPlaceholderProp
     <motion.div
       layout
       className={`as-placeholder ${className}`}
+      style={{
+        position: 'absolute',
+        inset: 0,
+        display: 'flex',
+        alignItems: 'center',
+        overflow: 'hidden',
+        width: '100%',
+        maxWidth: '100%',
+        pointerEvents: 'none',
+      }}
     >
       <AnimatePresence mode="popLayout">
         <motion.p
@@ -97,7 +107,14 @@ const SpotlightPlaceholder = ({ text, className = '' }: SpotlightPlaceholderProp
           animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
           exit={{ opacity: 0, y: -10, filter: 'blur(5px)' }}
           transition={{ duration: 0.2, ease: 'easeOut' }}
-          style={{ margin: 0 }}
+          style={{
+            margin: 0,
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            width: '100%',
+            maxWidth: '100%',
+          }}
         >
           {text}
         </motion.p>

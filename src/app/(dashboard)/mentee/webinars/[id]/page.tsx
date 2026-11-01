@@ -240,10 +240,10 @@ export default function MenteeWebinarDetailPage() {
   return (
     <div style={{ maxWidth: 1100, margin: '0 auto' }} className="animate-fade-in">
       {/* Main layout (Mirip Bootcamp) */}
-      <div className="detail-layout-grid" style={{ display: 'grid', gap: 48 }}>
+            <div className="detail-layout-grid">
         
-        {/* ── LEFT COLUMN ───────────────────────────────────── */}
-        <div>
+        {/* ── HERO (Title, Meta, Badges) ────────────────── */}
+        <div className="detail-hero">
           {/* Hero */}
           <div style={{ marginBottom: 'var(--space-8)' }}>
             {/* Breadcrumb */}
@@ -251,18 +251,19 @@ export default function MenteeWebinarDetailPage() {
               display: 'flex', alignItems: 'center', gap: 6,
               marginBottom: 28, fontSize: '13px',
               color: 'var(--color-text-tertiary)',
+              minWidth: 0,
             }}>
-              <Link href={ROUTES.WEBINAR_LIST} style={{ color: 'var(--color-text-secondary)', textDecoration: 'none' }}>
+              <Link href={ROUTES.WEBINAR_LIST} style={{ color: 'var(--color-text-secondary)', textDecoration: 'none', flexShrink: 0 }}>
                 Webinar
               </Link>
-              <ChevronRight size={13} strokeWidth={1.5} />
-              <span style={{ color: 'var(--color-text-primary)', fontWeight: 500, maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <ChevronRight size={13} strokeWidth={1.5} style={{ flexShrink: 0 }} />
+              <span style={{ color: 'var(--color-text-primary)', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>
                 {webinar.title}
               </span>
             </nav>
 
             {/* Eyebrow */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '6px 8px', marginBottom: 12 }}>
               <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-secondary)' }}>
                 {webinar.field ? (FIELD_LABELS[webinar.field] || webinar.field) : 'Live Learning'}
               </span>
@@ -301,7 +302,7 @@ export default function MenteeWebinarDetailPage() {
 
             {/* Title */}
             <h1 style={{
-              fontSize: '28px', fontWeight: 800, lineHeight: 1.25,
+              fontSize: 'clamp(22px, 4vw, 28px)', fontWeight: 800, lineHeight: 1.25,
               color: 'var(--color-text-primary)',
               letterSpacing: '-0.02em', marginBottom: 14,
             }}>
@@ -338,7 +339,296 @@ export default function MenteeWebinarDetailPage() {
               </div>
             </div>
           </div>
+        </div>
 
+        {/* ── RIGHT (Purchase Card) ─────────────────────── */}
+        <div className="detail-sidebar">
+          <div style={{
+            border: '1px solid var(--color-border-subtle)',
+            borderRadius: 12, overflow: 'hidden',
+            background: 'var(--color-surface)',
+          }}>
+            {/* Thumbnail */}
+            <div style={{
+              height: 160, background: 'var(--color-bg)',
+              borderBottom: '1px solid var(--color-border-subtle)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              overflow: 'hidden',
+            }}>
+              {webinar.bannerUrl ? (
+                <img src={webinar.bannerUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              ) : (
+                <Video size={40} color="var(--color-border)" strokeWidth={1} />
+              )}
+            </div>
+
+            <div style={{ padding: '20px' }}>
+              {/* Price */}
+              <div style={{
+                fontSize: '26px', fontWeight: 800,
+                color: 'var(--color-text-primary)',
+                letterSpacing: '-0.02em',
+                marginBottom: 16,
+              }}>
+                {isFree ? 'Gratis' : formatRupiah(webinar.price)}
+              </div>
+
+              {/* CTA dengan Logika Waktu Ketat */}
+              {webinar.isRegistered ? (
+                isUpcoming ? (
+                  /* Terdaftar tapi BELUM WAKTUNYA */
+                  <div>
+                    <motion.div
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
+                      onClick={() => {
+                        setActiveTab('schedule')
+                        toast.info(`Ruang sesi akan dibuka otomatis 30 menit sebelum jadwal (pukul ${formatTimeOnly(openTime)} WIB). Sesi mulai pukul ${formatTimeOnly(scheduledStart)} WIB.`)
+                      }}
+                      style={{
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                        width: '100%', padding: '12px 0',
+                        background: 'var(--color-bg)', color: 'var(--color-text-secondary)',
+                        border: '1px solid var(--color-border-subtle)',
+                        borderRadius: 8, fontWeight: 700, fontSize: '13.5px',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      <Lock size={15} strokeWidth={2} /> Dibuka {formatTimeOnly(openTime)} WIB
+                    </motion.div>
+                    <div style={{ textAlign: 'center', marginTop: 6, fontSize: '11px', color: 'var(--color-text-tertiary)' }}>
+                      Ruang buka 30 menit sebelum mulai ({formatTimeOnly(scheduledStart)} WIB)
+                    </div>
+                  </div>
+                ) : isLiveWindow ? (
+                  /* Terdaftar dan SEDANG BERLANGSUNG */
+                  webinar.meetingUrl ? (
+                    <div>
+                      <a href={ensureAbsoluteUrl(webinar.meetingUrl)} target="_blank" rel="noreferrer" style={{ textDecoration: 'none', display: 'block' }}>
+                        <motion.div
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          style={{
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                            width: '100%', padding: '12px 0',
+                            background: isOvertime ? '#D97706' : 'var(--color-primary)', color: '#fff',
+                            borderRadius: 8, fontWeight: 700, fontSize: '14px',
+                          }}
+                        >
+                          <PlayCircle size={16} strokeWidth={2} /> Masuk Live Room Sekarang
+                        </motion.div>
+                      </a>
+                      {isOvertime && (
+                        <div style={{ textAlign: 'center', marginTop: 8, fontSize: '11.5px', color: '#D97706', fontWeight: 500 }}>
+                          Sesi sedang berlangsung (waktu tambahan / Q&A)
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div>
+                      <motion.div
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => setActiveTab('schedule')}
+                        style={{
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                          width: '100%', padding: '12px 0',
+                          background: isOvertime ? '#D97706' : 'var(--color-primary)', color: '#fff',
+                          borderRadius: 8, fontWeight: 700, fontSize: '14px',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        <PlayCircle size={16} strokeWidth={2} /> Masuk Live Room
+                      </motion.div>
+                      {isOvertime && (
+                        <div style={{ textAlign: 'center', marginTop: 8, fontSize: '11.5px', color: '#D97706', fontWeight: 500 }}>
+                          Sesi sedang berlangsung (waktu tambahan / Q&A)
+                        </div>
+                      )}
+                    </div>
+                  )
+                ) : (
+                  /* Terdaftar dan SESI TELAH SELESAI */
+                  webinar.recordingUrl ? (
+                    <a href={ensureAbsoluteUrl(webinar.recordingUrl)} target="_blank" rel="noreferrer" style={{ textDecoration: 'none', display: 'block' }}>
+                      <motion.div
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        style={{
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                          width: '100%', padding: '12px 0',
+                          background: 'var(--color-primary)', color: '#fff',
+                          borderRadius: 8, fontWeight: 700, fontSize: '14px',
+                        }}
+                      >
+                        <PlayCircle size={16} strokeWidth={2} /> Tonton Rekaman Sesi
+                      </motion.div>
+                    </a>
+                  ) : (
+                    <div
+                      style={{
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                        width: '100%', padding: '12px 0',
+                        background: 'var(--color-bg)', color: 'var(--color-text-tertiary)',
+                        border: '1px solid var(--color-border-subtle)',
+                        borderRadius: 8, fontWeight: 700, fontSize: '14px',
+                        cursor: 'default',
+                      }}
+                    >
+                      <CheckCircle2 size={16} strokeWidth={2} /> Sesi Telah Selesai
+                    </div>
+                  )
+                )
+              ) : isEnded ? (
+                /* Belum Terdaftar tapi Sesi sudah selesai */
+                <div
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                    width: '100%', padding: '12px 0',
+                    background: 'var(--color-bg)', color: 'var(--color-text-secondary)',
+                    border: '1px solid var(--color-border-subtle)',
+                    borderRadius: 8, fontWeight: 700, fontSize: '14px',
+                    cursor: 'not-allowed',
+                  }}
+                >
+                  <Lock size={16} strokeWidth={2} /> Sesi Selesai
+                </div>
+              ) : isRegistrationClosed ? (
+                /* Batas Pendaftaran H-2 Jam */
+                <div>
+                  <div
+                    style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                      width: '100%', padding: '12px 0',
+                      background: 'var(--color-bg)', color: '#dc2626',
+                      border: '1px solid var(--color-border-subtle)',
+                      borderRadius: 8, fontWeight: 700, fontSize: '14px',
+                      cursor: 'not-allowed',
+                    }}
+                  >
+                    <Lock size={16} strokeWidth={2} /> Pendaftaran Ditutup
+                  </div>
+                  <div style={{ textAlign: 'center', marginTop: 6, fontSize: '11.5px', color: 'var(--color-text-tertiary)' }}>
+                    Batas pendaftaran H-2 jam sebelum acara telah berakhir.
+                  </div>
+                </div>
+              ) : isFull ? (
+                /* Kuota Penuh */
+                <div
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                    width: '100%', padding: '12px 0',
+                    background: 'var(--color-bg)', color: '#dc2626',
+                    border: '1px solid var(--color-border-subtle)',
+                    borderRadius: 8, fontWeight: 700, fontSize: '14px',
+                    cursor: 'not-allowed',
+                  }}
+                >
+                  <Lock size={16} strokeWidth={2} /> Kuota Penuh
+                </div>
+              ) : isFree ? (
+                /* Belum Terdaftar: Gratis */
+                <motion.button
+                  whileHover={!registerMutation.isPending ? { scale: 1.02 } : {}}
+                  whileTap={!registerMutation.isPending ? { scale: 0.98 } : {}}
+                  onClick={() => {
+                    if (!user) {
+                      toast.info('Silakan login terlebih dahulu untuk mendaftar.')
+                      router.push('/login')
+                      return
+                    }
+                    setShowConfirmModal(true)
+                  }}
+                  disabled={registerMutation.isPending}
+                  style={{
+                    width: '100%', padding: '12px 0',
+                    background: 'var(--color-primary)', color: '#fff',
+                    border: 'none', borderRadius: 8,
+                    fontWeight: 700, fontSize: '14px',
+                    cursor: registerMutation.isPending ? 'not-allowed' : 'pointer',
+                    opacity: registerMutation.isPending ? 0.6 : 1,
+                  }}
+                >
+                  {registerMutation.isPending ? 'Memproses...' : 'Daftar Sekarang'}
+                </motion.button>
+              ) : (
+                /* Belum Terdaftar: Berbayar */
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={handlePaidCheckout}
+                  style={{
+                    width: '100%', padding: '12px 0',
+                    background: 'var(--color-primary)', color: '#fff',
+                    border: 'none', borderRadius: 8,
+                    fontWeight: 700, fontSize: '14px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Daftar Sekarang
+                </motion.button>
+              )}
+
+              {/* Secondary CTAs (Share button) */}
+              <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+                <motion.button
+                  whileHover={{ scale: 1.02, backgroundColor: 'var(--color-surface)' }}
+                  whileTap={{ scale: 0.98 }}
+                  style={{
+                    flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                    padding: '10px 0', fontSize: '13px', fontWeight: 600,
+                    color: 'var(--color-text-secondary)',
+                    background: 'var(--color-bg)',
+                    border: '1px solid var(--color-border-subtle)',
+                    borderRadius: 8, cursor: 'pointer',
+                  }}
+                  onClick={() => {
+                    navigator.clipboard.writeText(window.location.href)
+                    toast.success('Link webinar disalin!')
+                  }}
+                >
+                  <Share2 size={14} strokeWidth={1.5} />
+                  Bagikan
+                </motion.button>
+              </div>
+
+              {/* Divider */}
+              <div style={{ height: 1, background: 'var(--color-border-subtle)', margin: '18px 0' }} />
+
+              {/* FASILITAS WEBINAR */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <p style={{
+                  fontSize: '12px', fontWeight: 700, color: 'var(--color-text-tertiary)',
+                  letterSpacing: '0.04em', textTransform: 'uppercase', margin: '0 0 4px',
+                }}>
+                  Fasilitas Webinar
+                </p>
+                {[
+                  { icon: Zap,      text: 'XP dari setiap sesi', color: 'var(--color-xp)' },
+                  { icon: Users,    text: `${webinar._count?.registrations || 0} peserta terdaftar`, color: 'var(--color-text-tertiary)' },
+                  { icon: Clock,    text: `${webinar.duration}m durasi sesi`, color: 'var(--color-text-tertiary)' },
+                  isEnded ? {
+                    icon: Calendar,
+                    text: `Berakhir: ${formatDate(actualEndTime.toISOString())}, ${formatTimeOnly(actualEndTime)} WIB`,
+                    color: 'var(--color-text-tertiary)',
+                  } : {
+                    icon: Calendar,
+                    text: `Mulai: ${formatDate(webinar.scheduledAt)}, ${formatTimeOnly(scheduledStart)} WIB`,
+                    color: 'var(--color-text-tertiary)',
+                  },
+                ].map((item, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: '13px', color: 'var(--color-text-secondary)' }}>
+                    <item.icon size={14} strokeWidth={1.5} color={item.color} />
+                    {item.text}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ── TABS (Overview, Kurikulum, Ulasan) ────────── */}
+        <div className="detail-tabs">
           {/* CardTabs — browser-tab style persis Bootcamp */}
           <CardTabs
             items={[
@@ -834,291 +1124,6 @@ export default function MenteeWebinarDetailPage() {
           </CardTabs>
         </div>
 
-        {/* ── RIGHT (Purchase Card 1:1 Mirip Bootcamp) ───── */}
-        <div style={{ position: 'sticky', top: 32, alignSelf: 'start' }}>
-          <div style={{
-            border: '1px solid var(--color-border-subtle)',
-            borderRadius: 12, overflow: 'hidden',
-            background: 'var(--color-surface)',
-          }}>
-            {/* Thumbnail */}
-            <div style={{
-              height: 160, background: 'var(--color-bg)',
-              borderBottom: '1px solid var(--color-border-subtle)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              overflow: 'hidden',
-            }}>
-              {webinar.bannerUrl ? (
-                <img src={webinar.bannerUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              ) : (
-                <Video size={40} color="var(--color-border)" strokeWidth={1} />
-              )}
-            </div>
-
-            <div style={{ padding: '20px' }}>
-              {/* Price */}
-              <div style={{
-                fontSize: '26px', fontWeight: 800,
-                color: 'var(--color-text-primary)',
-                letterSpacing: '-0.02em',
-                marginBottom: 16,
-              }}>
-                {isFree ? 'Gratis' : formatRupiah(webinar.price)}
-              </div>
-
-              {/* CTA dengan Logika Waktu Ketat */}
-              {webinar.isRegistered ? (
-                isUpcoming ? (
-                  /* Terdaftar tapi BELUM WAKTUNYA */
-                  <div>
-                    <motion.div
-                      whileHover={{ scale: 1.01 }}
-                      whileTap={{ scale: 0.99 }}
-                      onClick={() => {
-                        setActiveTab('schedule')
-                        toast.info(`Ruang sesi akan dibuka otomatis 30 menit sebelum jadwal (pukul ${formatTimeOnly(openTime)} WIB). Sesi mulai pukul ${formatTimeOnly(scheduledStart)} WIB.`)
-                      }}
-                      style={{
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                        width: '100%', padding: '12px 0',
-                        background: 'var(--color-bg)', color: 'var(--color-text-secondary)',
-                        border: '1px solid var(--color-border-subtle)',
-                        borderRadius: 8, fontWeight: 700, fontSize: '13.5px',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      <Lock size={15} strokeWidth={2} /> Dibuka {formatTimeOnly(openTime)} WIB
-                    </motion.div>
-                    <div style={{ textAlign: 'center', marginTop: 6, fontSize: '11px', color: 'var(--color-text-tertiary)' }}>
-                      Ruang buka 30 menit sebelum mulai ({formatTimeOnly(scheduledStart)} WIB)
-                    </div>
-                  </div>
-                ) : isLiveWindow ? (
-                  /* Terdaftar dan SEDANG BERLANGSUNG */
-                  webinar.meetingUrl ? (
-                    <div>
-                      <a href={ensureAbsoluteUrl(webinar.meetingUrl)} target="_blank" rel="noreferrer" style={{ textDecoration: 'none', display: 'block' }}>
-                        <motion.div
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                          style={{
-                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                            width: '100%', padding: '12px 0',
-                            background: isOvertime ? '#D97706' : 'var(--color-primary)', color: '#fff',
-                            borderRadius: 8, fontWeight: 700, fontSize: '14px',
-                          }}
-                        >
-                          <PlayCircle size={16} strokeWidth={2} /> Masuk Live Room Sekarang
-                        </motion.div>
-                      </a>
-                      {isOvertime && (
-                        <div style={{ textAlign: 'center', marginTop: 8, fontSize: '11.5px', color: '#D97706', fontWeight: 500 }}>
-                          Sesi sedang berlangsung (waktu tambahan / Q&A)
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <div>
-                      <motion.div
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => setActiveTab('schedule')}
-                        style={{
-                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                          width: '100%', padding: '12px 0',
-                          background: isOvertime ? '#D97706' : 'var(--color-primary)', color: '#fff',
-                          borderRadius: 8, fontWeight: 700, fontSize: '14px',
-                          cursor: 'pointer',
-                        }}
-                      >
-                        <PlayCircle size={16} strokeWidth={2} /> Masuk Live Room
-                      </motion.div>
-                      {isOvertime && (
-                        <div style={{ textAlign: 'center', marginTop: 8, fontSize: '11.5px', color: '#D97706', fontWeight: 500 }}>
-                          Sesi sedang berlangsung (waktu tambahan / Q&A)
-                        </div>
-                      )}
-                    </div>
-                  )
-                ) : (
-                  /* Terdaftar dan SESI TELAH SELESAI */
-                  webinar.recordingUrl ? (
-                    <a href={ensureAbsoluteUrl(webinar.recordingUrl)} target="_blank" rel="noreferrer" style={{ textDecoration: 'none', display: 'block' }}>
-                      <motion.div
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        style={{
-                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                          width: '100%', padding: '12px 0',
-                          background: 'var(--color-primary)', color: '#fff',
-                          borderRadius: 8, fontWeight: 700, fontSize: '14px',
-                        }}
-                      >
-                        <PlayCircle size={16} strokeWidth={2} /> Tonton Rekaman Sesi
-                      </motion.div>
-                    </a>
-                  ) : (
-                    <div
-                      style={{
-                        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                        width: '100%', padding: '12px 0',
-                        background: 'var(--color-bg)', color: 'var(--color-text-tertiary)',
-                        border: '1px solid var(--color-border-subtle)',
-                        borderRadius: 8, fontWeight: 700, fontSize: '14px',
-                        cursor: 'default',
-                      }}
-                    >
-                      <CheckCircle2 size={16} strokeWidth={2} /> Sesi Telah Selesai
-                    </div>
-                  )
-                )
-              ) : isEnded ? (
-                /* Belum Terdaftar tapi Sesi sudah selesai */
-                <div
-                  style={{
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                    width: '100%', padding: '12px 0',
-                    background: 'var(--color-bg)', color: 'var(--color-text-secondary)',
-                    border: '1px solid var(--color-border-subtle)',
-                    borderRadius: 8, fontWeight: 700, fontSize: '14px',
-                    cursor: 'not-allowed',
-                  }}
-                >
-                  <Lock size={16} strokeWidth={2} /> Sesi Selesai
-                </div>
-              ) : isRegistrationClosed ? (
-                /* Batas Pendaftaran H-2 Jam */
-                <div>
-                  <div
-                    style={{
-                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                      width: '100%', padding: '12px 0',
-                      background: 'var(--color-bg)', color: '#dc2626',
-                      border: '1px solid var(--color-border-subtle)',
-                      borderRadius: 8, fontWeight: 700, fontSize: '14px',
-                      cursor: 'not-allowed',
-                    }}
-                  >
-                    <Lock size={16} strokeWidth={2} /> Pendaftaran Ditutup
-                  </div>
-                  <div style={{ textAlign: 'center', marginTop: 6, fontSize: '11.5px', color: 'var(--color-text-tertiary)' }}>
-                    Batas pendaftaran H-2 jam sebelum acara telah berakhir.
-                  </div>
-                </div>
-              ) : isFull ? (
-                /* Kuota Penuh */
-                <div
-                  style={{
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                    width: '100%', padding: '12px 0',
-                    background: 'var(--color-bg)', color: '#dc2626',
-                    border: '1px solid var(--color-border-subtle)',
-                    borderRadius: 8, fontWeight: 700, fontSize: '14px',
-                    cursor: 'not-allowed',
-                  }}
-                >
-                  <Lock size={16} strokeWidth={2} /> Kuota Penuh
-                </div>
-              ) : isFree ? (
-                /* Belum Terdaftar: Gratis */
-                <motion.button
-                  whileHover={!registerMutation.isPending ? { scale: 1.02 } : {}}
-                  whileTap={!registerMutation.isPending ? { scale: 0.98 } : {}}
-                  onClick={() => {
-                    if (!user) {
-                      toast.info('Silakan login terlebih dahulu untuk mendaftar.')
-                      router.push('/login')
-                      return
-                    }
-                    setShowConfirmModal(true)
-                  }}
-                  disabled={registerMutation.isPending}
-                  style={{
-                    width: '100%', padding: '12px 0',
-                    background: 'var(--color-primary)', color: '#fff',
-                    border: 'none', borderRadius: 8,
-                    fontWeight: 700, fontSize: '14px',
-                    cursor: registerMutation.isPending ? 'not-allowed' : 'pointer',
-                    opacity: registerMutation.isPending ? 0.6 : 1,
-                  }}
-                >
-                  {registerMutation.isPending ? 'Memproses...' : 'Daftar Sekarang'}
-                </motion.button>
-              ) : (
-                /* Belum Terdaftar: Berbayar */
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={handlePaidCheckout}
-                  style={{
-                    width: '100%', padding: '12px 0',
-                    background: 'var(--color-primary)', color: '#fff',
-                    border: 'none', borderRadius: 8,
-                    fontWeight: 700, fontSize: '14px',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Daftar Sekarang
-                </motion.button>
-              )}
-
-              {/* Secondary CTAs (Share button) */}
-              <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-                <motion.button
-                  whileHover={{ scale: 1.02, backgroundColor: 'var(--color-surface)' }}
-                  whileTap={{ scale: 0.98 }}
-                  style={{
-                    flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                    padding: '10px 0', fontSize: '13px', fontWeight: 600,
-                    color: 'var(--color-text-secondary)',
-                    background: 'var(--color-bg)',
-                    border: '1px solid var(--color-border-subtle)',
-                    borderRadius: 8, cursor: 'pointer',
-                  }}
-                  onClick={() => {
-                    navigator.clipboard.writeText(window.location.href)
-                    toast.success('Link webinar disalin!')
-                  }}
-                >
-                  <Share2 size={14} strokeWidth={1.5} />
-                  Bagikan
-                </motion.button>
-              </div>
-
-              {/* Divider */}
-              <div style={{ height: 1, background: 'var(--color-border-subtle)', margin: '18px 0' }} />
-
-              {/* FASILITAS WEBINAR */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                <p style={{
-                  fontSize: '12px', fontWeight: 700, color: 'var(--color-text-tertiary)',
-                  letterSpacing: '0.04em', textTransform: 'uppercase', margin: '0 0 4px',
-                }}>
-                  Fasilitas Webinar
-                </p>
-                {[
-                  { icon: Zap,      text: 'XP dari setiap sesi', color: 'var(--color-xp)' },
-                  { icon: Users,    text: `${webinar._count?.registrations || 0} peserta terdaftar`, color: 'var(--color-text-tertiary)' },
-                  { icon: Clock,    text: `${webinar.duration}m durasi sesi`, color: 'var(--color-text-tertiary)' },
-                  isEnded ? {
-                    icon: Calendar,
-                    text: `Berakhir: ${formatDate(actualEndTime.toISOString())}, ${formatTimeOnly(actualEndTime)} WIB`,
-                    color: 'var(--color-text-tertiary)',
-                  } : {
-                    icon: Calendar,
-                    text: `Mulai: ${formatDate(webinar.scheduledAt)}, ${formatTimeOnly(scheduledStart)} WIB`,
-                    color: 'var(--color-text-tertiary)',
-                  },
-                ].map((item, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: '13px', color: 'var(--color-text-secondary)' }}>
-                    <item.icon size={14} strokeWidth={1.5} color={item.color} />
-                    {item.text}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* ── MODAL KONFIRMASI PENDAFTARAN GRATIS ──────────────── */}
