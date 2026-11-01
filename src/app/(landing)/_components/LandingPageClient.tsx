@@ -102,12 +102,18 @@ export default function LandingPageClient({
   const mappedBootcamps = featuredBootcamps.map(b => {
     const now = new Date()
     const regOpen = b.registrationStartDate ? new Date(b.registrationStartDate) : null
-    const regClose = b.registrationDeadline ? new Date(b.registrationDeadline) : null
+    let regClose = b.registrationDeadline ? new Date(b.registrationDeadline) : null
+    if (regClose && b.registrationDeadline && (b.registrationDeadline.endsWith('T00:00:00.000Z') || !b.registrationDeadline.includes('T'))) {
+      regClose = new Date(regClose.getTime() + 24 * 60 * 60 * 1000 - 1)
+    }
     const end = b.batchEndDate ? new Date(b.batchEndDate) : null
 
     // Status: hanya dibuka atau sudah ditutup
     let statusText = 'Pendaftaran Dibuka'
-    if ((regClose && now >= regClose) || (end && now > end) || b.batchStatus === 'CLOSED') {
+    const isDeadlinePassed = Boolean(regClose && now >= regClose)
+    const isEnded = Boolean(end && now > end)
+    const isClosed = isDeadlinePassed || isEnded || (b.batchStatus === 'CLOSED' && (!regClose || now >= regClose))
+    if (isClosed) {
       statusText = 'Pendaftaran Sudah Ditutup'
     } else if (regOpen && now < regOpen) {
       statusText = 'Pendaftaran Belum Dibuka'
