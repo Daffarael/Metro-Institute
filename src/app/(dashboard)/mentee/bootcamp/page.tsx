@@ -214,8 +214,83 @@ function BootcampCard({ bootcamp }: { bootcamp: Bootcamp }) {
         {/* Content Area */}
         <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', flex: 1 }}>
           
-          {/* Meta: Field · Level · Status */}
-          <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
+          {/* Status Badge - Tanda Jelas & Non-Pudar */}
+          {bootcamp.batchStatus && (
+            <div style={{ marginBottom: 12 }}>
+              {bootcamp.batchStatus === 'OPEN' && (
+                <span style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  padding: '4px 10px',
+                  borderRadius: 20,
+                  background: '#018556',
+                  color: '#ffffff',
+                  fontSize: '11px',
+                  fontWeight: 700,
+                  letterSpacing: '0.02em',
+                  boxShadow: '0 2px 6px rgba(1, 133, 86, 0.25)',
+                }}>
+                  <span style={{
+                    width: 6,
+                    height: 6,
+                    borderRadius: '50%',
+                    backgroundColor: '#C6F242',
+                    boxShadow: '0 0 6px #C6F242',
+                  }} />
+                  Pendaftaran Dibuka
+                </span>
+              )}
+              {bootcamp.batchStatus === 'CLOSED' && (
+                <span style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  padding: '4px 10px',
+                  borderRadius: 20,
+                  background: '#D92D20',
+                  color: '#ffffff',
+                  fontSize: '11px',
+                  fontWeight: 700,
+                }}>
+                  Pendaftaran Ditutup
+                </span>
+              )}
+              {bootcamp.batchStatus === 'ONGOING' && (
+                <span style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  padding: '4px 10px',
+                  borderRadius: 20,
+                  background: '#344054',
+                  color: '#ffffff',
+                  fontSize: '11px',
+                  fontWeight: 700,
+                }}>
+                  Sedang Berjalan
+                </span>
+              )}
+              {bootcamp.batchStatus === 'COMING_SOON' && (
+                <span style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  padding: '4px 10px',
+                  borderRadius: 20,
+                  background: '#475467',
+                  color: '#ffffff',
+                  fontSize: '11px',
+                  fontWeight: 700,
+                }}>
+                  Segera Hadir
+                </span>
+              )}
+            </div>
+          )}
+
+          {/* Meta: Field · Level */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
             <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-secondary)' }}>
               {FIELD_LABELS[bootcamp.field]}
             </span>
@@ -223,25 +298,6 @@ function BootcampCard({ bootcamp }: { bootcamp: Bootcamp }) {
             <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--color-text-tertiary)' }}>
               {LEVEL_LABELS[bootcamp.level]}
             </span>
-            {bootcamp.batchStatus && (
-              <>
-                <span style={{ fontSize: '14px', color: 'var(--color-border)', lineHeight: 0 }}>•</span>
-                <span style={{
-                  fontSize: '12px',
-                  fontWeight: 600,
-                  color: bootcamp.batchStatus === 'OPEN'
-                    ? 'var(--color-primary)'
-                    : bootcamp.batchStatus === 'CLOSED'
-                      ? '#E02424'
-                      : 'var(--color-text-secondary)',
-                }}>
-                  {bootcamp.batchStatus === 'OPEN' ? 'Pendaftaran Dibuka'
-                    : bootcamp.batchStatus === 'ONGOING' ? 'Sedang Berjalan'
-                    : bootcamp.batchStatus === 'CLOSED' ? 'Pendaftaran Ditutup'
-                    : 'Segera Hadir'}
-                </span>
-              </>
-            )}
           </div>
 
           {/* Title */}
