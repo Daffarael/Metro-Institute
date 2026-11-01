@@ -618,8 +618,8 @@ export default function AdminBootcampPage() {
                     <td style={{ padding: 'var(--space-3) var(--space-4)', color: 'var(--color-text-tertiary)', fontWeight: 500 }}>
                       {(filters.page - 1) * filters.limit + i + 1}
                     </td>
-                    <td style={{ padding: 'var(--space-3) var(--space-4)', fontWeight: 600, maxWidth: 200 }}>
-                      <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{b.name}</div>
+                    <td style={{ padding: 'var(--space-3) var(--space-4)', fontWeight: 600, minWidth: 220 }}>
+                      <div style={{ color: 'var(--color-text-primary)', lineHeight: 1.4 }}>{b.name}</div>
                       {b.totalSessions !== undefined && (
                         <div style={{ fontSize: '11px', marginTop: 3 }}>
                           {b.totalSessions > 0 ? (
