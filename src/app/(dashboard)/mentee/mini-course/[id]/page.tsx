@@ -139,11 +139,9 @@ export default function CourseDetailPage() {
 
   return (
     <div style={{ maxWidth: 1100, margin: '0 auto' }} className="animate-fade-in">
-            <div className="detail-layout-grid">
-        
-        {/* ── HERO (Title, Meta, Badges) ────────────────── */}
-        <div className="detail-hero">
-          {/* Breadcrumb */}
+            {/* ── HEADER (Breadcrumb, Title, Meta) ──────────── */}
+      <div className="detail-header" style={{ marginBottom: 24 }}>
+        {/* Breadcrumb */}
           <nav style={{
             display: 'flex', alignItems: 'center', gap: 6,
             marginBottom: 28, fontSize: '13px',
@@ -211,6 +209,30 @@ export default function CourseDetailPage() {
               <span>{formatDuration(course.totalDuration)}</span>
             </div>
           </div>
+      </div>
+
+      <div className="detail-layout-grid">
+
+        {/* ── BANNER IMAGE ──────────────────────────────── */}
+        <div className="detail-banner">
+          {course.thumbnailUrl && (
+            <div style={{
+              width: '100%',
+              aspectRatio: '16/9',
+              maxHeight: 380,
+              borderRadius: 14,
+              overflow: 'hidden',
+              border: '1px solid var(--color-border-subtle)',
+              background: 'var(--color-bg)',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
+            }}>
+              <img
+                src={course.thumbnailUrl}
+                alt={course.title}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            </div>
+          )}
         </div>
 
         {/* ── RIGHT (Purchase Card) ─────────────────────── */}

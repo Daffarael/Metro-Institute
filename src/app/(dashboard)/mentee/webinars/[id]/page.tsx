@@ -240,13 +240,9 @@ export default function MenteeWebinarDetailPage() {
   return (
     <div style={{ maxWidth: 1100, margin: '0 auto' }} className="animate-fade-in">
       {/* Main layout (Mirip Bootcamp) */}
-            <div className="detail-layout-grid">
-        
-        {/* ── HERO (Title, Meta, Badges) ────────────────── */}
-        <div className="detail-hero">
-          {/* Hero */}
-          <div style={{ marginBottom: 'var(--space-8)' }}>
-            {/* Breadcrumb */}
+            {/* ── HEADER (Breadcrumb, Title, Meta) ──────────── */}
+      <div className="detail-header" style={{ marginBottom: 24 }}>
+        {/* Breadcrumb */}
             <nav style={{
               display: 'flex', alignItems: 'center', gap: 6,
               marginBottom: 28, fontSize: '13px',
@@ -338,27 +334,30 @@ export default function MenteeWebinarDetailPage() {
                 <span>{formatDate(webinar.scheduledAt)}</span>
               </div>
             </div>
+      </div>
 
-            {/* Banner Image */}
-            {webinar.bannerUrl && (
-              <div style={{
-                width: '100%',
-                aspectRatio: '16/9',
-                maxHeight: 380,
-                borderRadius: 14,
-                overflow: 'hidden',
-                border: '1px solid var(--color-border-subtle)',
-                background: 'var(--color-bg)',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
-              }}>
-                <img
-                  src={webinar.bannerUrl}
-                  alt={webinar.title}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
-              </div>
-            )}
-          </div>
+      <div className="detail-layout-grid">
+
+        {/* ── BANNER IMAGE ──────────────────────────────── */}
+        <div className="detail-banner">
+          {webinar.bannerUrl && (
+            <div style={{
+              width: '100%',
+              aspectRatio: '16/9',
+              maxHeight: 380,
+              borderRadius: 14,
+              overflow: 'hidden',
+              border: '1px solid var(--color-border-subtle)',
+              background: 'var(--color-bg)',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
+            }}>
+              <img
+                src={webinar.bannerUrl}
+                alt={webinar.title}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            </div>
+          )}
         </div>
 
         {/* ── RIGHT (Purchase Card) ─────────────────────── */}

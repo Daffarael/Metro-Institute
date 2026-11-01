@@ -165,13 +165,16 @@ export default function BootcampDetailPage() {
 
   if (isLoading) return (
     <div style={{ maxWidth: 960, margin: '0 auto' }}>
-      <div className="skeleton" style={{ height: 300, borderRadius: 16, marginBottom: 'var(--space-6)' }} />
+      <div className="skeleton" style={{ height: 120, borderRadius: 16, marginBottom: 'var(--space-6)' }} />
       <div className="detail-layout-grid">
-        <div className="detail-hero" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
-          {Array.from({ length: 4 }).map((_, i) => <div key={i} className="skeleton" style={{ height: 80, borderRadius: 12 }} />)}
+        <div className="detail-banner">
+          <div className="skeleton" style={{ aspectRatio: '16/9', maxHeight: 380, borderRadius: 14 }} />
         </div>
         <div className="detail-sidebar">
-          <div className="skeleton" style={{ height: 380, borderRadius: 16 }} />
+          <div className="skeleton" style={{ height: 380, borderRadius: 14 }} />
+        </div>
+        <div className="detail-tabs" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+          {Array.from({ length: 4 }).map((_, i) => <div key={i} className="skeleton" style={{ height: 80, borderRadius: 12 }} />)}
         </div>
       </div>
     </div>
@@ -184,12 +187,9 @@ export default function BootcampDetailPage() {
 
   return (
     <div style={{ maxWidth: 1100, margin: '0 auto' }} className="animate-fade-in">
-      {/* Main layout */}
-            <div className="detail-layout-grid">
-        
-        {/* ── HERO (Title, Meta, Badges) ────────────────── */}
-        <div className="detail-hero">
-          {/* Hero */}
+      {/* ── HEADER (Breadcrumb, Title, Meta) ──────────── */}
+      <div className="detail-header" style={{ marginBottom: 24 }}>
+        {/* Hero */}
             {/* Breadcrumb */}
             <nav style={{
               display: 'flex', alignItems: 'center', gap: 6,
@@ -281,26 +281,31 @@ export default function BootcampDetailPage() {
                 <span>{totalSessions} sesi</span>
               </div>
             </div>
+      </div>
 
-            {/* Banner Image */}
-            {data.thumbnailUrl && (
-              <div style={{
-                width: '100%',
-                aspectRatio: '16/9',
-                maxHeight: 380,
-                borderRadius: 14,
-                overflow: 'hidden',
-                border: '1px solid var(--color-border-subtle)',
-                background: 'var(--color-bg)',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
-              }}>
-                <img
-                  src={data.thumbnailUrl}
-                  alt={data.title}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
-              </div>
-            )}
+      {/* Main layout */}
+      <div className="detail-layout-grid">
+
+        {/* ── BANNER IMAGE ──────────────────────────────── */}
+        <div className="detail-banner">
+          {data.thumbnailUrl && (
+            <div style={{
+              width: '100%',
+              aspectRatio: '16/9',
+              maxHeight: 380,
+              borderRadius: 14,
+              overflow: 'hidden',
+              border: '1px solid var(--color-border-subtle)',
+              background: 'var(--color-bg)',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
+            }}>
+              <img
+                src={data.thumbnailUrl}
+                alt={data.title}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            </div>
+          )}
         </div>
 
         {/* ── RIGHT (Purchase Card) ─────────────────────── */}

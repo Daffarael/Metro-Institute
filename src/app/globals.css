@@ -1242,14 +1242,14 @@ input[type="number"] {
   grid-template-columns: minmax(0, 1fr) 340px;
   grid-template-rows: auto 1fr;
   grid-template-areas:
-    "hero sidebar"
-    "tabs sidebar";
+    "banner sidebar"
+    "tabs   sidebar";
   gap: 24px 48px;
   align-items: start;
 }
 
-.detail-hero {
-  grid-area: hero;
+.detail-banner {
+  grid-area: banner;
   min-width: 0;
 }
 
@@ -1271,7 +1271,7 @@ input[type="number"] {
     grid-template-columns: 1fr;
     grid-template-rows: auto;
     grid-template-areas:
-      "hero"
+      "banner"
       "sidebar"
       "tabs";
     gap: 20px;
