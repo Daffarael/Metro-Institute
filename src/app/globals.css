@@ -1240,10 +1240,11 @@ input[type="number"] {
 .detail-layout-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 340px;
+  grid-template-rows: auto 1fr;
   grid-template-areas:
     "hero sidebar"
     "tabs sidebar";
-  gap: 32px 48px;
+  gap: 24px 48px;
   align-items: start;
 }
 
@@ -1268,11 +1269,12 @@ input[type="number"] {
 @media (max-width: 900px) {
   .detail-layout-grid {
     grid-template-columns: 1fr;
+    grid-template-rows: auto;
     grid-template-areas:
       "hero"
       "sidebar"
       "tabs";
-    gap: 24px;
+    gap: 20px;
   }
   .detail-sidebar {
     position: static;
