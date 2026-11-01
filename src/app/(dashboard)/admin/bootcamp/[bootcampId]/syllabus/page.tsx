@@ -45,11 +45,11 @@ interface BootcampChapter {
 
 interface Bootcamp { id: string; name?: string; title?: string }
 
-const SESSION_TYPE_COLORS: Record<string, { bg: string; color: string; border?: string; icon: any }> = {
-  LIVE:      { bg: '#FEF08A', color: '#018556', border: '1.5px solid #FACC15', icon: Video },
-  MATERIAL:  { bg: '#FEF08A', color: '#854D0E', border: '1.5px solid #FACC15', icon: FileText },
-  VIDEO:     { bg: '#DCFCE7', color: '#018556', border: '1.5px solid #018556', icon: Video },
-  QUIZ:      { bg: '#FEE2E2', color: '#DC2626', border: '1.5px solid #DC2626', icon: Target },
+const SESSION_TYPE_COLORS: Record<string, { bg: string; color: string; icon: any }> = {
+  LIVE:      { bg: '#FACC15', color: '#018556', icon: Video },
+  MATERIAL:  { bg: '#FACC15', color: '#78350F', icon: FileText },
+  VIDEO:     { bg: '#018556', color: '#FFFFFF', icon: Video },
+  QUIZ:      { bg: '#DC2626', color: '#FFFFFF', icon: Target },
 }
 
 const inputStyle: React.CSSProperties = {
@@ -460,11 +460,11 @@ function SortableSessionItem({ session, setDeleteTarget }: { session: BootcampSe
         {session.type}
       </span>
 
-      <button onClick={() => setDeleteTarget({ type: 'session', id: session.id, edit: true, session })} style={{ width: 32, height: 32, borderRadius: 'var(--radius-md)', border: '1px solid #018556', background: '#F0FDF4', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#018556', transition: 'all 0.2s ease' }} onMouseOver={e => { e.currentTarget.style.background = '#DCFCE7' }} onMouseOut={e => { e.currentTarget.style.background = '#F0FDF4' }} title="Edit Materi">
-        <Edit size={15} strokeWidth={2.2} />
+      <button onClick={() => setDeleteTarget({ type: 'session', id: session.id, edit: true, session })} style={{ width: 28, height: 28, borderRadius: 6, border: 'none', background: '#018556', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFFFFF', boxShadow: '0 1px 2px rgba(1,133,86,0.2)', transition: 'all 0.15s ease' }} onMouseOver={e => { e.currentTarget.style.background = '#016b44' }} onMouseOut={e => { e.currentTarget.style.background = '#018556' }} title="Edit Materi">
+        <Edit size={14} strokeWidth={2.2} />
       </button>
-      <button onClick={() => setDeleteTarget({ type: 'session', id: session.id })} style={{ width: 32, height: 32, borderRadius: 'var(--radius-md)', border: '1px solid #DC2626', background: '#FEF2F2', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#DC2626', transition: 'all 0.2s ease' }} onMouseOver={e => { e.currentTarget.style.background = '#FEE2E2' }} onMouseOut={e => { e.currentTarget.style.background = '#FEF2F2' }} title="Hapus Materi">
-        <Trash2 size={15} strokeWidth={2.2} />
+      <button onClick={() => setDeleteTarget({ type: 'session', id: session.id })} style={{ width: 28, height: 28, borderRadius: 6, border: 'none', background: '#DC2626', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFFFFF', boxShadow: '0 1px 2px rgba(220,38,38,0.2)', transition: 'all 0.15s ease' }} onMouseOver={e => { e.currentTarget.style.background = '#B91C1C' }} onMouseOut={e => { e.currentTarget.style.background = '#DC2626' }} title="Hapus Materi">
+        <Trash2 size={14} strokeWidth={2.2} />
       </button>
     </div>
   )
@@ -502,11 +502,11 @@ function SortableChapterItem({ chapter, bootcampId, setDeleteTarget, onAddSessio
         <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-secondary)', background: 'var(--color-surface)', padding: '4px 10px', borderRadius: 'var(--radius-full)', border: '1px solid var(--color-border-subtle)' }}>
           {chapter.sessions.length} Materi
         </span>
-        <button onClick={() => onAddSession(chapter.id)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 'var(--radius-md)', border: '1.5px solid #018556', background: '#F0FDF4', fontSize: '12px', fontWeight: 700, cursor: 'pointer', color: '#018556', transition: 'all 0.2s' }} onMouseOver={e => { e.currentTarget.style.background = '#DCFCE7' }} onMouseOut={e => { e.currentTarget.style.background = '#F0FDF4' }}>
-          <Plus size={14} strokeWidth={2.5} /> Tambah
+        <button onClick={() => onAddSession(chapter.id)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', background: 'var(--color-surface)', fontSize: '12px', fontWeight: 600, cursor: 'pointer', color: 'var(--color-text-secondary)', transition: 'all 0.2s' }} onMouseOver={e => { e.currentTarget.style.color = 'var(--color-text-primary)'; e.currentTarget.style.borderColor = 'var(--color-border-heavy)' }} onMouseOut={e => { e.currentTarget.style.color = 'var(--color-text-secondary)'; e.currentTarget.style.borderColor = 'var(--color-border)' }}>
+          <Plus size={14} /> Tambah
         </button>
-        <button onClick={() => setDeleteTarget({ type: 'chapter', id: chapter.id })} style={{ width: 30, height: 30, borderRadius: 'var(--radius-md)', border: '1px solid #DC2626', background: '#FEF2F2', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#DC2626', transition: 'all 0.2s' }} title="Hapus Bab" onMouseOver={e => { e.currentTarget.style.background = '#FEE2E2' }} onMouseOut={e => { e.currentTarget.style.background = '#FEF2F2' }}>
-          <Trash2 size={15} strokeWidth={2.2} />
+        <button onClick={() => setDeleteTarget({ type: 'chapter', id: chapter.id })} style={{ width: 28, height: 28, borderRadius: 6, border: 'none', background: '#DC2626', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFFFFF', boxShadow: '0 1px 2px rgba(220,38,38,0.2)', transition: 'all 0.15s ease' }} onMouseOver={e => { e.currentTarget.style.background = '#B91C1C' }} onMouseOut={e => { e.currentTarget.style.background = '#DC2626' }} title="Hapus Bab">
+          <Trash2 size={14} strokeWidth={2.2} />
         </button>
       </div>
 

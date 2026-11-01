@@ -22,10 +22,10 @@ interface CourseSession {
 }
 interface MiniCourse { id: string; title: string }
 
-const SESSION_TYPE_COLORS: Record<string, { bg: string; color: string; border?: string }> = {
-  VIDEO:     { bg: '#DCFCE7', color: '#018556', border: '1.5px solid #018556' },
-  MATERIAL:  { bg: '#FEF08A', color: '#854D0E', border: '1.5px solid #FACC15' },
-  QUIZ:      { bg: '#FEE2E2', color: '#DC2626', border: '1.5px solid #DC2626' },
+const SESSION_TYPE_COLORS: Record<string, { bg: string; color: string }> = {
+  VIDEO:     { bg: '#018556', color: '#FFFFFF' },
+  MATERIAL:  { bg: '#FACC15', color: '#78350F' },
+  QUIZ:      { bg: '#DC2626', color: '#FFFFFF' },
 }
 
 const inputStyle: React.CSSProperties = {
