@@ -206,29 +206,6 @@ export default function BootcampDetailPage() {
               </span>
             </nav>
 
-            {/* Eyebrow */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '6px 8px', marginBottom: 12 }}>
-              <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-secondary)' }}>
-                {FIELD_LABELS[data.field]}
-              </span>
-              <span style={{ fontSize: '14px', color: 'var(--color-border)' }}>•</span>
-              <span style={{ fontSize: '12px', color: 'var(--color-text-tertiary)' }}>
-                {LEVEL_LABELS[data.level]}
-              </span>
-              {data.batchStatus !== 'CLOSED' && (
-                <>
-                  <span style={{ fontSize: '14px', color: 'var(--color-border)' }}>•</span>
-                  <span style={{
-                    fontSize: '12px', fontWeight: 600,
-                    color: data.batchStatus === 'OPEN' ? 'var(--color-primary)' : 'var(--color-text-secondary)',
-                  }}>
-                    {data.batchStatus === 'OPEN' ? 'Pendaftaran Dibuka'
-                      : data.batchStatus === 'ONGOING' ? 'Sedang Berjalan'
-                      : 'Segera Hadir'}
-                  </span>
-                </>
-              )}
-            </div>
 
             {/* Title */}
             <h1 style={{
