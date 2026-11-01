@@ -8,6 +8,7 @@ import AdminPageHeader from '@/components/admin/AdminPageHeader'
 import AdminConfirmModal from '@/components/admin/AdminConfirmModal'
 import AdminTableSkeleton from '@/components/admin/AdminTableSkeleton'
 import CleanCombobox from '@/components/admin/CleanCombobox'
+import VideoInputWithUpload from '@/components/admin/VideoInputWithUpload'
 import { toast } from 'sonner'
 import { motion, AnimatePresence } from 'motion/react'
 
@@ -45,10 +46,10 @@ interface BootcampChapter {
 interface Bootcamp { id: string; name?: string; title?: string }
 
 const SESSION_TYPE_COLORS: Record<string, { bg: string; color: string; border?: string; icon: any }> = {
-  LIVE:      { bg: '#FEF08A', color: '#018556', border: '1px solid #FDE047', icon: Video },
-  VIDEO:     { bg: '#EFF6FF', color: '#2563EB', icon: Video },
-  MATERIAL:  { bg: '#FEF3C7', color: '#D97706', icon: FileText },
-  QUIZ: { bg: '#F5F3FF', color: '#7C3AED', icon: Target },
+  LIVE:      { bg: '#FEF08A', color: '#854D0E', border: '1px solid #FACC15', icon: Video },
+  MATERIAL:  { bg: '#DCFCE7', color: '#018556', border: '1px solid #4ADE80', icon: FileText },
+  VIDEO:     { bg: '#DCFCE7', color: '#018556', border: '1px solid #4ADE80', icon: Video },
+  QUIZ:      { bg: '#FEE2E2', color: '#DC2626', border: '1px solid #F87171', icon: Target },
 }
 
 const inputStyle: React.CSSProperties = {
@@ -142,7 +143,7 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
 
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={e => { if (e.target === e.currentTarget) onClose() }}>
-      <motion.div initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-xl)', width: '100%', maxWidth: form.type === 'QUIZ' ? 640 : 540, maxHeight: '90vh', overflowY: 'auto', padding: 'var(--space-6)', boxShadow: 'var(--shadow-2xl)' }}>
+      <motion.div initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-xl)', width: '100%', maxWidth: form.type === 'QUIZ' ? 680 : (form.type === 'VIDEO' ? 640 : 560), maxHeight: '90vh', overflowY: 'auto', padding: 'var(--space-6)', boxShadow: 'var(--shadow-2xl)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 'var(--space-4)' }}>
           <h3 style={{ fontWeight: 700, fontSize: 'var(--text-lg)' }}>{editSession ? 'Edit Sesi Materi' : 'Tambah Sesi Materi (Session)'}</h3>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><X size={20} color="var(--color-text-secondary)" /></button>
@@ -236,13 +237,11 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
           {form.type === 'VIDEO' && (
             <div>
               <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>
-                Link Video (YouTube / Google Drive) <span style={{ color: 'var(--color-error)' }}>*</span>
+                Konten Video Pembelajaran <span style={{ color: 'var(--color-error)' }}>*</span>
               </label>
-              <input 
-                value={form.videoUrl} 
-                onChange={e => f('videoUrl', e.target.value)} 
-                placeholder="Contoh: https://www.youtube.com/watch?v=..." 
-                style={inputStyle} 
+              <VideoInputWithUpload
+                value={form.videoUrl}
+                onChange={(url) => f('videoUrl', url)}
               />
             </div>
           )}
@@ -275,18 +274,33 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
 
               <div style={{ padding: '16px', background: '#f9fafb', borderRadius: '14px', border: '1px solid var(--color-border)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                  <label style={{ fontSize: '13px', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>Daftar Soal Kuis Pilihan Ganda</label>
-                  <button type="button" onClick={() => setQuizOptions([...quizOptions, { id: Math.random().toString(36).substr(2, 9), question: '', options: [{ id: 'A', text: '', isCorrect: true }, { id: 'B', text: '', isCorrect: false }, { id: 'C', text: '', isCorrect: false }, { id: 'D', text: '', isCorrect: false }] }])} style={{ padding: '5px 12px', borderRadius: '8px', background: '#fff', border: '1px solid var(--color-border)', fontSize: '12px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <Plus size={13} /> Tambah Soal
-                  </button>
+                  <label style={{ fontSize: '13px', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>
+                    Daftar Soal Kuis Pilihan Ganda ({quizOptions.length} Soal)
+                  </label>
                 </div>
                 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
                   {quizOptions.map((q, qIndex) => (
                     <div key={q.id} style={{ background: '#fff', padding: '14px', borderRadius: '10px', border: '1px solid var(--color-border)', position: 'relative' }}>
                       {quizOptions.length > 1 && (
-                        <button type="button" onClick={() => setQuizOptions(quizOptions.filter((_, i) => i !== qIndex))} style={{ position: 'absolute', top: 10, right: 10, background: 'rgba(255,59,48,0.1)', color: 'var(--color-error)', border: 'none', borderRadius: '6px', width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-                          <Trash2 size={12} />
+                        <button 
+                          type="button" 
+                          onClick={() => setQuizOptions(quizOptions.filter((_, i) => i !== qIndex))} 
+                          style={{ 
+                            position: 'absolute', top: 10, right: 10, 
+                            background: '#DC2626', color: '#FFFFFF', 
+                            border: 'none', borderRadius: '6px', 
+                            width: 26, height: 26, 
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                            cursor: 'pointer',
+                            boxShadow: '0 2px 4px rgba(220,38,38,0.25)',
+                            transition: 'all 0.2s ease',
+                          }}
+                          onMouseOver={e => { e.currentTarget.style.background = '#B91C1C' }}
+                          onMouseOut={e => { e.currentTarget.style.background = '#DC2626' }}
+                          title="Hapus Soal"
+                        >
+                          <Trash2 size={13} strokeWidth={2.5} />
                         </button>
                       )}
                       <h4 style={{ fontSize: '12.5px', fontWeight: 700, marginBottom: 10, color: 'var(--color-text-primary)' }}>Soal {qIndex + 1}</h4>
@@ -303,41 +317,99 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
                       />
 
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                        {q.options.map((opt: any, optIndex: number) => (
-                          <div key={opt.id} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                            <div style={{ width: 26, height: 26, borderRadius: '6px', background: 'var(--color-bg)', border: '1px solid var(--color-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', fontWeight: 600, color: 'var(--color-text-secondary)', flexShrink: 0 }}>
-                              {['A', 'B', 'C', 'D'][optIndex] || optIndex + 1}
-                            </div>
-                            <input
-                              value={opt.text}
-                              onChange={(e) => {
-                                const newQuiz = [...quizOptions];
-                                newQuiz[qIndex].options[optIndex].text = e.target.value;
-                                setQuizOptions(newQuiz);
-                              }}
-                              placeholder={`Pilihan ${['A', 'B', 'C', 'D'][optIndex] ?? optIndex + 1}...`}
-                              style={{ ...inputStyle, flex: 1, padding: '7px 10px', fontSize: '12.5px' }}
-                            />
-                            <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', padding: '0 4px', height: 26 }}>
-                              <input 
-                                type="radio" 
-                                name={`correct-${q.id}`} 
-                                checked={opt.isCorrect}
-                                onChange={() => {
+                        {q.options.map((opt: any, optIndex: number) => {
+                          const isCorrect = opt.isCorrect;
+                          return (
+                            <div key={opt.id} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                              <div style={{ 
+                                width: 26, height: 26, borderRadius: '6px', 
+                                background: isCorrect ? '#DCFCE7' : 'var(--color-bg)', 
+                                border: isCorrect ? '1.5px solid #018556' : '1px solid var(--color-border)', 
+                                display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                                fontSize: '11px', fontWeight: 700, 
+                                color: isCorrect ? '#018556' : 'var(--color-text-secondary)', 
+                                flexShrink: 0 
+                              }}>
+                                {['A', 'B', 'C', 'D'][optIndex] || optIndex + 1}
+                              </div>
+                              <input
+                                value={opt.text}
+                                onChange={(e) => {
                                   const newQuiz = [...quizOptions];
-                                  newQuiz[qIndex].options.forEach((o: any) => o.isCorrect = false);
-                                  newQuiz[qIndex].options[optIndex].isCorrect = true;
+                                  newQuiz[qIndex].options[optIndex].text = e.target.value;
                                   setQuizOptions(newQuiz);
                                 }}
-                                style={{ width: 16, height: 16, accentColor: '#018556' }} 
+                                placeholder={`Pilihan ${['A', 'B', 'C', 'D'][optIndex] ?? optIndex + 1}...`}
+                                style={{ 
+                                  ...inputStyle, flex: 1, padding: '7px 10px', fontSize: '12.5px',
+                                  borderColor: isCorrect ? '#018556' : 'var(--color-border)',
+                                  background: isCorrect ? '#F0FDF4' : 'var(--color-surface)',
+                                }}
                               />
-                            </label>
-                          </div>
-                        ))}
+                              <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', padding: '0 4px', height: 26 }} title="Pilih sebagai kunci jawaban">
+                                <input 
+                                  type="radio" 
+                                  name={`correct-${q.id}`} 
+                                  checked={opt.isCorrect}
+                                  onChange={() => {
+                                    const newQuiz = [...quizOptions];
+                                    newQuiz[qIndex].options.forEach((o: any) => o.isCorrect = false);
+                                    newQuiz[qIndex].options[optIndex].isCorrect = true;
+                                    setQuizOptions(newQuiz);
+                                  }}
+                                  style={{ width: 17, height: 17, accentColor: '#018556', cursor: 'pointer' }} 
+                                />
+                              </label>
+                            </div>
+                          )
+                        })}
                       </div>
                     </div>
                   ))}
                 </div>
+
+                {/* Tombol Tambah Soal tepat di bawah soal terakhir */}
+                <button 
+                  type="button" 
+                  onClick={() => setQuizOptions([
+                    ...quizOptions, 
+                    { 
+                      id: Math.random().toString(36).substr(2, 9), 
+                      question: '', 
+                      options: [
+                        { id: 'A', text: '', isCorrect: true }, 
+                        { id: 'B', text: '', isCorrect: false }, 
+                        { id: 'C', text: '', isCorrect: false }, 
+                        { id: 'D', text: '', isCorrect: false }
+                      ] 
+                    }
+                  ])} 
+                  style={{ 
+                    marginTop: 16, 
+                    width: '100%', 
+                    padding: '11px 16px', 
+                    borderRadius: '10px', 
+                    background: '#F0FDF4', 
+                    border: '1.5px dashed #018556', 
+                    color: '#018556', 
+                    fontSize: '13px', 
+                    fontWeight: 700, 
+                    cursor: 'pointer', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center', 
+                    gap: 6,
+                    transition: 'all 0.2s ease',
+                  }}
+                  onMouseOver={e => {
+                    e.currentTarget.style.background = '#DCFCE7'
+                  }}
+                  onMouseOut={e => {
+                    e.currentTarget.style.background = '#F0FDF4'
+                  }}
+                >
+                  <Plus size={16} strokeWidth={2.5} /> Tambah Soal
+                </button>
               </div>
             </div>
           )}
@@ -417,11 +489,11 @@ function SortableSessionItem({ session, setDeleteTarget }: { session: BootcampSe
         {session.type}
       </span>
 
-      <button onClick={() => setDeleteTarget({ type: 'session', id: session.id, edit: true, session })} style={{ width: 32, height: 32, borderRadius: 'var(--radius-md)', border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-secondary)' }} title="Edit Materi">
-        <Edit size={15} />
+      <button onClick={() => setDeleteTarget({ type: 'session', id: session.id, edit: true, session })} style={{ width: 32, height: 32, borderRadius: 'var(--radius-md)', border: '1px solid transparent', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#018556', transition: 'all 0.2s ease' }} onMouseOver={e => { e.currentTarget.style.background = '#DCFCE7'; e.currentTarget.style.borderColor = '#4ADE80' }} onMouseOut={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'transparent' }} title="Edit Materi">
+        <Edit size={15} strokeWidth={2.2} />
       </button>
-      <button onClick={() => setDeleteTarget({ type: 'session', id: session.id })} style={{ width: 32, height: 32, borderRadius: 'var(--radius-md)', border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-tertiary)' }} title="Hapus Materi">
-        <Trash2 size={15} />
+      <button onClick={() => setDeleteTarget({ type: 'session', id: session.id })} style={{ width: 32, height: 32, borderRadius: 'var(--radius-md)', border: '1px solid transparent', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#DC2626', transition: 'all 0.2s ease' }} onMouseOver={e => { e.currentTarget.style.background = '#FEE2E2'; e.currentTarget.style.borderColor = '#F87171' }} onMouseOut={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'transparent' }} title="Hapus Materi">
+        <Trash2 size={15} strokeWidth={2.2} />
       </button>
     </div>
   )
@@ -459,11 +531,11 @@ function SortableChapterItem({ chapter, bootcampId, setDeleteTarget, onAddSessio
         <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-secondary)', background: 'var(--color-surface)', padding: '4px 10px', borderRadius: 'var(--radius-full)', border: '1px solid var(--color-border-subtle)' }}>
           {chapter.sessions.length} Materi
         </span>
-        <button onClick={() => onAddSession(chapter.id)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', background: 'var(--color-surface)', fontSize: '12px', fontWeight: 600, cursor: 'pointer', color: 'var(--color-text-secondary)', transition: 'all 0.2s' }} onMouseOver={e => { e.currentTarget.style.color = 'var(--color-text-primary)'; e.currentTarget.style.borderColor = 'var(--color-border-heavy)' }} onMouseOut={e => { e.currentTarget.style.color = 'var(--color-text-secondary)'; e.currentTarget.style.borderColor = 'var(--color-border)' }}>
-          <Plus size={14} /> Tambah
+        <button onClick={() => onAddSession(chapter.id)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 'var(--radius-md)', border: '1.5px solid #018556', background: '#F0FDF4', fontSize: '12px', fontWeight: 700, cursor: 'pointer', color: '#018556', transition: 'all 0.2s' }} onMouseOver={e => { e.currentTarget.style.background = '#DCFCE7' }} onMouseOut={e => { e.currentTarget.style.background = '#F0FDF4' }}>
+          <Plus size={14} strokeWidth={2.5} /> Tambah
         </button>
-        <button onClick={() => setDeleteTarget({ type: 'chapter', id: chapter.id })} style={{ width: 30, height: 30, borderRadius: 'var(--radius-md)', border: '1px solid transparent', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-tertiary)', transition: 'all 0.2s' }} title="Hapus Bab" onMouseOver={e => { e.currentTarget.style.color = 'var(--color-error)'; e.currentTarget.style.background = '#FEE2E2' }} onMouseOut={e => { e.currentTarget.style.color = 'var(--color-text-tertiary)'; e.currentTarget.style.background = 'transparent' }}>
-          <Trash2 size={15} />
+        <button onClick={() => setDeleteTarget({ type: 'chapter', id: chapter.id })} style={{ width: 30, height: 30, borderRadius: 'var(--radius-md)', border: '1px solid transparent', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#DC2626', transition: 'all 0.2s' }} title="Hapus Bab" onMouseOver={e => { e.currentTarget.style.background = '#FEE2E2'; e.currentTarget.style.borderColor = '#F87171' }} onMouseOut={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'transparent' }}>
+          <Trash2 size={15} strokeWidth={2.2} />
         </button>
       </div>
 
