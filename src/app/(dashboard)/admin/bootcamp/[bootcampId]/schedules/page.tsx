@@ -186,7 +186,7 @@ export default function BootcampSchedulesPage() {
 
       {isLoading ? <AdminTableSkeleton rows={5} cols={6} /> : sorted.length === 0 ? (
         <div className="card">
-          <AdminEmptyState type="empty" message="Belum ada jadwal live class. Tambahkan materi bertipe 'LIVE' melalui menu Silabus." action={null} />
+          <AdminEmptyState type="empty" message="Belum ada jadwal live class. Tambahkan materi bertipe 'LIVE' melalui menu Kurikulum." action={null} />
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>

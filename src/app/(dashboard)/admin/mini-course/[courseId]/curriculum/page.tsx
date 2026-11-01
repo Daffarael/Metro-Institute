@@ -22,7 +22,7 @@ interface CourseSession {
 }
 interface MiniCourse { id: string; title: string }
 
-const SESSION_TYPE_COLORS: Record<string, { bg: string; color: string }> = {
+const SESSION_TYPE_COLORS: Record<string, { bg: string; color: string; border?: string }> = {
   VIDEO:     { bg: '#018556', color: '#FFFFFF' },
   MATERIAL:  { bg: '#FACC15', color: '#78350F' },
   QUIZ:      { bg: '#DC2626', color: '#FFFFFF' },

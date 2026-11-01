@@ -45,7 +45,7 @@ interface BootcampChapter {
 
 interface Bootcamp { id: string; name?: string; title?: string }
 
-const SESSION_TYPE_COLORS: Record<string, { bg: string; color: string; icon: any }> = {
+const SESSION_TYPE_COLORS: Record<string, { bg: string; color: string; icon: any; border?: string }> = {
   LIVE:      { bg: '#FACC15', color: '#018556', icon: Video },
   MATERIAL:  { bg: '#FACC15', color: '#78350F', icon: FileText },
   VIDEO:     { bg: '#018556', color: '#FFFFFF', icon: Video },
@@ -648,7 +648,7 @@ export default function BootcampSyllabusPage() {
         breadcrumbs={[
           { label: 'Bootcamp', href: '/admin/bootcamp' },
           { label: bootcamp?.title ?? '...' },
-          { label: 'Syllabus' },
+          { label: 'Kurikulum' },
         ]}
         action={
           <button onClick={() => setShowAddChapter(true)} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 20px', borderRadius: 'var(--radius-full)', background: 'var(--color-primary)', color: '#fff', border: 'none', fontSize: 'var(--text-sm)', fontWeight: 700, cursor: 'pointer', boxShadow: 'var(--shadow-md)', transition: 'transform 0.2s' }} onMouseDown={e => e.currentTarget.style.transform = 'scale(0.95)'} onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}>

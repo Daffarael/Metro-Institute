@@ -229,7 +229,7 @@ function BootcampModal({
 
         <form onSubmit={handleSubmit(d => {
           if (d.status !== 'DRAFT' && !bootcamp?.hasCurriculum) {
-            toast.error('Kurikulum belum dibuat. Tambahkan bab dan materi di menu Silabus terlebih dahulu sebelum mempublikasikan.')
+            toast.error('Kurikulum belum dibuat. Tambahkan bab dan materi di menu Kurikulum terlebih dahulu sebelum mempublikasikan.')
             return
           }
           mutation.mutate(d as BootcampForm)
@@ -396,10 +396,10 @@ function BootcampModal({
                         onMouseEnter={e => e.currentTarget.style.textDecoration = 'underline'}
                         onMouseLeave={e => e.currentTarget.style.textDecoration = 'none'}
                       >
-                        Silabus
+                        Kurikulum
                       </Link>
                     ) : (
-                      <span style={{ color: '#018556', fontWeight: 600 }}>Silabus</span>
+                      <span style={{ color: '#018556', fontWeight: 600 }}>Kurikulum</span>
                     )}{' '}
                     untuk mengaktifkan status Tayang.
                   </p>
@@ -498,7 +498,7 @@ export default function AdminBootcampPage() {
       toast.success('Status Unggulan diperbarui!')
       qc.invalidateQueries({ queryKey: ['admin', 'bootcamps'] })
     },
-    onError: () => toast.error('Gagal memperbarui Featured.'),
+    onError: () => toast.error('Gagal memperbarui status Unggulan.'),
   })
 
   const { data, isLoading } = useQuery({
@@ -653,7 +653,7 @@ export default function AdminBootcampPage() {
                           onMouseEnter={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.color = 'var(--color-primary)' }}
                           onMouseLeave={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#374151' }}
                         >
-                          <Layers size={12} /> Silabus
+                          <Layers size={12} /> Kurikulum
                         </Link>
                         <button onClick={() => setChallengeTarget(b)} style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 'var(--radius-md)', background: '#fff', color: '#374151', border: '1px solid #e5e7eb', boxShadow: '0 1px 2px rgba(0,0,0,0.05)', fontSize: '12px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s' }}
                           onMouseEnter={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.color = 'var(--color-primary)' }}
@@ -688,7 +688,7 @@ export default function AdminBootcampPage() {
                             transition: 'all 0.15s',
                           }}
                         >
-                          {b.isFeatured ? '⭐ Featured' : '☆ Feature'}
+                          {b.isFeatured ? '★ Unggulan' : '☆ Jadikan Unggulan'}
                         </button>
                         {/* Delete Button */}
                         <button
