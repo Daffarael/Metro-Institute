@@ -46,10 +46,10 @@ interface BootcampChapter {
 interface Bootcamp { id: string; name?: string; title?: string }
 
 const SESSION_TYPE_COLORS: Record<string, { bg: string; color: string; icon: any; border?: string }> = {
-  LIVE:      { bg: '#FACC15', color: '#018556', icon: Video },
-  MATERIAL:  { bg: '#FACC15', color: '#78350F', icon: FileText },
-  VIDEO:     { bg: '#018556', color: '#FFFFFF', icon: Video },
-  QUIZ:      { bg: '#DC2626', color: '#FFFFFF', icon: Target },
+  LIVE:      { bg: 'var(--color-surface)', color: 'var(--color-text-secondary)', border: '1px solid var(--color-border)', icon: Video },
+  MATERIAL:  { bg: 'var(--color-surface)', color: 'var(--color-text-secondary)', border: '1px solid var(--color-border)', icon: FileText },
+  VIDEO:     { bg: 'var(--color-surface)', color: 'var(--color-text-secondary)', border: '1px solid var(--color-border)', icon: Video },
+  QUIZ:      { bg: 'var(--color-surface)', color: 'var(--color-text-secondary)', border: '1px solid var(--color-border)', icon: Target },
 }
 
 const inputStyle: React.CSSProperties = {
@@ -444,7 +444,7 @@ function SortableSessionItem({ session, setDeleteTarget }: { session: BootcampSe
     zIndex: isDragging ? 10 : 1,
   }
 
-  const typeConfig = SESSION_TYPE_COLORS[session.type] ?? { bg: '#F3F4F6', color: '#6B7280', icon: LayoutTemplate }
+  const typeConfig = SESSION_TYPE_COLORS[session.type] ?? { bg: 'var(--color-surface)', color: 'var(--color-text-secondary)', border: '1px solid var(--color-border)', icon: LayoutTemplate }
   const Icon = typeConfig.icon
 
   return (
@@ -456,7 +456,7 @@ function SortableSessionItem({ session, setDeleteTarget }: { session: BootcampSe
         <Icon size={16} strokeWidth={2} />
       </div>
       <span style={{ flex: 1, fontSize: 'var(--text-sm)', fontWeight: 500 }}>{session.title}</span>
-      <span style={{ padding: '4px 12px', borderRadius: 'var(--radius-full)', background: typeConfig.bg, color: typeConfig.color, border: typeConfig.border || 'none', fontSize: '11px', fontWeight: 800, letterSpacing: '0.03em' }}>
+      <span style={{ padding: '4px 12px', borderRadius: 'var(--radius-full)', background: typeConfig.bg, color: typeConfig.color, border: typeConfig.border || '1px solid var(--color-border)', fontSize: '11px', fontWeight: 700, letterSpacing: '0.03em' }}>
         {session.type}
       </span>
 

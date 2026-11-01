@@ -23,9 +23,9 @@ interface CourseSession {
 interface MiniCourse { id: string; title: string }
 
 const SESSION_TYPE_COLORS: Record<string, { bg: string; color: string; border?: string }> = {
-  VIDEO:     { bg: '#018556', color: '#FFFFFF' },
-  MATERIAL:  { bg: '#FACC15', color: '#78350F' },
-  QUIZ:      { bg: '#DC2626', color: '#FFFFFF' },
+  VIDEO:     { bg: 'var(--color-surface)', color: 'var(--color-text-secondary)', border: '1px solid var(--color-border)' },
+  MATERIAL:  { bg: 'var(--color-surface)', color: 'var(--color-text-secondary)', border: '1px solid var(--color-border)' },
+  QUIZ:      { bg: 'var(--color-surface)', color: 'var(--color-text-secondary)', border: '1px solid var(--color-border)' },
 }
 
 const inputStyle: React.CSSProperties = {
@@ -408,7 +408,7 @@ export default function MiniCourseCurriculumPage() {
             </div>
           ) : (
             sorted.map((s, i) => {
-              const tc = SESSION_TYPE_COLORS[s.type] ?? { bg: '#F3F4F6', color: '#6B7280' }
+              const tc = SESSION_TYPE_COLORS[s.type] ?? { bg: 'var(--color-surface)', color: 'var(--color-text-secondary)', border: '1px solid var(--color-border)' }
               return (
                 <div key={s.id}
                   style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', padding: 'var(--space-3) var(--space-4)', borderBottom: i < sorted.length - 1 ? '1px solid var(--color-border-subtle)' : 'none', transition: 'background var(--transition-fast)' }}
@@ -418,7 +418,7 @@ export default function MiniCourseCurriculumPage() {
                   <GripVertical size={16} color="var(--color-text-tertiary)" style={{ cursor: 'grab', flexShrink: 0 }} />
                   <span style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-tertiary)', width: 24, textAlign: 'center', fontWeight: 700 }}>{i + 1}</span>
                   <span style={{ flex: 1, fontSize: 'var(--text-sm)', fontWeight: 500 }}>{s.title}</span>
-                  <span style={{ padding: '3px 10px', borderRadius: 'var(--radius-full)', background: tc.bg, color: tc.color, border: tc.border || 'none', fontSize: '11px', fontWeight: 800 }}>{s.type}</span>
+                  <span style={{ padding: '3px 10px', borderRadius: 'var(--radius-full)', background: tc.bg, color: tc.color, border: tc.border || '1px solid var(--color-border)', fontSize: '11px', fontWeight: 700 }}>{s.type}</span>
                   {s.isFreePreview && <span style={{ padding: '2px 8px', borderRadius: 'var(--radius-full)', background: 'var(--color-accent-light)', color: '#856404', fontSize: '11px', fontWeight: 600 }}>Preview</span>}
                   
                   <button onClick={() => setEditSession(s)} style={{ width: 28, height: 28, borderRadius: 'var(--radius-md)', border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-tertiary)' }}
