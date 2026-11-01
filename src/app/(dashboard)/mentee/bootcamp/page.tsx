@@ -305,27 +305,25 @@ function BootcampCard({ bootcamp }: { bootcamp: Bootcamp }) {
             alignItems: 'center',
             justifyContent: 'space-between',
             gap: 8,
-            marginBottom: 8,
+            marginBottom: 10,
             minHeight: 46,
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0, overflow: 'hidden' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0 }}>
               <span style={{
-                fontSize: '12px',
-                fontWeight: 600,
+                fontSize: '13px',
+                fontWeight: 700,
                 color: 'var(--color-text-secondary)',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
+                lineHeight: 1.2,
                 whiteSpace: 'nowrap',
               }}>
                 {FIELD_LABELS[bootcamp.field]}
               </span>
-              <span style={{ fontSize: '12px', color: 'var(--color-border)', lineHeight: 0, flexShrink: 0 }}>•</span>
               <span style={{
-                fontSize: '12px',
+                fontSize: '11px',
                 fontWeight: 500,
                 color: 'var(--color-text-tertiary)',
+                lineHeight: 1.2,
                 whiteSpace: 'nowrap',
-                flexShrink: 0,
               }}>
                 {LEVEL_LABELS[bootcamp.level]}
               </span>
