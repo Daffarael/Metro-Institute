@@ -190,30 +190,7 @@ function BootcampCard({ bootcamp }: { bootcamp: Bootcamp }) {
           e.currentTarget.style.boxShadow = 'none'
         }}
       >
-        {/* Status badge — top-left corner */}
-        {bootcamp.batchStatus !== 'CLOSED' && (
-          <div style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            padding: '4px 10px',
-            background: bootcamp.batchStatus === 'OPEN'
-              ? 'var(--color-primary)'
-              : 'rgba(0,0,0,0.45)',
-            borderRadius: '11px 0 8px 0',
-            fontSize: '11px',
-            fontFamily: 'var(--font-reggae-one)',
-            color: '#fff',
-            letterSpacing: '0.03em',
-            whiteSpace: 'nowrap',
-            zIndex: 2,
-            lineHeight: 1.4,
-          }}>
-            {bootcamp.batchStatus === 'OPEN' ? 'Pendaftaran Dibuka'
-              : bootcamp.batchStatus === 'ONGOING' ? 'Sedang Berjalan'
-              : 'Segera Hadir'}
-          </div>
-        )}
+
 
         {/* Thumbnail */}
         <div style={{
@@ -237,8 +214,8 @@ function BootcampCard({ bootcamp }: { bootcamp: Bootcamp }) {
         {/* Content Area */}
         <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', flex: 1 }}>
           
-          {/* Meta: Field · Level */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+          {/* Meta: Field · Level · Status */}
+          <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
             <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-secondary)' }}>
               {FIELD_LABELS[bootcamp.field]}
             </span>
@@ -246,6 +223,25 @@ function BootcampCard({ bootcamp }: { bootcamp: Bootcamp }) {
             <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--color-text-tertiary)' }}>
               {LEVEL_LABELS[bootcamp.level]}
             </span>
+            {bootcamp.batchStatus && (
+              <>
+                <span style={{ fontSize: '14px', color: 'var(--color-border)', lineHeight: 0 }}>•</span>
+                <span style={{
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  color: bootcamp.batchStatus === 'OPEN'
+                    ? 'var(--color-primary)'
+                    : bootcamp.batchStatus === 'CLOSED'
+                      ? '#E02424'
+                      : 'var(--color-text-secondary)',
+                }}>
+                  {bootcamp.batchStatus === 'OPEN' ? 'Pendaftaran Dibuka'
+                    : bootcamp.batchStatus === 'ONGOING' ? 'Sedang Berjalan'
+                    : bootcamp.batchStatus === 'CLOSED' ? 'Pendaftaran Ditutup'
+                    : 'Segera Hadir'}
+                </span>
+              </>
+            )}
           </div>
 
           {/* Title */}
