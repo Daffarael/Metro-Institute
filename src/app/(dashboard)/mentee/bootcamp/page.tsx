@@ -165,6 +165,91 @@ export default function BootcampListPage() {
   )
 }
 
+// Hanging Signboard Component - Mirip desain & animasi 'Gratis' di Landing Page Ebook
+function HangingSignboard({ status }: { status: string }) {
+  const isOpen = status === 'OPEN'
+  const isOngoing = status === 'ONGOING'
+  const isComingSoon = status === 'COMING_SOON'
+
+  const bg = isOpen ? '#063D2A' : isOngoing ? '#1E293B' : isComingSoon ? '#1E1B4B' : '#450A0A'
+  const stroke = isOpen ? '#018556' : isOngoing ? '#475467' : isComingSoon ? '#6366F1' : '#DC2626'
+  const subText = isOpen ? 'PENDAFTARAN' : isOngoing ? 'BATCH' : isComingSoon ? 'BATCH' : 'PENDAFTARAN'
+  const mainText = isOpen ? 'DIBUKA' : isOngoing ? 'BERJALAN' : isComingSoon ? 'SEGERA' : 'DITUTUP'
+  const subColor = isOpen ? '#D1FAE5' : isOngoing ? '#94A3B8' : isComingSoon ? '#C7D2FE' : '#FCA5A5'
+
+  return (
+    <motion.div
+      animate={{ rotate: [-3.5, 3.5, -3.5] }}
+      transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
+      style={{ transformOrigin: '50% 8px' }}
+      whileHover={{ scale: 1.05, rotate: 6, transition: { duration: 0.3 } }}
+      className="origin-top select-none cursor-pointer drop-shadow-md"
+    >
+      <svg
+        width="120"
+        height="66"
+        viewBox="0 0 160 90"
+        xmlns="http://www.w3.org/2000/svg"
+        style={{ overflow: 'visible', display: 'block' }}
+      >
+        {/* Top Peg */}
+        <circle cx="80" cy="8" r="5" fill="#F3F4F6" stroke="#D1D5DB" strokeWidth="1.5" />
+        <circle cx="80" cy="8" r="2" fill="#9CA3AF" />
+
+        {/* Strings */}
+        <line x1="80" y1="8" x2="32" y2="34" stroke="#9CA3AF" strokeWidth="2" />
+        <line x1="80" y1="8" x2="128" y2="34" stroke="#9CA3AF" strokeWidth="2" />
+
+        {/* Board Outer */}
+        <rect x="8" y="26" width="144" height="58" rx="8" fill={bg} stroke={stroke} strokeWidth="1.5" />
+
+        {/* Board Inner Details (Silver border) */}
+        <rect x="13" y="31" width="134" height="48" rx="5" fill="none" stroke="#F3F4F6" strokeWidth="1" strokeOpacity="0.9" />
+
+        {/* Corner Accents */}
+        <path d="M 16 36 A 3 3 0 0 1 19 33" fill="none" stroke="#F3F4F6" strokeWidth="1" strokeOpacity="0.9" />
+        <path d="M 144 36 A 3 3 0 0 0 141 33" fill="none" stroke="#F3F4F6" strokeWidth="1" strokeOpacity="0.9" />
+        <path d="M 16 74 A 3 3 0 0 0 19 77" fill="none" stroke="#F3F4F6" strokeWidth="1" strokeOpacity="0.9" />
+        <path d="M 144 74 A 3 3 0 0 1 141 77" fill="none" stroke="#F3F4F6" strokeWidth="1" strokeOpacity="0.9" />
+
+        {/* Screws/Pegs */}
+        <circle cx="32" cy="36" r="3" fill="#F3F4F6" stroke="#D1D5DB" strokeWidth="1" />
+        <circle cx="32" cy="36" r="1" fill="#9CA3AF" />
+        <circle cx="128" cy="36" r="3" fill="#F3F4F6" stroke="#D1D5DB" strokeWidth="1" />
+        <circle cx="128" cy="36" r="1" fill="#9CA3AF" />
+
+        {/* Subtitle */}
+        <text
+          x="80"
+          y="48"
+          fontFamily="Georgia, 'Times New Roman', serif"
+          fontSize="8.5"
+          fill={subColor}
+          textAnchor="middle"
+          fontWeight="bold"
+          letterSpacing="1.5"
+        >
+          {subText}
+        </text>
+
+        {/* Main Text */}
+        <text
+          x="80"
+          y="68"
+          fontFamily="Georgia, 'Times New Roman', serif"
+          fontSize="16"
+          fill="#FFFFFF"
+          textAnchor="middle"
+          fontWeight="bold"
+          letterSpacing="2"
+        >
+          {mainText}
+        </text>
+      </svg>
+    </motion.div>
+  )
+}
+
 function BootcampCard({ bootcamp }: { bootcamp: Bootcamp }) {
 
   return (
@@ -190,30 +275,7 @@ function BootcampCard({ bootcamp }: { bootcamp: Bootcamp }) {
           e.currentTarget.style.boxShadow = 'none'
         }}
       >
-        {/* Status badge — top-left corner */}
-        {bootcamp.batchStatus !== 'CLOSED' && (
-          <div style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            padding: '4px 10px',
-            background: bootcamp.batchStatus === 'OPEN'
-              ? 'var(--color-primary)'
-              : 'rgba(0,0,0,0.45)',
-            borderRadius: '11px 0 8px 0',
-            fontSize: '11px',
-            fontFamily: 'var(--font-reggae-one)',
-            color: '#fff',
-            letterSpacing: '0.03em',
-            whiteSpace: 'nowrap',
-            zIndex: 2,
-            lineHeight: 1.4,
-          }}>
-            {bootcamp.batchStatus === 'OPEN' ? 'Pendaftaran Dibuka'
-              : bootcamp.batchStatus === 'ONGOING' ? 'Sedang Berjalan'
-              : 'Segera Hadir'}
-          </div>
-        )}
+
 
         {/* Thumbnail */}
         <div style={{
@@ -235,8 +297,15 @@ function BootcampCard({ bootcamp }: { bootcamp: Bootcamp }) {
         </div>
 
         {/* Content Area */}
-        <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+        <div style={{ padding: '16px 20px 20px', display: 'flex', flexDirection: 'column', flex: 1 }}>
           
+          {/* Hanging Signboard - Desain & Animasi Mirip Ebook Landing Page */}
+          {bootcamp.batchStatus && (
+            <div style={{ marginBottom: 12, display: 'flex', justifyContent: 'flex-start' }}>
+              <HangingSignboard status={bootcamp.batchStatus} />
+            </div>
+          )}
+
           {/* Meta: Field · Level */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
             <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-secondary)' }}>
