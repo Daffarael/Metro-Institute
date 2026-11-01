@@ -44,8 +44,8 @@ interface BootcampChapter {
 
 interface Bootcamp { id: string; name?: string; title?: string }
 
-const SESSION_TYPE_COLORS: Record<string, { bg: string; color: string; icon: any }> = {
-  LIVE:      { bg: '#ECFDF5', color: '#059669', icon: Video },
+const SESSION_TYPE_COLORS: Record<string, { bg: string; color: string; border?: string; icon: any }> = {
+  LIVE:      { bg: '#FEF08A', color: '#018556', border: '1px solid #FDE047', icon: Video },
   VIDEO:     { bg: '#EFF6FF', color: '#2563EB', icon: Video },
   MATERIAL:  { bg: '#FEF3C7', color: '#D97706', icon: FileText },
   QUIZ: { bg: '#F5F3FF', color: '#7C3AED', icon: Target },
@@ -409,11 +409,11 @@ function SortableSessionItem({ session, setDeleteTarget }: { session: BootcampSe
       <div {...attributes} {...listeners} style={{ cursor: 'grab', display: 'flex', padding: 4, borderRadius: 4 }}>
         <GripVertical size={16} color="var(--color-text-tertiary)" />
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: 6, background: typeConfig.bg, color: typeConfig.color }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 28, height: 28, borderRadius: 6, background: typeConfig.bg, color: typeConfig.color, border: (typeConfig as any).border || 'none' }}>
         <Icon size={14} />
       </div>
       <span style={{ flex: 1, fontSize: 'var(--text-sm)', fontWeight: 500 }}>{session.title}</span>
-      <span style={{ padding: '4px 10px', borderRadius: 'var(--radius-full)', background: typeConfig.bg, color: typeConfig.color, fontSize: '11px', fontWeight: 700, letterSpacing: '0.02em' }}>
+      <span style={{ padding: '4px 10px', borderRadius: 'var(--radius-full)', background: typeConfig.bg, color: typeConfig.color, border: (typeConfig as any).border || 'none', fontSize: '11px', fontWeight: 700, letterSpacing: '0.02em' }}>
         {session.type}
       </span>
 
