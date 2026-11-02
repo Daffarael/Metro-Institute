@@ -833,62 +833,99 @@ export default function MenteeWebinarDetailPage() {
               ) : isEnded ? (
 
                 /* Belum Terdaftar tapi Sesi sudah selesai */
-                <button
-                  disabled
+
+                <div
+
                   style={{
-                    width: '100%',
-                    padding: '12px 0',
-                    background: 'var(--color-primary)',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: 8,
-                    fontWeight: 700,
-                    fontSize: '14px',
+
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+
+                    width: '100%', padding: '12px 0',
+
+                    background: 'var(--color-bg)', color: 'var(--color-text-secondary)',
+
+                    border: '1px solid var(--color-border-subtle)',
+
+                    borderRadius: 8, fontWeight: 700, fontSize: '14px',
+
                     cursor: 'not-allowed',
-                    opacity: 0.6,
+
                   }}
+
                 >
-                  Sesi Selesai
-                </button>
+
+                  <Lock size={16} strokeWidth={2} /> Sesi Selesai
+
+                </div>
+
               ) : isRegistrationClosed ? (
+
                 /* Batas Pendaftaran H-2 Jam */
-                <button
-                  disabled
-                  style={{
-                    width: '100%',
-                    padding: '12px 0',
-                    background: 'var(--color-primary)',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: 8,
-                    fontWeight: 700,
-                    fontSize: '14px',
-                    cursor: 'not-allowed',
-                    opacity: 0.6,
-                  }}
-                >
-                  Pendaftaran Ditutup
-                </button>
+
+                <div>
+
+                  <div
+
+                    style={{
+
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+
+                      width: '100%', padding: '12px 0',
+
+                      background: 'var(--color-bg)', color: '#dc2626',
+
+                      border: '1px solid var(--color-border-subtle)',
+
+                      borderRadius: 8, fontWeight: 700, fontSize: '14px',
+
+                      cursor: 'not-allowed',
+
+                    }}
+
+                  >
+
+                    <Lock size={16} strokeWidth={2} /> Pendaftaran Ditutup
+
+                  </div>
+
+                  <div style={{ textAlign: 'center', marginTop: 6, fontSize: '11.5px', color: 'var(--color-text-tertiary)' }}>
+
+                    Batas pendaftaran H-2 jam sebelum acara telah berakhir.
+
+                  </div>
+
+                </div>
+
               ) : isFull ? (
+
                 /* Kuota Penuh */
-                <button
-                  disabled
+
+                <div
+
                   style={{
-                    width: '100%',
-                    padding: '12px 0',
-                    background: 'var(--color-primary)',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: 8,
-                    fontWeight: 700,
-                    fontSize: '14px',
+
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+
+                    width: '100%', padding: '12px 0',
+
+                    background: 'var(--color-bg)', color: '#dc2626',
+
+                    border: '1px solid var(--color-border-subtle)',
+
+                    borderRadius: 8, fontWeight: 700, fontSize: '14px',
+
                     cursor: 'not-allowed',
-                    opacity: 0.6,
+
                   }}
+
                 >
-                  Kuota Penuh
-                </button>
+
+                  <Lock size={16} strokeWidth={2} /> Kuota Penuh
+
+                </div>
+
               ) : isFree ? (
+
                 /* Belum Terdaftar: Gratis */
 
                 <motion.button
