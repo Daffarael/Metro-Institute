@@ -4,10 +4,10 @@ import { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import {
-  Video, Calendar, Clock, Search, ChevronRight
+  Video, Calendar, Clock, Search, ChevronRight, ArrowRight, Users
 } from 'lucide-react'
 import api from '@/lib/axios'
-import { ROUTES, formatDate, formatRupiah } from '@/lib/utils'
+import { ROUTES, formatDate, formatRupiah, FIELD_LABELS } from '@/lib/utils'
 import CleanCombobox from '@/components/admin/CleanCombobox'
 import AdminEmptyState from '@/components/admin/AdminEmptyState'
 import { SlidingTabs } from '@/components/ui/SlidingTabs'
@@ -205,153 +205,210 @@ function WebinarCard({
     >
       <div
         style={{
-          border: '1px solid var(--color-border)',
-          borderRadius: 16,
-          background: 'var(--color-surface)',
+          border: '1px solid var(--color-border-subtle)',
+          borderRadius: 12,
           overflow: 'hidden',
+          background: 'var(--color-surface)',
+          height: '100%',
           display: 'flex',
           flexDirection: 'column',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
-          transition: 'transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease',
-          cursor: 'pointer',
-          height: '100%',
+          transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+          position: 'relative',
         }}
         onMouseEnter={e => {
-          e.currentTarget.style.transform = 'translateY(-3px)'
-          e.currentTarget.style.boxShadow = '0 12px 24px rgba(0,0,0,0.06)'
-          e.currentTarget.style.borderColor = 'var(--color-primary)'
+          e.currentTarget.style.transform = 'translateY(-2px)'
+          e.currentTarget.style.boxShadow = '0 12px 24px rgba(0,0,0,0.06), 0 4px 8px rgba(0,0,0,0.04)'
         }}
         onMouseLeave={e => {
           e.currentTarget.style.transform = 'translateY(0)'
-          e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.02)'
-          e.currentTarget.style.borderColor = 'var(--color-border)'
+          e.currentTarget.style.boxShadow = 'none'
         }}
       >
-      {/* Banner / Poster Thumbnail */}
-      <div style={{ position: 'relative', height: 150, background: 'linear-gradient(135deg, #064e3b 0%, #1e293b 100%)', overflow: 'hidden' }}>
-        {webinar.bannerUrl ? (
-          <img
-            src={webinar.bannerUrl}
-            alt={webinar.title}
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-          />
-        ) : (
-          <div style={{
-            position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
-            background: 'linear-gradient(135deg, #059669 0%, #047857 50%, #064e3b 100%)',
-            color: '#fff', flexDirection: 'column', gap: 6,
-          }}>
-            <Video size={36} opacity={0.8} />
-            <span style={{ fontSize: '11px', fontWeight: 600, opacity: 0.9 }}>Live Workshop</span>
-          </div>
-        )}
-
-        {/* Price / Gratis Badge — top-left corner styled like Bootcamp */}
+        {/* Thumbnail Area - 150px height matching Bootcamp & Mini Course */}
         <div style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          padding: '4px 10px',
-          background: webinar.price === 0 ? 'var(--color-primary)' : 'rgba(0,0,0,0.5)',
-          borderRadius: '15px 0 8px 0',
-          fontSize: '11px',
-          fontFamily: 'var(--font-reggae-one)',
-          color: '#fff',
-          letterSpacing: '0.03em',
-          whiteSpace: 'nowrap',
-          zIndex: 2,
-          lineHeight: 1.4,
+          height: 150,
+          background: 'var(--color-bg)',
+          borderRadius: '12px 12px 0 0',
+          borderBottom: '1px solid var(--color-border-subtle)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          overflow: 'hidden',
+          flexShrink: 0,
+          position: 'relative',
         }}>
-          {webinar.price === 0 ? 'Gratis' : formatRupiah(webinar.price)}
+          {webinar.bannerUrl ? (
+            <img
+              src={webinar.bannerUrl}
+              alt={webinar.title}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          ) : (
+            <div style={{
+              position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
+              background: 'linear-gradient(135deg, #059669 0%, #047857 50%, #064e3b 100%)',
+              color: '#fff', flexDirection: 'column', gap: 6,
+            }}>
+              <Video size={36} opacity={0.8} />
+              <span style={{ fontSize: '11px', fontWeight: 600, opacity: 0.9 }}>Inspire Talk</span>
+            </div>
+          )}
         </div>
-      </div>
 
-      {/* Content */}
-      <div style={{ padding: 18, display: 'flex', flexDirection: 'column', flex: 1, gap: 12 }}>
-        {/* Title */}
-        <div>
+        {/* Content Area */}
+        <div style={{ padding: '16px 20px 20px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+          
+          {/* Metadata Row: Field & Status */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 8,
+            marginBottom: 10,
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+              <span style={{
+                fontSize: '12px',
+                fontWeight: 600,
+                color: 'var(--color-text-secondary)',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}>
+                {webinar.field ? (FIELD_LABELS[webinar.field] || webinar.field) : 'Inspire Talk'}
+              </span>
+              <span style={{ fontSize: '14px', color: 'var(--color-border)', lineHeight: 0 }}>•</span>
+              <span style={{
+                fontSize: '12px',
+                fontWeight: 500,
+                color: 'var(--color-text-tertiary)',
+                whiteSpace: 'nowrap',
+              }}>
+                Live
+              </span>
+            </div>
+
+            <span style={{
+              fontSize: '11px',
+              fontWeight: 600,
+              padding: '2px 8px',
+              borderRadius: 6,
+              background: isEnded
+                ? 'var(--color-bg, #f8fafc)'
+                : isRegistrationClosed
+                  ? 'rgba(220, 38, 38, 0.08)'
+                  : 'rgba(1, 133, 86, 0.08)',
+              color: isEnded
+                ? 'var(--color-text-tertiary, #94a3b8)'
+                : isRegistrationClosed
+                  ? '#dc2626'
+                  : 'var(--color-primary, #018556)',
+              border: `1px solid ${
+                isEnded
+                  ? 'var(--color-border, #e2e8f0)'
+                  : isRegistrationClosed
+                    ? 'rgba(220, 38, 38, 0.2)'
+                    : 'rgba(1, 133, 86, 0.2)'
+              }`,
+              whiteSpace: 'nowrap',
+              flexShrink: 0,
+            }}>
+              {isEnded ? 'Selesai' : isRegistrationClosed ? 'Ditutup' : 'Buka'}
+            </span>
+          </div>
+
+          {/* Title */}
           <h3 style={{
-            fontSize: '14px', fontWeight: 700, color: 'var(--color-text-primary)',
-            lineHeight: 1.35, marginBottom: 4, display: '-webkit-box',
-            WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', minHeight: 38,
+            fontSize: '15px',
+            fontWeight: 700,
+            lineHeight: 1.4,
+            color: 'var(--color-text-primary)',
+            margin: '0 0 8px 0',
+            letterSpacing: '-0.01em',
+            overflow: 'hidden', display: '-webkit-box',
+            WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
           }}>
             {webinar.title}
           </h3>
+
+          {/* Description */}
           <p style={{
-            fontSize: '12px', color: 'var(--color-text-secondary)', lineHeight: 1.4,
-            display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+            fontSize: '13px',
+            color: 'var(--color-text-tertiary)',
+            lineHeight: 1.5,
+            margin: '0 0 16px 0',
+            flex: 1,
+            overflow: 'hidden', display: '-webkit-box',
+            WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
           }}>
             {webinar.shortDescription || webinar.description}
           </p>
-        </div>
 
-        {/* Speaker Info */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 'auto' }}>
-          <div style={{
-            width: 28, height: 28, borderRadius: '50%',
-            background: 'rgba(1, 133, 86, 0.1)', color: 'var(--color-primary)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontWeight: 700, fontSize: '11px', overflow: 'hidden', flexShrink: 0,
-          }}>
-            {webinar.speakerAvatarUrl ? (
-              <img src={webinar.speakerAvatarUrl} alt={webinar.speakerName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            ) : (
-              webinar.speakerName.charAt(0).toUpperCase()
-            )}
-          </div>
-          <div style={{ overflow: 'hidden' }}>
-            <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-primary)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
-              {webinar.speakerName}
+          {/* Speaker Info */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+            <div style={{
+              width: 26, height: 26, borderRadius: '50%',
+              background: 'rgba(1, 133, 86, 0.1)', color: 'var(--color-primary)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontWeight: 700, fontSize: '11px', overflow: 'hidden', flexShrink: 0,
+            }}>
+              {webinar.speakerAvatarUrl ? (
+                <img src={webinar.speakerAvatarUrl} alt={webinar.speakerName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              ) : (
+                webinar.speakerName.charAt(0).toUpperCase()
+              )}
             </div>
-            {webinar.speakerRole && (
-              <div style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
-                {webinar.speakerRole}
+            <div style={{ overflow: 'hidden', minWidth: 0 }}>
+              <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-primary)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                {webinar.speakerName}
               </div>
-            )}
+              {webinar.speakerRole && (
+                <div style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                  {webinar.speakerRole}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
 
-        {/* Schedule & Duration */}
-        <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          paddingTop: 10, borderTop: '1px solid var(--color-border-subtle)',
-          fontSize: '11px', color: 'var(--color-text-secondary)',
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            <Calendar size={12} color="#64748b" /> {formatDate(webinar.scheduledAt)}
+          {/* Stats: Date & Duration */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+              <Calendar size={13} color="var(--color-text-tertiary)" />
+              <span style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
+                {formatDate(webinar.scheduledAt)}
+              </span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+              <Clock size={13} color="var(--color-text-tertiary)" />
+              <span style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
+                {webinar.duration}m
+              </span>
+            </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-            <Clock size={12} color="#64748b" /> {webinar.duration}m
-          </div>
-        </div>
 
-        {/* Action Button: Visual CTA (Navigasi ditangani oleh Link pembungkus card) */}
-        <div style={{ paddingTop: 4 }}>
-          <div
-            style={{
-              width: '100%', padding: '9px 12px', borderRadius: 8,
-              background: (isEnded || (!webinar.isRegistered && isRegistrationClosed)) ? 'var(--color-bg)' : 'var(--color-primary)',
-              color: (isEnded || (!webinar.isRegistered && isRegistrationClosed)) ? 'var(--color-text-tertiary)' : '#fff',
-              border: (isEnded || (!webinar.isRegistered && isRegistrationClosed)) ? '1px solid var(--color-border-subtle)' : 'none',
-              fontWeight: 600, fontSize: '12px',
-              display: 'flex', alignItems: 'center',
-              justifyContent: 'center', gap: 6,
-              transition: 'all 0.15s ease',
-            }}
-          >
-            {isEnded
-              ? 'Lihat Detail Sesi'
-              : webinar.isRegistered
-                ? 'Akses Sesi ›'
-                : isRegistrationClosed
-                  ? 'Pendaftaran Ditutup'
-                  : webinar.price === 0
-                    ? 'Daftar Gratis ›'
-                    : `Beli Tiket (${formatRupiah(webinar.price)})`}
+          {/* Footer (Price & Action) — Identical to Bootcamp and Mini Course */}
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            paddingTop: 16,
+            borderTop: '1px solid var(--color-border-subtle)',
+          }}>
+            <span style={{ fontSize: '15px', fontWeight: 700, color: 'var(--color-text-primary)' }}>
+              {webinar.price === 0 ? 'Gratis' : formatRupiah(webinar.price)}
+            </span>
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 6,
+              fontSize: '12px', fontWeight: 600,
+              color: 'var(--color-text-primary)',
+              border: '1px solid var(--color-border)',
+              padding: '6px 12px',
+              borderRadius: 20,
+            }}>
+              Lihat Detail <ArrowRight size={14} strokeWidth={2.5} />
+            </div>
           </div>
+
         </div>
       </div>
-    </div>
-  </Link>
-)
+    </Link>
+  )
 }
