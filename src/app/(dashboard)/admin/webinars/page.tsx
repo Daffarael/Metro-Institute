@@ -92,11 +92,7 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [onClose])
 
-  const { data: templates = [] } = useQuery<any[]>({
-    queryKey: ['certificate-templates'],
-    queryFn: () => api.get('/certificates/templates').then((r) => r.data.data ?? []),
-    staleTime: 5 * 60 * 1000,
-  })
+// Inspire Talk tidak memerlukan sertifikat
 
   // Helper to format Date/ISO string to "YYYY-MM-DDTHH:mm" in local WIB timezone for <input type="datetime-local">
   const toLocalDatetimeValue = (dateVal: string | Date | number) => {
@@ -123,7 +119,6 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
     webinar?.benefits && Array.isArray(webinar.benefits) && webinar.benefits.length > 0
       ? webinar.benefits
       : [
-          'Sertifikat Digital Resmi Metro Institute',
           'Sesi Tanya Jawab Langsung Bersama Narasumber',
           'Wawasan & Studi Kasus Praktik Nyata Industri',
           'Akses Jejaring & Diskusi Bersama Komunitas',
@@ -161,7 +156,7 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
       recordingUrl:     webinar?.recordingUrl ?? '',
       quota:            webinar?.quota ?? null,
       status:           webinar?.isPublished ? 'PUBLISHED' : 'DRAFT',
-      certificateTemplateId: webinar?.certificateTemplateId ?? null,
+      certificateTemplateId: null,
       bannerUrl:        webinar?.bannerUrl ?? '',
       attendanceThresholdPct: webinar?.attendanceThresholdPct !== undefined ? webinar.attendanceThresholdPct : ('' as any),
       xpReward:         webinar?.xpReward !== undefined ? webinar.xpReward : ('' as any),
@@ -186,6 +181,7 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
         scheduledAt: scheduledAtIso,
         meetingUrl: sanitizeUrl(rest.meetingUrl),
         recordingUrl: sanitizeUrl(rest.recordingUrl),
+        certificateTemplateId: null,
         isPublished: status === 'PUBLISHED',
         attendanceThresholdPct: (rest.attendanceThresholdPct !== undefined && rest.attendanceThresholdPct !== null && (rest as any).attendanceThresholdPct !== '' && !Number.isNaN(Number(rest.attendanceThresholdPct)))
           ? Number(rest.attendanceThresholdPct)
@@ -546,54 +542,31 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
             </div>
           </div>
 
-          {/* Status & Template Sertifikat */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-            <div>
-              <label style={labelStyle}>Status Publikasi <span style={{ color: 'var(--color-error)' }}>*</span></label>
-              <Controller
-                control={control}
-                name="status"
-                render={({ field }) => (
-                  <CleanCombobox
-                    options={[
-                      { value: 'PUBLISHED', label: 'Pendaftaran Dibuka' },
-                      { value: 'DRAFT', label: 'Draf' },
-                    ]}
-                    allowClear={false}
-                    value={field.value}
-                    onChange={field.onChange}
-                    placeholder="Pilih Status"
-                    width="100%"
-                    direction="down"
-                    style={{ ...inputStyleClean, padding: '12px 16px', background: '#fff' }}
-                  />
-                )}
-              />
-              <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 4, display: 'block' }}>
-                Webinar yang tayang otomatis berstatus Buka Pendaftaran, lalu otomatis Ditutup saat memasuki H-2 jam sebelum acara.
-              </span>
-            </div>
-            <div>
-              <label style={labelStyle}>Template Sertifikat</label>
-              <Controller
-                control={control}
-                name="certificateTemplateId"
-                render={({ field }) => (
-                  <CleanCombobox
-                    options={[
-                      { value: '', label: 'Tanpa Sertifikat' },
-                      ...templates.map(t => ({ value: t.id, label: t.name })),
-                    ]}
-                    value={field.value || ''}
-                    onChange={val => field.onChange(val === '' ? null : val)}
-                    placeholder="Pilih Template"
-                    width="100%"
-                    direction="down"
-                    style={{ ...inputStyleClean, padding: '12px 16px', background: '#fff' }}
-                  />
-                )}
-              />
-            </div>
+          {/* Status Publikasi */}
+          <div>
+            <label style={labelStyle}>Status Publikasi <span style={{ color: 'var(--color-error)' }}>*</span></label>
+            <Controller
+              control={control}
+              name="status"
+              render={({ field }) => (
+                <CleanCombobox
+                  options={[
+                    { value: 'PUBLISHED', label: 'Pendaftaran Dibuka' },
+                    { value: 'DRAFT', label: 'Draf' },
+                  ]}
+                  allowClear={false}
+                  value={field.value}
+                  onChange={field.onChange}
+                  placeholder="Pilih Status"
+                  width="100%"
+                  direction="down"
+                  style={{ ...inputStyleClean, padding: '12px 16px', background: '#fff' }}
+                />
+              )}
+            />
+            <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 4, display: 'block' }}>
+              Inspire Talk yang tayang otomatis berstatus Buka Pendaftaran, lalu otomatis Ditutup saat memasuki H-2 jam sebelum acara.
+            </span>
           </div>
 
           {/* Footer Submit */}
