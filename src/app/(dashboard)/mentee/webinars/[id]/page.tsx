@@ -16,7 +16,7 @@ import {
 
   Calendar, Clock, Users, Video, ChevronRight, CheckCircle2,
 
-  ExternalLink, PlayCircle, Lock, Zap, Share2, X, Award
+  ExternalLink, PlayCircle, Lock, Zap, Share2, X, Award, Play
 
 } from 'lucide-react'
 
@@ -176,7 +176,7 @@ export default function MenteeWebinarDetailPage() {
 
     if (webinar) {
 
-      setSearchPlaceholder(`Webinar / ${webinar.title}`)
+      setSearchPlaceholder(`Inspire Talk / ${webinar.title}`)
 
     }
 
@@ -348,13 +348,13 @@ export default function MenteeWebinarDetailPage() {
 
           <h2 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: 8 }}>
 
-            Webinar Tidak Ditemukan
+            Inspire Talk Tidak Ditemukan
 
           </h2>
 
           <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', marginBottom: 20 }}>
 
-            Sesi webinar mungkin telah dihapus atau tautan tidak valid.
+            Sesi Inspire Talk mungkin telah dihapus atau tautan tidak valid.
 
           </p>
 
@@ -362,7 +362,7 @@ export default function MenteeWebinarDetailPage() {
 
             <button style={{ padding: '8px 18px', borderRadius: 8, background: 'var(--color-primary)', color: '#fff', border: 'none', fontWeight: 600, fontSize: '13px', cursor: 'pointer' }}>
 
-              Kembali ke Daftar Webinar
+              Kembali ke Daftar Inspire Talk
 
             </button>
 
@@ -483,200 +483,60 @@ export default function MenteeWebinarDetailPage() {
       {/* Main layout (Mirip Bootcamp) */}
 
             {/* ── HEADER (Breadcrumb, Title, Meta) ──────────── */}
-
       <div className="detail-header" style={{ marginBottom: 24 }}>
-
         {/* Breadcrumb */}
-
-            <nav style={{
-
-              display: 'flex', alignItems: 'center', gap: 6,
-
-              marginBottom: 28, fontSize: '13px',
-
-              color: 'var(--color-text-tertiary)',
-
-              minWidth: 0,
-
-            }}>
-
-              <Link href={ROUTES.WEBINAR_LIST} style={{ color: 'var(--color-text-secondary)', textDecoration: 'none', flexShrink: 0 }}>
-
-                Webinar
-
-              </Link>
-
-              <ChevronRight size={13} strokeWidth={1.5} style={{ flexShrink: 0 }} />
-
-              <span style={{ color: 'var(--color-text-primary)', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>
-
-                {webinar.title}
-
-              </span>
-
-            </nav>
-
-
-
-            {/* Eyebrow */}
-
-            <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '6px 8px', marginBottom: 12 }}>
-
-              <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-secondary)' }}>
-
-                {webinar.field ? (FIELD_LABELS[webinar.field] || webinar.field) : 'Live Learning'}
-
-              </span>
-
-              <span style={{ fontSize: '14px', color: 'var(--color-border)' }}>•</span>
-
-              <span style={{ fontSize: '12px', color: 'var(--color-text-tertiary)' }}>
-
-                Live Workshop
-
-              </span>
-
-              <span style={{ fontSize: '14px', color: 'var(--color-border)' }}>•</span>
-
-              <span style={{
-
-                fontSize: '12px', fontWeight: 600,
-
-                color: isEnded
-
-                  ? 'var(--color-text-secondary)'
-
-                  : isOvertime
-
-                    ? '#D97706'
-
-                    : isLiveWindow
-
-                      ? 'var(--color-primary)'
-
-                      : isRegistrationClosed
-
-                        ? '#DC2626'
-
-                        : isFull
-
-                          ? '#DC2626'
-
-                          : 'var(--color-primary)',
-
-              }}>
-
-                {isEnded
-
-                  ? 'Sesi Selesai'
-
-                  : isOvertime
-
-                    ? 'Live Berlangsung (Waktu Tambahan)'
-
-                    : isLiveWindow
-
-                      ? 'Live Berlangsung'
-
-                      : isRegistrationClosed
-
-                        ? 'Pendaftaran Ditutup'
-
-                        : isFull
-
-                          ? 'Kuota Penuh'
-
-                          : 'Pendaftaran Dibuka'}
-
-              </span>
-
-            </div>
-
-
-
-            {/* Title */}
-
-            <h1 style={{
-
-              fontSize: 'clamp(22px, 4vw, 28px)', fontWeight: 800, lineHeight: 1.25,
-
-              color: 'var(--color-text-primary)',
-
-              letterSpacing: '-0.02em', marginBottom: 14,
-
-            }}>
-
-              {webinar.title}
-
-            </h1>
-
-
-
-            {webinar.shortDescription && (
-
-              <p style={{
-
-                fontSize: '15px', color: 'var(--color-text-secondary)',
-
-                lineHeight: 1.6, marginBottom: 24,
-
-              }}>
-
-                {webinar.shortDescription}
-
-              </p>
-
-            )}
-
-
-
-            {/* Meta strip */}
-
-            <div style={{
-
-              display: 'flex', flexWrap: 'wrap', alignItems: 'center',
-
-              gap: 20, marginBottom: 32,
-
-              paddingBottom: 24,
-
-              borderBottom: '1px solid var(--color-border-subtle)',
-
-            }}>
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: 5, color: 'var(--color-text-secondary)', fontSize: '13px' }}>
-
-                <Users size={13} strokeWidth={1.5} />
-
-                <span>{webinar._count?.registrations || 0} peserta</span>
-
-              </div>
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: 5, color: 'var(--color-text-secondary)', fontSize: '13px' }}>
-
-                <Clock size={13} strokeWidth={1.5} />
-
-                <span>{webinar.duration}m ({formatTimeOnly(scheduledStart)} – {formatTimeOnly(scheduledEnd)} WIB)</span>
-
-              </div>
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: 5, color: 'var(--color-text-secondary)', fontSize: '13px' }}>
-
-                <Calendar size={13} strokeWidth={1.5} />
-
-                <span>{formatDate(webinar.scheduledAt)}</span>
-
-              </div>
-
-            </div>
-
+        <nav style={{
+          display: 'flex', alignItems: 'center', gap: 6,
+          marginBottom: 28, fontSize: '13px',
+          color: 'var(--color-text-tertiary)',
+          minWidth: 0,
+        }}>
+          <Link href={ROUTES.WEBINAR_LIST} style={{ color: 'var(--color-text-secondary)', textDecoration: 'none', flexShrink: 0 }}>
+            Inspire Talk
+          </Link>
+          <ChevronRight size={13} strokeWidth={1.5} style={{ flexShrink: 0 }} />
+          <span style={{ color: 'var(--color-text-primary)', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>
+            {webinar.title}
+          </span>
+        </nav>
+
+        {/* Title */}
+        <h1 style={{
+          fontSize: 'clamp(22px, 4vw, 28px)', fontWeight: 800, lineHeight: 1.25,
+          color: 'var(--color-text-primary)',
+          letterSpacing: '-0.02em', marginBottom: 14,
+        }}>
+          {webinar.title}
+        </h1>
+
+        {webinar.shortDescription && (
+          <p style={{
+            fontSize: '15px', color: 'var(--color-text-secondary)',
+            lineHeight: 1.6, marginBottom: 24,
+          }}>
+            {webinar.shortDescription}
+          </p>
+        )}
+
+        {/* Meta strip */}
+        <div style={{
+          display: 'flex', flexWrap: 'wrap', alignItems: 'center',
+          gap: 20, marginBottom: 32,
+          paddingBottom: 24,
+          borderBottom: '1px solid var(--color-border-subtle)',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5, color: 'var(--color-text-secondary)', fontSize: '13px' }}>
+            <Users size={13} strokeWidth={1.5} />
+            <span>{webinar._count?.registrations || 0} peserta</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5, color: 'var(--color-text-secondary)', fontSize: '13px' }}>
+            <Play size={13} strokeWidth={1.5} />
+            <span>1 sesi</span>
+          </div>
+        </div>
       </div>
 
-
-
       <div className="detail-layout-grid">
-
-
 
         {/* ── BANNER IMAGE ──────────────────────────────── */}
 
@@ -1182,7 +1042,7 @@ export default function MenteeWebinarDetailPage() {
 
                     navigator.clipboard.writeText(window.location.href)
 
-                    toast.success('Link webinar disalin!')
+                    toast.success('Link Inspire Talk disalin!')
 
                   }}
 
@@ -1216,7 +1076,7 @@ export default function MenteeWebinarDetailPage() {
 
                 }}>
 
-                  Fasilitas Webinar
+                  Fasilitas Inspire Talk
 
                 </p>
 

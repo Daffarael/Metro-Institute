@@ -115,7 +115,7 @@ export default function MenteeWebinarsPage() {
             <Search size={14} color="#94a3b8" style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)' }} />
             <input
               type="text"
-              placeholder="Cari webinar atau pembicara..."
+              placeholder="Cari Inspire Talk atau pembicara..."
               value={search}
               onChange={e => setSearch(e.target.value)}
               style={{
@@ -156,8 +156,8 @@ export default function MenteeWebinarsPage() {
           type="empty"
           message={
             activeTab === 'MY'
-              ? 'Kamu belum mendaftar ke webinar manapun. Jelajahi sesi webinar mendatang dan daftar sekarang!'
-              : 'Tidak ada webinar yang sesuai dengan pencarian atau filter yang dipilih.'
+              ? 'Kamu belum mendaftar ke sesi Inspire Talk manapun. Jelajahi sesi Inspire Talk mendatang dan daftar sekarang!'
+              : 'Tidak ada Inspire Talk yang sesuai dengan pencarian atau filter yang dipilih.'
           }
           action={
             activeTab === 'MY' ? (
@@ -170,7 +170,7 @@ export default function MenteeWebinarsPage() {
                   color: '#fff', border: 'none', fontWeight: 600, fontSize: '13px', cursor: 'pointer',
                 }}
               >
-                Cari Webinar
+                Cari Inspire Talk
               </motion.button>
             ) : undefined
           }
