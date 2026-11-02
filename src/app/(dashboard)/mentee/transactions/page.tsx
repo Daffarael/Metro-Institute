@@ -192,14 +192,6 @@ export default function TransactionsPage() {
                   </div>
                 </div>
 
-                {/* Amount + status */}
-                <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                  <div style={{ fontWeight: 700, fontSize: 'var(--text-sm)' }}>{formatRupiah(tx.amount)}</div>
-                  <div style={{ marginTop: 4, display: 'inline-flex', alignItems: 'center', gap: 4, padding: '3px 10px', borderRadius: 9999, background: cfg.bg, color: cfg.color, fontSize: '11px', fontWeight: 700, letterSpacing: '0.01em', boxShadow: '0 1px 2px rgba(0, 0, 0, 0.06)' }}>
-                    {cfg.label}
-                  </div>
-                </div>
-
                 {/* Pay now button for pending */}
                 {tx.status === 'PENDING' && (
                   <motion.button
@@ -209,7 +201,7 @@ export default function TransactionsPage() {
                       background: 'var(--color-accent, #FAE653)', color: '#0D1117',
                       border: 'none', fontWeight: 700, fontSize: '12px',
                       cursor: 'pointer',
-                      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+                      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)', flexShrink: 0
                     }}
                     onClick={() => {
                       api.get(`/transactions/${tx.orderId}`).then((r) => {
@@ -223,6 +215,14 @@ export default function TransactionsPage() {
                     Bayar
                   </motion.button>
                 )}
+
+                {/* Amount + status */}
+                <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                  <div style={{ fontWeight: 700, fontSize: 'var(--text-sm)' }}>{formatRupiah(tx.amount)}</div>
+                  <div style={{ marginTop: 4, display: 'inline-flex', alignItems: 'center', gap: 4, padding: '3px 10px', borderRadius: 9999, background: cfg.bg, color: cfg.color, fontSize: '11px', fontWeight: 700, letterSpacing: '0.01em', boxShadow: '0 1px 2px rgba(0, 0, 0, 0.06)' }}>
+                    {cfg.label}
+                  </div>
+                </div>
               </div>
             )
           })}
