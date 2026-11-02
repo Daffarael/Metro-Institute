@@ -1,3 +1,4 @@
+import MarkdownTextarea from '@/components/ui/MarkdownTextarea'
 'use client'
 // src/app/admin/mini-course/page.tsx
 // List Mini Course + Modal Buat/Edit
@@ -218,9 +219,20 @@ function CourseModal({ course, onClose }: { course?: MiniCourse; onClose: () => 
           </div>
           <div>
             <label style={labelStyle}>Deskripsi Lengkap <span style={{color: 'var(--color-error)'}}>*</span></label>
-            <textarea {...register('descLong')} rows={4} style={{ ...inputStyleClean, resize: 'vertical' }} placeholder="Deskripsi lengkap kursus..." 
-              onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
-              onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
+            <Controller
+              control={control}
+              name="descLong"
+              render={({ field }) => (
+                <MarkdownTextarea
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                  rows={4}
+                  minHeight={110}
+                  placeholder="Deskripsi lengkap kursus..."
+                  error={errors.descLong?.message}
+                />
+              )}
             />
             {errors.descLong && <p style={{ fontSize: '12px', color: 'var(--color-error)', marginTop: 6, fontWeight: 500 }}>{errors.descLong.message}</p>}
           </div>

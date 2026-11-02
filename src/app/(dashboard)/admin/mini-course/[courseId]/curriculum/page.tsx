@@ -1,3 +1,4 @@
+import MarkdownTextarea from '@/components/ui/MarkdownTextarea'
 'use client'
 // src/app/admin/mini-course/[courseId]/curriculum/page.tsx
 // Kelola kurikulum mini course (DnD sessions)
@@ -251,11 +252,12 @@ return (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
               <div>
                 <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 4 }}>Instruksi Kuis <span style={{ color: 'var(--color-error)' }}>*</span></label>
-                <textarea 
+                <MarkdownTextarea 
                   value={form.assignmentDescription} 
-                  onChange={e => f('assignmentDescription', e.target.value)} 
+                  onChange={v => f('assignmentDescription', v)} 
                   placeholder="Jelaskan instruksi kuis ini secara umum..." 
-                  style={{ ...inputStyle, minHeight: 80, resize: 'vertical' }} 
+                  rows={4}
+                  minHeight={100}
                 />
               </div>
 

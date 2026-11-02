@@ -254,11 +254,12 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
                 <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>
                   Instruksi Tugas / Kuis
                 </label>
-                <textarea 
+                <MarkdownTextarea 
                   value={form.assignmentDescription} 
-                  onChange={e => f('assignmentDescription', e.target.value)} 
+                  onChange={v => f('assignmentDescription', v)} 
                   placeholder="Tuliskan petunjuk pengerjaan tugas atau kuis di sini..." 
-                  style={{ ...inputStyle, minHeight: 80, resize: 'vertical' }} 
+                  rows={4}
+                  minHeight={100}
                 />
               </div>
               <div>

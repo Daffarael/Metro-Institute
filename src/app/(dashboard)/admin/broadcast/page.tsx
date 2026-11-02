@@ -1,3 +1,4 @@
+import MarkdownTextarea from '@/components/ui/MarkdownTextarea'
 'use client'
 
 import { useState } from 'react'
@@ -76,15 +77,12 @@ export default function AdminBroadcastPage() {
         {/* Body */}
         <div style={{ marginBottom: '32px' }}>
           <label style={labelStyle}>Isi Pesan <span style={{color: 'var(--color-error)'}}>*</span></label>
-          <textarea
-            style={{ ...inputStyleClean, resize: 'vertical', fontFamily: 'inherit', minHeight: 140 }}
-            placeholder="Tulis pesan broadcast di sini..."
+          <MarkdownTextarea
             value={body}
-            maxLength={3000}
+            onChange={setBody}
+            placeholder="Tulis pesan broadcast di sini..."
             rows={6}
-            onChange={(e) => setBody(e.target.value)}
-            onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)'; e.currentTarget.style.boxShadow = '0 0 0 4px rgba(1,133,86,0.08)' }}
-            onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)'; e.currentTarget.style.boxShadow = 'none' }}
+            minHeight={140}
           />
           <div style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', textAlign: 'right', marginTop: '8px', fontWeight: 500 }}>{body.length}/3000</div>
         </div>

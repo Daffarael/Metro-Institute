@@ -1,3 +1,4 @@
+import MarkdownTextarea from '@/components/ui/MarkdownTextarea'
 'use client'
 // src/app/admin/bootcamp/page.tsx
 // Sesuai concept doc Section 4A + 4B
@@ -431,9 +432,20 @@ function BootcampModal({
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 8 }}>
               <label style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-secondary)' }}>Deskripsi Bootcamp <span style={{color: 'var(--color-error)'}}>*</span></label>
             </div>
-            <textarea {...register('description')} rows={3} style={{ ...inputStyleClean, resize: 'vertical' }} placeholder="Deskripsi lengkap tentang kurikulum, target capaian, dan fasilitas cohort bootcamp ini..." 
-              onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
-              onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
+            <Controller
+              control={control}
+              name="description"
+              render={({ field }) => (
+                <MarkdownTextarea
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                  rows={4}
+                  minHeight={110}
+                  placeholder="Deskripsi lengkap tentang kurikulum, target capaian, dan fasilitas cohort bootcamp ini..."
+                  error={errors.description?.message}
+                />
+              )}
             />
             {errors.description && <p style={{ fontSize: '12px', color: 'var(--color-error)', marginTop: 6, fontWeight: 500 }}>{errors.description.message}</p>}
           </div>
