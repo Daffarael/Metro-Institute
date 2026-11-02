@@ -70,6 +70,7 @@ interface Bootcamp {
   level?: string
   status: string
   price: number
+  quota?: number
   purchaseOpenAt: string
   purchaseCloseAt: string
   startDate: string
@@ -106,6 +107,20 @@ const inputStyle: React.CSSProperties = {
   color: 'var(--color-text-primary)',
 }
 
+// Helper to format Date/ISO string to "YYYY-MM-DD" in local WIB timezone for <input type="date">
+export function toLocalDateInput(dateVal: string | Date | null | undefined): string {
+  if (!dateVal) return ''
+  const d = new Date(dateVal)
+  if (isNaN(d.getTime())) return ''
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Jakarta',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  })
+  return formatter.format(d)
+}
+
 // ─── Modal Buat/Edit Bootcamp ──────────────────────────────
 function BootcampModal({
   bootcamp, onClose,
@@ -121,12 +136,12 @@ function BootcampModal({
       description:     bootcamp?.description ?? '',
       field:           (bootcamp?.field || bootcamp?.fields?.[0] || '') as any,
       level:           ((bootcamp as any)?.level || '') as any,
-      quota:           (bootcamp as any)?.quota !== undefined ? (bootcamp as any).quota : ('' as any),
+      quota:           ((bootcamp as any)?.quota && Number((bootcamp as any).quota) > 0) ? Number((bootcamp as any).quota) : 50,
       price:           bootcamp?.price !== undefined ? bootcamp.price : ('' as any),
-      purchaseOpenAt:  bootcamp?.purchaseOpenAt?.slice(0, 10) ?? '',
-      purchaseCloseAt: bootcamp?.purchaseCloseAt?.slice(0, 10) ?? '',
-      startDate:       bootcamp?.startDate?.slice(0, 10) ?? '',
-      endDate:         bootcamp?.endDate?.slice(0, 10) ?? '',
+      purchaseOpenAt:  toLocalDateInput(bootcamp?.purchaseOpenAt || (bootcamp as any)?.registrationStartDate),
+      purchaseCloseAt: toLocalDateInput(bootcamp?.purchaseCloseAt || (bootcamp as any)?.registrationDeadline),
+      startDate:       toLocalDateInput(bootcamp?.startDate || (bootcamp as any)?.batchStartDate),
+      endDate:         toLocalDateInput(bootcamp?.endDate || (bootcamp as any)?.batchEndDate),
       status:          (bootcamp?.status as any) ?? 'DRAFT',
       certificateTemplateId: bootcamp?.certificateTemplateId ?? null,
       thumbnailUrl:    bootcamp?.thumbnailUrl ?? '',
@@ -137,6 +152,7 @@ function BootcampModal({
     mutationFn: (data: BootcampForm) => {
       const payload = {
         ...data,
+        quota: Number(data.quota) || 50,
         fields: [data.field],
       }
       return isEdit

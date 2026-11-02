@@ -32,7 +32,7 @@ const webinarSchema = z.object({
   duration:         z.preprocess(v => (v === '' || v === null || v === undefined || (typeof v === 'number' && Number.isNaN(v)) ? undefined : Number(v)), z.number({ error: () => ({ message: 'Durasi wajib diisi' }) }).min(1, 'Minimal 1 menit')),
   meetingUrl:       z.string().optional().nullable(),
   recordingUrl:     z.string().optional().nullable(),
-  quota:            z.preprocess(v => (v === '' || v === null || v === undefined || (typeof v === 'number' && Number.isNaN(v)) ? null : Number(v)), z.number().optional().nullable()),
+  quota:            z.preprocess(v => (v === '' || v === null || v === undefined || (typeof v === 'number' && (Number.isNaN(v) || v <= 0)) ? null : Number(v)), z.number().min(1, 'Kuota minimal 1 peserta').optional().nullable()),
   status:           z.enum(['DRAFT', 'PUBLISHED']),
   certificateTemplateId: z.string().optional().nullable(),
   bannerUrl:        z.string().optional().nullable(),
@@ -95,20 +95,23 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
 // Inspire Talk tidak memerlukan sertifikat
 
   // Helper to format Date/ISO string to "YYYY-MM-DDTHH:mm" in local WIB timezone for <input type="datetime-local">
-  const toLocalDatetimeValue = (dateVal: string | Date | number) => {
+  const toLocalDatetimeValue = (dateVal: string | Date | number | null | undefined): string => {
+    if (!dateVal) return ''
     const d = new Date(dateVal)
-    const formatter = new Intl.DateTimeFormat('en-US', {
+    if (isNaN(d.getTime())) return ''
+    const formatter = new Intl.DateTimeFormat('en-CA', {
       timeZone: 'Asia/Jakarta',
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',
       hour: '2-digit',
       minute: '2-digit',
-      hour12: false,
+      hourCycle: 'h23',
     })
     const parts = Object.fromEntries(formatter.formatToParts(d).map((p) => [p.type, p.value]))
-    const hour = parts.hour === '24' ? '00' : parts.hour
-    return `${parts.year}-${parts.month}-${parts.day}T${hour}:${parts.minute}`
+    const hour = parts.hour === '24' ? '00' : parts.hour.padStart(2, '0')
+    const minute = parts.minute.padStart(2, '0')
+    return `${parts.year}-${parts.month}-${parts.day}T${hour}:${minute}`
   }
 
   const defaultDate = webinar?.scheduledAt
@@ -154,7 +157,7 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
       duration:         webinar?.duration !== undefined ? webinar.duration : ('' as any),
       meetingUrl:       webinar?.meetingUrl ?? '',
       recordingUrl:     webinar?.recordingUrl ?? '',
-      quota:            webinar?.quota ?? null,
+      quota:            (webinar?.quota && Number(webinar.quota) > 0) ? Number(webinar.quota) : ('' as any),
       status:           webinar?.isPublished ? 'PUBLISHED' : 'DRAFT',
       certificateTemplateId: null,
       bannerUrl:        webinar?.bannerUrl ?? '',
@@ -177,6 +180,7 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
 
       const payload = {
         ...rest,
+        quota: (rest.quota && Number(rest.quota) > 0) ? Number(rest.quota) : null,
         benefits: benefitsList,
         scheduledAt: scheduledAtIso,
         meetingUrl: sanitizeUrl(rest.meetingUrl),
@@ -377,7 +381,7 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
               <label style={labelStyle}>Batas Kuota Peserta</label>
               <input
                 type="number"
-                {...register('quota', { setValueAs: v => (v === '' ? null : Number(v)) })}
+                {...register('quota', { setValueAs: v => (v === '' || Number(v) <= 0 ? null : Number(v)) })}
                 placeholder="Tak terbatas"
                 min={1}
                 style={inputStyleClean}
