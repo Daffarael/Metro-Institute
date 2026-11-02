@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query'
 import { useForm, useFieldArray, Controller } from 'react-hook-form'
-import { Plus, Edit2, Trash2, X, Search, GripVertical } from 'lucide-react'
+import { Plus, Edit2, Trash2, X, Search, GripVertical, Shuffle } from 'lucide-react'
 import { motion, AnimatePresence } from 'motion/react'
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core'
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable'
@@ -246,7 +246,7 @@ function QuestionModal({
   const qc = useQueryClient()
   const isEdit = !!question
 
-  const { register, handleSubmit, control } = useForm({
+  const { register, handleSubmit, control, setValue, getValues } = useForm({
     defaultValues: {
       question: question?.question ?? '',
       options: question?.options ?? [
@@ -259,6 +259,18 @@ function QuestionModal({
       isActive: question?.isActive ?? true,
     },
   })
+
+  const handleShuffleOptions = () => {
+    const currentOptions = getValues('options')
+    if (!currentOptions || currentOptions.length < 2) return
+    const shuffled = [...currentOptions].sort(() => Math.random() - 0.5)
+    shuffled.forEach((opt, idx) => {
+      setValue(`options.${idx}.text`, opt.text, { shouldDirty: true })
+      setValue(`options.${idx}.field`, opt.field, { shouldDirty: true })
+      setValue(`options.${idx}.id`, OPTION_LABELS[idx].toLowerCase(), { shouldDirty: true })
+    })
+    toast.info('Urutan opsi berhasil diacak.')
+  }
 
   const { fields } = useFieldArray({ control, name: 'options' })
 
@@ -371,7 +383,31 @@ function QuestionModal({
 
           {/* Options */}
           <div>
-            <label style={labelStyle}>Opsi Jawaban & Pemetaan Bidang <span style={{ color: 'var(--color-error)' }}>*</span></label>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+              <label style={{ ...labelStyle, marginBottom: 0 }}>
+                Opsi Jawaban & Pemetaan Bidang <span style={{ color: 'var(--color-error)' }}>*</span>
+              </label>
+              <button
+                type="button"
+                onClick={handleShuffleOptions}
+                style={{
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  color: 'var(--color-primary)',
+                  background: 'var(--color-primary-xlight)',
+                  border: 'none',
+                  borderRadius: '6px',
+                  padding: '4px 10px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 5,
+                  transition: 'background 0.2s',
+                }}
+              >
+                <Shuffle size={13} /> Acak Opsi
+              </button>
+            </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {fields.map((field, idx) => (
                 <div key={field.id} style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
@@ -546,23 +582,48 @@ export default function AdminSkillTestPage() {
     onError: () => toast.error('Gagal menghapus.'),
   })
 
+  const shuffleAllMutation = useMutation({
+    mutationFn: () => api.post('/admin/skill-test/shuffle-options').then(r => r.data),
+    onSuccess: () => {
+      toast.success('Semua opsi soal berhasil diacak.')
+      qc.invalidateQueries({ queryKey: ['admin', 'skill-test'] })
+    },
+    onError: () => toast.error('Gagal mengacak opsi.'),
+  })
+
   return (
     <div>
       <AdminPageHeader
         title="Soal Skill Test"
         description="Kelola bank soal Skill Test. Bobot tiap pertanyaan menentukan rekomendasi bidang pengguna."
         action={
-          <button
-            onClick={() => setModal('new')}
-            style={{
-              display: 'flex', alignItems: 'center', gap: 6,
-              padding: '9px 16px', borderRadius: 'var(--radius-md)',
-              background: 'var(--color-primary)', color: '#fff',
-              border: 'none', fontSize: 'var(--text-sm)', fontWeight: 700, cursor: 'pointer',
-            }}
-          >
-            <Plus size={15} /> Tambah Soal
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <button
+              onClick={() => shuffleAllMutation.mutate()}
+              disabled={shuffleAllMutation.isPending}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 6,
+                padding: '9px 14px', borderRadius: 'var(--radius-md)',
+                background: '#fff', color: 'var(--color-text-secondary)',
+                border: '1px solid var(--color-border)', fontSize: 'var(--text-sm)', fontWeight: 600, cursor: 'pointer',
+                opacity: shuffleAllMutation.isPending ? 0.6 : 1,
+              }}
+              title="Acak urutan opsi A, B, C, D untuk semua soal"
+            >
+              <Shuffle size={14} /> {shuffleAllMutation.isPending ? 'Mengacak...' : 'Acak Semua Opsi'}
+            </button>
+            <button
+              onClick={() => setModal('new')}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 6,
+                padding: '9px 16px', borderRadius: 'var(--radius-md)',
+                background: 'var(--color-primary)', color: '#fff',
+                border: 'none', fontSize: 'var(--text-sm)', fontWeight: 700, cursor: 'pointer',
+              }}
+            >
+              <Plus size={15} /> Tambah Soal
+            </button>
+          </div>
         }
       />
 
