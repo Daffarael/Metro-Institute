@@ -588,10 +588,11 @@ export default function AdminMiniCoursePage() {
                           style={{
                             display: 'flex', alignItems: 'center', gap: 4,
                             padding: '5px 10px', borderRadius: 'var(--radius-md)',
-                            border: `1px solid ${c.isFeatured ? '#10b981' : '#e5e7eb'}`,
-                            background: c.isFeatured ? '#ecfdf5' : '#fff',
+                            border: `1px solid ${c.isFeatured ? 'var(--color-primary)' : '#e5e7eb'}`,
+                            background: c.isFeatured ? 'var(--color-primary)' : '#fff',
                             fontSize: '12px', fontWeight: 600, cursor: 'pointer',
-                            color: c.isFeatured ? '#059669' : '#374151',
+                            color: c.isFeatured ? '#fff' : '#374151',
+                            boxShadow: c.isFeatured ? '0 1px 3px rgba(1, 133, 86, 0.25)' : '0 1px 2px rgba(0,0,0,0.05)',
                             transition: 'all 0.15s',
                           }}
                         >

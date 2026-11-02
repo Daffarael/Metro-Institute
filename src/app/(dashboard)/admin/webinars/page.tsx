@@ -811,7 +811,7 @@ export default function AdminWebinarsPage() {
                       <span style={{
                         display: 'inline-flex', alignItems: 'center', gap: 3,
                         marginTop: 4, padding: '1px 6px', borderRadius: '4px',
-                        background: '#ecfdf5', color: '#059669', fontSize: '11px', fontWeight: 600,
+                        background: 'var(--color-primary)', color: '#ffffff', fontSize: '11px', fontWeight: 700,
                       }}>
                         Ditampilkan
                       </span>
@@ -930,12 +930,12 @@ export default function AdminWebinarsPage() {
                         style={{
                           display: 'flex', alignItems: 'center', gap: 4,
                           padding: '5px 10px', borderRadius: 'var(--radius-md)',
-                          border: `1px solid ${w.isFeatured ? '#10b981' : '#e5e7eb'}`,
-                          background: w.isFeatured ? '#ecfdf5' : '#fff',
+                          border: `1px solid ${w.isFeatured ? 'var(--color-primary)' : '#e5e7eb'}`,
+                          background: w.isFeatured ? 'var(--color-primary)' : '#fff',
                           fontSize: '12px', fontWeight: 600, cursor: 'pointer',
-                          color: w.isFeatured ? '#059669' : '#374151',
+                          color: w.isFeatured ? '#fff' : '#374151',
                           transition: 'all 0.15s',
-                          boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                          boxShadow: w.isFeatured ? '0 1px 3px rgba(1, 133, 86, 0.25)' : '0 1px 2px rgba(0,0,0,0.05)',
                         }}
                       >
                         {w.isFeatured ? 'Ditampilkan' : 'Tampilkan'}

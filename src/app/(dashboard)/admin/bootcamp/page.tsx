@@ -723,10 +723,11 @@ export default function AdminBootcampPage() {
                           style={{
                             display: 'flex', alignItems: 'center', gap: 4,
                             padding: '5px 10px', borderRadius: 'var(--radius-md)',
-                            border: `1px solid ${b.isFeatured ? '#10b981' : '#e5e7eb'}`,
-                            background: b.isFeatured ? '#ecfdf5' : '#fff',
+                            border: `1px solid ${b.isFeatured ? 'var(--color-primary)' : '#e5e7eb'}`,
+                            background: b.isFeatured ? 'var(--color-primary)' : '#fff',
                             fontSize: '12px', fontWeight: 600, cursor: 'pointer',
-                            color: b.isFeatured ? '#059669' : '#374151',
+                            color: b.isFeatured ? '#fff' : '#374151',
+                            boxShadow: b.isFeatured ? '0 1px 3px rgba(1, 133, 86, 0.25)' : '0 1px 2px rgba(0,0,0,0.05)',
                             transition: 'all 0.15s',
                           }}
                         >
