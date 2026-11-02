@@ -189,6 +189,99 @@ export default function MenteeWebinarsPage() {
   )
 }
 
+// Hanging Signboard Component - Identik dengan Bootcamp
+function HangingSignboard({ status }: { status: string }) {
+  const isOpen = status === 'OPEN'
+
+  const config = isOpen
+    ? {
+        bg: '#063D2A',
+        stroke: '#018556',
+        subText: 'PENDAFTARAN',
+        mainText: 'DIBUKA',
+        subColor: '#D1FAE5',
+      }
+    : {
+        bg: '#450A0A',
+        stroke: '#DC2626',
+        subText: 'PENDAFTARAN',
+        mainText: 'DITUTUP',
+        subColor: '#FECACA',
+      }
+
+  return (
+    <motion.div
+      animate={{ rotate: [-3.5, 3.5, -3.5] }}
+      transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}
+      style={{ transformOrigin: '50% 6px' }}
+      whileHover={{ scale: 1.05, rotate: 6, transition: { duration: 0.3 } }}
+      className="origin-top select-none cursor-pointer drop-shadow-sm flex-shrink-0"
+    >
+      <svg
+        width="92"
+        height="46"
+        viewBox="0 0 140 70"
+        xmlns="http://www.w3.org/2000/svg"
+        style={{ overflow: 'visible', display: 'block' }}
+      >
+        {/* Top Peg */}
+        <circle cx="70" cy="6" r="4.5" fill="#F3F4F6" stroke="#D1D5DB" strokeWidth="1.2" />
+        <circle cx="70" cy="6" r="1.8" fill="#9CA3AF" />
+
+        {/* Strings */}
+        <line x1="70" y1="6" x2="24" y2="22" stroke="#9CA3AF" strokeWidth="1.8" />
+        <line x1="70" y1="6" x2="116" y2="22" stroke="#9CA3AF" strokeWidth="1.8" />
+
+        {/* Board Outer */}
+        <rect x="6" y="16" width="128" height="50" rx="6" fill={config.bg} stroke={config.stroke} strokeWidth="1.2" />
+
+        {/* Board Inner Details (Silver border) */}
+        <rect x="10" y="20" width="120" height="42" rx="4" fill="none" stroke="#F3F4F6" strokeWidth="0.8" strokeOpacity="0.9" />
+
+        {/* Corner Accents */}
+        <path d="M 13 25 A 2.5 2.5 0 0 1 15.5 22.5" fill="none" stroke="#F3F4F6" strokeWidth="0.8" strokeOpacity="0.9" />
+        <path d="M 127 25 A 2.5 2.5 0 0 0 124.5 22.5" fill="none" stroke="#F3F4F6" strokeWidth="0.8" strokeOpacity="0.9" />
+        <path d="M 13 57 A 2.5 2.5 0 0 0 15.5 59.5" fill="none" stroke="#F3F4F6" strokeWidth="0.8" strokeOpacity="0.9" />
+        <path d="M 127 57 A 2.5 2.5 0 0 1 124.5 59.5" fill="none" stroke="#F3F4F6" strokeWidth="0.8" strokeOpacity="0.9" />
+
+        {/* Screws/Pegs */}
+        <circle cx="24" cy="23" r="2.5" fill="#F3F4F6" stroke="#D1D5DB" strokeWidth="0.8" />
+        <circle cx="24" cy="23" r="1" fill="#9CA3AF" />
+        <circle cx="116" cy="23" r="2.5" fill="#F3F4F6" stroke="#D1D5DB" strokeWidth="0.8" />
+        <circle cx="116" cy="23" r="1" fill="#9CA3AF" />
+
+        {/* Subtitle */}
+        <text
+          x="70"
+          y="34"
+          fontFamily="Georgia, 'Times New Roman', serif"
+          fontSize="7.5"
+          fill={config.subColor}
+          textAnchor="middle"
+          fontWeight="bold"
+          letterSpacing="1.2"
+        >
+          {config.subText}
+        </text>
+
+        {/* Main Text */}
+        <text
+          x="70"
+          y="51"
+          fontFamily="Georgia, 'Times New Roman', serif"
+          fontSize="14"
+          fill="#FFFFFF"
+          textAnchor="middle"
+          fontWeight="bold"
+          letterSpacing="1.5"
+        >
+          {config.mainText}
+        </text>
+      </svg>
+    </motion.div>
+  )
+}
+
 function WebinarCard({
   webinar,
 }: {
@@ -224,7 +317,7 @@ function WebinarCard({
           e.currentTarget.style.boxShadow = 'none'
         }}
       >
-        {/* Thumbnail Area - 150px height matching Bootcamp & Mini Course */}
+        {/* Thumbnail Area - 16:9 ratio */}
         <div style={{
           aspectRatio: '16/9',
           background: 'var(--color-bg)',
@@ -258,63 +351,38 @@ function WebinarCard({
         {/* Content Area */}
         <div style={{ padding: '16px 20px 20px', display: 'flex', flexDirection: 'column', flex: 1 }}>
           
-          {/* Metadata Row: Field & Status */}
+          {/* Header Row: Field & Type (Left) · Hanging Signboard (Right) */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             gap: 8,
             marginBottom: 10,
+            minHeight: 46,
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0 }}>
               <span style={{
-                fontSize: '12px',
-                fontWeight: 600,
+                fontSize: '13px',
+                fontWeight: 700,
                 color: 'var(--color-text-secondary)',
+                lineHeight: 1.2,
                 whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
               }}>
                 {webinar.field ? (FIELD_LABELS[webinar.field] || webinar.field) : 'Inspire Talk'}
               </span>
-              <span style={{ fontSize: '14px', color: 'var(--color-border)', lineHeight: 0 }}>•</span>
               <span style={{
-                fontSize: '12px',
+                fontSize: '11px',
                 fontWeight: 500,
                 color: 'var(--color-text-tertiary)',
+                lineHeight: 1.2,
                 whiteSpace: 'nowrap',
               }}>
-                Live
+                Live Session
               </span>
             </div>
 
-            <span style={{
-              fontSize: '11px',
-              fontWeight: 600,
-              padding: '2px 8px',
-              borderRadius: 6,
-              background: isEnded
-                ? 'var(--color-bg, #f8fafc)'
-                : isRegistrationClosed
-                  ? 'rgba(220, 38, 38, 0.08)'
-                  : 'rgba(1, 133, 86, 0.08)',
-              color: isEnded
-                ? 'var(--color-text-tertiary, #94a3b8)'
-                : isRegistrationClosed
-                  ? '#dc2626'
-                  : 'var(--color-primary, #018556)',
-              border: `1px solid ${
-                isEnded
-                  ? 'var(--color-border, #e2e8f0)'
-                  : isRegistrationClosed
-                    ? 'rgba(220, 38, 38, 0.2)'
-                    : 'rgba(1, 133, 86, 0.2)'
-              }`,
-              whiteSpace: 'nowrap',
-              flexShrink: 0,
-            }}>
-              {isEnded ? 'Selesai' : isRegistrationClosed ? 'Ditutup' : 'Buka'}
-            </span>
+            {/* Hanging Signboard - Right-aligned */}
+            <HangingSignboard status={isRegistrationClosed ? 'CLOSED' : 'OPEN'} />
           </div>
 
           {/* Title */}
@@ -323,7 +391,7 @@ function WebinarCard({
             fontWeight: 700,
             lineHeight: 1.4,
             color: 'var(--color-text-primary)',
-            margin: '0 0 8px 0',
+            margin: '0 0 10px 0',
             letterSpacing: '-0.01em',
             overflow: 'hidden', display: '-webkit-box',
             WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
@@ -331,23 +399,10 @@ function WebinarCard({
             {webinar.title}
           </h3>
 
-          {/* Description */}
-          <p style={{
-            fontSize: '13px',
-            color: 'var(--color-text-tertiary)',
-            lineHeight: 1.5,
-            margin: '0 0 16px 0',
-            flex: 1,
-            overflow: 'hidden', display: '-webkit-box',
-            WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
-          }}>
-            {webinar.shortDescription || webinar.description}
-          </p>
-
           {/* Speaker Info */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
             <div style={{
-              width: 26, height: 26, borderRadius: '50%',
+              width: 28, height: 28, borderRadius: '50%',
               background: 'rgba(1, 133, 86, 0.1)', color: 'var(--color-primary)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontWeight: 700, fontSize: '11px', overflow: 'hidden', flexShrink: 0,
@@ -370,12 +425,12 @@ function WebinarCard({
             </div>
           </div>
 
-          {/* Stats: Date & Duration */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16 }}>
+          {/* Stats: Peserta & Durasi */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16, marginTop: 'auto' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-              <Calendar size={13} color="var(--color-text-tertiary)" />
+              <Users size={13} color="var(--color-text-tertiary)" />
               <span style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
-                {formatDate(webinar.scheduledAt)}
+                {webinar._count?.registrations || 0} Peserta
               </span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -386,7 +441,7 @@ function WebinarCard({
             </div>
           </div>
 
-          {/* Footer (Price & Action) — Identical to Bootcamp and Mini Course */}
+          {/* Footer (Price & Action) — Identik dengan Bootcamp */}
           <div style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             paddingTop: 16,
