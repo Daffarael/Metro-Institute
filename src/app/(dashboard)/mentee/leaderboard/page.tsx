@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'motion/react'
 import { Crown, Medal, Flame, Zap } from 'lucide-react'
 import api from '@/lib/axios'
 import { useAuthStore } from '@/stores/auth.store'
-import { FIELD_LABELS, getInitials } from '@/lib/utils'
+import { BADGE_LABELS, FIELD_LABELS, getInitials } from '@/lib/utils'
 
 interface LeaderboardEntry {
   rank: number
@@ -138,11 +138,9 @@ function LeaderboardRow({ entry, isMe }: { entry: LeaderboardEntry; isMe?: boole
           {isMe && <span className="badge badge-primary" style={{ fontSize: '10px', flexShrink: 0 }}>Saya</span>}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', marginTop: 2 }}>
-          {entry.selectedField ? (
-            <span style={{ fontSize: '11px', color: 'var(--color-primary)', fontWeight: 500 }}>
-              {FIELD_LABELS[entry.selectedField] ?? entry.selectedField}
-            </span>
-          ) : null}
+          <span style={{ fontSize: '11px', color: 'var(--color-primary)', fontWeight: 500 }}>
+            {BADGE_LABELS[entry.badgeLevel]}
+          </span>
           {entry.currentStreak > 0 && (
             <span style={{ display: 'flex', alignItems: 'center', gap: 2, fontSize: '11px', color: 'var(--color-streak)' }}>
               <Flame size={11} /> {entry.currentStreak}d

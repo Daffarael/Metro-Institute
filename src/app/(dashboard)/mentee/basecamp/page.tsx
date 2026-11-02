@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query'
 import { PlaySquare, Flame, CheckCircle2, Circle, ArrowRight, Calendar, PlayCircle, Clock, Trophy, ChevronRight, ChevronLeft, Search, Zap, Code, Layout, Smartphone, Star, MessageCircle, GraduationCap } from 'lucide-react'
 import api from '@/lib/axios'
 import { useAuthStore } from '@/stores/auth.store'
-import { ROUTES, formatRupiah, formatDate } from '@/lib/utils'
+import { ROUTES, formatRupiah, formatDate, BADGE_LABELS } from '@/lib/utils'
 import { motion } from 'framer-motion'
 
 interface BasecampData {
@@ -111,7 +111,8 @@ export default function BasecampPage() {
 
   if (isLoading) return <BasecampSkeleton />
 
-
+  const nextXp      = BADGE_XP[user?.badgeLevel || 'METRO_ROOKIE'] || 500
+  const progressPct = Math.min(100, ((user?.totalXp || 0) / nextXp) * 100)
 
   return (
     <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-6)' }}>
@@ -120,6 +121,9 @@ export default function BasecampPage() {
       <div className="basecamp-header-container" style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 'var(--space-6)', flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)' }}>
           <div>
+            <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-primary)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 3 }}>
+              {BADGE_LABELS[user?.badgeLevel || 'METRO_ROOKIE']}
+            </div>
             <h1 style={{ fontSize: 'var(--text-2xl)', fontWeight: 700, letterSpacing: '-0.02em', lineHeight: 1.2 }}>
               Hai, {user?.name ? user.name.split(' ')[0] : 'Sobat'}!
             </h1>
@@ -135,11 +139,19 @@ export default function BasecampPage() {
                 {user?.currentStreak || 0} hari streak
               </span>
             </div>
-            <div className="basecamp-xp-bar" style={{ display: 'flex', alignItems: 'center', gap: 6, justifyContent: 'flex-end' }}>
-              <Zap size={14} color="var(--color-xp)" />
-              <span style={{ fontSize: '13px', color: 'var(--color-text-primary)', fontWeight: 600 }}>
-                {(user?.totalXp || 0).toLocaleString()} XP
-              </span>
+            <div className="basecamp-xp-bar" style={{ width: 200 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: 6 }}>
+                <span style={{ color: 'var(--color-text-tertiary)' }}>XP</span>
+                <span style={{ fontWeight: 600, color: 'var(--color-text-primary)' }}>
+                  {(user?.totalXp || 0).toLocaleString()} / {nextXp.toLocaleString()}
+                </span>
+              </div>
+              <div style={{ height: 4, borderRadius: 2, background: 'var(--color-border)', overflow: 'hidden' }}>
+                <div style={{ height: '100%', width: `${progressPct}%`, background: 'var(--color-primary)', borderRadius: 2, transition: 'width 0.4s ease' }} />
+              </div>
+              <div className="basecamp-next-badge" style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 5, textAlign: 'right' }}>
+                Menuju <strong style={{ color: 'var(--color-text-secondary)', fontWeight: 600 }}>{BADGE_LABELS['METRO_EXPLORER']}</strong>
+              </div>
             </div>
           </div>
         </div>
