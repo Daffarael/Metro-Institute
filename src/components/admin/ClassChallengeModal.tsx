@@ -236,40 +236,22 @@ export default function ClassChallengeModal({
             </div>
 
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                <h2
-                  style={{
-                    fontSize: '18px',
-                    fontWeight: 700,
-                    color: 'var(--color-text-primary, #0f172a)',
-                    margin: 0,
-                    letterSpacing: '-0.02em',
-                  }}
-                >
-                  Challenge Bank Kelas
-                </h2>
-                <span
-                  style={{
-                    padding: '2px 8px',
-                    borderRadius: 'var(--radius-full, 9999px)',
-                    background: 'var(--color-bg, #f8fafc)',
-                    border: '1px solid var(--color-border, #e2e8f0)',
-                    fontSize: '11px',
-                    fontWeight: 700,
-                    color: 'var(--color-text-secondary, #64748b)',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.04em',
-                  }}
-                >
-                  {classType === 'BOOTCAMP' ? 'Bootcamp' : 'Mini Course'}
-                </span>
-              </div>
+              <h2
+                style={{
+                  fontSize: '18px',
+                  fontWeight: 700,
+                  color: 'var(--color-text-primary, #0f172a)',
+                  margin: 0,
+                  letterSpacing: '-0.02em',
+                }}
+              >
+                Challenge Bank Kelas
+              </h2>
 
               <div
                 style={{
                   fontSize: '13px',
-                  color: 'var(--color-text-secondary, #64748b)',
-                  marginTop: 4,
+                  marginTop: 6,
                   display: 'flex',
                   alignItems: 'center',
                   gap: 8,
@@ -279,33 +261,47 @@ export default function ClassChallengeModal({
                 <span style={{ fontWeight: 600, color: 'var(--color-text-primary, #1e293b)' }}>
                   {classTitle}
                 </span>
-                <span style={{ color: 'var(--color-border, #cbd5e1)' }}>•</span>
-                <span
-                  style={{
-                    padding: '2px 8px',
-                    borderRadius: 'var(--radius-full, 9999px)',
-                    background: 'var(--color-bg, #f8fafc)',
-                    border: '1px solid var(--color-border, #e2e8f0)',
-                    fontSize: '11.5px',
-                    fontWeight: 500,
-                    color: 'var(--color-text-secondary, #475569)',
-                  }}
-                >
-                  {fieldName}
-                </span>
-                <span
-                  style={{
-                    padding: '2px 8px',
-                    borderRadius: 'var(--radius-full, 9999px)',
-                    background: 'var(--color-bg, #f8fafc)',
-                    border: '1px solid var(--color-border, #e2e8f0)',
-                    fontSize: '11.5px',
-                    fontWeight: 500,
-                    color: 'var(--color-text-secondary, #475569)',
-                  }}
-                >
-                  Level {levelName}
-                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                  <span
+                    style={{
+                      padding: '2px 8px',
+                      borderRadius: 6,
+                      background: 'rgba(1, 133, 86, 0.08)',
+                      border: '1px solid rgba(1, 133, 86, 0.2)',
+                      fontSize: '11.5px',
+                      fontWeight: 600,
+                      color: 'var(--color-primary, #018556)',
+                    }}
+                  >
+                    {classType === 'BOOTCAMP' ? 'Bootcamp' : 'Mini Course'}
+                  </span>
+                  <span
+                    style={{
+                      padding: '2px 8px',
+                      borderRadius: 6,
+                      background: 'var(--color-bg, #f8fafc)',
+                      border: '1px solid var(--color-border, #e2e8f0)',
+                      fontSize: '11.5px',
+                      fontWeight: 500,
+                      color: 'var(--color-text-secondary, #475569)',
+                    }}
+                  >
+                    {fieldName}
+                  </span>
+                  <span
+                    style={{
+                      padding: '2px 8px',
+                      borderRadius: 6,
+                      background: 'var(--color-bg, #f8fafc)',
+                      border: '1px solid var(--color-border, #e2e8f0)',
+                      fontSize: '11.5px',
+                      fontWeight: 500,
+                      color: 'var(--color-text-secondary, #475569)',
+                    }}
+                  >
+                    Level {levelName}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
