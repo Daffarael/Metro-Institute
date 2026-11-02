@@ -266,11 +266,11 @@ export default function ClassChallengeModal({
                     style={{
                       padding: '2px 8px',
                       borderRadius: 6,
-                      background: 'rgba(1, 133, 86, 0.08)',
-                      border: '1px solid rgba(1, 133, 86, 0.2)',
+                      background: 'var(--color-bg, #f8fafc)',
+                      border: '1px solid var(--color-border, #e2e8f0)',
                       fontSize: '11.5px',
-                      fontWeight: 600,
-                      color: 'var(--color-primary, #018556)',
+                      fontWeight: 500,
+                      color: 'var(--color-text-secondary, #475569)',
                     }}
                   >
                     {classType === 'BOOTCAMP' ? 'Bootcamp' : 'Mini Course'}
