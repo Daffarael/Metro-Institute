@@ -140,7 +140,7 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
   const [form, setForm] = useState({ 
     title: current?.title || '', 
     description: current?.description || '',
-    type: current?.type || ('LIVE' as BootcampSession['type']), 
+    type: current?.type || '', 
     scheduledAt: toLocalDatetimeValue(current?.liveScheduledAt || current?.scheduledAt),
     durationMin: current?.videoDuration ?? (current?.durationMin ?? 90),
     meetingUrl: current?.liveUrl || (current?.meetingUrl || ''),
@@ -167,7 +167,7 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
       setForm({
         title: freshSession.title || '',
         description: freshSession.description || '',
-        type: freshSession.type || 'LIVE',
+        type: freshSession.type || '',
         scheduledAt: toLocalDatetimeValue(freshSession.liveScheduledAt || freshSession.scheduledAt),
         durationMin: freshSession.videoDuration ?? (freshSession.durationMin ?? 90),
         meetingUrl: freshSession.liveUrl || (freshSession.meetingUrl || ''),
@@ -186,6 +186,10 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
 
   const mutation = useMutation({
     mutationFn: () => {
+      if (!form.type) {
+        toast.error('Harap pilih jenis materi terlebih dahulu.')
+        return Promise.reject(new Error('Jenis materi wajib dipilih'))
+      }
       const scheduledIso = toIsoDatetime(form.scheduledAt)
       const deadlineIso = toIsoDatetime(form.assignmentDeadline)
 
@@ -245,7 +249,7 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
                 options={[
                   { value: 'LIVE', label: 'LIVE - Sesi Tatap Muka Google Meet' },
                   { value: 'MATERIAL', label: 'MATERIAL - Modul Bacaan Teori / PDF' },
-                  { value: 'QUIZ', label: 'QUIZ - Kuis & Tugas Pendamping' },
+                  { value: 'QUIZ', label: 'QUIZ - Kuis' },
                   { value: 'VIDEO', label: 'VIDEO - Rekaman / Video Pendukung' },
                 ]}
                 width="100%"
@@ -357,7 +361,7 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
               <div style={{ padding: '16px', background: '#f9fafb', borderRadius: '14px', border: '1px solid var(--color-border)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
                   <label style={{ fontSize: '13px', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>
-                    Daftar Soal Kuis Pilihan Ganda ({quizOptions.length} Soal)
+                    Daftar Soal Kuis ({quizOptions.length} Soal)
                   </label>
                 </div>
                 
@@ -489,19 +493,19 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
         <div style={{ display: 'flex', gap: 'var(--space-3)', justifyContent: 'flex-end', padding: '16px 24px', borderTop: '1px solid var(--color-border-subtle)', background: 'var(--color-surface)', flexShrink: 0 }}>
           <button onClick={onClose} style={{ padding: '10px 20px', borderRadius: '12px', border: '1px solid var(--color-border)', background: '#fff', cursor: 'pointer', fontWeight: 600, fontSize: '14px', color: 'var(--color-text-secondary)' }}>Batal</button>
           <button 
-            disabled={!form.title.trim() || mutation.isPending} 
+            disabled={!form.title.trim() || !form.type || mutation.isPending} 
             onClick={() => mutation.mutate()} 
             style={{ 
               padding: '10px 22px', 
               borderRadius: '12px', 
               border: 'none', 
-              background: !form.title.trim() ? '#E2E8F0' : '#018556', 
-              color: !form.title.trim() ? '#94A3B8' : '#ffffff', 
+              background: (!form.title.trim() || !form.type) ? '#E2E8F0' : '#018556', 
+              color: (!form.title.trim() || !form.type) ? '#94A3B8' : '#ffffff', 
               fontWeight: 700, 
               fontSize: '14px',
-              cursor: !form.title.trim() ? 'not-allowed' : 'pointer',
+              cursor: (!form.title.trim() || !form.type) ? 'not-allowed' : 'pointer',
               transition: 'all 0.2s ease',
-              boxShadow: form.title.trim() ? '0 2px 8px rgba(1,133,86,0.25)' : 'none'
+              boxShadow: (form.title.trim() && form.type) ? '0 2px 8px rgba(1,133,86,0.25)' : 'none'
             }}
           >
             {mutation.isPending ? 'Menyimpan...' : 'Simpan Materi'}

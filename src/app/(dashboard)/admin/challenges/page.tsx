@@ -222,7 +222,7 @@ return (
                 render={({ field }) => (
                   <CleanCombobox 
                     options={[
-                      { value: 'QUIZ', label: 'Quiz' },
+                      { value: 'QUIZ', label: 'Kuis' },
                       { value: 'PROJECT', label: 'Project' }
                     ]} 
                     value={field.value as string} 
@@ -286,10 +286,7 @@ return (
               >
                 <div style={{ marginTop: 8, padding: '20px', background: '#f8f9fc', borderRadius: '16px', border: '1px solid rgba(0,0,0,0.04)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                    <label style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>Daftar Soal Kuis</label>
-                    <button type="button" onClick={() => append({ id: Math.random().toString(36).substr(2, 9), question: '', options: [{ id: 'A', text: '', isCorrect: true }, { id: 'B', text: '', isCorrect: false }, { id: 'C', text: '', isCorrect: false }, { id: 'D', text: '', isCorrect: false }] })} style={{ padding: '6px 12px', borderRadius: '8px', background: '#fff', border: '1px solid var(--color-border)', fontSize: '12px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
-                      <Plus size={14} /> Tambah Soal
-                    </button>
+                    <label style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>Daftar Soal Kuis ({fields.length} Soal)</label>
                   </div>
                   
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
@@ -349,6 +346,39 @@ return (
                     ))}
                     {errors.options && <p style={{ color: 'var(--color-error)', fontSize: '12px', marginTop: 4, fontWeight: 500 }}>Periksa kembali kelengkapan soal Anda.</p>}
                   </div>
+
+                  {/* Tombol Tambah Soal tepat di bawah soal terakhir */}
+                  <button 
+                    type="button" 
+                    onClick={() => append({ id: Math.random().toString(36).substr(2, 9), question: '', options: [{ id: 'A', text: '', isCorrect: true }, { id: 'B', text: '', isCorrect: false }, { id: 'C', text: '', isCorrect: false }, { id: 'D', text: '', isCorrect: false }] })} 
+                    style={{ 
+                      marginTop: 16, 
+                      width: '100%', 
+                      padding: '10px 16px', 
+                      borderRadius: '8px', 
+                      background: '#fff', 
+                      border: '1px solid var(--color-border)', 
+                      color: 'var(--color-text-primary)', 
+                      fontSize: '13px', 
+                      fontWeight: 600, 
+                      cursor: 'pointer', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      gap: 6,
+                      transition: 'all 0.2s ease',
+                    }}
+                    onMouseOver={e => {
+                      e.currentTarget.style.borderColor = 'var(--color-border-heavy)'
+                      e.currentTarget.style.background = 'var(--color-surface)'
+                    }}
+                    onMouseOut={e => {
+                      e.currentTarget.style.borderColor = 'var(--color-border)'
+                      e.currentTarget.style.background = '#fff'
+                    }}
+                  >
+                    <Plus size={15} /> Tambah Soal
+                  </button>
                 </div>
               </motion.div>
             )}
@@ -464,7 +494,7 @@ export default function AdminChallengesPage() {
           onChange={val => setFilters(f => ({ ...f, type: val || undefined, page: 1 }))}
           placeholder="Semua Tipe"
           options={[
-            { value: 'QUIZ', label: 'Quiz' },
+            { value: 'QUIZ', label: 'Kuis' },
             { value: 'PROJECT', label: 'Project' }
           ]}
           width={180}

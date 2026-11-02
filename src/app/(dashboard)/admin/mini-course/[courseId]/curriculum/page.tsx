@@ -150,7 +150,7 @@ function AddSessionModal({ courseId, editSession, onClose }: { courseId: string;
   const qc = useQueryClient()
   const [form, setForm] = useState({ 
     title: editSession?.title || '', 
-    type: editSession?.type || ('VIDEO' as CourseSession['type']), 
+    type: editSession?.type || '', 
     videoUrl: editSession?.videoUrl || '', 
     materialUrl: (editSession?.materials as any)?.[0]?.url || (editSession as any)?.materialUrl || '', 
     assignmentDescription: (editSession as any)?.assignmentDescription || '',
@@ -168,6 +168,9 @@ function AddSessionModal({ courseId, editSession, onClose }: { courseId: string;
 
   const mutation = useMutation({
     mutationFn: () => {
+      if (!form.type) {
+        throw new Error('Harap pilih tipe konten terlebih dahulu.')
+      }
       if (form.type === 'VIDEO' && form.videoUrl && (form.videoUrl.includes('youtube.com') || form.videoUrl.includes('youtu.be'))) {
         throw new Error('Harap hapus atau ganti tautan YouTube dengan video baru sebelum menyimpan.')
       }
@@ -233,7 +236,7 @@ return (
                 options={[
                   { value: 'VIDEO', label: 'Video Pembelajaran' },
                   { value: 'MATERIAL', label: 'Materi Teks / PDF' },
-                  { value: 'QUIZ', label: 'Tugas / Kuis' }
+                  { value: 'QUIZ', label: 'Kuis' }
                 ]}
                 placeholder="Pilih tipe konten"
               />
@@ -272,10 +275,7 @@ return (
 
               <div style={{ padding: '20px', background: '#f8f9fc', borderRadius: '16px', border: '1px solid rgba(0,0,0,0.04)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                  <label style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>Daftar Soal Kuis</label>
-                  <button type="button" onClick={() => setQuizOptions([...quizOptions, { id: Math.random().toString(36).substr(2, 9), question: '', options: [{ id: 'A', text: '', isCorrect: true }, { id: 'B', text: '', isCorrect: false }, { id: 'C', text: '', isCorrect: false }, { id: 'D', text: '', isCorrect: false }] }])} style={{ padding: '6px 12px', borderRadius: '8px', background: '#fff', border: '1px solid var(--color-border)', fontSize: '12px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <Plus size={14} /> Tambah Soal
-                  </button>
+                  <label style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-text-primary)', margin: 0 }}>Daftar Soal Kuis ({quizOptions.length} Soal)</label>
                 </div>
                 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
@@ -335,6 +335,51 @@ return (
                     </div>
                   ))}
                 </div>
+
+                {/* Tombol Tambah Soal tepat di bawah soal terakhir */}
+                <button 
+                  type="button" 
+                  onClick={() => setQuizOptions([
+                    ...quizOptions, 
+                    { 
+                      id: Math.random().toString(36).substr(2, 9), 
+                      question: '', 
+                      options: [
+                        { id: 'A', text: '', isCorrect: true }, 
+                        { id: 'B', text: '', isCorrect: false }, 
+                        { id: 'C', text: '', isCorrect: false }, 
+                        { id: 'D', text: '', isCorrect: false }
+                      ] 
+                    }
+                  ])} 
+                  style={{ 
+                    marginTop: 16, 
+                    width: '100%', 
+                    padding: '10px 16px', 
+                    borderRadius: '8px', 
+                    background: '#fff', 
+                    border: '1px solid var(--color-border)', 
+                    color: 'var(--color-text-primary)', 
+                    fontSize: '13px', 
+                    fontWeight: 600, 
+                    cursor: 'pointer', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center', 
+                    gap: 6,
+                    transition: 'all 0.2s ease',
+                  }}
+                  onMouseOver={e => {
+                    e.currentTarget.style.borderColor = 'var(--color-border-heavy)'
+                    e.currentTarget.style.background = 'var(--color-surface)'
+                  }}
+                  onMouseOut={e => {
+                    e.currentTarget.style.borderColor = 'var(--color-border)'
+                    e.currentTarget.style.background = '#fff'
+                  }}
+                >
+                  <Plus size={15} /> Tambah Soal
+                </button>
               </div>
             </div>
           )}
@@ -433,27 +478,27 @@ return (
           </button>
           <button
             type="button"
-            disabled={!form.title.trim() || mutation.isPending}
+            disabled={!form.title.trim() || !form.type || mutation.isPending}
             onClick={() => mutation.mutate()}
             style={{
               padding: '8px 18px',
               borderRadius: '8px',
               border: 'none',
-              background: (!form.title.trim() || mutation.isPending) ? '#9ca3af' : 'var(--color-primary)',
+              background: (!form.title.trim() || !form.type || mutation.isPending) ? '#9ca3af' : 'var(--color-primary)',
               color: '#ffffff',
               fontSize: '13px',
               fontWeight: 600,
-              cursor: (!form.title.trim() || mutation.isPending) ? 'not-allowed' : 'pointer',
+              cursor: (!form.title.trim() || !form.type || mutation.isPending) ? 'not-allowed' : 'pointer',
               boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
               transition: 'all 0.15s ease'
             }}
             onMouseEnter={e => {
-              if (form.title.trim() && !mutation.isPending) {
+              if (form.title.trim() && form.type && !mutation.isPending) {
                 e.currentTarget.style.background = 'var(--color-primary-dark)'
               }
             }}
             onMouseLeave={e => {
-              if (form.title.trim() && !mutation.isPending) {
+              if (form.title.trim() && form.type && !mutation.isPending) {
                 e.currentTarget.style.background = 'var(--color-primary)'
               }
             }}
