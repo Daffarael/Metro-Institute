@@ -336,6 +336,9 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
                 onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
               />
               {errors.scheduledAt && <p style={{ fontSize: '12px', color: 'var(--color-error)', marginTop: 6, fontWeight: 500 }}>{errors.scheduledAt.message}</p>}
+              <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 4, display: 'block' }}>
+                Waktu Indonesia Barat (WIB). Gunakan format 24 jam (contoh: 15:00 untuk 3 sore, 20:00 untuk 8 malam).
+              </span>
             </div>
             <div>
               <label style={labelStyle}>Durasi (menit) <span style={{ color: 'var(--color-error)' }}>*</span></label>
