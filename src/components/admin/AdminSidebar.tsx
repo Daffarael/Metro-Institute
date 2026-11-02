@@ -27,7 +27,7 @@ const branchItems = [
     children: [
       { value: '/admin/bootcamp', label: 'Bootcamp', icon: Tent },
       { value: '/admin/mini-course', label: 'Mini Course', icon: BookOpen },
-      { value: '/admin/webinars', label: 'Webinar & Workshop', icon: Video },
+      { value: '/admin/webinars', label: 'Inspire Talk', icon: Video },
       { value: '/admin/challenges', label: 'Challenge Bank', icon: Zap },
       { value: '/admin/assignments', label: 'Penilaian Tugas', icon: ClipboardCheck },
       { value: '/admin/skill-test', label: 'Soal Skill Test', icon: FlaskConical },

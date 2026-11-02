@@ -199,12 +199,12 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
         : api.post('/admin/webinars', payload).then(r => r.data)
     },
     onSuccess: () => {
-      toast.success(isEdit ? 'Webinar diperbarui.' : 'Webinar berhasil dibuat!')
+      toast.success(isEdit ? 'Inspire Talk diperbarui.' : 'Inspire Talk berhasil dibuat!')
       qc.invalidateQueries({ queryKey: ['admin', 'webinars'] })
       onClose()
     },
     onError: (err: any) => {
-      toast.error(err.response?.data?.message || 'Gagal menyimpan webinar.')
+      toast.error(err.response?.data?.message || 'Gagal menyimpan Inspire Talk.')
     },
   })
 
@@ -251,7 +251,7 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
         }}>
           <h2 style={{ fontSize: '24px', fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--color-text-primary)' }}>
-            {isEdit ? 'Edit Webinar & Workshop' : 'Buat Webinar Baru'}
+            {isEdit ? 'Edit Inspire Talk' : 'Buat Inspire Talk Baru'}
           </h2>
           <button
             type="button"
@@ -623,7 +623,7 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
               onMouseEnter={e => { if (!mutation.isPending) e.currentTarget.style.filter = 'brightness(1.1)' }}
               onMouseLeave={e => { e.currentTarget.style.filter = 'brightness(1)' }}
             >
-              {mutation.isPending ? 'Menyimpan...' : (isEdit ? 'Simpan Perubahan' : 'Buat Webinar')}
+              {mutation.isPending ? 'Menyimpan...' : (isEdit ? 'Simpan Perubahan' : 'Buat Inspire Talk')}
             </button>
           </div>
         </form>
@@ -674,7 +674,7 @@ export default function AdminWebinarsPage() {
       qc.invalidateQueries({ queryKey: ['admin', 'webinars'] })
       setDeleteTarget(null)
     },
-    onError: () => toast.error('Gagal menghapus webinar.'),
+    onError: () => toast.error('Gagal menghapus Inspire Talk.'),
   })
 
   const toggleEndMutation = useMutation({
@@ -695,8 +695,8 @@ export default function AdminWebinarsPage() {
   return (
     <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       <AdminPageHeader
-        title="Webinar & Workshop"
-        description="Kelola jadwal webinar live, narasumber, link streaming, dan peserta terdaftar."
+        title="Inspire Talk"
+        description="Kelola jadwal sesi Inspire Talk live, narasumber, link streaming, dan peserta terdaftar."
         action={
           <button
             suppressHydrationWarning
@@ -708,7 +708,7 @@ export default function AdminWebinarsPage() {
               border: 'none', fontSize: 'var(--text-sm)', fontWeight: 700, cursor: 'pointer',
             }}
           >
-            <Plus size={16} /> Buat Webinar
+            <Plus size={16} /> Buat Inspire Talk
           </button>
         }
       />
@@ -747,7 +747,7 @@ export default function AdminWebinarsPage() {
       ) : items.length === 0 ? (
         <AdminEmptyState
           type={search ? 'no-results' : 'empty'}
-          message={search ? 'Tidak ada webinar yang cocok dengan pencarian.' : 'Belum ada data webinar & workshop.'}
+          message={search ? 'Tidak ada sesi yang cocok dengan pencarian.' : 'Belum ada data Inspire Talk.'}
         />
       ) : (
         <div style={{
@@ -889,7 +889,7 @@ export default function AdminWebinarsPage() {
 
                       <button
                         onClick={() => setDeleteTarget(w)}
-                        title="Hapus Webinar"
+                        title="Hapus Inspire Talk"
                         style={{
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           width: 28, height: 28, borderRadius: 'var(--radius-md)', border: '1px solid #fee2e2',
@@ -942,8 +942,8 @@ export default function AdminWebinarsPage() {
       {/* Confirm Delete Modal */}
       <AdminConfirmModal
         isOpen={!!deleteTarget}
-        title="Hapus Webinar"
-        description={`Apakah Anda yakin ingin menghapus webinar "${deleteTarget?.title}"? Data pendaftar juga akan terhapus.`}
+        title="Hapus Inspire Talk"
+        description={`Apakah Anda yakin ingin menghapus Inspire Talk "${deleteTarget?.title}"? Data pendaftar juga akan terhapus.`}
         confirmLabel="Hapus"
         isDangerous={true}
         isLoading={deleteMutation.isPending}

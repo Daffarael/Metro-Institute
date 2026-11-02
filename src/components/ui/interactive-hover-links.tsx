@@ -28,13 +28,13 @@ export const INTERACTIVE_LINKS = [
     href: "/login",
   },
   {
-    heading: "Webinar & Workshop",
+    heading: "Inspire Talk",
     subheading: "Sesi live interaktif langsung bersama praktisi top industri.",
     imgSrc: "https://images.unsplash.com/photo-1540317580384-e5d43616b9aa?auto=format&fit=crop&q=80&w=800",
     category: "Live Session",
     tag1: "Q&A Interaktif",
     tag2: "Insight Expert",
-    buttonText: "Jelajahi Webinar",
+    buttonText: "Jelajahi Inspire Talk",
     href: "/login",
   },
 ];
@@ -68,7 +68,7 @@ const SERVICE_DEFAULTS: Record<string, {
     category: "Live Session",
     tag1: "Q&A Interaktif",
     tag2: "Insight Expert",
-    buttonText: "Jelajahi Webinar",
+    buttonText: "Jelajahi Inspire Talk",
     subheading: "Sesi live interaktif langsung bersama praktisi top industri.",
   },
 };
@@ -118,7 +118,7 @@ export function InteractiveHoverLinks({
             let defaults = SERVICE_DEFAULTS.bootcamp;
             if (headingLower.includes("mini")) {
               defaults = SERVICE_DEFAULTS["mini course"];
-            } else if (headingLower.includes("webinar") || headingLower.includes("workshop")) {
+            } else if (headingLower.includes("webinar") || headingLower.includes("workshop") || headingLower.includes("inspire")) {
               defaults = SERVICE_DEFAULTS.webinar;
             }
 

@@ -86,7 +86,7 @@ export default function LandingPageClient({
     return [
       { heading: 'Bootcamp', subheading: 'Program intensif bimbingan karir siap kerja dari nol.' },
       { heading: 'Mini Course', subheading: 'Kuasai skill teknologi spesifik dalam waktu singkat.' },
-      { heading: 'Webinar & Workshop', subheading: 'Sesi live interaktif langsung bersama praktisi top industri.' },
+      { heading: 'Inspire Talk', subheading: 'Sesi live interaktif langsung bersama praktisi top industri.' },
     ]
   })()
 
@@ -172,7 +172,7 @@ export default function LandingPageClient({
 
     return {
       type: 'WEBINAR',
-      badge: 'WEBINAR & WORKSHOP',
+      badge: 'INSPIRE TALK',
       title: w.title,
       partner: 'Metro Institute',
       batch: statusText,

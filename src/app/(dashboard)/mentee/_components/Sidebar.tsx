@@ -25,7 +25,7 @@ const branchItems = [
     children: [
       { value: ROUTES.COURSE_LIST, label: 'Mini Course', icon: Compass },
       { value: ROUTES.BOOTCAMP_LIST, label: 'Bootcamp', icon: Tent },
-      { value: ROUTES.WEBINAR_LIST, label: 'Webinar', icon: Video },
+      { value: ROUTES.WEBINAR_LIST, label: 'Inspire Talk', icon: Video },
       { value: ROUTES.MY_COURSES, label: 'Kelas Saya', icon: GraduationCap },
     ]
   },

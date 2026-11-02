@@ -83,8 +83,8 @@ export default function MenteeWebinarsPage() {
   const displayedWebinars = activeTab === 'ALL' ? allWebinars : myWebinars
 
   const tabItems = [
-    { value: 'ALL', label: 'Jelajahi Webinar' },
-    { value: 'MY', label: 'Webinar Saya', count: myWebinars.length },
+    { value: 'ALL', label: 'Jelajahi Inspire Talk' },
+    { value: 'MY', label: 'Inspire Talk Saya', count: myWebinars.length },
   ]
 
   return (
@@ -92,7 +92,7 @@ export default function MenteeWebinarsPage() {
       {/* ── Page Header ────────────────────────────────────── */}
       <div>
         <h1 style={{ fontSize: 'var(--text-2xl)', fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--color-text-primary)', marginBottom: 4 }}>
-          Webinar & Workshop
+          Inspire Talk
         </h1>
         <p style={{ fontSize: '13px', color: 'var(--color-text-tertiary)', margin: 0 }}>
           Ikuti sesi interaktif live streaming bersama mentor dan pakar industri teknologi. Diskusikan studi kasus nyata, tren terkini, dan tanyakan langsung kendalamu.
