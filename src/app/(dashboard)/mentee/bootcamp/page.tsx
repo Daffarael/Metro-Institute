@@ -23,9 +23,7 @@ interface Bootcamp {
 const STATUS_OPTIONS = [
   { value: '', label: 'Semua Status' },
   { value: 'OPEN', label: 'Pendaftaran Dibuka' },
-  { value: 'ONGOING', label: 'Sedang Berjalan' },
   { value: 'CLOSED', label: 'Pendaftaran Ditutup' },
-  { value: 'COMING_SOON', label: 'Segera Hadir' },
 ]
 
 const FIELD_OPTIONS = [
@@ -168,42 +166,22 @@ export default function BootcampListPage() {
 // Hanging Signboard Component - Compact, Mirip desain & animasi 'Gratis' di Landing Page Ebook
 function HangingSignboard({ status }: { status: string }) {
   const isOpen = status === 'OPEN'
-  const isClosed = status === 'CLOSED'
-  const isOngoing = status === 'ONGOING'
-  const isComingSoon = status === 'COMING_SOON'
 
-  // Konfigurasi visual & teks untuk setiap status (OPEN, CLOSED, COMING_SOON, ONGOING)
-  const config = isClosed
+  // Hanya ada 2 status: Pendaftaran Dibuka & Pendaftaran Ditutup
+  const config = isOpen
     ? {
-        bg: '#450A0A',
-        stroke: '#DC2626',
-        subText: 'PENDAFTARAN',
-        mainText: 'DITUTUP',
-        subColor: '#FECACA',
-      }
-    : isComingSoon
-    ? {
-        bg: '#1E1B4B',
-        stroke: '#6366F1',
-        subText: 'SEGERA',
-        mainText: 'DATANG',
-        subColor: '#C7D2FE',
-      }
-    : isOngoing
-    ? {
-        bg: '#0F172A',
-        stroke: '#0284C7',
-        subText: 'SEDANG',
-        mainText: 'BERJALAN',
-        subColor: '#BAE6FD',
-      }
-    : {
-        // Default OPEN
         bg: '#063D2A',
         stroke: '#018556',
         subText: 'PENDAFTARAN',
         mainText: 'DIBUKA',
         subColor: '#D1FAE5',
+      }
+    : {
+        bg: '#450A0A',
+        stroke: '#DC2626',
+        subText: 'PENDAFTARAN',
+        mainText: 'DITUTUP',
+        subColor: '#FECACA',
       }
 
   return (

@@ -47,10 +47,10 @@ const FIELD_LABEL: Record<string, string> = {
 }
 
 const BATCH_BADGE: Record<string, { label: string; color: string }> = {
-  OPEN:        { label: 'Buka Pendaftaran', color: '#03764F' },
-  ONGOING:     { label: 'Sedang Berjalan',  color: '#F59E0B' },
-  CLOSED:      { label: 'Tutup',            color: '#6B7280' },
-  COMING_SOON: { label: 'Coming Soon',      color: '#8B5CF6' },
+  OPEN:        { label: 'Pendaftaran Dibuka',  color: '#03764F' },
+  ONGOING:     { label: 'Pendaftaran Ditutup', color: '#DC2626' },
+  CLOSED:      { label: 'Pendaftaran Ditutup', color: '#DC2626' },
+  COMING_SOON: { label: 'Pendaftaran Ditutup', color: '#DC2626' },
 }
 
 export default function LandingPageClient({

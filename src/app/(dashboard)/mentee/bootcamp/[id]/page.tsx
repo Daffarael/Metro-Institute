@@ -372,7 +372,7 @@ export default function BootcampDetailPage() {
                     opacity: (!canEnroll || enrollMutation.isPending) ? 0.6 : 1,
                   }}
                 >
-                  {enrollMutation.isPending ? 'Memproses...' : (canEnroll ? 'Daftar Sekarang' : data.batchStatus === 'CLOSED' ? 'Pendaftaran Ditutup' : 'Segera Tersedia')}
+                  {enrollMutation.isPending ? 'Memproses...' : (canEnroll ? 'Daftar Sekarang' : 'Pendaftaran Ditutup')}
                 </motion.button>
               )}
 
