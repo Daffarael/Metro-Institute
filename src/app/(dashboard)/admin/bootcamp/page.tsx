@@ -142,7 +142,15 @@ function BootcampModal({
       purchaseCloseAt: toLocalDateInput(bootcamp?.purchaseCloseAt || (bootcamp as any)?.registrationDeadline),
       startDate:       toLocalDateInput(bootcamp?.startDate || (bootcamp as any)?.batchStartDate),
       endDate:         toLocalDateInput(bootcamp?.endDate || (bootcamp as any)?.batchEndDate),
-      status:          (bootcamp?.status as any) ?? 'DRAFT',
+      status: (() => {
+        if (!bootcamp) return 'DRAFT'
+        if ((bootcamp as any).isPublished === false || bootcamp.status === 'DRAFT') return 'DRAFT'
+        const deadline = bootcamp.purchaseCloseAt || (bootcamp as any).registrationDeadline
+        if (deadline && new Date(deadline).getTime() > Date.now()) {
+          return 'OPEN'
+        }
+        return (bootcamp.status as any) ?? 'PUBLISHED'
+      })(),
       certificateTemplateId: bootcamp?.certificateTemplateId ?? null,
       thumbnailUrl:    bootcamp?.thumbnailUrl ?? '',
     },
@@ -150,8 +158,10 @@ function BootcampModal({
 
   const mutation = useMutation({
     mutationFn: (data: BootcampForm) => {
+      const isDeadlineFuture = data.purchaseCloseAt && (new Date(`${data.purchaseCloseAt}T23:59:59+07:00`).getTime() > Date.now())
       const payload = {
         ...data,
+        status: (data.status === 'CLOSED' && isDeadlineFuture) ? 'OPEN' : data.status,
         quota: Number(data.quota) || 50,
         fields: [data.field],
       }
