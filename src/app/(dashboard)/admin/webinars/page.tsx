@@ -27,18 +27,18 @@ const webinarSchema = z.object({
   description:      z.string().min(10, 'Minimal 10 karakter'),
   speakerName:      z.string().min(2, 'Nama pembicara wajib diisi'),
   speakerRole:      z.string().optional().nullable(),
-  price:            z.number({ error: () => ({ message: 'Harga tiket wajib diisi' }) }).min(0, 'Harga tidak boleh negatif'),
+  price:            z.preprocess(v => (v === '' || v === null || v === undefined || (typeof v === 'number' && Number.isNaN(v)) ? undefined : Number(v)), z.number({ error: () => ({ message: 'Harga tiket wajib diisi' }) }).min(0, 'Harga tidak boleh negatif')),
   scheduledAt:      z.string().min(1, 'Jadwal pelaksanaan wajib diisi'),
-  duration:         z.number({ error: () => ({ message: 'Durasi wajib diisi' }) }).min(1, 'Minimal 1 menit'),
+  duration:         z.preprocess(v => (v === '' || v === null || v === undefined || (typeof v === 'number' && Number.isNaN(v)) ? undefined : Number(v)), z.number({ error: () => ({ message: 'Durasi wajib diisi' }) }).min(1, 'Minimal 1 menit')),
   meetingUrl:       z.string().optional().nullable(),
   recordingUrl:     z.string().optional().nullable(),
-  quota:            z.number().optional().nullable(),
+  quota:            z.preprocess(v => (v === '' || v === null || v === undefined || (typeof v === 'number' && Number.isNaN(v)) ? null : Number(v)), z.number().optional().nullable()),
   status:           z.enum(['DRAFT', 'PUBLISHED']),
   certificateTemplateId: z.string().optional().nullable(),
   bannerUrl:        z.string().optional().nullable(),
   benefits:         z.array(z.string()).optional(),
-  attendanceThresholdPct: z.number().min(1).max(100).optional(),
-  xpReward:         z.number().min(0).optional(),
+  attendanceThresholdPct: z.preprocess(v => (v === '' || v === null || v === undefined || (typeof v === 'number' && Number.isNaN(v)) ? undefined : Number(v)), z.number().min(1, 'Minimal 1%').max(100, 'Maksimal 100%').optional().nullable()),
+  xpReward:         z.preprocess(v => (v === '' || v === null || v === undefined || (typeof v === 'number' && Number.isNaN(v)) ? undefined : Number(v)), z.number().min(0).optional().nullable()),
 })
 type WebinarForm = z.infer<typeof webinarSchema>
 
@@ -187,8 +187,12 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
         meetingUrl: sanitizeUrl(rest.meetingUrl),
         recordingUrl: sanitizeUrl(rest.recordingUrl),
         isPublished: status === 'PUBLISHED',
-        attendanceThresholdPct: (rest.attendanceThresholdPct !== undefined && (rest as any).attendanceThresholdPct !== '') ? Number(rest.attendanceThresholdPct) : 80,
-        xpReward: (rest.xpReward !== undefined && (rest as any).xpReward !== '') ? Number(rest.xpReward) : 25,
+        attendanceThresholdPct: (rest.attendanceThresholdPct !== undefined && rest.attendanceThresholdPct !== null && (rest as any).attendanceThresholdPct !== '' && !Number.isNaN(Number(rest.attendanceThresholdPct)))
+          ? Number(rest.attendanceThresholdPct)
+          : 80,
+        xpReward: (rest.xpReward !== undefined && rest.xpReward !== null && (rest as any).xpReward !== '' && !Number.isNaN(Number(rest.xpReward)))
+          ? Number(rest.xpReward)
+          : 25,
       }
       return isEdit
         ? api.patch(`/admin/webinars/${webinar!.id}`, payload).then(r => r.data)
@@ -265,7 +269,13 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit(d => mutation.mutate(d))} style={{ padding: '0 32px 24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <form onSubmit={handleSubmit(
+          d => mutation.mutate(d),
+          (errs) => {
+            const firstErr = Object.values(errs)[0]?.message
+            if (firstErr) toast.error(String(firstErr))
+          }
+        )} style={{ padding: '0 32px 24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {/* Banner Poster */}
           <div>
             <label style={labelStyle}>Banner Poster Webinar</label>
@@ -400,7 +410,7 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
               <label style={labelStyle}>Syarat Hadir (% Durasi Meet)</label>
               <input
                 type="number"
-                {...register('attendanceThresholdPct', { valueAsNumber: true })}
+                {...register('attendanceThresholdPct', { setValueAs: v => (v === '' || v === null || v === undefined || Number.isNaN(Number(v)) ? undefined : Number(v)) })}
                 min={1}
                 max={100}
                 placeholder="Contoh: 80"
@@ -408,6 +418,7 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
                 onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
                 onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
               />
+              {errors.attendanceThresholdPct && <p style={{ fontSize: '12px', color: 'var(--color-error)', marginTop: 4, fontWeight: 500 }}>{errors.attendanceThresholdPct.message}</p>}
               <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 4, display: 'block' }}>
                 Default: 80% dari durasi webinar.
               </span>
@@ -416,13 +427,14 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
               <label style={labelStyle}>Hadiah XP Kehadiran</label>
               <input
                 type="number"
-                {...register('xpReward', { valueAsNumber: true })}
+                {...register('xpReward', { setValueAs: v => (v === '' || v === null || v === undefined || Number.isNaN(Number(v)) ? undefined : Number(v)) })}
                 min={0}
                 placeholder="Contoh: 25"
                 style={inputStyleClean}
                 onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
                 onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
               />
+              {errors.xpReward && <p style={{ fontSize: '12px', color: 'var(--color-error)', marginTop: 4, fontWeight: 500 }}>{errors.xpReward.message}</p>}
               <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 4, display: 'block' }}>
                 XP yang didapat jika memenuhi syarat hadir.
               </span>
