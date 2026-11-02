@@ -583,7 +583,7 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
             </div>
 
             <div>
-              <label style={labelStyle}>Program Unggulan</label>
+              <label style={labelStyle}>Tampilkan di Landing Page</label>
               <label
                 style={{
                   display: 'flex',
@@ -600,10 +600,10 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
                 <input
                   type="checkbox"
                   {...register('isFeatured')}
-                  style={{ width: 16, height: 16, accentColor: '#D97706', cursor: 'pointer' }}
+                  style={{ width: 16, height: 16, accentColor: '#10b981', cursor: 'pointer' }}
                 />
                 <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-primary)' }}>
-                  ★ Tampil di Landing Page
+                  Tampilkan di Landing Page
                 </span>
               </label>
               <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 4, display: 'block' }}>
@@ -709,10 +709,10 @@ export default function AdminWebinarsPage() {
     mutationFn: ({ id, isFeatured }: { id: string; isFeatured: boolean }) =>
       api.patch(`/admin/webinars/${id}/featured`, { isFeatured }),
     onSuccess: () => {
-      toast.success('Status Unggulan diperbarui!')
+      toast.success('Status tampilan berhasil diperbarui!')
       qc.invalidateQueries({ queryKey: ['admin', 'webinars'] })
     },
-    onError: () => toast.error('Gagal memperbarui status Unggulan.'),
+    onError: () => toast.error('Gagal memperbarui status tampilan.'),
   })
 
   const items: WebinarItem[] = data?.items ?? []
@@ -811,9 +811,9 @@ export default function AdminWebinarsPage() {
                       <span style={{
                         display: 'inline-flex', alignItems: 'center', gap: 3,
                         marginTop: 4, padding: '1px 6px', borderRadius: '4px',
-                        background: '#FEF3C7', color: '#D97706', fontSize: '11px', fontWeight: 700,
+                        background: '#ecfdf5', color: '#059669', fontSize: '11px', fontWeight: 600,
                       }}>
-                        ★ Unggulan
+                        Ditampilkan
                       </span>
                     )}
                   </td>
@@ -924,21 +924,21 @@ export default function AdminWebinarsPage() {
 
                       {/* Featured Toggle */}
                       <button
-                        title={w.isFeatured ? 'Hapus dari Unggulan (Landing Page)' : 'Tampilkan di Landing Page sebagai Unggulan'}
+                        title={w.isFeatured ? 'Sembunyikan dari Landing Page' : 'Tampilkan di Landing Page'}
                         onClick={() => featuredMutation.mutate({ id: w.id, isFeatured: !w.isFeatured })}
                         disabled={featuredMutation.isPending}
                         style={{
                           display: 'flex', alignItems: 'center', gap: 4,
                           padding: '5px 10px', borderRadius: 'var(--radius-md)',
-                          border: `1px solid ${w.isFeatured ? '#F59E0B' : '#e5e7eb'}`,
-                          background: w.isFeatured ? '#FEF3C7' : '#fff',
+                          border: `1px solid ${w.isFeatured ? '#10b981' : '#e5e7eb'}`,
+                          background: w.isFeatured ? '#ecfdf5' : '#fff',
                           fontSize: '12px', fontWeight: 600, cursor: 'pointer',
-                          color: w.isFeatured ? '#D97706' : '#374151',
+                          color: w.isFeatured ? '#059669' : '#374151',
                           transition: 'all 0.15s',
                           boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
                         }}
                       >
-                        {w.isFeatured ? '★ Unggulan' : '☆ Jadikan Unggulan'}
+                        {w.isFeatured ? 'Ditampilkan' : 'Tampilkan'}
                       </button>
 
                       <button

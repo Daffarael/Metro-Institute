@@ -537,10 +537,10 @@ export default function AdminBootcampPage() {
     mutationFn: ({ id, isFeatured }: { id: string; isFeatured: boolean }) =>
       api.patch(`/admin/bootcamps/${id}/featured`, { isFeatured }),
     onSuccess: () => {
-      toast.success('Status Unggulan diperbarui!')
+      toast.success('Status tampilan berhasil diperbarui!')
       qc.invalidateQueries({ queryKey: ['admin', 'bootcamps'] })
     },
-    onError: () => toast.error('Gagal memperbarui status Unggulan.'),
+    onError: () => toast.error('Gagal memperbarui status tampilan.'),
   })
 
   const { data, isLoading } = useQuery({
@@ -718,19 +718,19 @@ export default function AdminBootcampPage() {
                         </Link>
                         {/* Featured Toggle */}
                         <button
-                          title={b.isFeatured ? 'Hapus dari Unggulan (Landing Page)' : 'Tampilkan di Landing Page sebagai Unggulan'}
+                          title={b.isFeatured ? 'Sembunyikan dari Landing Page' : 'Tampilkan di Landing Page'}
                           onClick={() => featuredMutation.mutate({ id: b.id, isFeatured: !b.isFeatured })}
                           style={{
                             display: 'flex', alignItems: 'center', gap: 4,
                             padding: '5px 10px', borderRadius: 'var(--radius-md)',
-                            border: `1px solid ${b.isFeatured ? '#F59E0B' : '#e5e7eb'}`,
-                            background: b.isFeatured ? '#FEF3C7' : '#fff',
+                            border: `1px solid ${b.isFeatured ? '#10b981' : '#e5e7eb'}`,
+                            background: b.isFeatured ? '#ecfdf5' : '#fff',
                             fontSize: '12px', fontWeight: 600, cursor: 'pointer',
-                            color: b.isFeatured ? '#D97706' : '#374151',
+                            color: b.isFeatured ? '#059669' : '#374151',
                             transition: 'all 0.15s',
                           }}
                         >
-                          {b.isFeatured ? '★ Unggulan' : '☆ Jadikan Unggulan'}
+                          {b.isFeatured ? 'Ditampilkan' : 'Tampilkan'}
                         </button>
                         {/* Delete Button */}
                         <button
