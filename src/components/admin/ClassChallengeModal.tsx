@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { motion } from 'motion/react'
-import { X, Check, Search } from 'lucide-react'
+import { X, Check, Search, Target } from 'lucide-react'
 import Link from 'next/link'
 import api from '@/lib/axios'
 import { FIELD_LABELS, LEVEL_LABELS } from '@/lib/utils'
@@ -203,47 +203,108 @@ export default function ClassChallengeModal({
           border: '1px solid var(--color-border-subtle, #e2e8f0)',
         }}
       >
-        {/* Header - Ultra Clean */}
+        {/* Header - Professional Clean */}
         <div
           style={{
-            padding: '20px 24px 16px',
+            padding: '20px 24px',
             borderBottom: '1px solid var(--color-border-subtle, #f1f5f9)',
             display: 'flex',
             justifyContent: 'space-between',
-            alignItems: 'flex-start',
+            alignItems: 'center',
             gap: 16,
           }}
         >
-          <div>
-            <h2
-              style={{
-                fontSize: '17px',
-                fontWeight: 700,
-                color: 'var(--color-text-primary, #0f172a)',
-                margin: 0,
-                letterSpacing: '-0.01em',
-              }}
-            >
-              Challenge Bank Kelas
-            </h2>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
             <div
               style={{
-                fontSize: '13px',
-                color: 'var(--color-text-secondary, #64748b)',
-                marginTop: 4,
+                width: 44,
+                height: 44,
+                borderRadius: 12,
+                background: 'var(--color-surface, #ffffff)',
+                border: '1px solid var(--color-border, #e2e8f0)',
+                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.04)',
                 display: 'flex',
                 alignItems: 'center',
-                gap: 8,
-                flexWrap: 'wrap',
+                justifyContent: 'center',
+                color: 'var(--color-text-primary, #0f172a)',
+                flexShrink: 0,
               }}
             >
-              <span style={{ fontWeight: 600, color: 'var(--color-text-primary, #1e293b)' }}>
-                {classTitle}
-              </span>
-              <span style={{ color: 'var(--color-border, #cbd5e1)' }}>·</span>
-              <span>{fieldName}</span>
-              <span style={{ color: 'var(--color-border, #cbd5e1)' }}>·</span>
-              <span>Level {levelName}</span>
+              <Target size={22} strokeWidth={2} />
+            </div>
+
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                <h2
+                  style={{
+                    fontSize: '18px',
+                    fontWeight: 700,
+                    color: 'var(--color-text-primary, #0f172a)',
+                    margin: 0,
+                    letterSpacing: '-0.02em',
+                  }}
+                >
+                  Challenge Bank Kelas
+                </h2>
+                <span
+                  style={{
+                    padding: '2px 8px',
+                    borderRadius: 'var(--radius-full, 9999px)',
+                    background: 'var(--color-bg, #f8fafc)',
+                    border: '1px solid var(--color-border, #e2e8f0)',
+                    fontSize: '11px',
+                    fontWeight: 700,
+                    color: 'var(--color-text-secondary, #64748b)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.04em',
+                  }}
+                >
+                  {classType === 'BOOTCAMP' ? 'Bootcamp' : 'Mini Course'}
+                </span>
+              </div>
+
+              <div
+                style={{
+                  fontSize: '13px',
+                  color: 'var(--color-text-secondary, #64748b)',
+                  marginTop: 4,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  flexWrap: 'wrap',
+                }}
+              >
+                <span style={{ fontWeight: 600, color: 'var(--color-text-primary, #1e293b)' }}>
+                  {classTitle}
+                </span>
+                <span style={{ color: 'var(--color-border, #cbd5e1)' }}>•</span>
+                <span
+                  style={{
+                    padding: '2px 8px',
+                    borderRadius: 'var(--radius-full, 9999px)',
+                    background: 'var(--color-bg, #f8fafc)',
+                    border: '1px solid var(--color-border, #e2e8f0)',
+                    fontSize: '11.5px',
+                    fontWeight: 500,
+                    color: 'var(--color-text-secondary, #475569)',
+                  }}
+                >
+                  {fieldName}
+                </span>
+                <span
+                  style={{
+                    padding: '2px 8px',
+                    borderRadius: 'var(--radius-full, 9999px)',
+                    background: 'var(--color-bg, #f8fafc)',
+                    border: '1px solid var(--color-border, #e2e8f0)',
+                    fontSize: '11.5px',
+                    fontWeight: 500,
+                    color: 'var(--color-text-secondary, #475569)',
+                  }}
+                >
+                  Level {levelName}
+                </span>
+              </div>
             </div>
           </div>
 
