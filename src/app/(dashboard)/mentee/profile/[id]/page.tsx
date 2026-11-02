@@ -6,7 +6,7 @@ import { BookOpen, Calendar, MapPin } from 'lucide-react'
 import { motion } from 'motion/react'
 import api from '@/lib/axios'
 import { useAuthStore } from '@/stores/auth.store'
-import { FIELD_LABELS, BADGE_LABELS, formatDate, getInitials } from '@/lib/utils'
+import { FIELD_LABELS, formatDate, getInitials } from '@/lib/utils'
 import Link from 'next/link'
 import { ROUTES } from '@/lib/utils'
 
@@ -52,13 +52,6 @@ export default function ProfilePage() {
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', flexWrap: 'wrap', marginBottom: 'var(--space-1)' }}>
               <h1 style={{ fontSize: 'var(--text-xl)', fontWeight: 800 }}>{profile.name}</h1>
-              <span style={{ 
-                color: 'var(--color-primary)', 
-                fontSize: 'var(--text-sm)',
-                fontWeight: 600 
-              }}>
-                {BADGE_LABELS[profile.badgeLevel]}
-              </span>
             </div>
 
             {profile.status && <p style={{ color: 'var(--color-text-secondary)', fontSize: 'var(--text-sm)', marginBottom: 4 }}>{profile.status}</p>}

@@ -11,7 +11,7 @@ import {
 } from 'lucide-react'
 import { useAuthStore } from '@/stores/auth.store'
 import { useNotifStore } from '@/stores/auth.store'
-import { ROUTES, BADGE_LABELS, getInitials, cn } from '@/lib/utils'
+import { ROUTES, getInitials, cn } from '@/lib/utils'
 import { authService } from '@/services/auth.service'
 import { toast } from 'sonner'
 import BranchedMenu from '@/components/ui/BranchedMenu'
