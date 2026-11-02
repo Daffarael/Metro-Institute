@@ -14,17 +14,17 @@ interface Transaction {
   createdAt: string; paidAt?: string
 }
 
-const STATUS_CONFIG = {
-  SUCCESS:   { label: 'Berhasil', icon: <CheckCircle2 size={14} />, color: 'var(--color-primary)', bg: '#D1FAE5' },
-  PENDING:   { label: 'Menunggu', icon: <Clock size={14} />, color: '#D97706', bg: '#FEF3C7' },
-  FAILED:    { label: 'Gagal', icon: <XCircle size={14} />, color: '#EF4444', bg: '#FEE2E2' },
-  CANCELLED: { label: 'Dibatalkan', icon: <XCircle size={14} />, color: '#EF4444', bg: '#FEE2E2' },
-  REFUNDED:  { label: 'Refund', icon: <CreditCard size={14} />, color: '#6B7280', bg: '#F3F4F6' },
+const STATUS_CONFIG: Record<string, { label: string; icon: React.ReactNode; color: string; bg: string }> = {
+  SUCCESS:   { label: 'Berhasil',   icon: <CheckCircle2 size={18} strokeWidth={2.5} />, color: '#ffffff', bg: '#018556' },
+  PENDING:   { label: 'Menunggu',   icon: <Clock size={18} strokeWidth={2.5} />,        color: '#ffffff', bg: '#D97706' },
+  FAILED:    { label: 'Gagal',      icon: <XCircle size={18} strokeWidth={2.5} />,      color: '#ffffff', bg: '#DC2626' },
+  CANCELLED: { label: 'Dibatalkan', icon: <XCircle size={18} strokeWidth={2.5} />,      color: '#ffffff', bg: '#DC2626' },
+  REFUNDED:  { label: 'Refund',     icon: <CreditCard size={18} strokeWidth={2.5} />,   color: '#ffffff', bg: '#475569' },
 }
 
 const STATUS_FILTERS = [
   { label: 'Semua',    value: '' },
-  { label: 'Berhasil', value: 'PAID' },
+  { label: 'Berhasil', value: 'SUCCESS' },
   { label: 'Menunggu', value: 'PENDING' },
   { label: 'Gagal',    value: 'FAILED' },
 ] as const
@@ -178,7 +178,7 @@ export default function TransactionsPage() {
                 borderBottom: idx < transactions.length - 1 ? '1px solid var(--color-border-subtle)' : 'none',
               }}>
                 {/* Icon */}
-                <div style={{ width: 40, height: 40, borderRadius: 'var(--radius-md)', background: cfg.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: cfg.color }}>
+                <div style={{ width: 42, height: 42, borderRadius: 12, background: cfg.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: cfg.color, boxShadow: '0 2px 6px rgba(0, 0, 0, 0.08)' }}>
                   {cfg.icon}
                 </div>
 
@@ -195,7 +195,7 @@ export default function TransactionsPage() {
                 {/* Amount + status */}
                 <div style={{ textAlign: 'right', flexShrink: 0 }}>
                   <div style={{ fontWeight: 700, fontSize: 'var(--text-sm)' }}>{formatRupiah(tx.amount)}</div>
-                  <div style={{ marginTop: 2, display: 'inline-flex', alignItems: 'center', gap: 3, padding: '2px 8px', borderRadius: 'var(--radius-full)', background: cfg.bg, color: cfg.color, fontSize: '10px', fontWeight: 700 }}>
+                  <div style={{ marginTop: 4, display: 'inline-flex', alignItems: 'center', gap: 4, padding: '3px 10px', borderRadius: 9999, background: cfg.bg, color: cfg.color, fontSize: '11px', fontWeight: 700, letterSpacing: '0.01em', boxShadow: '0 1px 2px rgba(0, 0, 0, 0.06)' }}>
                     {cfg.label}
                   </div>
                 </div>
