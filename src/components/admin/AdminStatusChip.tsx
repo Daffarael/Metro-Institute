@@ -14,6 +14,9 @@ const STATUS_MAP: Record<string, ChipStyle> = {
   COMPLETED:      { color: '#1F2937', label: 'Selesai' }, // Deep Slate
   // RegistrationStatus
   ACTIVE:         { color: '#018556', label: 'Aktif' },
+  INACTIVE:       { color: '#DC2626', label: 'Nonaktif' },
+  EXPIRED:        { color: '#DC2626', label: 'Kadaluarsa' },
+  FULL:           { color: '#D97706', label: 'Habis' },
   REMOVED:        { color: '#EF4444', label: 'Dikeluarkan' },
   // TxStatus
   PENDING:        { color: '#D97706', label: 'Menunggu' }, // Deep Amber

@@ -31,6 +31,7 @@ import { useAuthStore } from '@/stores/auth.store'
 import { useUIStore } from '@/stores/ui.store'
 
 import { CardTabs } from '@/components/ui/AnimatedTabs'
+import CheckoutModal from '@/components/mentee/CheckoutModal'
 
 
 
@@ -215,73 +216,39 @@ export default function MenteeWebinarDetailPage() {
 
 
   // Alur Berbayar (Checkout / Midtrans Snap)
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
 
   const handlePaidCheckout = () => {
-
     if (!user) {
-
       toast.info('Silakan login terlebih dahulu untuk membeli tiket.')
-
       router.push('/login')
-
       return
-
     }
+    setIsCheckoutOpen(true)
+  }
 
-
-
-    api.post('/transactions/initiate', {
-
-      productType: 'WEBINAR',
-
-      webinarId: id,
-
-    })
-
-      .then((res) => {
-
-        const snapToken = res.data.data?.snapToken
-
-        if (snapToken && (window as any).snap) {
-
-          (window as any).snap.pay(snapToken, {
-
-            onSuccess: () => {
-
-              toast.success('Pembayaran tiket webinar berhasil!')
-
-              queryClient.invalidateQueries({ queryKey: ['webinar', id] })
-
-              queryClient.invalidateQueries({ queryKey: ['webinars'] })
-
-            },
-
-            onPending: () => {
-
-              toast.info('Menunggu pembayaran...')
-
-              router.push('/mentee/transactions')
-
-            },
-
-            onError: () => toast.error('Pembayaran gagal atau dibatalkan'),
-
-          })
-
-        } else {
-
-          router.push(`/mentee/checkout?type=webinar&id=${id}`)
-
-        }
-
+  const handleCheckoutSuccess = (data: any) => {
+    if (data?.isFree) {
+      toast.success('Pendaftaran webinar berhasil!')
+      queryClient.invalidateQueries({ queryKey: ['webinar', id] })
+      queryClient.invalidateQueries({ queryKey: ['webinars'] })
+    } else if (data?.snapToken && (window as any).snap) {
+      (window as any).snap.pay(data.snapToken, {
+        onSuccess: () => {
+          toast.success('Pembayaran tiket webinar berhasil!')
+          queryClient.invalidateQueries({ queryKey: ['webinar', id] })
+          queryClient.invalidateQueries({ queryKey: ['webinars'] })
+        },
+        onPending: () => {
+          toast.info('Menunggu pembayaran...')
+          router.push('/mentee/transactions')
+        },
+        onError: () => toast.error('Pembayaran gagal atau dibatalkan'),
       })
-
-      .catch((err) => {
-
-        toast.error(err.response?.data?.message || 'Gagal memulai transaksi tiket')
-
-      })
-
+    } else {
+      router.push('/mentee/transactions')
+      toast.info('Token pembayaran dibuat. Cek halaman transaksi.')
+    }
   }
 
 
@@ -2244,9 +2211,20 @@ export default function MenteeWebinarDetailPage() {
 
       </AnimatePresence>
 
+      {webinar && (
+        <CheckoutModal
+          isOpen={isCheckoutOpen}
+          onClose={() => setIsCheckoutOpen(false)}
+          productType="WEBINAR"
+          productId={id}
+          title={webinar.title}
+          price={webinar.price}
+          badgeLabel="Inspire Talk"
+          speakerOrMentor={webinar.speakerName}
+          onSuccess={handleCheckoutSuccess}
+        />
+      )}
     </div>
-
   )
-
 }
 

@@ -16,6 +16,7 @@ import { ROUTES, FIELD_LABELS, LEVEL_LABELS, FIELD_COLORS, formatRupiah, formatD
 import { toast } from 'sonner'
 import { motion } from 'framer-motion'
 import { CardTabs } from '@/components/ui/AnimatedTabs'
+import CheckoutModal from '@/components/mentee/CheckoutModal'
 
 const getSessionIcon = (type: string, color: string) => {
   switch(type) {
@@ -133,14 +134,22 @@ export default function BootcampDetailPage() {
     },
   })
 
-  const enrollMutation = useMutation({
-    mutationFn: () => api.post('/transactions/initiate', { productType: 'BOOTCAMP', bootcampId: id }).then((r) => r.data.data),
-    onSuccess: (txData) => {
-      // Open Midtrans Snap
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
+
+  const handleCheckoutSuccess = (txData: any) => {
+    if (txData?.isFree) {
+      toast.success('Pendaftaran bootcamp berhasil!')
+      queryClient.invalidateQueries({ queryKey: ['bootcamp', id] })
+      queryClient.invalidateQueries({ queryKey: ['transactions'] })
+    } else if (txData?.snapToken) {
       const w = window as unknown as { snap?: { pay: (token: string, opts: object) => void } }
-      if (w.snap) {
+      if (w?.snap) {
         w.snap.pay(txData.snapToken, {
-          onSuccess: () => { toast.success('Pembayaran berhasil!'); queryClient.invalidateQueries({ queryKey: ['bootcamp', id] }) },
+          onSuccess: () => {
+            toast.success('Pembayaran berhasil!')
+            queryClient.invalidateQueries({ queryKey: ['bootcamp', id] })
+            queryClient.invalidateQueries({ queryKey: ['transactions'] })
+          },
           onError: () => toast.error('Pembayaran gagal'),
           onClose: () => {},
         })
@@ -148,7 +157,12 @@ export default function BootcampDetailPage() {
         router.push(ROUTES.TRANSACTIONS)
         toast.info('Token pembayaran dibuat. Cek halaman transaksi.')
       }
-    },
+    }
+  }
+
+  const enrollMutation = useMutation({
+    mutationFn: () => api.post('/transactions/initiate', { productType: 'BOOTCAMP', bootcampId: id }).then((r) => r.data.data),
+    onSuccess: (txData) => handleCheckoutSuccess(txData),
     onError: (err: unknown) => {
       console.error('Enroll Error:', err)
       const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message || (err as Error).message || 'Gagal memulai pembayaran'
@@ -372,20 +386,18 @@ export default function BootcampDetailPage() {
                 </div>
               ) : (
                 <motion.button
-                  whileHover={!enrollMutation.isPending ? { scale: 1.02 } : {}}
-                  whileTap={!enrollMutation.isPending ? { scale: 0.98 } : {}}
-                  onClick={() => enrollMutation.mutate()}
-                  disabled={enrollMutation.isPending}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setIsCheckoutOpen(true)}
                   style={{
                     width: '100%', padding: '12px 0',
                     background: 'var(--color-primary)', color: '#fff',
                     border: 'none', borderRadius: 8,
                     fontWeight: 700, fontSize: '14px',
-                    cursor: enrollMutation.isPending ? 'not-allowed' : 'pointer',
-                    opacity: enrollMutation.isPending ? 0.6 : 1,
+                    cursor: 'pointer',
                   }}
                 >
-                  {enrollMutation.isPending ? 'Memproses...' : 'Daftar Sekarang'}
+                  Daftar Sekarang
                 </motion.button>
               )}
 
@@ -1166,6 +1178,19 @@ export default function BootcampDetailPage() {
         </div>
 
       </div>
+
+      {data && (
+        <CheckoutModal
+          isOpen={isCheckoutOpen}
+          onClose={() => setIsCheckoutOpen(false)}
+          productType="BOOTCAMP"
+          productId={id}
+          title={data.title}
+          price={data.price}
+          badgeLabel={FIELD_LABELS[data.field] || data.field}
+          onSuccess={handleCheckoutSuccess}
+        />
+      )}
     </div>
   )
 }

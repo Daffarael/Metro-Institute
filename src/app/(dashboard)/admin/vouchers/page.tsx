@@ -31,11 +31,20 @@ let _vouchersHasLoaded = false
 
 // ─── Types ─────────────────────────────────────────────────
 interface Voucher {
-  id: string; code: string
+  id: string
+  code: string
   discountType: 'FIXED' | 'PERCENT'
-  discountValue: number; maxUses: number; usedCount: number
-  validFrom: string; validUntil: string; isActive: boolean
-  productType: 'BOOTCAMP' | 'MINI_COURSE' | 'ALL'
+  type?: 'FIXED' | 'PERCENT'
+  discountValue: number
+  value?: number
+  maxUses: number
+  maxUsage?: number
+  usedCount: number
+  usageCount?: number
+  validFrom: string
+  validUntil: string
+  isActive: boolean
+  productType?: 'BOOTCAMP' | 'MINI_COURSE' | 'ALL'
 }
 interface Filters { isActive?: boolean | string; search?: string; page: number; limit: number }
 
@@ -426,7 +435,14 @@ export default function AdminVouchersPage() {
                   const now = new Date()
                   const validUntil = new Date(v.validUntil)
                   const isExpired = validUntil < now
-                  const isFull = v.usedCount >= v.maxUses
+                  const dType = v.discountType || v.type || 'PERCENT'
+                  const dVal = v.discountValue ?? v.value ?? 0
+                  const mUses = v.maxUses ?? v.maxUsage ?? 1
+                  const uCount = v.usedCount ?? v.usageCount ?? 0
+                  const isFull = uCount >= mUses
+
+                  const statusKey = isExpired ? 'EXPIRED' : isFull ? 'FULL' : v.isActive ? 'ACTIVE' : 'INACTIVE'
+                  const statusLabel = isExpired ? 'Kadaluarsa' : isFull ? 'Habis' : v.isActive ? 'Aktif' : 'Nonaktif'
 
                   return (
                     <tr key={v.id}
@@ -443,25 +459,25 @@ export default function AdminVouchersPage() {
                         </div>
                       </td>
                       <td style={{ padding: 'var(--space-3) var(--space-4)', fontWeight: 700, color: 'var(--color-primary)' }}>
-                        {v.discountType === 'PERCENT' ? `${v.discountValue}%` : formatRupiah(v.discountValue)}
+                        {dType === 'PERCENT' ? `${dVal}%` : formatRupiah(dVal)}
                       </td>
                       <td style={{ padding: 'var(--space-3) var(--space-4)', fontSize: '12px' }}>
                         <div style={{ color: 'var(--color-text-secondary)' }}>{formatDate(v.validFrom)}</div>
-                        <div style={{ color: isExpired ? 'var(--color-error)' : 'var(--color-text-secondary)' }}>{formatDate(v.validUntil)} {isExpired ? '(Kadaluarsa)' : ''}</div>
+                        <div style={{ color: isExpired ? '#DC2626' : 'var(--color-text-secondary)', fontWeight: isExpired ? 600 : 400 }}>{formatDate(v.validUntil)} {isExpired ? '(Kadaluarsa)' : ''}</div>
                       </td>
                       <td style={{ padding: 'var(--space-3) var(--space-4)' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <div style={{ height: 6, width: 60, borderRadius: 3, background: 'var(--color-border)', overflow: 'hidden' }}>
-                            <div style={{ height: '100%', width: `${Math.min((v.usedCount / v.maxUses) * 100, 100)}%`, background: isFull ? 'var(--color-error)' : 'var(--color-primary)', borderRadius: 3 }} />
+                          <div style={{ height: 6, width: 60, borderRadius: 3, background: '#E5E7EB', overflow: 'hidden' }}>
+                            <div style={{ height: '100%', width: `${Math.min((uCount / (mUses || 1)) * 100, 100)}%`, background: isFull ? '#DC2626' : '#018556', borderRadius: 3 }} />
                           </div>
-                          <span style={{ fontSize: '12px', color: isFull ? 'var(--color-error)' : 'var(--color-text-secondary)', fontWeight: 500 }}>{v.usedCount}/{v.maxUses}</span>
+                          <span style={{ fontSize: '12px', color: isFull ? '#DC2626' : 'var(--color-text-secondary)', fontWeight: 600 }}>{uCount}/{mUses}</span>
                         </div>
                       </td>
                       <td style={{ padding: 'var(--space-3) var(--space-4)', color: 'var(--color-text-secondary)', fontSize: '12px' }}>
-                        {v.productType === 'ALL' ? 'Semua Produk' : v.productType === 'BOOTCAMP' ? 'Bootcamp' : 'Mini Course'}
+                        {v.productType === 'ALL' || !v.productType ? 'Semua Produk' : v.productType === 'BOOTCAMP' ? 'Bootcamp' : 'Mini Course'}
                       </td>
                       <td style={{ padding: 'var(--space-3) var(--space-4)' }}>
-                        <AdminStatusChip status={v.isActive && !isExpired && !isFull ? 'ACTIVE' : 'INACTIVE'} label={v.isActive && !isExpired && !isFull ? 'Aktif' : isExpired ? 'Kadaluarsa' : isFull ? 'Habis' : 'Nonaktif'} />
+                        <AdminStatusChip status={statusKey} label={statusLabel} />
                       </td>
                       <td style={{ padding: 'var(--space-3) var(--space-4)' }}>
                         <div style={{ display: 'flex', gap: 6 }}>

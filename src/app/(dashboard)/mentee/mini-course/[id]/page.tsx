@@ -1,632 +1,1256 @@
-'use client'
-
-import { useState, useEffect, useRef } from 'react'
-import { motion } from 'motion/react'
-import { useQuery, useMutation } from '@tanstack/react-query'
-import { useParams, useRouter } from 'next/navigation'
-import Link from 'next/link'
-import {
-  Star, Users, Clock, ChevronDown, ChevronUp, ChevronRight, PlayCircle, Play,
-  FileText, CheckCircle2, Lock, Heart, Share2, Award, Shield, BookOpen, Infinity,
-  HelpCircle, FileEdit, Calendar
-} from 'lucide-react'
-import { toast } from 'sonner'
-import api from '@/lib/axios'
-import { useAuthStore } from '@/stores/auth.store'
-import { useUIStore } from '@/stores/ui.store'
-import { ROUTES, formatRupiah, formatDuration, FIELD_LABELS, LEVEL_LABELS } from '@/lib/utils'
-import { CardTabs } from '@/components/ui/AnimatedTabs'
-
-interface CourseDetail {
-  id: string
-  title: string
-  shortDescription: string
-  description: string
-  field: string
-  level: string
-  price: number
-  thumbnailUrl?: string
-  totalDuration: number
-  accessDays: number
-  rating: number
-  reviewCount: number
-  enrollmentCount: number
-  tags: string[]
-  isEnrolled: boolean
-  isWishlisted: boolean
-  progress?: number
-  chapters: Array<{
-    id: string; title: string; orderIndex: number
-    sessions: Array<{
-      id: string; title: string; type: string
-      videoDuration?: number; isFreePreview: boolean; orderIndex: number
-    }>
-  }>
-  reviews: Array<{
-    id: string; rating: number; content?: string
-    user: { name: string; photoUrl?: string }; createdAt: string
-  }>
-}
-
-const getSessionIcon = (type: string, color: string) => {
-  switch (type) {
-    case 'LIVE': return <Calendar size={15} color={color} />
-    case 'VIDEO': return <Play size={15} color={color} />
-    case 'MATERIAL': return <FileText size={15} color={color} />
-    case 'QUIZ': return <HelpCircle size={15} color={color} />
-    case 'ASSIGNMENT': return <FileEdit size={15} color={color} />
-    default: return <Play size={15} color={color} />
-  }
-}
-
-export default function CourseDetailPage() {
-  const { id } = useParams<{ id: string }>()
-  const router = useRouter()
-  const { user } = useAuthStore()
-  const { setSearchPlaceholder } = useUIStore()
-  const [expandedChapter, setExpandedChapter] = useState<string | null>(null)
-  const [isWishlisted, setIsWishlisted] = useState(false)
-  const [activeTab, setActiveTab] = useState<'overview' | 'curriculum' | 'reviews'>('overview')
-  const [reviewRating, setReviewRating] = useState<number>(0)
-  const [reviewContent, setReviewContent] = useState('')
-
-  const { data: course, isLoading, refetch } = useQuery<CourseDetail>({
-    queryKey: ['course-detail', id],
-    queryFn: () => api.get(`/courses/${id}`).then((r) => r.data.data),
-  })
-
-  const submitReviewMutation = useMutation({
-    mutationFn: () => api.post(`/courses/${id}/reviews`, { rating: reviewRating, content: reviewContent }),
-    onSuccess: () => {
-      toast.success('Ulasan berhasil dikirim!')
-      setReviewRating(0)
-      setReviewContent('')
-      refetch()
-    },
-    onError: (err: any) => {
-      toast.error(err.response?.data?.message || 'Gagal mengirim ulasan')
-    }
-  })
-
-  useEffect(() => { if (course) setIsWishlisted(course.isWishlisted) }, [course])
-
-  const hasInitializedChapterRef = useRef(false)
-  useEffect(() => {
-    if (course?.chapters?.[0]?.id && !hasInitializedChapterRef.current) {
-      hasInitializedChapterRef.current = true
-      setExpandedChapter(course.chapters[0].id)
-    }
-  }, [course?.chapters])
-
-  const wishlistMutation = useMutation({
-    mutationFn: () =>
-      isWishlisted
-        ? api.delete(`/wishlist/course/${id}`)
-        : api.post('/wishlist', { productType: 'MINI_COURSE', courseId: id }),
-    onSuccess: () => {
-      setIsWishlisted(!isWishlisted)
-      toast.success(isWishlisted ? 'Dihapus dari wishlist' : 'Ditambahkan ke wishlist')
-    },
-  })
-
-  const checkoutMutation = useMutation({
-    mutationFn: () => api.post('/transactions/initiate', { productType: 'MINI_COURSE', courseId: id }).then((r) => r.data),
-    onSuccess: (data) => {
-      if (data.data.snapToken && typeof window !== 'undefined') {
-        (window as any).snap?.pay(data.data.snapToken, {
-          onSuccess: () => router.push(`${ROUTES.CHECKOUT_SUCCESS}?type=course&id=${id}`),
-          onError: () => toast.error('Pembayaran gagal.'),
-          onClose: () => toast('Pembayaran dibatalkan.'),
-        })
-      }
-    },
-    onError: () => toast.error('Gagal memulai checkout.'),
-  })
-
-
-
-  useEffect(() => {
-    if (course) {
-      setSearchPlaceholder(`Mini Course / ${course.title}`)
-    }
-    return () => setSearchPlaceholder(null)
-  }, [course, setSearchPlaceholder])
-
-  if (isLoading) return <CourseDetailSkeleton />
-  if (!course) return null
-
-  const totalSessions = course.chapters.reduce((acc, ch) => acc + ch.sessions.length, 0)
-
-  return (
-    <div style={{ maxWidth: 1100, margin: '0 auto' }} className="animate-fade-in">
-            {/* ── HEADER (Breadcrumb, Title, Meta) ──────────── */}
-      <div className="detail-header" style={{ marginBottom: 24 }}>
-        {/* Breadcrumb */}
-          <nav style={{
-            display: 'flex', alignItems: 'center', gap: 6,
-            marginBottom: 28, fontSize: '13px',
-            color: 'var(--color-text-tertiary)',
-          }}>
-            <Link href={ROUTES.COURSE_LIST} style={{ color: 'var(--color-text-secondary)', textDecoration: 'none' }}>
-              Mini Course
-            </Link>
-            <ChevronRight size={13} strokeWidth={1.5} />
-            <span style={{ color: 'var(--color-text-primary)', fontWeight: 500, maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {course.title}
-            </span>
-          </nav>
-
-          {/* Eyebrow */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '6px 8px', marginBottom: 12 }}>
-            <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-secondary)' }}>
-              {FIELD_LABELS[course.field]}
-            </span>
-            <span style={{ fontSize: '14px', color: 'var(--color-border)' }}>•</span>
-            <span style={{ fontSize: '12px', color: 'var(--color-text-tertiary)' }}>
-              {LEVEL_LABELS[course.level]}
-            </span>
-          </div>
-
-          {/* Title */}
-          <h1 style={{
-            fontSize: 'clamp(22px, 4vw, 28px)', fontWeight: 800, lineHeight: 1.25,
-            letterSpacing: '-0.02em',
-            color: 'var(--color-text-primary)',
-            marginBottom: 14,
-          }}>
-            {course.title}
-          </h1>
-
-          <p style={{
-            fontSize: '15px', color: 'var(--color-text-secondary)',
-            lineHeight: 1.6, marginBottom: 24,
-          }}>
-            {course.shortDescription}
-          </p>
-
-          {/* Meta strip */}
-          <div style={{
-            display: 'flex', flexWrap: 'wrap', alignItems: 'center',
-            gap: 20, marginBottom: 32,
-            paddingBottom: 24,
-            borderBottom: '1px solid var(--color-border-subtle)',
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-              <Star size={14} color="#F59E0B" fill="#F59E0B" />
-              <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-text-primary)' }}>
-                {course.rating.toFixed(1)}
-              </span>
-              <span style={{ fontSize: '13px', color: 'var(--color-text-tertiary)' }}>
-                ({course.reviewCount} ulasan)
-              </span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5, color: 'var(--color-text-secondary)', fontSize: '13px' }}>
-              <Users size={13} strokeWidth={1.5} />
-              <span>{course.enrollmentCount} pelajar</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5, color: 'var(--color-text-secondary)', fontSize: '13px' }}>
-              <Clock size={13} strokeWidth={1.5} />
-              <span>{formatDuration(course.totalDuration)}</span>
-            </div>
-          </div>
-      </div>
-
-      <div className="detail-layout-grid">
-
-        {/* ── BANNER IMAGE ──────────────────────────────── */}
-        <div className="detail-banner">
-          {course.thumbnailUrl && (
-            <div style={{
-              width: '100%',
-              aspectRatio: '16/9',
-              maxHeight: 380,
-              borderRadius: 14,
-              overflow: 'hidden',
-              border: '1px solid var(--color-border-subtle)',
-              background: 'var(--color-bg)',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
-            }}>
-              <img
-                src={course.thumbnailUrl}
-                alt={course.title}
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-            </div>
-          )}
-        </div>
-
-        {/* ── RIGHT (Purchase Card) ─────────────────────── */}
-        <div className="detail-sidebar">
-          <div style={{
-            border: '1px solid var(--color-border-subtle)',
-            borderRadius: 12, overflow: 'hidden',
-            background: 'var(--color-surface)',
-          }}>
-            {/* Thumbnail */}
-            <div style={{
-              aspectRatio: '16/9', background: 'var(--color-bg)',
-              borderBottom: '1px solid var(--color-border-subtle)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              overflow: 'hidden',
-            }}>
-              {course.thumbnailUrl
-                ? <img src={course.thumbnailUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                : <BookOpen size={40} color="var(--color-border)" strokeWidth={1} />
-              }
-            </div>
-
-            <div style={{ padding: '20px' }}>
-              {/* Price */}
-              <div style={{
-                fontSize: '26px', fontWeight: 800,
-                color: 'var(--color-text-primary)',
-                letterSpacing: '-0.02em',
-                marginBottom: 16,
-              }}>
-                {course.price === 0 ? 'Gratis' : formatRupiah(course.price)}
-              </div>
-
-              {/* CTA */}
-              {course.isEnrolled ? (
-                <Link href={ROUTES.LEARN_COURSE(course.id)} style={{ textDecoration: 'none', display: 'block' }}>
-                  <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    style={{
-                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                      width: '100%', padding: '12px 0',
-                      background: 'var(--color-primary)', color: '#fff',
-                      borderRadius: 8, fontWeight: 700, fontSize: '14px',
-                    }}
-                  >
-                    <PlayCircle size={16} strokeWidth={2} /> Lanjut Belajar
-                  </motion.div>
-                </Link>
-              ) : (
-                <motion.button
-                  whileHover={!checkoutMutation.isPending ? { scale: 1.02 } : {}}
-                  whileTap={!checkoutMutation.isPending ? { scale: 0.98 } : {}}
-                  onClick={() => checkoutMutation.mutate()}
-                  disabled={checkoutMutation.isPending}
-                  style={{
-                    width: '100%', padding: '12px 0',
-                    background: 'var(--color-primary)', color: '#fff',
-                    border: 'none', borderRadius: 8,
-                    fontWeight: 700, fontSize: '14px',
-                    cursor: checkoutMutation.isPending ? 'not-allowed' : 'pointer',
-                    opacity: checkoutMutation.isPending ? 0.6 : 1,
-                  }}
-                >
-                  {checkoutMutation.isPending ? 'Memproses...' : 'Beli Sekarang'}
-                </motion.button>
-              )}
-
-              {/* Secondary CTAs */}
-              <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-                <motion.button
-                  whileHover={!wishlistMutation.isPending ? { scale: 1.02, backgroundColor: 'var(--color-surface)' } : {}}
-                  whileTap={!wishlistMutation.isPending ? { scale: 0.98 } : {}}
-                  onClick={() => wishlistMutation.mutate()}
-                  disabled={wishlistMutation.isPending}
-                  style={{
-                    flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-                    padding: '10px 0', fontSize: '13px', fontWeight: 600,
-                    color: isWishlisted ? 'var(--color-error)' : 'var(--color-text-secondary)',
-                    background: 'var(--color-bg)',
-                    border: '1px solid var(--color-border-subtle)',
-                    borderRadius: 8, cursor: 'pointer',
-                  }}
-                >
-                  <Heart size={14} strokeWidth={1.5} fill={isWishlisted ? 'currentColor' : 'none'} />
-                  {isWishlisted ? 'Disimpan' : 'Simpan'}
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.05, backgroundColor: 'var(--color-surface)' }}
-                  whileTap={{ scale: 0.95 }}
-                  style={{
-                    width: 44, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    background: 'var(--color-bg)',
-                    border: '1px solid var(--color-border-subtle)',
-                    borderRadius: 8, cursor: 'pointer', flexShrink: 0,
-                    color: 'var(--color-text-secondary)',
-                  }}
-                  onClick={() => { navigator.clipboard.writeText(window.location.href); toast.success('Link disalin!') }}
-                >
-                  <Share2 size={14} strokeWidth={1.5} />
-                </motion.button>
-              </div>
-
-              {/* Divider */}
-              <div style={{ height: 1, background: 'var(--color-border-subtle)', margin: '18px 0' }} />
-
-              {/* Features */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                <p style={{ fontSize: '12px', fontWeight: 700, color: 'var(--color-text-tertiary)', letterSpacing: '0.04em', textTransform: 'uppercase', margin: '0 0 4px' }}>
-                  Fasilitas Kursus
-                </p>
-                {[
-                  { icon: course.accessDays > 10000 ? Infinity : Clock,        text: course.accessDays > 10000 ? 'Akses seumur hidup' : `Akses ${course.accessDays} hari` },
-                  { icon: CheckCircle2, text: `${totalSessions} sesi pembelajaran` },
-                  { icon: FileText,     text: 'Materi & project files' },
-                  { icon: Award,        text: 'Sertifikat penyelesaian' },
-                  { icon: Shield,       text: 'Garansi uang kembali 3 hari' },
-                ].map((f, i) => (
-                  <div key={i} style={{
-                    display: 'flex', alignItems: 'center', gap: 10,
-                    fontSize: '13px', color: 'var(--color-text-secondary)',
-                  }}>
-                    <f.icon size={14} strokeWidth={1.5} color="var(--color-text-tertiary)" />
-                    {f.text}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-
-        </div>
-
-        {/* ── TABS (Overview, Kurikulum, Ulasan) ────────── */}
-        <div className="detail-tabs">
-          {/* About */}
-          <CardTabs
-            items={[
-              { id: 'overview', label: 'Overview' },
-              { id: 'curriculum', label: 'Kurikulum' },
-              { id: 'reviews', label: 'Ulasan' },
-            ]}
-            activeId={activeTab}
-            onChange={(id) => setActiveTab(id as 'overview' | 'curriculum' | 'reviews')}
-          >
-            {activeTab === 'overview' && (
-              <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-5)' }}>
-                <h2 style={{ fontSize: '18px', fontWeight: 700, letterSpacing: '-0.01em', marginBottom: 12, color: 'var(--color-text-primary)' }}>
-                  Tentang Kursus
-                </h2>
-                <div style={{
-                  fontSize: '14px', color: 'var(--color-text-secondary)',
-                  lineHeight: 1.7, whiteSpace: 'pre-line',
-                }}>
-                  {course.description}
-                </div>
-              </div>
-            )}
-
-            {activeTab === 'curriculum' && (
-              <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
-                {course.chapters?.map((chapter) => {
-                  const isOpen = expandedChapter === chapter.id
-                  return (
-                    <div key={chapter.id} className="card" style={{
-                      overflow: 'hidden',
-                      transition: 'all 500ms cubic-bezier(0.4,0,0.2,1)',
-                      borderRadius: isOpen ? 16 : 12,
-                    }}>
-                      <button
-                        onClick={() => setExpandedChapter(isOpen ? null : chapter.id)}
-                        style={{ width: '100%', padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, fontSize: '14.5px', color: 'var(--color-text-primary)' }}
-                      >
-                        <span style={{ flex: 1, textAlign: 'left', lineHeight: 1.4, paddingRight: 16 }}>{chapter.title}</span>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
-                          <span style={{ fontSize: '12px', color: 'var(--color-text-tertiary)', fontWeight: 400 }}>{chapter.sessions.length} sesi</span>
-                          <div style={{ display: 'flex', height: 28, width: 28, alignItems: 'center', justifyContent: 'center' }}>
-                            <ChevronUp
-                              size={16}
-                              color="var(--color-text-tertiary)"
-                              style={{
-                                transition: 'transform 500ms cubic-bezier(0.4,0,0.2,1)',
-                                transform: isOpen ? 'rotate(0deg)' : 'rotate(180deg)'
-                              }}
-                            />
-                          </div>
-                        </div>
-                      </button>
-
-                      <div
-                        style={{
-                          display: 'grid',
-                          transition: 'all 500ms cubic-bezier(0.4,0,0.2,1)',
-                          gridTemplateRows: isOpen ? '1fr' : '0fr',
-                          opacity: isOpen ? 1 : 0,
-                        }}
-                      >
-                        <div style={{ overflow: 'hidden' }}>
-                          <div style={{ padding: '0 8px 12px' }}>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                              {chapter.sessions.map((session, idx: number) => {
-                                const canAccess = course.isEnrolled || session.isFreePreview
-                                const sessionContent = (
-                                  <div
-                                    key={session.id}
-                                    style={{
-                                      display: 'flex', alignItems: 'center', gap: 12,
-                                      padding: '10px 12px',
-                                      borderRadius: 10,
-                                      transition: 'all 500ms cubic-bezier(0.4,0,0.2,1)',
-                                      transform: isOpen ? 'translateY(0)' : 'translateY(16px)',
-                                      opacity: isOpen ? 1 : 0,
-                                      transitionDelay: isOpen ? `${idx * 75}ms` : '0ms',
-                                      cursor: canAccess ? 'pointer' : 'default',
-                                    }}
-                                    onMouseEnter={(e) => e.currentTarget.style.background = 'color-mix(in srgb, var(--color-text-primary) 3%, transparent)'}
-                                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                                  >
-                                    <div style={{
-                                      display: 'flex', height: 36, width: 36, flexShrink: 0,
-                                      alignItems: 'center', justifyContent: 'center',
-                                      borderRadius: 10, background: 'var(--color-bg)',
-                                      border: '1px solid var(--color-border-subtle)'
-                                    }}>
-                                      {getSessionIcon(session.type, session.type === 'LIVE' ? 'var(--color-primary)' : 'var(--color-text-tertiary)')}
-                                    </div>
-                                    <div style={{ flex: 1, minWidth: 0, paddingRight: 16 }}>
-                                      <div style={{ fontSize: '13.5px', fontWeight: 500, color: canAccess ? 'var(--color-text-primary)' : 'var(--color-text-secondary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                        {session.title}
-                                      </div>
-                                    </div>
-                                    {session.isFreePreview && !course.isEnrolled ? (
-                                      <span style={{
-                                        fontSize: '11px', fontWeight: 600,
-                                        color: 'var(--color-primary)',
-                                        background: 'rgba(1, 133, 86, 0.08)',
-                                        padding: '2px 8px', borderRadius: 20,
-                                        flexShrink: 0,
-                                      }}>
-                                        Preview Gratis
-                                      </span>
-                                    ) : session.videoDuration ? (
-                                      <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', flexShrink: 0 }}>
-                                        {formatDuration(session.videoDuration)}
-                                      </span>
-                                    ) : null}
-                                    {(!course.isEnrolled && !session.isFreePreview) && (
-                                      <Lock size={13} color="var(--color-text-tertiary)" style={{ flexShrink: 0, marginLeft: 4 }} />
-                                    )}
-                                  </div>
-                                )
-
-                                return canAccess ? (
-                                  <Link key={session.id} href={ROUTES.LEARN_COURSE_SESSION(id, session.id)} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
-                                    {sessionContent}
-                                  </Link>
-                                ) : (
-                                  sessionContent
-                                )
-                              })}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            )}
-
-            {activeTab === 'reviews' && (
-              <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
-                {course.isEnrolled && (course.progress ?? 0) >= 100 ? (
-                  <div style={{ padding: '20px', border: '1px solid var(--color-border-subtle)', borderRadius: 10, background: 'var(--color-surface)' }}>
-                    <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: 12 }}>Berikan Ulasan Anda</h3>
-                    <div style={{ display: 'flex', gap: 4, marginBottom: 16 }}>
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <Star 
-                          key={star} 
-                          size={24} 
-                          strokeWidth={1.5}
-                          color={star <= reviewRating ? '#F59E0B' : 'var(--color-border)'} 
-                          fill={star <= reviewRating ? '#F59E0B' : 'none'} 
-                          style={{ cursor: 'pointer', transition: 'all 0.2s' }}
-                          onClick={() => setReviewRating(star)}
-                        />
-                      ))}
-                    </div>
-                    <textarea 
-                      value={reviewContent}
-                      onChange={(e) => setReviewContent(e.target.value)}
-                      placeholder="Bagaimana pengalaman Anda belajar di kursus ini?"
-                      style={{ 
-                        width: '100%', minHeight: 80, padding: 12, borderRadius: 8, 
-                        border: '1px solid var(--color-border-subtle)', background: 'var(--color-bg)',
-                        color: 'var(--color-text-primary)', fontSize: '14px', marginBottom: 16,
-                        fontFamily: 'inherit', resize: 'vertical'
-                      }}
-                    />
-                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                      <motion.button
-                        whileHover={!submitReviewMutation.isPending && reviewRating > 0 ? { scale: 1.02 } : {}}
-                        whileTap={!submitReviewMutation.isPending && reviewRating > 0 ? { scale: 0.98 } : {}}
-                        onClick={() => submitReviewMutation.mutate()}
-                        disabled={submitReviewMutation.isPending || reviewRating === 0}
-                        style={{
-                          padding: '10px 20px', background: 'var(--color-primary)', color: '#fff',
-                          border: 'none', borderRadius: 8, fontWeight: 600, fontSize: '13px',
-                          cursor: submitReviewMutation.isPending || reviewRating === 0 ? 'not-allowed' : 'pointer',
-                          opacity: submitReviewMutation.isPending || reviewRating === 0 ? 0.6 : 1,
-                        }}
-                      >
-                        {submitReviewMutation.isPending ? 'Mengirim...' : 'Kirim Ulasan'}
-                      </motion.button>
-                    </div>
-                  </div>
-                ) : course.isEnrolled ? (
-                  <div style={{ padding: '20px', textAlign: 'center', border: '1px solid var(--color-border-subtle)', borderRadius: 10, background: 'var(--color-surface)' }}>
-                    <p style={{ color: 'var(--color-text-secondary)', fontSize: 14 }}>Selesaikan kursus ini (Progres 100%) untuk memberikan ulasan.</p>
-                  </div>
-                ) : null}
-
-                {course.reviews.length === 0 ? (
-                  <div className="empty-state" style={{ padding: '40px 0', textAlign: 'center', border: '1px solid var(--color-border-subtle)', borderRadius: 10 }}>
-                    <p style={{ color: 'var(--color-text-tertiary)', fontSize: 14 }}>Belum ada ulasan</p>
-                  </div>
-                ) : (
-                  <>
-                    <h2 style={{ fontSize: '18px', fontWeight: 700, letterSpacing: '-0.01em', marginBottom: 16, color: 'var(--color-text-primary)' }}>
-                      Ulasan <span style={{ fontWeight: 400, color: 'var(--color-text-tertiary)', fontSize: '15px' }}>({course.reviewCount})</span>
-                    </h2>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                      {course.reviews.slice(0, 5).map((review) => (
-                        <div key={review.id} style={{
-                          padding: '16px 18px',
-                          border: '1px solid var(--color-border-subtle)',
-                          borderRadius: 10,
-                          background: 'var(--color-surface)',
-                        }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
-                            <div style={{
-                              width: 32, height: 32, borderRadius: '50%',
-                              background: 'var(--color-bg)',
-                              border: '1px solid var(--color-border-subtle)',
-                              display: 'flex', alignItems: 'center', justifyContent: 'center',
-                              fontSize: '13px', fontWeight: 700, color: 'var(--color-text-secondary)',
-                              flexShrink: 0,
-                            }}>
-                              {review.user.name[0].toUpperCase()}
-                            </div>
-                            <div>
-                              <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: 2 }}>
-                                {review.user.name}
-                              </div>
-                              <div style={{ display: 'flex', gap: 2 }}>
-                                {Array.from({ length: 5 }).map((_, i) => (
-                                  <Star key={i} size={11} color="#F59E0B" fill={i < review.rating ? '#F59E0B' : 'none'} />
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                          {review.content && (
-                            <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: 0 }}>
-                              {review.content}
-                            </p>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </>
-                )}
-              </div>
-            )}
-          </CardTabs>
-        </div>
-
-      </div>
-    </div>
-  )
-}
-
-function CourseDetailSkeleton() {
-  return (
-    <div className="detail-layout-grid" style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gap: 48 }}>
-      <div>
-        <div className="skeleton" style={{ height: 13, width: 220, marginBottom: 24, borderRadius: 4 }} />
-        <div className="skeleton" style={{ height: 36, width: '75%', marginBottom: 12, borderRadius: 6 }} />
-        <div className="skeleton" style={{ height: 18, width: '55%', marginBottom: 28, borderRadius: 4 }} />
-        <div className="skeleton" style={{ aspectRatio: '16/9', borderRadius: 12, marginBottom: 32 }} />
-        <div className="skeleton" style={{ height: 180, borderRadius: 10 }} />
-      </div>
-      <div>
-        <div className="skeleton" style={{ height: 420, borderRadius: 12 }} />
-      </div>
-    </div>
-  )
-}
+'use client'
+
+
+
+import { useState, useEffect, useRef } from 'react'
+
+import { motion } from 'motion/react'
+
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+
+import { useParams, useRouter } from 'next/navigation'
+
+import Link from 'next/link'
+
+import {
+
+  Star, Users, Clock, ChevronDown, ChevronUp, ChevronRight, PlayCircle, Play,
+
+  FileText, CheckCircle2, Lock, Heart, Share2, Award, Shield, BookOpen, Infinity,
+
+  HelpCircle, FileEdit, Calendar
+
+} from 'lucide-react'
+
+import { toast } from 'sonner'
+
+import api from '@/lib/axios'
+import CheckoutModal from '@/components/mentee/CheckoutModal'
+
+import { useAuthStore } from '@/stores/auth.store'
+
+import { useUIStore } from '@/stores/ui.store'
+
+import { ROUTES, formatRupiah, formatDuration, FIELD_LABELS, LEVEL_LABELS } from '@/lib/utils'
+
+import { CardTabs } from '@/components/ui/AnimatedTabs'
+
+
+
+interface CourseDetail {
+
+  id: string
+
+  title: string
+
+  shortDescription: string
+
+  description: string
+
+  field: string
+
+  level: string
+
+  price: number
+
+  thumbnailUrl?: string
+
+  totalDuration: number
+
+  accessDays: number
+
+  rating: number
+
+  reviewCount: number
+
+  enrollmentCount: number
+
+  tags: string[]
+
+  isEnrolled: boolean
+
+  isWishlisted: boolean
+
+  progress?: number
+
+  chapters: Array<{
+
+    id: string; title: string; orderIndex: number
+
+    sessions: Array<{
+
+      id: string; title: string; type: string
+
+      videoDuration?: number; isFreePreview: boolean; orderIndex: number
+
+    }>
+
+  }>
+
+  reviews: Array<{
+
+    id: string; rating: number; content?: string
+
+    user: { name: string; photoUrl?: string }; createdAt: string
+
+  }>
+
+}
+
+
+
+const getSessionIcon = (type: string, color: string) => {
+
+  switch (type) {
+
+    case 'LIVE': return <Calendar size={15} color={color} />
+
+    case 'VIDEO': return <Play size={15} color={color} />
+
+    case 'MATERIAL': return <FileText size={15} color={color} />
+
+    case 'QUIZ': return <HelpCircle size={15} color={color} />
+
+    case 'ASSIGNMENT': return <FileEdit size={15} color={color} />
+
+    default: return <Play size={15} color={color} />
+
+  }
+
+}
+
+
+
+export default function CourseDetailPage() {
+
+  const { id } = useParams<{ id: string }>()
+
+  const router = useRouter()
+  const queryClient = useQueryClient()
+
+  const { user } = useAuthStore()
+
+  const { setSearchPlaceholder } = useUIStore()
+
+  const [expandedChapter, setExpandedChapter] = useState<string | null>(null)
+
+  const [isWishlisted, setIsWishlisted] = useState(false)
+
+  const [activeTab, setActiveTab] = useState<'overview' | 'curriculum' | 'reviews'>('overview')
+
+  const [reviewRating, setReviewRating] = useState<number>(0)
+
+  const [reviewContent, setReviewContent] = useState('')
+
+
+
+  const { data: course, isLoading, refetch } = useQuery<CourseDetail>({
+
+    queryKey: ['course-detail', id],
+
+    queryFn: () => api.get(`/courses/${id}`).then((r) => r.data.data),
+
+  })
+
+
+
+  const submitReviewMutation = useMutation({
+
+    mutationFn: () => api.post(`/courses/${id}/reviews`, { rating: reviewRating, content: reviewContent }),
+
+    onSuccess: () => {
+
+      toast.success('Ulasan berhasil dikirim!')
+
+      setReviewRating(0)
+
+      setReviewContent('')
+
+      refetch()
+
+    },
+
+    onError: (err: any) => {
+
+      toast.error(err.response?.data?.message || 'Gagal mengirim ulasan')
+
+    }
+
+  })
+
+
+
+  useEffect(() => { if (course) setIsWishlisted(course.isWishlisted) }, [course])
+
+
+
+  const hasInitializedChapterRef = useRef(false)
+
+  useEffect(() => {
+
+    if (course?.chapters?.[0]?.id && !hasInitializedChapterRef.current) {
+
+      hasInitializedChapterRef.current = true
+
+      setExpandedChapter(course.chapters[0].id)
+
+    }
+
+  }, [course?.chapters])
+
+
+
+  const wishlistMutation = useMutation({
+
+    mutationFn: () =>
+
+      isWishlisted
+
+        ? api.delete(`/wishlist/course/${id}`)
+
+        : api.post('/wishlist', { productType: 'MINI_COURSE', courseId: id }),
+
+    onSuccess: () => {
+
+      setIsWishlisted(!isWishlisted)
+
+      toast.success(isWishlisted ? 'Dihapus dari wishlist' : 'Ditambahkan ke wishlist')
+
+    },
+
+  })
+
+
+
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false)
+
+  const handleCheckoutSuccess = (data: any) => {
+    if (data?.isFree) {
+      toast.success('Pendaftaran kursus berhasil!')
+      queryClient.invalidateQueries({ queryKey: ['course', id] })
+      router.push(`${ROUTES.CHECKOUT_SUCCESS}?type=course&id=${id}`)
+    } else if (data?.snapToken && typeof window !== 'undefined') {
+      (window as any).snap?.pay(data.snapToken, {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ['course', id] })
+          router.push(`${ROUTES.CHECKOUT_SUCCESS}?type=course&id=${id}`)
+        },
+        onError: () => toast.error('Pembayaran gagal.'),
+        onClose: () => toast('Pembayaran dibatalkan.'),
+      })
+    }
+  }
+
+  const checkoutMutation = useMutation({
+    mutationFn: () => api.post('/transactions/initiate', { productType: 'MINI_COURSE', courseId: id }).then((r) => r.data),
+    onSuccess: (data) => handleCheckoutSuccess(data?.data),
+    onError: () => toast.error('Gagal memulai checkout.'),
+  })
+
+
+
+
+
+
+
+  useEffect(() => {
+
+    if (course) {
+
+      setSearchPlaceholder(`Mini Course / ${course.title}`)
+
+    }
+
+    return () => setSearchPlaceholder(null)
+
+  }, [course, setSearchPlaceholder])
+
+
+
+  if (isLoading) return <CourseDetailSkeleton />
+
+  if (!course) return null
+
+
+
+  const totalSessions = course.chapters.reduce((acc, ch) => acc + ch.sessions.length, 0)
+
+
+
+  return (
+
+    <div style={{ maxWidth: 1100, margin: '0 auto' }} className="animate-fade-in">
+
+            {/* ── HEADER (Breadcrumb, Title, Meta) ──────────── */}
+
+      <div className="detail-header" style={{ marginBottom: 24 }}>
+
+        {/* Breadcrumb */}
+
+          <nav style={{
+
+            display: 'flex', alignItems: 'center', gap: 6,
+
+            marginBottom: 28, fontSize: '13px',
+
+            color: 'var(--color-text-tertiary)',
+
+          }}>
+
+            <Link href={ROUTES.COURSE_LIST} style={{ color: 'var(--color-text-secondary)', textDecoration: 'none' }}>
+
+              Mini Course
+
+            </Link>
+
+            <ChevronRight size={13} strokeWidth={1.5} />
+
+            <span style={{ color: 'var(--color-text-primary)', fontWeight: 500, maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+
+              {course.title}
+
+            </span>
+
+          </nav>
+
+
+
+          {/* Eyebrow */}
+
+          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '6px 8px', marginBottom: 12 }}>
+
+            <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-secondary)' }}>
+
+              {FIELD_LABELS[course.field]}
+
+            </span>
+
+            <span style={{ fontSize: '14px', color: 'var(--color-border)' }}>•</span>
+
+            <span style={{ fontSize: '12px', color: 'var(--color-text-tertiary)' }}>
+
+              {LEVEL_LABELS[course.level]}
+
+            </span>
+
+          </div>
+
+
+
+          {/* Title */}
+
+          <h1 style={{
+
+            fontSize: 'clamp(22px, 4vw, 28px)', fontWeight: 800, lineHeight: 1.25,
+
+            letterSpacing: '-0.02em',
+
+            color: 'var(--color-text-primary)',
+
+            marginBottom: 14,
+
+          }}>
+
+            {course.title}
+
+          </h1>
+
+
+
+          <p style={{
+
+            fontSize: '15px', color: 'var(--color-text-secondary)',
+
+            lineHeight: 1.6, marginBottom: 24,
+
+          }}>
+
+            {course.shortDescription}
+
+          </p>
+
+
+
+          {/* Meta strip */}
+
+          <div style={{
+
+            display: 'flex', flexWrap: 'wrap', alignItems: 'center',
+
+            gap: 20, marginBottom: 32,
+
+            paddingBottom: 24,
+
+            borderBottom: '1px solid var(--color-border-subtle)',
+
+          }}>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+
+              <Star size={14} color="#F59E0B" fill="#F59E0B" />
+
+              <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-text-primary)' }}>
+
+                {course.rating.toFixed(1)}
+
+              </span>
+
+              <span style={{ fontSize: '13px', color: 'var(--color-text-tertiary)' }}>
+
+                ({course.reviewCount} ulasan)
+
+              </span>
+
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5, color: 'var(--color-text-secondary)', fontSize: '13px' }}>
+
+              <Users size={13} strokeWidth={1.5} />
+
+              <span>{course.enrollmentCount} pelajar</span>
+
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5, color: 'var(--color-text-secondary)', fontSize: '13px' }}>
+
+              <Clock size={13} strokeWidth={1.5} />
+
+              <span>{formatDuration(course.totalDuration)}</span>
+
+            </div>
+
+          </div>
+
+      </div>
+
+
+
+      <div className="detail-layout-grid">
+
+
+
+        {/* ── BANNER IMAGE ──────────────────────────────── */}
+
+        <div className="detail-banner">
+
+          {course.thumbnailUrl && (
+
+            <div style={{
+
+              width: '100%',
+
+              aspectRatio: '16/9',
+
+              maxHeight: 380,
+
+              borderRadius: 14,
+
+              overflow: 'hidden',
+
+              border: '1px solid var(--color-border-subtle)',
+
+              background: 'var(--color-bg)',
+
+              boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
+
+            }}>
+
+              <img
+
+                src={course.thumbnailUrl}
+
+                alt={course.title}
+
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+
+              />
+
+            </div>
+
+          )}
+
+        </div>
+
+
+
+        {/* ── RIGHT (Purchase Card) ─────────────────────── */}
+
+        <div className="detail-sidebar">
+
+          <div style={{
+
+            border: '1px solid var(--color-border-subtle)',
+
+            borderRadius: 12, overflow: 'hidden',
+
+            background: 'var(--color-surface)',
+
+          }}>
+
+            {/* Thumbnail */}
+
+            <div style={{
+
+              aspectRatio: '16/9', background: 'var(--color-bg)',
+
+              borderBottom: '1px solid var(--color-border-subtle)',
+
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+
+              overflow: 'hidden',
+
+            }}>
+
+              {course.thumbnailUrl
+
+                ? <img src={course.thumbnailUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+
+                : <BookOpen size={40} color="var(--color-border)" strokeWidth={1} />
+
+              }
+
+            </div>
+
+
+
+            <div style={{ padding: '20px' }}>
+
+              {/* Price */}
+
+              <div style={{
+
+                fontSize: '26px', fontWeight: 800,
+
+                color: 'var(--color-text-primary)',
+
+                letterSpacing: '-0.02em',
+
+                marginBottom: 16,
+
+              }}>
+
+                {course.price === 0 ? 'Gratis' : formatRupiah(course.price)}
+
+              </div>
+
+
+
+              {/* CTA */}
+
+              {course.isEnrolled ? (
+
+                <Link href={ROUTES.LEARN_COURSE(course.id)} style={{ textDecoration: 'none', display: 'block' }}>
+
+                  <motion.div
+
+                    whileHover={{ scale: 1.02 }}
+
+                    whileTap={{ scale: 0.98 }}
+
+                    style={{
+
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+
+                      width: '100%', padding: '12px 0',
+
+                      background: 'var(--color-primary)', color: '#fff',
+
+                      borderRadius: 8, fontWeight: 700, fontSize: '14px',
+
+                    }}
+
+                  >
+
+                    <PlayCircle size={16} strokeWidth={2} /> Lanjut Belajar
+
+                  </motion.div>
+
+                </Link>
+
+              ) : (
+
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setIsCheckoutOpen(true)}
+                  style={{
+                    width: '100%', padding: '12px 0',
+                    background: 'var(--color-primary)', color: '#fff',
+                    border: 'none', borderRadius: 8,
+                    fontWeight: 700, fontSize: '14px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  Beli Sekarang
+                </motion.button>
+
+              )}
+
+
+
+              {/* Secondary CTAs */}
+
+              <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+
+                <motion.button
+
+                  whileHover={!wishlistMutation.isPending ? { scale: 1.02, backgroundColor: 'var(--color-surface)' } : {}}
+
+                  whileTap={!wishlistMutation.isPending ? { scale: 0.98 } : {}}
+
+                  onClick={() => wishlistMutation.mutate()}
+
+                  disabled={wishlistMutation.isPending}
+
+                  style={{
+
+                    flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+
+                    padding: '10px 0', fontSize: '13px', fontWeight: 600,
+
+                    color: isWishlisted ? 'var(--color-error)' : 'var(--color-text-secondary)',
+
+                    background: 'var(--color-bg)',
+
+                    border: '1px solid var(--color-border-subtle)',
+
+                    borderRadius: 8, cursor: 'pointer',
+
+                  }}
+
+                >
+
+                  <Heart size={14} strokeWidth={1.5} fill={isWishlisted ? 'currentColor' : 'none'} />
+
+                  {isWishlisted ? 'Disimpan' : 'Simpan'}
+
+                </motion.button>
+
+                <motion.button
+
+                  whileHover={{ scale: 1.05, backgroundColor: 'var(--color-surface)' }}
+
+                  whileTap={{ scale: 0.95 }}
+
+                  style={{
+
+                    width: 44, display: 'flex', alignItems: 'center', justifyContent: 'center',
+
+                    background: 'var(--color-bg)',
+
+                    border: '1px solid var(--color-border-subtle)',
+
+                    borderRadius: 8, cursor: 'pointer', flexShrink: 0,
+
+                    color: 'var(--color-text-secondary)',
+
+                  }}
+
+                  onClick={() => { navigator.clipboard.writeText(window.location.href); toast.success('Link disalin!') }}
+
+                >
+
+                  <Share2 size={14} strokeWidth={1.5} />
+
+                </motion.button>
+
+              </div>
+
+
+
+              {/* Divider */}
+
+              <div style={{ height: 1, background: 'var(--color-border-subtle)', margin: '18px 0' }} />
+
+
+
+              {/* Features */}
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+
+                <p style={{ fontSize: '12px', fontWeight: 700, color: 'var(--color-text-tertiary)', letterSpacing: '0.04em', textTransform: 'uppercase', margin: '0 0 4px' }}>
+
+                  Fasilitas Kursus
+
+                </p>
+
+                {[
+
+                  { icon: course.accessDays > 10000 ? Infinity : Clock,        text: course.accessDays > 10000 ? 'Akses seumur hidup' : `Akses ${course.accessDays} hari` },
+
+                  { icon: CheckCircle2, text: `${totalSessions} sesi pembelajaran` },
+
+                  { icon: FileText,     text: 'Materi & project files' },
+
+                  { icon: Award,        text: 'Sertifikat penyelesaian' },
+
+                  { icon: Shield,       text: 'Garansi uang kembali 3 hari' },
+
+                ].map((f, i) => (
+
+                  <div key={i} style={{
+
+                    display: 'flex', alignItems: 'center', gap: 10,
+
+                    fontSize: '13px', color: 'var(--color-text-secondary)',
+
+                  }}>
+
+                    <f.icon size={14} strokeWidth={1.5} color="var(--color-text-tertiary)" />
+
+                    {f.text}
+
+                  </div>
+
+                ))}
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+
+
+
+        </div>
+
+
+
+        {/* ── TABS (Overview, Kurikulum, Ulasan) ────────── */}
+
+        <div className="detail-tabs">
+
+          {/* About */}
+
+          <CardTabs
+
+            items={[
+
+              { id: 'overview', label: 'Overview' },
+
+              { id: 'curriculum', label: 'Kurikulum' },
+
+              { id: 'reviews', label: 'Ulasan' },
+
+            ]}
+
+            activeId={activeTab}
+
+            onChange={(id) => setActiveTab(id as 'overview' | 'curriculum' | 'reviews')}
+
+          >
+
+            {activeTab === 'overview' && (
+
+              <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-5)' }}>
+
+                <h2 style={{ fontSize: '18px', fontWeight: 700, letterSpacing: '-0.01em', marginBottom: 12, color: 'var(--color-text-primary)' }}>
+
+                  Tentang Kursus
+
+                </h2>
+
+                <div style={{
+
+                  fontSize: '14px', color: 'var(--color-text-secondary)',
+
+                  lineHeight: 1.7, whiteSpace: 'pre-line',
+
+                }}>
+
+                  {course.description}
+
+                </div>
+
+              </div>
+
+            )}
+
+
+
+            {activeTab === 'curriculum' && (
+
+              <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+
+                {course.chapters?.map((chapter) => {
+
+                  const isOpen = expandedChapter === chapter.id
+
+                  return (
+
+                    <div key={chapter.id} className="card" style={{
+
+                      overflow: 'hidden',
+
+                      transition: 'all 500ms cubic-bezier(0.4,0,0.2,1)',
+
+                      borderRadius: isOpen ? 16 : 12,
+
+                    }}>
+
+                      <button
+
+                        onClick={() => setExpandedChapter(isOpen ? null : chapter.id)}
+
+                        style={{ width: '100%', padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600, fontSize: '14.5px', color: 'var(--color-text-primary)' }}
+
+                      >
+
+                        <span style={{ flex: 1, textAlign: 'left', lineHeight: 1.4, paddingRight: 16 }}>{chapter.title}</span>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
+
+                          <span style={{ fontSize: '12px', color: 'var(--color-text-tertiary)', fontWeight: 400 }}>{chapter.sessions.length} sesi</span>
+
+                          <div style={{ display: 'flex', height: 28, width: 28, alignItems: 'center', justifyContent: 'center' }}>
+
+                            <ChevronUp
+
+                              size={16}
+
+                              color="var(--color-text-tertiary)"
+
+                              style={{
+
+                                transition: 'transform 500ms cubic-bezier(0.4,0,0.2,1)',
+
+                                transform: isOpen ? 'rotate(0deg)' : 'rotate(180deg)'
+
+                              }}
+
+                            />
+
+                          </div>
+
+                        </div>
+
+                      </button>
+
+
+
+                      <div
+
+                        style={{
+
+                          display: 'grid',
+
+                          transition: 'all 500ms cubic-bezier(0.4,0,0.2,1)',
+
+                          gridTemplateRows: isOpen ? '1fr' : '0fr',
+
+                          opacity: isOpen ? 1 : 0,
+
+                        }}
+
+                      >
+
+                        <div style={{ overflow: 'hidden' }}>
+
+                          <div style={{ padding: '0 8px 12px' }}>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+
+                              {chapter.sessions.map((session, idx: number) => {
+
+                                const canAccess = course.isEnrolled || session.isFreePreview
+
+                                const sessionContent = (
+
+                                  <div
+
+                                    key={session.id}
+
+                                    style={{
+
+                                      display: 'flex', alignItems: 'center', gap: 12,
+
+                                      padding: '10px 12px',
+
+                                      borderRadius: 10,
+
+                                      transition: 'all 500ms cubic-bezier(0.4,0,0.2,1)',
+
+                                      transform: isOpen ? 'translateY(0)' : 'translateY(16px)',
+
+                                      opacity: isOpen ? 1 : 0,
+
+                                      transitionDelay: isOpen ? `${idx * 75}ms` : '0ms',
+
+                                      cursor: canAccess ? 'pointer' : 'default',
+
+                                    }}
+
+                                    onMouseEnter={(e) => e.currentTarget.style.background = 'color-mix(in srgb, var(--color-text-primary) 3%, transparent)'}
+
+                                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+
+                                  >
+
+                                    <div style={{
+
+                                      display: 'flex', height: 36, width: 36, flexShrink: 0,
+
+                                      alignItems: 'center', justifyContent: 'center',
+
+                                      borderRadius: 10, background: 'var(--color-bg)',
+
+                                      border: '1px solid var(--color-border-subtle)'
+
+                                    }}>
+
+                                      {getSessionIcon(session.type, session.type === 'LIVE' ? 'var(--color-primary)' : 'var(--color-text-tertiary)')}
+
+                                    </div>
+
+                                    <div style={{ flex: 1, minWidth: 0, paddingRight: 16 }}>
+
+                                      <div style={{ fontSize: '13.5px', fontWeight: 500, color: canAccess ? 'var(--color-text-primary)' : 'var(--color-text-secondary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+
+                                        {session.title}
+
+                                      </div>
+
+                                    </div>
+
+                                    {session.isFreePreview && !course.isEnrolled ? (
+
+                                      <span style={{
+
+                                        fontSize: '11px', fontWeight: 600,
+
+                                        color: 'var(--color-primary)',
+
+                                        background: 'rgba(1, 133, 86, 0.08)',
+
+                                        padding: '2px 8px', borderRadius: 20,
+
+                                        flexShrink: 0,
+
+                                      }}>
+
+                                        Preview Gratis
+
+                                      </span>
+
+                                    ) : session.videoDuration ? (
+
+                                      <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', flexShrink: 0 }}>
+
+                                        {formatDuration(session.videoDuration)}
+
+                                      </span>
+
+                                    ) : null}
+
+                                    {(!course.isEnrolled && !session.isFreePreview) && (
+
+                                      <Lock size={13} color="var(--color-text-tertiary)" style={{ flexShrink: 0, marginLeft: 4 }} />
+
+                                    )}
+
+                                  </div>
+
+                                )
+
+
+
+                                return canAccess ? (
+
+                                  <Link key={session.id} href={ROUTES.LEARN_COURSE_SESSION(id, session.id)} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
+
+                                    {sessionContent}
+
+                                  </Link>
+
+                                ) : (
+
+                                  sessionContent
+
+                                )
+
+                              })}
+
+                            </div>
+
+                          </div>
+
+                        </div>
+
+                      </div>
+
+                    </div>
+
+                  )
+
+                })}
+
+              </div>
+
+            )}
+
+
+
+            {activeTab === 'reviews' && (
+
+              <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+
+                {course.isEnrolled && (course.progress ?? 0) >= 100 ? (
+
+                  <div style={{ padding: '20px', border: '1px solid var(--color-border-subtle)', borderRadius: 10, background: 'var(--color-surface)' }}>
+
+                    <h3 style={{ fontSize: '15px', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: 12 }}>Berikan Ulasan Anda</h3>
+
+                    <div style={{ display: 'flex', gap: 4, marginBottom: 16 }}>
+
+                      {[1, 2, 3, 4, 5].map((star) => (
+
+                        <Star 
+
+                          key={star} 
+
+                          size={24} 
+
+                          strokeWidth={1.5}
+
+                          color={star <= reviewRating ? '#F59E0B' : 'var(--color-border)'} 
+
+                          fill={star <= reviewRating ? '#F59E0B' : 'none'} 
+
+                          style={{ cursor: 'pointer', transition: 'all 0.2s' }}
+
+                          onClick={() => setReviewRating(star)}
+
+                        />
+
+                      ))}
+
+                    </div>
+
+                    <textarea 
+
+                      value={reviewContent}
+
+                      onChange={(e) => setReviewContent(e.target.value)}
+
+                      placeholder="Bagaimana pengalaman Anda belajar di kursus ini?"
+
+                      style={{ 
+
+                        width: '100%', minHeight: 80, padding: 12, borderRadius: 8, 
+
+                        border: '1px solid var(--color-border-subtle)', background: 'var(--color-bg)',
+
+                        color: 'var(--color-text-primary)', fontSize: '14px', marginBottom: 16,
+
+                        fontFamily: 'inherit', resize: 'vertical'
+
+                      }}
+
+                    />
+
+                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+
+                      <motion.button
+
+                        whileHover={!submitReviewMutation.isPending && reviewRating > 0 ? { scale: 1.02 } : {}}
+
+                        whileTap={!submitReviewMutation.isPending && reviewRating > 0 ? { scale: 0.98 } : {}}
+
+                        onClick={() => submitReviewMutation.mutate()}
+
+                        disabled={submitReviewMutation.isPending || reviewRating === 0}
+
+                        style={{
+
+                          padding: '10px 20px', background: 'var(--color-primary)', color: '#fff',
+
+                          border: 'none', borderRadius: 8, fontWeight: 600, fontSize: '13px',
+
+                          cursor: submitReviewMutation.isPending || reviewRating === 0 ? 'not-allowed' : 'pointer',
+
+                          opacity: submitReviewMutation.isPending || reviewRating === 0 ? 0.6 : 1,
+
+                        }}
+
+                      >
+
+                        {submitReviewMutation.isPending ? 'Mengirim...' : 'Kirim Ulasan'}
+
+                      </motion.button>
+
+                    </div>
+
+                  </div>
+
+                ) : course.isEnrolled ? (
+
+                  <div style={{ padding: '20px', textAlign: 'center', border: '1px solid var(--color-border-subtle)', borderRadius: 10, background: 'var(--color-surface)' }}>
+
+                    <p style={{ color: 'var(--color-text-secondary)', fontSize: 14 }}>Selesaikan kursus ini (Progres 100%) untuk memberikan ulasan.</p>
+
+                  </div>
+
+                ) : null}
+
+
+
+                {course.reviews.length === 0 ? (
+
+                  <div className="empty-state" style={{ padding: '40px 0', textAlign: 'center', border: '1px solid var(--color-border-subtle)', borderRadius: 10 }}>
+
+                    <p style={{ color: 'var(--color-text-tertiary)', fontSize: 14 }}>Belum ada ulasan</p>
+
+                  </div>
+
+                ) : (
+
+                  <>
+
+                    <h2 style={{ fontSize: '18px', fontWeight: 700, letterSpacing: '-0.01em', marginBottom: 16, color: 'var(--color-text-primary)' }}>
+
+                      Ulasan <span style={{ fontWeight: 400, color: 'var(--color-text-tertiary)', fontSize: '15px' }}>({course.reviewCount})</span>
+
+                    </h2>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+
+                      {course.reviews.slice(0, 5).map((review) => (
+
+                        <div key={review.id} style={{
+
+                          padding: '16px 18px',
+
+                          border: '1px solid var(--color-border-subtle)',
+
+                          borderRadius: 10,
+
+                          background: 'var(--color-surface)',
+
+                        }}>
+
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
+
+                            <div style={{
+
+                              width: 32, height: 32, borderRadius: '50%',
+
+                              background: 'var(--color-bg)',
+
+                              border: '1px solid var(--color-border-subtle)',
+
+                              display: 'flex', alignItems: 'center', justifyContent: 'center',
+
+                              fontSize: '13px', fontWeight: 700, color: 'var(--color-text-secondary)',
+
+                              flexShrink: 0,
+
+                            }}>
+
+                              {review.user.name[0].toUpperCase()}
+
+                            </div>
+
+                            <div>
+
+                              <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-primary)', marginBottom: 2 }}>
+
+                                {review.user.name}
+
+                              </div>
+
+                              <div style={{ display: 'flex', gap: 2 }}>
+
+                                {Array.from({ length: 5 }).map((_, i) => (
+
+                                  <Star key={i} size={11} color="#F59E0B" fill={i < review.rating ? '#F59E0B' : 'none'} />
+
+                                ))}
+
+                              </div>
+
+                            </div>
+
+                          </div>
+
+                          {review.content && (
+
+                            <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: 0 }}>
+
+                              {review.content}
+
+                            </p>
+
+                          )}
+
+                        </div>
+
+                      ))}
+
+                    </div>
+
+                  </>
+
+                )}
+
+              </div>
+
+            )}
+
+          </CardTabs>
+
+        </div>
+
+
+
+      </div>
+
+      {course && (
+        <CheckoutModal
+          isOpen={isCheckoutOpen}
+          onClose={() => setIsCheckoutOpen(false)}
+          productType="MINI_COURSE"
+          productId={id}
+          title={course.title}
+          price={course.price}
+          badgeLabel={LEVEL_LABELS[course.level] || 'Mini Course'}
+          onSuccess={handleCheckoutSuccess}
+        />
+      )}
+    </div>
+  )
+}
+
+
+
+function CourseDetailSkeleton() {
+
+  return (
+
+    <div className="detail-layout-grid" style={{ maxWidth: 1100, margin: '0 auto', display: 'grid', gap: 48 }}>
+
+      <div>
+
+        <div className="skeleton" style={{ height: 13, width: 220, marginBottom: 24, borderRadius: 4 }} />
+
+        <div className="skeleton" style={{ height: 36, width: '75%', marginBottom: 12, borderRadius: 6 }} />
+
+        <div className="skeleton" style={{ height: 18, width: '55%', marginBottom: 28, borderRadius: 4 }} />
+
+        <div className="skeleton" style={{ aspectRatio: '16/9', borderRadius: 12, marginBottom: 32 }} />
+
+        <div className="skeleton" style={{ height: 180, borderRadius: 10 }} />
+
+      </div>
+
+      <div>
+
+        <div className="skeleton" style={{ height: 420, borderRadius: 12 }} />
+
+      </div>
+
+    </div>
+  )
+}
+
