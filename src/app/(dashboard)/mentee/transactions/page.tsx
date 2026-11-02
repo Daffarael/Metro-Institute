@@ -15,11 +15,11 @@ interface Transaction {
 }
 
 const STATUS_CONFIG: Record<string, { label: string; icon: React.ReactNode; color: string; bg: string }> = {
-  SUCCESS:   { label: 'Berhasil',   icon: <CheckCircle2 size={18} strokeWidth={2.5} />, color: '#ffffff', bg: '#018556' },
-  PENDING:   { label: 'Menunggu',   icon: <Clock size={18} strokeWidth={2.5} />,        color: '#ffffff', bg: '#D97706' },
-  FAILED:    { label: 'Gagal',      icon: <XCircle size={18} strokeWidth={2.5} />,      color: '#ffffff', bg: '#DC2626' },
-  CANCELLED: { label: 'Dibatalkan', icon: <XCircle size={18} strokeWidth={2.5} />,      color: '#ffffff', bg: '#DC2626' },
-  REFUNDED:  { label: 'Refund',     icon: <CreditCard size={18} strokeWidth={2.5} />,   color: '#ffffff', bg: '#475569' },
+  SUCCESS:   { label: 'Berhasil',   icon: <CheckCircle2 size={18} strokeWidth={2} />, color: '#ffffff', bg: '#018556' },
+  PENDING:   { label: 'Menunggu',   icon: <Clock size={18} strokeWidth={2} />,        color: '#ffffff', bg: '#D97706' },
+  FAILED:    { label: 'Gagal',      icon: <XCircle size={18} strokeWidth={2} />,      color: '#ffffff', bg: '#DC2626' },
+  CANCELLED: { label: 'Dibatalkan', icon: <XCircle size={18} strokeWidth={2} />,      color: '#ffffff', bg: '#DC2626' },
+  REFUNDED:  { label: 'Refund',     icon: <CreditCard size={18} strokeWidth={2} />,   color: '#ffffff', bg: '#475569' },
 }
 
 const STATUS_FILTERS = [
@@ -178,7 +178,7 @@ export default function TransactionsPage() {
                 borderBottom: idx < transactions.length - 1 ? '1px solid var(--color-border-subtle)' : 'none',
               }}>
                 {/* Icon */}
-                <div style={{ width: 42, height: 42, borderRadius: 12, background: cfg.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: cfg.color, boxShadow: '0 2px 6px rgba(0, 0, 0, 0.08)' }}>
+                <div style={{ width: 40, height: 40, borderRadius: 'var(--radius-md)', background: 'var(--color-surface)', border: '1px solid var(--color-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: 'var(--color-text-secondary)', boxShadow: 'var(--shadow-sm)' }}>
                   {cfg.icon}
                 </div>
 
