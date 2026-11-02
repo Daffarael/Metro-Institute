@@ -86,7 +86,7 @@ function ChallengeModal({ challenge, onClose }: { challenge?: Challenge; onClose
       description: challenge?.description ?? '',
       type:        challenge?.type ?? ('' as any),
       field:       challenge?.field ?? ('' as any),
-      level:       (challenge as any)?.level ?? 'BEGINNER',
+      level:       (challenge as any)?.level ?? ('' as any),
       maxScore:    challenge?.maxScore ?? 100,
       options:     challenge?.options?.length && 'question' in challenge.options[0] 
         ? challenge.options 
