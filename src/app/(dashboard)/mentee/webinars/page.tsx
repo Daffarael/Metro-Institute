@@ -35,6 +35,7 @@ interface WebinarItem {
   isFeatured: boolean
   isRegistered?: boolean
   attended?: boolean
+  status?: 'OPEN' | 'CLOSED' | 'COMPLETED' | string
   isEnded?: boolean
   endedAt?: string | null
   _count?: { registrations: number }
@@ -289,7 +290,8 @@ function WebinarCard({
 }) {
   const scheduledTime = new Date(webinar.scheduledAt).getTime()
   const isEnded = Boolean(webinar.isEnded) || (scheduledTime + 24 * 60 * 60 * 1000 < Date.now())
-  const isRegistrationClosed = isEnded || Date.now() >= (scheduledTime - 2 * 60 * 60 * 1000)
+  const isFull = Boolean(webinar.quota && (webinar._count?.registrations || 0) >= webinar.quota)
+  const isRegistrationClosed = webinar.status === 'CLOSED' || webinar.status === 'COMPLETED' || isEnded || isFull || Date.now() >= scheduledTime
 
   return (
     <Link
@@ -391,13 +393,27 @@ function WebinarCard({
             fontWeight: 700,
             lineHeight: 1.4,
             color: 'var(--color-text-primary)',
-            margin: '0 0 10px 0',
+            margin: '0 0 6px 0',
             letterSpacing: '-0.01em',
             overflow: 'hidden', display: '-webkit-box',
             WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
           }}>
             {webinar.title}
           </h3>
+
+          {/* Subtitle / Description */}
+          {(webinar.shortDescription || webinar.description) && (
+            <p style={{
+              fontSize: '13px',
+              color: 'var(--color-text-tertiary)',
+              lineHeight: 1.5,
+              margin: '0 0 12px 0',
+              overflow: 'hidden', display: '-webkit-box',
+              WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
+            }}>
+              {webinar.shortDescription || webinar.description}
+            </p>
+          )}
 
           {/* Speaker Info */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
@@ -425,12 +441,18 @@ function WebinarCard({
             </div>
           </div>
 
-          {/* Stats: Peserta & Durasi */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 16, marginTop: 'auto' }}>
+          {/* Stats: Peserta, Tanggal, & Durasi */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 16, marginTop: 'auto', flexWrap: 'wrap' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
               <Users size={13} color="var(--color-text-tertiary)" />
               <span style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
                 {webinar._count?.registrations || 0} Peserta
+              </span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+              <Calendar size={13} color="var(--color-text-tertiary)" />
+              <span style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
+                {formatDate(webinar.scheduledAt)}
               </span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>

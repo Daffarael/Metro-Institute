@@ -391,14 +391,11 @@ export default function MenteeWebinarDetailPage() {
 
 
   // Sesi dinyatakan Selesai JIKA diakhiri manual oleh admin (isEnded = true / liveStatus = 'ENDED')
-
   // ATAU fallback pengaman 24 jam setelah waktu jadwal
-
   const isEnded = Boolean(webinar.isEnded) || webinar.liveStatus === 'ENDED' || currentTime > (scheduledStart.getTime() + 24 * 60 * 60 * 1000)
 
-  const registrationDeadline = new Date(scheduledStart.getTime() - 2 * 60 * 60 * 1000)
-
-  const isRegistrationClosed = isEnded || currentTime >= registrationDeadline.getTime()
+  // Pendaftaran dibuka hingga jadwal sesi dimulai (atau sesi diakhiri admin / kuota penuh)
+  const isRegistrationClosed = isEnded || currentTime >= scheduledStart.getTime()
 
   const isUpcoming = !isEnded && currentTime < openTime.getTime()
 
@@ -890,12 +887,6 @@ export default function MenteeWebinarDetailPage() {
 
                   </div>
 
-                  <div style={{ textAlign: 'center', marginTop: 6, fontSize: '11.5px', color: 'var(--color-text-tertiary)' }}>
-
-                    Batas pendaftaran H-2 jam sebelum acara telah berakhir.
-
-                  </div>
-
                 </div>
 
               ) : isFull ? (
@@ -1009,52 +1000,6 @@ export default function MenteeWebinarDetailPage() {
                 </motion.button>
 
               )}
-
-
-
-              {/* Secondary CTAs (Share button) */}
-
-              <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-
-                <motion.button
-
-                  whileHover={{ scale: 1.02, backgroundColor: 'var(--color-surface)' }}
-
-                  whileTap={{ scale: 0.98 }}
-
-                  style={{
-
-                    flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-
-                    padding: '10px 0', fontSize: '13px', fontWeight: 600,
-
-                    color: 'var(--color-text-secondary)',
-
-                    background: 'var(--color-bg)',
-
-                    border: '1px solid var(--color-border-subtle)',
-
-                    borderRadius: 8, cursor: 'pointer',
-
-                  }}
-
-                  onClick={() => {
-
-                    navigator.clipboard.writeText(window.location.href)
-
-                    toast.success('Link Inspire Talk disalin!')
-
-                  }}
-
-                >
-
-                  <Share2 size={14} strokeWidth={1.5} />
-
-                  Bagikan
-
-                </motion.button>
-
-              </div>
 
 
 

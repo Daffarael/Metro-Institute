@@ -197,6 +197,8 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
     onSuccess: () => {
       toast.success(isEdit ? 'Inspire Talk diperbarui.' : 'Inspire Talk berhasil dibuat!')
       qc.invalidateQueries({ queryKey: ['admin', 'webinars'] })
+      qc.invalidateQueries({ queryKey: ['webinars'] })
+      qc.invalidateQueries({ queryKey: ['webinar'] })
       onClose()
     },
     onError: (err: any) => {

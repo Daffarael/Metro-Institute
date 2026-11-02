@@ -146,6 +146,8 @@ function BootcampModal({
     onSuccess: (data) => {
       toast.success(isEdit ? 'Bootcamp diperbarui.' : 'Bootcamp berhasil dibuat!')
       qc.invalidateQueries({ queryKey: ['admin', 'bootcamps'] })
+      qc.invalidateQueries({ queryKey: ['bootcamps'] })
+      qc.invalidateQueries({ queryKey: ['bootcamp'] })
       onClose()
       
       // Jika ini pembuatan baru, otomatis redirect ke halaman Silabus
