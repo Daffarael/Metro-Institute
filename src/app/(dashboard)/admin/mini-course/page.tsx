@@ -34,9 +34,9 @@ const miniCourseSchema = z.object({
   descLong:    z.string().min(20, 'Minimal 20 karakter'),
   field:       z.enum(['UI_UX', 'FRONTEND', 'BACKEND', 'MOBILE'], { error: () => ({ message: 'Pilih bidang' }) }),
   level:       z.enum(['BEGINNER', 'ELEMENTARY', 'INTERMEDIATE', 'ADVANCED'], { error: () => ({ message: 'Pilih level' }) }),
-  price:       z.number().min(0),
+  price:       z.number({ error: () => ({ message: 'Harga wajib diisi' }) }).min(0, 'Harga tidak boleh negatif'),
   accessDays:  z.number().min(1).max(365000),
-  totalDuration: z.number().min(1),
+  totalDuration: z.number({ error: () => ({ message: 'Total durasi wajib diisi' }) }).min(1, 'Total durasi minimal 1 menit'),
   status:      z.enum(['DRAFT', 'PUBLISHED'], { error: () => ({ message: 'Pilih status' }) }),
   certificateTemplateId: z.string().optional().nullable(),
   thumbnailUrl: z.string().optional().nullable(),
@@ -88,16 +88,16 @@ function CourseModal({ course, onClose }: { course?: MiniCourse; onClose: () => 
   }, [onClose])
 
   const { register, handleSubmit, control, formState: { errors } } = useForm<CourseForm>({
-    resolver: zodResolver(miniCourseSchema),
+    resolver: zodResolver(miniCourseSchema) as any,
     defaultValues: {
       title:         course?.title ?? '',
       descShort:     (course as any)?.shortDescription ?? '',
       descLong:      (course as any)?.description ?? '',
       field:         course?.field ?? ('' as any),
-      level:         (course?.level ?? (course as any)?.level ?? 'BEGINNER') as any,
-      price:         course?.price ?? 0,
-      accessDays:    (course as any)?.accessDays ?? 36500,
-      totalDuration: course?.totalDuration ?? 60,
+      level:         ((course?.level ?? (course as any)?.level) || '') as any,
+      price:         course?.price !== undefined ? course.price : ('' as any),
+      accessDays:    (course as any)?.accessDays ?? 365,
+      totalDuration: course?.totalDuration !== undefined ? course.totalDuration : ('' as any),
       status:        (course as any)?.isPublished ? 'PUBLISHED' : 'DRAFT',
       certificateTemplateId: (course as any)?.certificateTemplateId ?? null,
       thumbnailUrl:  course?.thumbnailUrl ?? '',
@@ -276,7 +276,7 @@ function CourseModal({ course, onClose }: { course?: MiniCourse; onClose: () => 
           <div className="grid-cols-2" style={{ display: 'grid', gap: '20px' }}>
             <div>
               <label style={labelStyle}>Harga (Rp) <span style={{color: 'var(--color-error)'}}>*</span></label>
-              <input type="number" {...register('price', { valueAsNumber: true })} style={inputStyleClean} min={0} placeholder="149000" 
+              <input type="number" {...register('price', { valueAsNumber: true })} style={inputStyleClean} min={0} placeholder="Contoh: 149000" 
                 onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
                 onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
               />

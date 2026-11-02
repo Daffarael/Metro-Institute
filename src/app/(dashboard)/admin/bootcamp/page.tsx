@@ -44,10 +44,10 @@ const LEVEL_LABELS: Record<string, string> = {
 const bootcampSchema = z.object({
   name:            z.string().min(5, 'Minimal 5 karakter'),
   description:     z.string().min(20, 'Minimal 20 karakter'),
-  field:           z.enum(['UI_UX', 'FRONTEND', 'BACKEND', 'MOBILE'], { error: () => ({ message: 'Pilih bidang' }) }),
-  level:           z.enum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED']),
-  quota:           z.number().min(1, 'Kuota minimal 1 peserta'),
-  price:           z.number().min(0, 'Harga tidak boleh negatif'),
+  field:           z.enum(['UI_UX', 'FRONTEND', 'BACKEND', 'MOBILE'], { error: () => ({ message: 'Pilih bidang keahlian' }) }),
+  level:           z.enum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED'], { error: () => ({ message: 'Pilih tingkat / level' }) }),
+  quota:           z.number({ error: () => ({ message: 'Kuota wajib diisi' }) }).min(1, 'Kuota minimal 1 peserta'),
+  price:           z.number({ error: () => ({ message: 'Harga wajib diisi' }) }).min(0, 'Harga tidak boleh negatif'),
   purchaseOpenAt:  z.string().min(1, 'Wajib diisi'),
   purchaseCloseAt: z.string().min(1, 'Wajib diisi'),
   startDate:       z.string().min(1, 'Wajib diisi'),
@@ -115,14 +115,14 @@ function BootcampModal({
   const isEdit = !!bootcamp
 
   const { register, handleSubmit, watch, setValue, control, formState: { errors } } = useForm<BootcampForm>({
-    resolver: zodResolver(bootcampSchema),
+    resolver: zodResolver(bootcampSchema) as any,
     defaultValues: {
       name:            bootcamp?.name ?? (bootcamp?.title ?? ''),
       description:     bootcamp?.description ?? '',
-      field:           (bootcamp?.field || bootcamp?.fields?.[0] || 'UI_UX') as any,
-      level:           ((bootcamp as any)?.level || 'BEGINNER') as any,
-      quota:           (bootcamp as any)?.quota ?? 50,
-      price:           bootcamp?.price ?? 0,
+      field:           (bootcamp?.field || bootcamp?.fields?.[0] || '') as any,
+      level:           ((bootcamp as any)?.level || '') as any,
+      quota:           (bootcamp as any)?.quota !== undefined ? (bootcamp as any).quota : ('' as any),
+      price:           bootcamp?.price !== undefined ? bootcamp.price : ('' as any),
       purchaseOpenAt:  bootcamp?.purchaseOpenAt?.slice(0, 10) ?? '',
       purchaseCloseAt: bootcamp?.purchaseCloseAt?.slice(0, 10) ?? '',
       startDate:       bootcamp?.startDate?.slice(0, 10) ?? '',
@@ -269,7 +269,7 @@ function BootcampModal({
                     options={FIELD_OPTS.map(f => ({ value: f, label: FIELD_LABELS[f] }))}
                     value={field.value} 
                     onChange={val => field.onChange(val)} 
-                    placeholder="Pilih Bidang"
+                    placeholder="Pilih Bidang Keahlian"
                     width="100%"
                     direction="down"
                     allowClear={false}
@@ -298,11 +298,12 @@ function BootcampModal({
                   />
                 )}
               />
+              {errors.level && <p style={{ fontSize: '12px', color: 'var(--color-error)', marginTop: 6, fontWeight: 500 }}>{errors.level.message}</p>}
             </div>
 
             <div>
               <label style={labelStyle}>Kuota Peserta (Mentee) <span style={{color: 'var(--color-error)'}}>*</span></label>
-              <input type="number" {...register('quota', { valueAsNumber: true })} style={inputStyleClean} placeholder="50" min={1} 
+              <input type="number" {...register('quota', { valueAsNumber: true })} style={inputStyleClean} placeholder="Contoh: 50" min={1} 
                 onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
                 onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
               />
@@ -311,7 +312,7 @@ function BootcampModal({
 
             <div>
               <label style={labelStyle}>Harga Pendaftaran (Rp) <span style={{color: 'var(--color-error)'}}>*</span></label>
-              <input type="number" {...register('price', { valueAsNumber: true })} style={inputStyleClean} placeholder="1500000" min={0} 
+              <input type="number" {...register('price', { valueAsNumber: true })} style={inputStyleClean} placeholder="Contoh: 25000" min={0} 
                 onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
                 onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
               />
