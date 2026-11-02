@@ -1,5 +1,6 @@
-import MarkdownTextarea from '@/components/ui/MarkdownTextarea'
 'use client'
+
+import MarkdownTextarea from '@/components/ui/MarkdownTextarea'
 // src/app/admin/mini-course/page.tsx
 // List Mini Course + Modal Buat/Edit
 // Sesuai concept doc Section 5A + 5B

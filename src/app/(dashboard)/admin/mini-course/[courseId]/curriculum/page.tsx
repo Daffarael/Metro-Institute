@@ -1,5 +1,6 @@
-import MarkdownTextarea from '@/components/ui/MarkdownTextarea'
 'use client'
+
+import MarkdownTextarea from '@/components/ui/MarkdownTextarea'
 // src/app/admin/mini-course/[courseId]/curriculum/page.tsx
 // Kelola kurikulum mini course (DnD sessions)
 // Sesuai concept doc Section 5C — Tipe: VIDEO | MATERIAL | CHALLENGE (tidak ada LIVE)

@@ -1,5 +1,6 @@
-import MarkdownText from '@/components/ui/MarkdownText'
 'use client'
+
+import MarkdownText from '@/components/ui/MarkdownText'
 
 import { useState, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'

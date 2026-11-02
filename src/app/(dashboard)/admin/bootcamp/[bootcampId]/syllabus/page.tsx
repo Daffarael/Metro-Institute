@@ -1,5 +1,6 @@
-import MarkdownTextarea from '@/components/ui/MarkdownTextarea'
 'use client'
+
+import MarkdownTextarea from '@/components/ui/MarkdownTextarea'
 import { useState, useEffect, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useParams } from 'next/navigation'

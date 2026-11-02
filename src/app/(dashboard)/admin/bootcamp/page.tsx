@@ -1,5 +1,6 @@
-import MarkdownTextarea from '@/components/ui/MarkdownTextarea'
 'use client'
+
+import MarkdownTextarea from '@/components/ui/MarkdownTextarea'
 // src/app/admin/bootcamp/page.tsx
 // Sesuai concept doc Section 4A + 4B
 // List Bootcamp + Modal Buat/Edit + Status DRAFT→PUBLISHED→OPEN→ONGOING→COMPLETED

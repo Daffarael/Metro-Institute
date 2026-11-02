@@ -1,5 +1,6 @@
-import MarkdownText from '@/components/ui/MarkdownText'
 'use client'
+
+import MarkdownText from '@/components/ui/MarkdownText'
 
 import { useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
