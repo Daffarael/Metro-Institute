@@ -61,6 +61,36 @@ const inputStyle: React.CSSProperties = {
   color: 'var(--color-text-primary)', outline: 'none', transition: 'all 0.2s',
 }
 
+// ─── Datetime & Timezone Helpers (Asia/Jakarta WIB) ────────
+function toLocalDatetimeValue(dateVal?: string | Date | null): string {
+  if (!dateVal) return ''
+  try {
+    const d = typeof dateVal === 'string' ? new Date(dateVal) : dateVal
+    if (isNaN(d.getTime())) return ''
+    const formatter = new Intl.DateTimeFormat('sv-SE', {
+      timeZone: 'Asia/Jakarta',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    })
+    return formatter.format(d).replace(' ', 'T')
+  } catch {
+    return ''
+  }
+}
+
+function toIsoDatetime(localStr?: string | null): string | null {
+  if (!localStr || !localStr.trim()) return null
+  const s = localStr.trim()
+  if (!s.includes('+') && !s.includes('Z') && !s.match(/-\d{2}:\d{2}$/)) {
+    return `${s}:00+07:00`
+  }
+  return new Date(s).toISOString()
+}
+
 // ─── Modals ────────────────────────────────────────────────
 function AddChapterModal({ bootcampId, onClose }: any) {
   const qc = useQueryClient()
@@ -97,33 +127,79 @@ function AddChapterModal({ bootcampId, onClose }: any) {
 
 function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
   const qc = useQueryClient()
+
+  // Fetch the fresh single session data to guarantee 100% complete, up-to-date fields
+  const { data: freshSession } = useQuery({
+    queryKey: ['admin', 'bootcamp', bootcampId, 'session', editSession?.id],
+    queryFn: () => api.get(`/admin/bootcamps/${bootcampId}/sessions/${editSession.id}`).then(r => r.data.data),
+    enabled: !!editSession?.id,
+  })
+
+  const current = freshSession || editSession
+
   const [form, setForm] = useState({ 
-    title: editSession?.title || '', 
-    description: editSession?.description || '',
-    type: editSession?.type || ('LIVE' as BootcampSession['type']), 
-    scheduledAt: editSession?.liveScheduledAt ? editSession.liveScheduledAt.slice(0, 16) : (editSession?.scheduledAt ? editSession.scheduledAt.slice(0, 16) : ''),
-    durationMin: editSession?.videoDuration ?? (editSession?.durationMin ?? 90),
-    meetingUrl: editSession?.liveUrl || (editSession?.meetingUrl || ''),
-    videoUrl: editSession?.videoUrl || '', 
-    materialUrl: editSession?.materials?.[0]?.url || '', 
-    isPreview: editSession?.isFreePreview || false,
-    assignmentDescription: editSession?.assignmentDescription || '',
-    assignmentDeadline: editSession?.assignmentDeadline ? editSession.assignmentDeadline.slice(0, 16) : '',
-    xpReward: editSession?.xpReward !== undefined ? editSession.xpReward : 10
+    title: current?.title || '', 
+    description: current?.description || '',
+    type: current?.type || ('LIVE' as BootcampSession['type']), 
+    scheduledAt: toLocalDatetimeValue(current?.liveScheduledAt || current?.scheduledAt),
+    durationMin: current?.videoDuration ?? (current?.durationMin ?? 90),
+    meetingUrl: current?.liveUrl || (current?.meetingUrl || ''),
+    videoUrl: current?.videoUrl || '', 
+    materialUrl: (Array.isArray(current?.materials) && current?.materials?.[0]?.url) ? current.materials[0].url : (current?.materialUrl || ''), 
+    isPreview: current?.isFreePreview ?? (current?.isPreview ?? false),
+    assignmentDescription: current?.assignmentDescription || '',
+    assignmentDeadline: toLocalDatetimeValue(current?.assignmentDeadline),
+    xpReward: current?.xpReward !== undefined ? current.xpReward : 10
   })
   const f = (k: string, v: any) => setForm(p => ({ ...p, [k]: v }))
 
   const [quizOptions, setQuizOptions] = useState<any[]>(
-    (editSession as any)?.quizOptions || [
-      { id: Math.random().toString(36).substr(2, 9), question: '', options: [{ id: 'A', text: '', isCorrect: true }, { id: 'B', text: '', isCorrect: false }, { id: 'C', text: '', isCorrect: false }, { id: 'D', text: '', isCorrect: false }] }
-    ]
+    current?.quizOptions && Array.isArray(current.quizOptions) && current.quizOptions.length > 0
+      ? current.quizOptions
+      : [
+          { id: Math.random().toString(36).substr(2, 9), question: '', options: [{ id: 'A', text: '', isCorrect: true }, { id: 'B', text: '', isCorrect: false }, { id: 'C', text: '', isCorrect: false }, { id: 'D', text: '', isCorrect: false }] }
+        ]
   )
+
+  // Sync form when freshSession arrives
+  useEffect(() => {
+    if (freshSession) {
+      setForm({
+        title: freshSession.title || '',
+        description: freshSession.description || '',
+        type: freshSession.type || 'LIVE',
+        scheduledAt: toLocalDatetimeValue(freshSession.liveScheduledAt || freshSession.scheduledAt),
+        durationMin: freshSession.videoDuration ?? (freshSession.durationMin ?? 90),
+        meetingUrl: freshSession.liveUrl || (freshSession.meetingUrl || ''),
+        videoUrl: freshSession.videoUrl || '',
+        materialUrl: (Array.isArray(freshSession.materials) && freshSession.materials[0]?.url) ? freshSession.materials[0].url : (freshSession.materialUrl || ''),
+        isPreview: freshSession.isFreePreview ?? (freshSession.isPreview ?? false),
+        assignmentDescription: freshSession.assignmentDescription || '',
+        assignmentDeadline: toLocalDatetimeValue(freshSession.assignmentDeadline),
+        xpReward: freshSession.xpReward !== undefined ? freshSession.xpReward : 10
+      })
+      if (freshSession.quizOptions && Array.isArray(freshSession.quizOptions) && freshSession.quizOptions.length > 0) {
+        setQuizOptions(freshSession.quizOptions)
+      }
+    }
+  }, [freshSession])
 
   const mutation = useMutation({
     mutationFn: () => {
+      const scheduledIso = toIsoDatetime(form.scheduledAt)
+      const deadlineIso = toIsoDatetime(form.assignmentDeadline)
+
       let payload: any = { 
         ...form, 
+        scheduledAt: scheduledIso,
+        liveScheduledAt: scheduledIso,
+        assignmentDeadline: deadlineIso,
+        liveUrl: form.meetingUrl,
+        meetingUrl: form.meetingUrl,
+        videoDuration: Number(form.durationMin) || 90,
         durationMin: Number(form.durationMin) || 90,
+        isFreePreview: form.isPreview,
+        isPreview: form.isPreview,
         xpReward: Number(form.xpReward) || 10,
         quizOptions: (form.type === 'QUIZ' || form.type === 'ASSIGNMENT') ? quizOptions : null 
       }
@@ -138,6 +214,9 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
       toast.success(editSession ? 'Materi diperbarui.' : 'Materi berhasil ditambahkan.')
       qc.invalidateQueries({ queryKey: ['admin', 'bootcamp', bootcampId, 'syllabus'] })
       qc.invalidateQueries({ queryKey: ['admin', 'bootcamp', bootcampId, 'schedules'] })
+      if (editSession?.id) {
+        qc.invalidateQueries({ queryKey: ['admin', 'bootcamp', bootcampId, 'session', editSession.id] })
+      }
       onClose()
     },
     onError: () => toast.error('Gagal menyimpan materi.'),

@@ -152,16 +152,18 @@ function AddSessionModal({ courseId, editSession, onClose }: { courseId: string;
     title: editSession?.title || '', 
     type: editSession?.type || ('VIDEO' as CourseSession['type']), 
     videoUrl: editSession?.videoUrl || '', 
-    materialUrl: (editSession?.materials as any)?.[0]?.url || '', 
+    materialUrl: (editSession?.materials as any)?.[0]?.url || (editSession as any)?.materialUrl || '', 
     assignmentDescription: (editSession as any)?.assignmentDescription || '',
-    isPreview: editSession?.isFreePreview || false,
+    isPreview: editSession?.isFreePreview ?? ((editSession as any)?.isPreview ?? false),
     xpReward: (editSession as any)?.xpReward !== undefined ? (editSession as any).xpReward : 10
   })
 
   const [quizOptions, setQuizOptions] = useState<any[]>(
-    (editSession as any)?.quizOptions || [
-      { id: Math.random().toString(36).substr(2, 9), question: '', options: [{ id: 'A', text: '', isCorrect: true }, { id: 'B', text: '', isCorrect: false }, { id: 'C', text: '', isCorrect: false }, { id: 'D', text: '', isCorrect: false }] }
-    ]
+    (editSession as any)?.quizOptions && Array.isArray((editSession as any).quizOptions) && (editSession as any).quizOptions.length > 0
+      ? (editSession as any).quizOptions
+      : [
+          { id: Math.random().toString(36).substr(2, 9), question: '', options: [{ id: 'A', text: '', isCorrect: true }, { id: 'B', text: '', isCorrect: false }, { id: 'C', text: '', isCorrect: false }, { id: 'D', text: '', isCorrect: false }] }
+        ]
   )
 
   const mutation = useMutation({
@@ -169,7 +171,13 @@ function AddSessionModal({ courseId, editSession, onClose }: { courseId: string;
       if (form.type === 'VIDEO' && form.videoUrl && (form.videoUrl.includes('youtube.com') || form.videoUrl.includes('youtu.be'))) {
         throw new Error('Harap hapus atau ganti tautan YouTube dengan video baru sebelum menyimpan.')
       }
-      const payload: any = { ...form, quizOptions: (form.type as any) === 'QUIZ' ? quizOptions : null }
+      const payload: any = { 
+        ...form, 
+        isFreePreview: form.isPreview,
+        materials: form.materialUrl ? [{ name: 'Materi', url: form.materialUrl }] : [],
+        materialUrl: form.materialUrl,
+        quizOptions: (form.type as any) === 'QUIZ' ? quizOptions : null 
+      }
       if (editSession) {
         return api.put(`/admin/courses/sessions/${editSession.id}`, payload)
       } else {
