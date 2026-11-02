@@ -508,7 +508,6 @@ export default function AdminChallengesPage() {
                       <td style={{ padding: 'var(--space-3) var(--space-4)', color: 'var(--color-text-tertiary)' }}>{(filters.page - 1) * filters.limit + i + 1}</td>
                       <td style={{ padding: 'var(--space-3) var(--space-4)', fontWeight: 600, maxWidth: 260 }}>
                         <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.title}</div>
-                        {c.description && <div style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.description}</div>}
                       </td>
                       <td style={{ padding: 'var(--space-3) var(--space-4)' }}>
                         <AdminStatusChip status={c.type} label={c.type} />
