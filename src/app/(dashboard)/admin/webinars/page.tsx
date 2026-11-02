@@ -27,9 +27,9 @@ const webinarSchema = z.object({
   description:      z.string().min(10, 'Minimal 10 karakter'),
   speakerName:      z.string().min(2, 'Nama pembicara wajib diisi'),
   speakerRole:      z.string().optional().nullable(),
-  price:            z.number().min(0),
-  scheduledAt:      z.string().min(1, 'Jadwal wajib diisi'),
-  duration:         z.number().min(1, 'Minimal 1 menit'),
+  price:            z.number({ error: () => ({ message: 'Harga tiket wajib diisi' }) }).min(0, 'Harga tidak boleh negatif'),
+  scheduledAt:      z.string().min(1, 'Jadwal pelaksanaan wajib diisi'),
+  duration:         z.number({ error: () => ({ message: 'Durasi wajib diisi' }) }).min(1, 'Minimal 1 menit'),
   meetingUrl:       z.string().optional().nullable(),
   recordingUrl:     z.string().optional().nullable(),
   quota:            z.number().optional().nullable(),
@@ -154,17 +154,17 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
       description:      webinar?.description ?? '',
       speakerName:      webinar?.speakerName ?? '',
       speakerRole:      webinar?.speakerRole ?? '',
-      price:            webinar?.price ?? 0,
-      scheduledAt:      defaultDate,
-      duration:         webinar?.duration ?? 90,
+      price:            webinar?.price !== undefined ? webinar.price : ('' as any),
+      scheduledAt:      webinar?.scheduledAt ? toLocalDatetimeValue(webinar.scheduledAt) : '',
+      duration:         webinar?.duration !== undefined ? webinar.duration : ('' as any),
       meetingUrl:       webinar?.meetingUrl ?? '',
       recordingUrl:     webinar?.recordingUrl ?? '',
       quota:            webinar?.quota ?? null,
       status:           webinar?.isPublished ? 'PUBLISHED' : 'DRAFT',
       certificateTemplateId: webinar?.certificateTemplateId ?? null,
       bannerUrl:        webinar?.bannerUrl ?? '',
-      attendanceThresholdPct: webinar?.attendanceThresholdPct ?? 80,
-      xpReward:         webinar?.xpReward ?? 25,
+      attendanceThresholdPct: webinar?.attendanceThresholdPct !== undefined ? webinar.attendanceThresholdPct : ('' as any),
+      xpReward:         webinar?.xpReward !== undefined ? webinar.xpReward : ('' as any),
     },
   })
 
@@ -187,8 +187,8 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
         meetingUrl: sanitizeUrl(rest.meetingUrl),
         recordingUrl: sanitizeUrl(rest.recordingUrl),
         isPublished: status === 'PUBLISHED',
-        attendanceThresholdPct: Number(rest.attendanceThresholdPct) || 80,
-        xpReward: Number(rest.xpReward) || 25,
+        attendanceThresholdPct: (rest.attendanceThresholdPct !== undefined && (rest as any).attendanceThresholdPct !== '') ? Number(rest.attendanceThresholdPct) : 80,
+        xpReward: (rest.xpReward !== undefined && (rest as any).xpReward !== '') ? Number(rest.xpReward) : 25,
       }
       return isEdit
         ? api.patch(`/admin/webinars/${webinar!.id}`, payload).then(r => r.data)
@@ -335,11 +335,12 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
                 type="number"
                 {...register('duration', { valueAsNumber: true })}
                 min={1}
-                placeholder="90"
+                placeholder="Contoh: 90"
                 style={inputStyleClean}
                 onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
                 onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
               />
+              {errors.duration && <p style={{ fontSize: '12px', color: 'var(--color-error)', marginTop: 4, fontWeight: 500 }}>{errors.duration.message}</p>}
             </div>
           </div>
 
@@ -350,12 +351,13 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
               <input
                 type="number"
                 {...register('price', { valueAsNumber: true })}
-                placeholder="0"
+                placeholder="Contoh: 25000 (atau 0 jika gratis)"
                 min={0}
                 style={inputStyleClean}
                 onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
                 onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
               />
+              {errors.price && <p style={{ fontSize: '12px', color: 'var(--color-error)', marginTop: 4, fontWeight: 500 }}>{errors.price.message}</p>}
               <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 4, display: 'block' }}>
                 Masukkan 0 jika webinar diselenggarakan gratis.
               </span>
@@ -401,7 +403,7 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
                 {...register('attendanceThresholdPct', { valueAsNumber: true })}
                 min={1}
                 max={100}
-                placeholder="80"
+                placeholder="Contoh: 80"
                 style={inputStyleClean}
                 onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
                 onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
@@ -416,7 +418,7 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
                 type="number"
                 {...register('xpReward', { valueAsNumber: true })}
                 min={0}
-                placeholder="25"
+                placeholder="Contoh: 25"
                 style={inputStyleClean}
                 onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
                 onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
