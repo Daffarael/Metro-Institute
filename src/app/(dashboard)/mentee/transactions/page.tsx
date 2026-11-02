@@ -203,12 +203,13 @@ export default function TransactionsPage() {
                 {/* Pay now button for pending */}
                 {tx.status === 'PENDING' && (
                   <motion.button
-                    whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                    whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
                     style={{
-                      padding: '8px 16px', borderRadius: 'var(--radius-md)',
-                      background: 'var(--color-primary)', color: '#fff',
-                      border: 'none', fontWeight: 600, fontSize: '12px',
-                      cursor: 'pointer'
+                      padding: '8px 18px', borderRadius: 'var(--radius-md)',
+                      background: 'var(--color-accent, #FAE653)', color: '#0D1117',
+                      border: 'none', fontWeight: 700, fontSize: '12px',
+                      cursor: 'pointer',
+                      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
                     }}
                     onClick={() => {
                       api.get(`/transactions/${tx.orderId}`).then((r) => {
