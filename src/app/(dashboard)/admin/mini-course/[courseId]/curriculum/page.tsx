@@ -214,12 +214,12 @@ return (
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.94, y: 10 }}
         transition={{ type: 'spring', damping: 28, stiffness: 300, mass: 0.8 }}
-       style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-xl)', boxShadow: 'var(--shadow-xl)', width: '100%', maxWidth: form.type === 'QUIZ' ? 640 : 480, maxHeight: '90vh', overflowY: 'auto', padding: 'var(--space-6)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 'var(--space-4)' }}>
-          <h3 style={{ fontWeight: 700, fontSize: 'var(--text-lg)' }}>{editSession ? 'Edit Sesi Kurikulum' : 'Tambah Sesi Kurikulum'}</h3>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><X size={18} /></button>
+       style={{ background: 'var(--color-surface)', borderRadius: 20, boxShadow: 'var(--shadow-xl)', width: '100%', maxWidth: form.type === 'QUIZ' ? 640 : 480, maxHeight: '90vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', border: '1px solid var(--color-border)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '18px 24px', borderBottom: '1px solid var(--color-border-subtle)', background: 'var(--color-surface)', flexShrink: 0 }}>
+          <h3 style={{ fontWeight: 700, fontSize: 'var(--text-lg)', margin: 0 }}>{editSession ? 'Edit Sesi Kurikulum' : 'Tambah Sesi Kurikulum'}</h3>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 4, borderRadius: 6 }}><X size={18} /></button>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+        <div style={{ flex: 1, overflowY: 'auto', padding: '24px', display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
           <div>
             <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 4 }}>Judul Sesi <span style={{ color: 'var(--color-error)' }}>*</span></label>
             <input value={form.title} onChange={e => f('title', e.target.value)} placeholder="Pengenalan Figma Interface" style={inputStyle} autoFocus />
@@ -405,7 +405,7 @@ return (
         </div>
 
         {/* Clean Modal Action Buttons */}
-        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 20, paddingTop: 16, borderTop: '1px solid #f3f4f6' }}>
+        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', padding: '16px 24px', borderTop: '1px solid var(--color-border-subtle)', background: 'var(--color-surface)', flexShrink: 0 }}>
           <button
             type="button"
             onClick={onClose}

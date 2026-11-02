@@ -224,12 +224,12 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
 
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={e => { if (e.target === e.currentTarget) onClose() }}>
-      <motion.div initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-xl)', width: '100%', maxWidth: form.type === 'QUIZ' ? 680 : (form.type === 'VIDEO' ? 640 : 560), maxHeight: '90vh', overflowY: 'auto', padding: 'var(--space-6)', boxShadow: 'var(--shadow-2xl)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 'var(--space-4)' }}>
-          <h3 style={{ fontWeight: 700, fontSize: 'var(--text-lg)' }}>{editSession ? 'Edit Sesi Materi' : 'Tambah Sesi Materi (Session)'}</h3>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><X size={20} color="var(--color-text-secondary)" /></button>
+      <motion.div initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} style={{ background: 'var(--color-surface)', borderRadius: 20, width: '100%', maxWidth: form.type === 'QUIZ' ? 680 : (form.type === 'VIDEO' ? 640 : 560), maxHeight: '90vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', boxShadow: 'var(--shadow-2xl)', border: '1px solid var(--color-border)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '18px 24px', borderBottom: '1px solid var(--color-border-subtle)', background: 'var(--color-surface)', flexShrink: 0 }}>
+          <h3 style={{ fontWeight: 700, fontSize: 'var(--text-lg)', margin: 0 }}>{editSession ? 'Edit Sesi Materi' : 'Tambah Sesi Materi (Session)'}</h3>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 4, borderRadius: 6 }}><X size={20} color="var(--color-text-secondary)" /></button>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+        <div style={{ flex: 1, overflowY: 'auto', padding: '24px', display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
           <div>
             <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Judul Materi / Sesi <span style={{ color: 'var(--color-error)' }}>*</span></label>
             <input value={form.title} onChange={e => f('title', e.target.value)} placeholder="Contoh: Sesi 1 - Pengenalan Design System & Figma" style={inputStyle} autoFocus />
@@ -486,7 +486,7 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: 'var(--space-3)', justifyContent: 'flex-end', marginTop: 'var(--space-6)' }}>
+        <div style={{ display: 'flex', gap: 'var(--space-3)', justifyContent: 'flex-end', padding: '16px 24px', borderTop: '1px solid var(--color-border-subtle)', background: 'var(--color-surface)', flexShrink: 0 }}>
           <button onClick={onClose} style={{ padding: '10px 20px', borderRadius: '12px', border: '1px solid var(--color-border)', background: '#fff', cursor: 'pointer', fontWeight: 600, fontSize: '14px', color: 'var(--color-text-secondary)' }}>Batal</button>
           <button 
             disabled={!form.title.trim() || mutation.isPending} 
