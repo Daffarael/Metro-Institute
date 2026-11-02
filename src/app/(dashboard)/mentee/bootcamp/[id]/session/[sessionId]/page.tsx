@@ -1,3 +1,4 @@
+import MarkdownText from '@/components/ui/MarkdownText'
 'use client'
 
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react'
@@ -736,9 +737,9 @@ export default function BootcampLearningPlayerPage() {
                   border: '1px solid #e2e8f0'
                 }}>
                   <h4 style={{ fontSize: '13px', fontWeight: 700, color: '#0f172a', margin: '0 0 6px' }}>Instruksi Tugas:</h4>
-                  <p style={{ color: '#475569', fontSize: '14px', lineHeight: 1.6, margin: 0, whiteSpace: 'pre-wrap' }}>
-                    {currentSession.assignmentDescription || currentSession.description || 'Silakan kerjakan tugas sesuai arahan mentor dan kirimkan tautan repository GitHub / Google Drive / Figma Anda di bawah ini.'}
-                  </p>
+                  <div style={{ color: '#475569', fontSize: '14px', lineHeight: 1.6, margin: 0 }}>
+                    <MarkdownText content={currentSession.assignmentDescription || currentSession.description || 'Silakan kerjakan tugas sesuai arahan mentor dan kirimkan tautan repository GitHub / Google Drive / Figma Anda di bawah ini.'} />
+                  </div>
                 </div>
 
                 {/* Submission Form */}
@@ -1433,9 +1434,9 @@ export default function BootcampLearningPlayerPage() {
                     <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#0f172a', marginBottom: 12 }}>
                       Tentang Sesi Ini
                     </h3>
-                    <p style={{ color: '#475569', lineHeight: 1.75, fontSize: '14.5px', margin: 0, whiteSpace: 'pre-wrap' }}>
-                      {currentSession.assignmentDescription || currentSession.description || 'Sesi ini akan membahas materi bootcamp secara intensif sesuai kurikulum yang telah disusun.'}
-                    </p>
+                    <div style={{ color: '#475569', lineHeight: 1.75, fontSize: '14.5px', margin: 0 }}>
+                      <MarkdownText content={currentSession.assignmentDescription || currentSession.description || 'Sesi ini akan membahas materi bootcamp secara intensif sesuai kurikulum yang telah disusun.'} />
+                    </div>
                   </div>
                 )}
 

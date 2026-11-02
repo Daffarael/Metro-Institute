@@ -1,3 +1,4 @@
+import MarkdownTextarea from '@/components/ui/MarkdownTextarea'
 'use client'
 import { useState, useEffect, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
@@ -387,7 +388,7 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
 
           <div>
             <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>Deskripsi Materi (Opsional)</label>
-            <textarea value={form.description} onChange={e => f('description', e.target.value)} placeholder="Tuliskan ringkasan materi atau catatan untuk mentee di sini..." style={{...inputStyle, minHeight: 60}} />
+            <MarkdownTextarea value={form.description} onChange={v => f('description', v)} placeholder="Tuliskan ringkasan materi atau catatan untuk mentee di sini..." rows={3} minHeight={85} />
           </div>
 
           <div>

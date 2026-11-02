@@ -1,3 +1,4 @@
+import MarkdownText from '@/components/ui/MarkdownText'
 'use client'
 
 import { useState, useMemo } from 'react'
@@ -422,7 +423,7 @@ export default function ChallengeBankPage() {
                   </h3>
 
                   {challenge.description && (
-                    <p style={{
+                    <div style={{
                       fontSize: '13px',
                       color: 'var(--color-text-secondary)',
                       lineHeight: 1.5,
@@ -432,8 +433,8 @@ export default function ChallengeBankPage() {
                       WebkitLineClamp: 2,
                       WebkitBoxOrient: 'vertical',
                     }}>
-                      {challenge.description}
-                    </p>
+                      <MarkdownText content={challenge.description} />
+                    </div>
                   )}
 
                   {/* Progressive Unlock Progress Indicator */}

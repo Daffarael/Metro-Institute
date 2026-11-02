@@ -19,6 +19,7 @@ import AdminEmptyState from '@/components/admin/AdminEmptyState'
 import AdminPagination from '@/components/admin/AdminPagination'
 import AdminConfirmModal from '@/components/admin/AdminConfirmModal'
 import CleanCombobox from '@/components/admin/CleanCombobox'
+import MarkdownTextarea from '@/components/ui/MarkdownTextarea'
 import { toast } from 'sonner'
 
 // ─── Types (sesuai Prisma schema Challenge model) ──────────
@@ -194,9 +195,20 @@ return (
             <label style={labelStyle}>
               {watchType === 'QUIZ' ? 'Instruksi / Deskripsi Kuis' : 'Deskripsi / Instruksi'} <span style={{color: 'var(--color-error)'}}>*</span>
             </label>
-            <textarea {...register('description')} rows={4} style={{ ...inputStyleClean, resize: 'vertical' }} placeholder={watchType === 'QUIZ' ? "Jelaskan instruksi kuis ini secara umum..." : "Jelaskan apa yang harus dikerjakan mentee..."} 
-              onFocus={e => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.borderColor = 'var(--color-primary)' }}
-              onBlur={e => { e.currentTarget.style.background = '#f9fafb'; e.currentTarget.style.borderColor = 'rgba(0,0,0,0.06)' }}
+            <Controller
+              control={control}
+              name="description"
+              render={({ field }) => (
+                <MarkdownTextarea
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                  rows={4}
+                  minHeight={110}
+                  placeholder={watchType === 'QUIZ' ? "Jelaskan instruksi kuis ini secara umum..." : "Jelaskan apa yang harus dikerjakan mentee..."}
+                  error={errors.description?.message}
+                />
+              )}
             />
             {errors.description && <p style={{ color: 'var(--color-error)', fontSize: '12px', marginTop: 6, fontWeight: 500 }}>{errors.description.message}</p>}
           </div>

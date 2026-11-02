@@ -1,3 +1,4 @@
+import MarkdownText from '@/components/ui/MarkdownText'
 'use client'
 
 import { useState } from 'react'
@@ -223,7 +224,7 @@ export default function ChallengeDetailPage() {
             {FIELD_LABELS[challenge.field] || challenge.field} · {LEVEL_LABELS[challenge.level] || challenge.level}
           </div>
           <h1 style={{ fontSize: '20px', fontWeight: 700, margin: '0 0 6px 0', color: 'var(--color-text-primary)' }}>{challenge.title}</h1>
-          <p style={{ color: 'var(--color-text-secondary)', fontSize: '13px', lineHeight: 1.6, margin: 0 }}>{challenge.description}</p>
+          <div style={{ color: 'var(--color-text-secondary)', fontSize: '13.5px', lineHeight: 1.6, margin: '6px 0 0' }}><MarkdownText content={challenge.description} /></div>
         </div>
 
         <div style={{ padding: '22px', background: 'var(--color-surface)', border: '1px solid var(--color-border-subtle)', borderRadius: '12px', marginBottom: 20 }}>
@@ -307,9 +308,9 @@ export default function ChallengeDetailPage() {
         <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-tertiary)', marginBottom: 8 }}>
           Soal {currentQIdx + 1}
         </div>
-        <p style={{ fontSize: '15px', fontWeight: 500, lineHeight: 1.6, color: 'var(--color-text-primary)', margin: '0 0 20px 0' }}>
-          {currentQ.question}
-        </p>
+        <div style={{ fontSize: '15px', fontWeight: 500, lineHeight: 1.6, color: 'var(--color-text-primary)', margin: '0 0 20px 0' }}>
+          <MarkdownText content={currentQ.question} />
+        </div>
 
         {currentQ.imageUrl && (
           <img src={currentQ.imageUrl} alt="Ilustrasi" style={{ width: '100%', borderRadius: 8, border: '1px solid var(--color-border-subtle)', marginBottom: 18, maxHeight: 260, objectFit: 'contain' }} />

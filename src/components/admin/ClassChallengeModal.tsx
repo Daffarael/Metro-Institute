@@ -1,3 +1,4 @@
+import MarkdownText from '@/components/ui/MarkdownText'
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
@@ -548,7 +549,7 @@ export default function ClassChallengeModal({
                                 overflow: 'hidden',
                               }}
                             >
-                              {ch.description}
+                              <MarkdownText content={ch.description} />
                             </div>
                           )}
                         </div>
