@@ -3,7 +3,7 @@
 // Kelola kurikulum mini course (DnD sessions)
 // Sesuai concept doc Section 5C — Tipe: VIDEO | MATERIAL | CHALLENGE (tidak ada LIVE)
 
-import {  useState , useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query'
 import { useParams } from 'next/navigation'
 import { Plus, GripVertical, Trash2, X, Info, Edit } from 'lucide-react'
@@ -15,6 +15,24 @@ import AdminConfirmModal from '@/components/admin/AdminConfirmModal'
 import CleanCombobox from '@/components/admin/CleanCombobox'
 import VideoInputWithUpload from '@/components/admin/VideoInputWithUpload'
 import { toast } from 'sonner'
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+  DragStartEvent
+} from '@dnd-kit/core'
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 
 interface CourseSession {
   id: string; title: string; type: 'VIDEO' | 'MATERIAL' | 'QUIZ'
@@ -32,6 +50,98 @@ const inputStyle: React.CSSProperties = {
   width: '100%', padding: '8px 12px', borderRadius: 'var(--radius-md)',
   border: '1px solid var(--color-border)', fontSize: 'var(--text-sm)',
   background: 'var(--color-surface)', color: 'var(--color-text-primary)', outline: 'none',
+}
+
+function SortableSessionItem({
+  session,
+  index,
+  onEdit,
+  onDelete
+}: {
+  session: CourseSession
+  index: number
+  onEdit: (s: CourseSession) => void
+  onDelete: (id: string) => void
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: `session-${session.id}`,
+    data: { type: 'session', session }
+  })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.4 : 1,
+    zIndex: isDragging ? 10 : 1,
+  }
+
+  const tc = SESSION_TYPE_COLORS[session.type] ?? { bg: 'var(--color-surface)', color: 'var(--color-text-secondary)', border: '1px solid var(--color-border)' }
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{
+        ...style,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 'var(--space-3)',
+        padding: 'var(--space-3) var(--space-4)',
+        borderBottom: '1px solid var(--color-border-subtle)',
+        background: isDragging ? 'var(--color-bg)' : 'transparent',
+        cursor: isDragging ? 'grabbing' : undefined,
+        transition: 'background var(--transition-fast)'
+      }}
+      onMouseEnter={e => { if (!isDragging) e.currentTarget.style.background = 'var(--color-bg)' }}
+      onMouseLeave={e => { if (!isDragging) e.currentTarget.style.background = 'transparent' }}
+    >
+      <div
+        {...attributes}
+        {...listeners}
+        className="syllabus-drag-handle"
+        style={{
+          cursor: isDragging ? 'grabbing' : 'grab',
+          display: 'flex',
+          padding: 4,
+          borderRadius: 4,
+          touchAction: 'none'
+        }}
+      >
+        <GripVertical size={16} color="var(--color-text-tertiary)" style={{ flexShrink: 0 }} />
+      </div>
+      <span style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-tertiary)', width: 24, textAlign: 'center', fontWeight: 700 }}>
+        {index + 1}
+      </span>
+      <span style={{ flex: 1, fontSize: 'var(--text-sm)', fontWeight: 500 }}>{session.title}</span>
+      <span style={{ padding: '3px 10px', borderRadius: 'var(--radius-full)', background: tc.bg, color: tc.color, border: tc.border || '1px solid var(--color-border)', fontSize: '11px', fontWeight: 700 }}>
+        {session.type}
+      </span>
+      {session.isFreePreview && (
+        <span style={{ padding: '2px 8px', borderRadius: 'var(--radius-full)', background: 'var(--color-accent-light)', color: '#856404', fontSize: '11px', fontWeight: 600 }}>
+          Preview
+        </span>
+      )}
+
+      <button
+        onClick={() => onEdit(session)}
+        style={{ width: 28, height: 28, borderRadius: 'var(--radius-md)', border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-tertiary)', transition: 'color 0.15s ease' }}
+        onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-primary)')}
+        onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-tertiary)')}
+        title="Edit Sesi"
+      >
+        <Edit size={15} />
+      </button>
+
+      <button
+        onClick={() => onDelete(session.id)}
+        style={{ width: 28, height: 28, borderRadius: 'var(--radius-md)', border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-tertiary)', transition: 'color 0.15s ease' }}
+        onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-error)')}
+        onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-tertiary)')}
+        title="Hapus Sesi"
+      >
+        <Trash2 size={15} />
+      </button>
+    </div>
+  )
 }
 
 function AddSessionModal({ courseId, editSession, onClose }: { courseId: string; editSession?: CourseSession; onClose: () => void }) {
@@ -352,6 +462,7 @@ export default function MiniCourseCurriculumPage() {
   const [showAdd, setShowAdd] = useState(false)
   const [editSession, setEditSession] = useState<CourseSession | null>(null)
   const [deleteId, setDeleteId] = useState<string | null>(null)
+  const [localSessions, setLocalSessions] = useState<CourseSession[]>([])
 
   const { data: course } = useQuery<MiniCourse>({
     queryKey: ['admin', 'course', courseId], placeholderData: keepPreviousData,
@@ -364,6 +475,22 @@ export default function MiniCourseCurriculumPage() {
     staleTime: 2 * 60 * 1000,
   })
 
+  // Sync server data to local state for fast UI optimistic updates
+  useEffect(() => {
+    if (sessions) {
+      setLocalSessions([...sessions].sort((a, b) => a.order - b.order))
+    }
+  }, [sessions])
+
+  // Cleanup dragging class on unmount
+  useEffect(() => {
+    return () => {
+      if (typeof document !== 'undefined') {
+        document.body.classList.remove('is-syllabus-dragging')
+      }
+    }
+  }, [])
+
   const deleteMutation = useMutation({
     mutationFn: (id: string) => api.delete(`/admin/courses/sessions/${id}`),
     onSuccess: () => {
@@ -374,7 +501,53 @@ export default function MiniCourseCurriculumPage() {
     onError: () => toast.error('Gagal menghapus.'),
   })
 
-  const sorted = [...(sessions ?? [])].sort((a, b) => a.order - b.order)
+  const reorderMutation = useMutation({
+    mutationFn: (data: { sessions: { id: string; order: number }[] }) =>
+      api.put(`/admin/courses/${courseId}/sessions/reorder`, data),
+    onSuccess: () => toast.success('Urutan materi berhasil diperbarui!'),
+    onError: () => {
+      toast.error('Gagal menyimpan urutan materi.')
+      qc.invalidateQueries({ queryKey: ['admin', 'course', courseId, 'curriculum'] })
+    }
+  })
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 3 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  )
+
+  const handleDragStart = () => {
+    if (typeof document !== 'undefined') {
+      document.body.classList.add('is-syllabus-dragging')
+    }
+  }
+
+  const handleDragCancel = () => {
+    if (typeof document !== 'undefined') {
+      document.body.classList.remove('is-syllabus-dragging')
+    }
+  }
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    if (typeof document !== 'undefined') {
+      document.body.classList.remove('is-syllabus-dragging')
+    }
+    const { active, over } = event
+    if (!over || active.id === over.id) return
+
+    setLocalSessions(prev => {
+      const oldIndex = prev.findIndex(s => `session-${s.id}` === active.id)
+      const newIndex = prev.findIndex(s => `session-${s.id}` === over.id)
+      if (oldIndex === -1 || newIndex === -1) return prev
+
+      const newArr = arrayMove(prev, oldIndex, newIndex)
+      const payload = newArr.map((s, i) => ({ id: s.id, order: i }))
+      reorderMutation.mutate({ sessions: payload })
+      return newArr
+    })
+  }
+
+  const sessionIds = useMemo(() => localSessions.map(s => `session-${s.id}`), [localSessions])
 
   return (
     <div>
@@ -382,9 +555,16 @@ export default function MiniCourseCurriculumPage() {
         .syllabus-drag-handle {
           cursor: grab !important;
           user-select: none;
+          -webkit-user-select: none;
         }
         .syllabus-drag-handle:active {
           cursor: grabbing !important;
+        }
+        body.is-syllabus-dragging,
+        body.is-syllabus-dragging * {
+          cursor: grabbing !important;
+          user-select: none !important;
+          -webkit-user-select: none !important;
         }
       `}} />
       <AdminPageHeader
@@ -402,50 +582,44 @@ export default function MiniCourseCurriculumPage() {
         }
       />
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-text-tertiary)', fontSize: '13px', marginBottom: '24px' }}>
-        <Info size={14} />
-        <span>Tipe sesi tersedia: VIDEO, MATERIAL, dan QUIZ. Khusus Mini Course tidak ada sesi LIVE.</span>
+      <div style={{ padding: 'var(--space-4)', borderRadius: 'var(--radius-lg)', background: 'var(--color-bg)', color: 'var(--color-text-secondary)', fontSize: 'var(--text-sm)', fontWeight: 500, marginBottom: 'var(--space-6)', border: '1px solid var(--color-border)', display: 'flex', alignItems: 'center', gap: 14 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 8, background: 'var(--color-surface)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', color: 'var(--color-text-secondary)' }}>
+          <Info size={18} />
+        </div>
+        <div>
+          <strong style={{ display: 'block', marginBottom: 2, color: 'var(--color-text-primary)' }}>Tips Drag & Drop</strong>
+          Tarik icon <GripVertical size={14} style={{ display: 'inline', verticalAlign: 'middle', margin: '0 2px' }} /> untuk mengatur urutan materi. Perubahan akan tersimpan otomatis.
+        </div>
       </div>
 
       {isLoading ? <AdminTableSkeleton rows={6} cols={5} /> : (
         <div className="card" style={{ overflow: 'hidden' }}>
-          {sorted.length === 0 ? (
+          {localSessions.length === 0 ? (
             <div style={{ padding: 'var(--space-12)', textAlign: 'center' }}>
               <p style={{ fontWeight: 700, marginBottom: 8 }}>Kurikulum kosong</p>
               <p style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)', marginBottom: 16 }}>Tambahkan sesi pertama untuk memulai.</p>
               <button onClick={() => setShowAdd(true)} style={{ padding: '9px 20px', borderRadius: 'var(--radius-md)', background: 'var(--color-primary)', color: '#fff', border: 'none', fontWeight: 700, cursor: 'pointer' }}>+ Tambah Sesi</button>
             </div>
           ) : (
-            sorted.map((s, i) => {
-              const tc = SESSION_TYPE_COLORS[s.type] ?? { bg: 'var(--color-surface)', color: 'var(--color-text-secondary)', border: '1px solid var(--color-border)' }
-              return (
-                <div key={s.id}
-                  style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', padding: 'var(--space-3) var(--space-4)', borderBottom: i < sorted.length - 1 ? '1px solid var(--color-border-subtle)' : 'none', transition: 'background var(--transition-fast)' }}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-bg)')}
-                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                >
-                  <GripVertical size={16} color="var(--color-text-tertiary)" className="syllabus-drag-handle" style={{ cursor: 'grab', flexShrink: 0 }} />
-                  <span style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-tertiary)', width: 24, textAlign: 'center', fontWeight: 700 }}>{i + 1}</span>
-                  <span style={{ flex: 1, fontSize: 'var(--text-sm)', fontWeight: 500 }}>{s.title}</span>
-                  <span style={{ padding: '3px 10px', borderRadius: 'var(--radius-full)', background: tc.bg, color: tc.color, border: tc.border || '1px solid var(--color-border)', fontSize: '11px', fontWeight: 700 }}>{s.type}</span>
-                  {s.isFreePreview && <span style={{ padding: '2px 8px', borderRadius: 'var(--radius-full)', background: 'var(--color-accent-light)', color: '#856404', fontSize: '11px', fontWeight: 600 }}>Preview</span>}
-                  
-                  <button onClick={() => setEditSession(s)} style={{ width: 28, height: 28, borderRadius: 'var(--radius-md)', border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-tertiary)' }}
-                    onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-primary)')}
-                    onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-tertiary)')}
-                  >
-                    <Edit size={15} />
-                  </button>
-
-                  <button onClick={() => setDeleteId(s.id)} style={{ width: 28, height: 28, borderRadius: 'var(--radius-md)', border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-text-tertiary)' }}
-                    onMouseEnter={e => (e.currentTarget.style.color = 'var(--color-error)')}
-                    onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-tertiary)')}
-                  >
-                    <Trash2 size={15} />
-                  </button>
-                </div>
-              )
-            })
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
+              onDragCancel={handleDragCancel}
+            >
+              <SortableContext items={sessionIds} strategy={verticalListSortingStrategy}>
+                {localSessions.map((s, i) => (
+                  <SortableSessionItem
+                    key={`session-${s.id}`}
+                    session={s}
+                    index={i}
+                    onEdit={setEditSession}
+                    onDelete={setDeleteId}
+                  />
+                ))}
+              </SortableContext>
+            </DndContext>
           )}
         </div>
       )}
@@ -454,11 +628,11 @@ export default function MiniCourseCurriculumPage() {
       <AdminConfirmModal
         isOpen={deleteId !== null}
         title="Hapus Sesi?"
-        description="Sesi ini akan dihapus permanen dari kurikulum."
+        description="Sesi materi ini akan dihapus permanen dari kurikulum."
+        confirmLabel="Hapus"
         isDangerous
-        confirmLabel="Ya, Hapus"
         isLoading={deleteMutation.isPending}
-        onConfirm={() => deleteId && deleteMutation.mutate(deleteId)}
+        onConfirm={() => { if (deleteId) deleteMutation.mutate(deleteId) }}
         onClose={() => setDeleteId(null)}
       />
     </div>
