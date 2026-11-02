@@ -546,7 +546,7 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
                 boxShadow: isEmojiOpen ? '0 0 0 2px rgba(1, 133, 86, 0.1)' : 'none',
               }}
             >
-              <Smile size={14} color={isEmojiOpen ? 'var(--color-primary, #018556)' : '#f59e0b'} strokeWidth={2.5} />
+              <Smile size={14} color={isEmojiOpen ? 'var(--color-primary, #018556)' : 'var(--color-text-secondary, #475569)'} strokeWidth={2.5} />
               <span>Emoji</span>
             </button>
           </div>
@@ -638,7 +638,7 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
             <div style={{ padding: '10px 12px', borderBottom: '1px solid #f1f5f9', background: '#f8fafc' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
                 <span style={{ fontSize: '12px', fontWeight: 700, color: '#0f172a', display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <Sparkles size={13} color="#f59e0b" />
+                  <Sparkles size={13} color="var(--color-primary, #018556)" />
                   Emoji Sopan & Profesional
                 </span>
                 <button
@@ -861,7 +861,7 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-            <span style={{ fontWeight: 600, color: 'var(--color-text-secondary, #475569)' }}>💡 Bantuan:</span>
+            <span style={{ fontWeight: 600, color: 'var(--color-text-secondary, #475569)' }}>Bantuan:</span>
             <span>
               Klik tombol di atas atau ketik langsung simbol <code>**teks tebal**</code>, <code>*teks miring*</code>, dan emoji.
             </span>
