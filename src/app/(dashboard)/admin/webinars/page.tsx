@@ -34,6 +34,7 @@ const webinarSchema = z.object({
   recordingUrl:     z.string().optional().nullable(),
   quota:            z.preprocess(v => (v === '' || v === null || v === undefined || (typeof v === 'number' && (Number.isNaN(v) || v <= 0)) ? null : Number(v)), z.number().min(1, 'Kuota minimal 1 peserta').optional().nullable()),
   status:           z.enum(['DRAFT', 'PUBLISHED']),
+  isFeatured:       z.boolean().optional().default(false),
   certificateTemplateId: z.string().optional().nullable(),
   bannerUrl:        z.string().optional().nullable(),
   benefits:         z.array(z.string()).optional(),
@@ -159,6 +160,7 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
       recordingUrl:     webinar?.recordingUrl ?? '',
       quota:            (webinar?.quota && Number(webinar.quota) > 0) ? Number(webinar.quota) : ('' as any),
       status:           webinar?.isPublished ? 'PUBLISHED' : 'DRAFT',
+      isFeatured:       webinar?.isFeatured ?? false,
       certificateTemplateId: null,
       bannerUrl:        webinar?.bannerUrl ?? '',
       attendanceThresholdPct: webinar?.attendanceThresholdPct !== undefined ? webinar.attendanceThresholdPct : ('' as any),
@@ -187,6 +189,7 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
         recordingUrl: sanitizeUrl(rest.recordingUrl),
         certificateTemplateId: null,
         isPublished: status === 'PUBLISHED',
+        isFeatured: Boolean(rest.isFeatured),
         attendanceThresholdPct: (rest.attendanceThresholdPct !== undefined && rest.attendanceThresholdPct !== null && (rest as any).attendanceThresholdPct !== '' && !Number.isNaN(Number(rest.attendanceThresholdPct)))
           ? Number(rest.attendanceThresholdPct)
           : 80,
@@ -551,31 +554,62 @@ function WebinarModal({ webinar, onClose }: { webinar?: WebinarItem; onClose: ()
             </div>
           </div>
 
-          {/* Status Publikasi */}
-          <div>
-            <label style={labelStyle}>Status Publikasi <span style={{ color: 'var(--color-error)' }}>*</span></label>
-            <Controller
-              control={control}
-              name="status"
-              render={({ field }) => (
-                <CleanCombobox
-                  options={[
-                    { value: 'PUBLISHED', label: 'Pendaftaran Dibuka' },
-                    { value: 'DRAFT', label: 'Draf' },
-                  ]}
-                  allowClear={false}
-                  value={field.value}
-                  onChange={field.onChange}
-                  placeholder="Pilih Status"
-                  width="100%"
-                  direction="down"
-                  style={{ ...inputStyleClean, padding: '12px 16px', background: '#fff' }}
+          {/* Status Publikasi & Unggulan */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '16px', alignItems: 'flex-start' }}>
+            <div>
+              <label style={labelStyle}>Status Publikasi <span style={{ color: 'var(--color-error)' }}>*</span></label>
+              <Controller
+                control={control}
+                name="status"
+                render={({ field }) => (
+                  <CleanCombobox
+                    options={[
+                      { value: 'PUBLISHED', label: 'Pendaftaran Dibuka' },
+                      { value: 'DRAFT', label: 'Draf' },
+                    ]}
+                    allowClear={false}
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="Pilih Status"
+                    width="100%"
+                    direction="down"
+                    style={{ ...inputStyleClean, padding: '12px 16px', background: '#fff' }}
+                  />
+                )}
+              />
+              <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 4, display: 'block' }}>
+                Inspire Talk yang tayang otomatis berstatus Buka Pendaftaran, lalu otomatis Ditutup saat memasuki H-2 jam sebelum acara.
+              </span>
+            </div>
+
+            <div>
+              <label style={labelStyle}>Program Unggulan</label>
+              <label
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 10,
+                  padding: '12px 16px',
+                  borderRadius: '12px',
+                  border: '1px solid rgba(0,0,0,0.06)',
+                  background: '#f9fafb',
+                  cursor: 'pointer',
+                  minHeight: '46px',
+                }}
+              >
+                <input
+                  type="checkbox"
+                  {...register('isFeatured')}
+                  style={{ width: 16, height: 16, accentColor: '#D97706', cursor: 'pointer' }}
                 />
-              )}
-            />
-            <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 4, display: 'block' }}>
-              Inspire Talk yang tayang otomatis berstatus Buka Pendaftaran, lalu otomatis Ditutup saat memasuki H-2 jam sebelum acara.
-            </span>
+                <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+                  ★ Tampil di Landing Page
+                </span>
+              </label>
+              <span style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 4, display: 'block' }}>
+                Jadikan program pilihan di halaman utama.
+              </span>
+            </div>
           </div>
 
           {/* Footer Submit */}
@@ -671,6 +705,16 @@ export default function AdminWebinarsPage() {
     },
   })
 
+  const featuredMutation = useMutation({
+    mutationFn: ({ id, isFeatured }: { id: string; isFeatured: boolean }) =>
+      api.patch(`/admin/webinars/${id}/featured`, { isFeatured }),
+    onSuccess: () => {
+      toast.success('Status Unggulan diperbarui!')
+      qc.invalidateQueries({ queryKey: ['admin', 'webinars'] })
+    },
+    onError: () => toast.error('Gagal memperbarui status Unggulan.'),
+  })
+
   const items: WebinarItem[] = data?.items ?? []
   const pagination = data?.pagination ?? { total: 0, page: 1, limit: 10, totalPages: 1 }
 
@@ -763,6 +807,15 @@ export default function AdminWebinarsPage() {
                     <div style={{ fontWeight: 700, color: 'var(--color-text-primary)', lineHeight: 1.35 }}>
                       {w.title}
                     </div>
+                    {w.isFeatured && (
+                      <span style={{
+                        display: 'inline-flex', alignItems: 'center', gap: 3,
+                        marginTop: 4, padding: '1px 6px', borderRadius: '4px',
+                        background: '#FEF3C7', color: '#D97706', fontSize: '11px', fontWeight: 700,
+                      }}>
+                        ★ Unggulan
+                      </span>
+                    )}
                   </td>
 
                   {/* Speaker */}
@@ -868,6 +921,25 @@ export default function AdminWebinarsPage() {
                       >
                         <Users size={12} /> Peserta
                       </Link>
+
+                      {/* Featured Toggle */}
+                      <button
+                        title={w.isFeatured ? 'Hapus dari Unggulan (Landing Page)' : 'Tampilkan di Landing Page sebagai Unggulan'}
+                        onClick={() => featuredMutation.mutate({ id: w.id, isFeatured: !w.isFeatured })}
+                        disabled={featuredMutation.isPending}
+                        style={{
+                          display: 'flex', alignItems: 'center', gap: 4,
+                          padding: '5px 10px', borderRadius: 'var(--radius-md)',
+                          border: `1px solid ${w.isFeatured ? '#F59E0B' : '#e5e7eb'}`,
+                          background: w.isFeatured ? '#FEF3C7' : '#fff',
+                          fontSize: '12px', fontWeight: 600, cursor: 'pointer',
+                          color: w.isFeatured ? '#D97706' : '#374151',
+                          transition: 'all 0.15s',
+                          boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                        }}
+                      >
+                        {w.isFeatured ? '★ Unggulan' : '☆ Jadikan Unggulan'}
+                      </button>
 
                       <button
                         onClick={() => setDeleteTarget(w)}
