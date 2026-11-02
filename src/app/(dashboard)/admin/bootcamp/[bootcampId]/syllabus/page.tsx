@@ -457,12 +457,24 @@ function SortableSessionItem({ session, index, setDeleteTarget }: { session: Boo
         padding: 'var(--space-3) var(--space-4)',
         borderBottom: '1px solid var(--color-border-subtle)',
         background: isDragging ? 'var(--color-bg)' : 'transparent',
+        cursor: isDragging ? 'grabbing' : undefined,
         transition: 'background var(--transition-fast)'
       }}
       onMouseEnter={e => { if (!isDragging) e.currentTarget.style.background = 'var(--color-bg)' }}
       onMouseLeave={e => { if (!isDragging) e.currentTarget.style.background = 'transparent' }}
     >
-      <div {...attributes} {...listeners} style={{ cursor: 'grab', display: 'flex', padding: 4, borderRadius: 4 }}>
+      <div
+        {...attributes}
+        {...listeners}
+        className="syllabus-drag-handle"
+        style={{
+          cursor: isDragging ? 'grabbing' : 'grab',
+          display: 'flex',
+          padding: 4,
+          borderRadius: 4,
+          touchAction: 'none'
+        }}
+      >
         <GripVertical size={16} color="var(--color-text-tertiary)" style={{ flexShrink: 0 }} />
       </div>
       {index !== undefined && (
@@ -521,10 +533,21 @@ function SortableChapterItem({ chapter, bootcampId, setDeleteTarget, onAddSessio
   const sessionIds = useMemo(() => chapter.sessions.map((s: any) => `session-${s.id}`), [chapter.sessions])
 
   return (
-    <div ref={setNodeRef} style={{ ...style, background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-xl)', overflow: 'hidden', marginBottom: 'var(--space-4)', boxShadow: isDragging ? 'var(--shadow-xl)' : 'var(--shadow-sm)' }}>
+    <div ref={setNodeRef} style={{ ...style, background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-xl)', overflow: 'hidden', marginBottom: 'var(--space-4)', boxShadow: isDragging ? 'var(--shadow-xl)' : 'var(--shadow-sm)', cursor: isDragging ? 'grabbing' : undefined }}>
       {/* Chapter Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', padding: 'var(--space-4)', background: 'var(--color-bg)', borderBottom: expanded ? '1px solid var(--color-border)' : 'none' }}>
-        <div {...attributes} {...listeners} style={{ cursor: 'grab', display: 'flex', padding: 4, borderRadius: 4 }}>
+        <div
+          {...attributes}
+          {...listeners}
+          className="syllabus-drag-handle"
+          style={{
+            cursor: isDragging ? 'grabbing' : 'grab',
+            display: 'flex',
+            padding: 4,
+            borderRadius: 4,
+            touchAction: 'none'
+          }}
+        >
           <GripVertical size={18} color="var(--color-text-secondary)" />
         </div>
         <button onClick={() => setExpanded(v => !v)} style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', borderRadius: 6, width: 28, height: 28, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -586,6 +609,15 @@ export default function BootcampSyllabusPage() {
     queryFn: () => api.get(`/admin/bootcamps/${bootcampId}/chapters`).then(r => r.data.data ?? []),
   })
 
+  // Cleanup dragging class on unmount
+  useEffect(() => {
+    return () => {
+      if (typeof document !== 'undefined') {
+        document.body.classList.remove('is-syllabus-dragging')
+      }
+    }
+  }, [])
+
   // Sync server data to local state for fast UI optimistic updates
   useEffect(() => {
     if (chaptersData) {
@@ -619,11 +651,31 @@ export default function BootcampSyllabusPage() {
 
   // DnD Handlers
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(PointerSensor, { activationConstraint: { distance: 3 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   )
 
+  const [activeDragId, setActiveDragId] = useState<string | null>(null)
+
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveDragId(String(event.active.id))
+    if (typeof document !== 'undefined') {
+      document.body.classList.add('is-syllabus-dragging')
+    }
+  }
+
+  const handleDragCancel = () => {
+    setActiveDragId(null)
+    if (typeof document !== 'undefined') {
+      document.body.classList.remove('is-syllabus-dragging')
+    }
+  }
+
   const handleDragEnd = (event: DragEndEvent) => {
+    setActiveDragId(null)
+    if (typeof document !== 'undefined') {
+      document.body.classList.remove('is-syllabus-dragging')
+    }
     const { active, over } = event
     if (!over) return
 
@@ -674,6 +726,22 @@ export default function BootcampSyllabusPage() {
 
   return (
     <div style={{ paddingBottom: 'var(--space-20)' }}>
+      <style dangerouslySetInnerHTML={{__html: `
+        .syllabus-drag-handle {
+          cursor: grab !important;
+          user-select: none;
+          -webkit-user-select: none;
+        }
+        .syllabus-drag-handle:active {
+          cursor: grabbing !important;
+        }
+        body.is-syllabus-dragging,
+        body.is-syllabus-dragging * {
+          cursor: grabbing !important;
+          user-select: none !important;
+          -webkit-user-select: none !important;
+        }
+      `}} />
       <AdminPageHeader
         title="Kurikulum & Silabus"
         description={bootcamp?.title ?? 'Memuat...'}
@@ -702,7 +770,13 @@ export default function BootcampSyllabusPage() {
       {isLoading ? (
         <AdminTableSkeleton rows={5} cols={4} />
       ) : localChapters.length > 0 ? (
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+          onDragCancel={handleDragCancel}
+        >
           <SortableContext items={chapterIds} strategy={verticalListSortingStrategy}>
             {localChapters.map(chapter => (
               <SortableChapterItem key={`chapter-${chapter.id}`} chapter={chapter} bootcampId={bootcampId} setDeleteTarget={setDeleteTarget} onAddSession={setAddSessionToChapter} />

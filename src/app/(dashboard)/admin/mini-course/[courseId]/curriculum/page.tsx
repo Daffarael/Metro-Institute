@@ -378,6 +378,15 @@ export default function MiniCourseCurriculumPage() {
 
   return (
     <div>
+      <style dangerouslySetInnerHTML={{__html: `
+        .syllabus-drag-handle {
+          cursor: grab !important;
+          user-select: none;
+        }
+        .syllabus-drag-handle:active {
+          cursor: grabbing !important;
+        }
+      `}} />
       <AdminPageHeader
         title="Kelola Kurikulum"
         description={course?.title}
@@ -415,7 +424,7 @@ export default function MiniCourseCurriculumPage() {
                   onMouseEnter={e => (e.currentTarget.style.background = 'var(--color-bg)')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
-                  <GripVertical size={16} color="var(--color-text-tertiary)" style={{ cursor: 'grab', flexShrink: 0 }} />
+                  <GripVertical size={16} color="var(--color-text-tertiary)" className="syllabus-drag-handle" style={{ cursor: 'grab', flexShrink: 0 }} />
                   <span style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-tertiary)', width: 24, textAlign: 'center', fontWeight: 700 }}>{i + 1}</span>
                   <span style={{ flex: 1, fontSize: 'var(--text-sm)', fontWeight: 500 }}>{s.title}</span>
                   <span style={{ padding: '3px 10px', borderRadius: 'var(--radius-full)', background: tc.bg, color: tc.color, border: tc.border || '1px solid var(--color-border)', fontSize: '11px', fontWeight: 700 }}>{s.type}</span>
