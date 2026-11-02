@@ -6,7 +6,7 @@ import { BookOpen, Calendar, MapPin } from 'lucide-react'
 import { motion } from 'motion/react'
 import api from '@/lib/axios'
 import { useAuthStore } from '@/stores/auth.store'
-import { FIELD_LABELS, BADGE_LABELS, formatDate, getInitials } from '@/lib/utils'
+import { BADGE_LABELS, formatDate, getInitials } from '@/lib/utils'
 import Link from 'next/link'
 import { ROUTES } from '@/lib/utils'
 
@@ -65,7 +65,6 @@ export default function ProfilePage() {
 
             <div style={{ display: 'flex', gap: 'var(--space-4)', flexWrap: 'wrap', fontSize: 'var(--text-xs)', color: 'var(--color-text-tertiary)' }}>
               {profile.institution && <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><MapPin size={11} /> {profile.institution}</span>}
-              {profile.selectedField && <span style={{ color: 'var(--color-primary)', fontWeight: 500 }}>{FIELD_LABELS[profile.selectedField]}</span>}
               <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}><Calendar size={11} /> Bergabung {formatDate(profile.createdAt)}</span>
             </div>
 
