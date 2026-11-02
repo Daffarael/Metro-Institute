@@ -16,6 +16,7 @@ import {
   X,
   Sparkles
 } from 'lucide-react'
+import { motion } from 'motion/react'
 import MarkdownText from './MarkdownText'
 
 // ─── Katalog Emoji Sopan & Profesional ────────────────────────────
@@ -147,6 +148,12 @@ export interface MarkdownTextareaProps {
   id?: string
 }
 
+
+const EDITOR_TABS = [
+  { id: 'write', label: 'Tulis', icon: <Edit3 size={12} strokeWidth={2.5} /> },
+  { id: 'preview', label: 'Pratinjau', icon: <Eye size={12} strokeWidth={2.5} /> },
+] as const
+
 export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextareaProps>(
   (
     {
@@ -174,6 +181,20 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
     const [isEmojiOpen, setIsEmojiOpen] = useState(false)
     const [emojiSearch, setEmojiSearch] = useState('')
     const [selectedCategory, setSelectedCategory] = useState('popular')
+
+    // Sliding pill animation untuk tab switcher (mirip Riwayat Transaksi Mentee)
+    const tabBtnRefs = useRef<(HTMLButtonElement | null)[]>([])
+    const [tabPill, setTabPill] = useState({ left: 0, width: 0 })
+    const [tabReady, setTabReady] = useState(false)
+
+    useEffect(() => {
+      const idx = EDITOR_TABS.findIndex((t) => t.id === activeTab)
+      const el = tabBtnRefs.current[idx === -1 ? 0 : idx]
+      if (el) {
+        setTabPill({ left: el.offsetLeft, width: el.offsetWidth })
+        setTabReady(true)
+      }
+    }, [activeTab])
 
     const textareaRef = useRef<HTMLTextAreaElement>(null)
     const emojiPopoverRef = useRef<HTMLDivElement>(null)
@@ -551,66 +572,71 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
             </button>
           </div>
 
-          {/* Switcher Tab: Tulis vs Pratinjau */}
+          {/* Switcher Tab: Tulis vs Pratinjau dengan Animasi Sliding Pill (Persis Riwayat Transaksi Mentee) */}
           <div
             style={{
-              display: 'flex',
-              background: 'rgba(0, 0, 0, 0.05)',
-              padding: 2,
-              borderRadius: 7,
-              gap: 2,
+              position: 'relative',
+              display: 'inline-flex',
+              alignItems: 'center',
+              background: 'var(--color-bg, #f1f5f9)',
+              border: '1px solid var(--color-border, #e2e8f0)',
+              borderRadius: 9999,
+              padding: 3,
             }}
           >
-            <button
-              type="button"
-              onClick={() => {
-                setActiveTab('write')
-                setIsEmojiOpen(false)
-              }}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 5,
-                padding: '4px 10px',
-                borderRadius: 5,
-                fontSize: '11.5px',
-                fontWeight: 600,
-                border: 'none',
-                cursor: 'pointer',
-                background: activeTab === 'write' ? '#ffffff' : 'transparent',
-                color: activeTab === 'write' ? 'var(--color-primary, #018556)' : 'var(--color-text-tertiary, #64748b)',
-                boxShadow: activeTab === 'write' ? '0 1px 2px rgba(0,0,0,0.06)' : 'none',
-                transition: 'all 0.15s ease',
-              }}
-            >
-              <Edit3 size={12} />
-              Tulis
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setActiveTab('preview')
-                setIsEmojiOpen(false)
-              }}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 5,
-                padding: '4px 10px',
-                borderRadius: 5,
-                fontSize: '11.5px',
-                fontWeight: 600,
-                border: 'none',
-                cursor: 'pointer',
-                background: activeTab === 'preview' ? '#ffffff' : 'transparent',
-                color: activeTab === 'preview' ? 'var(--color-primary, #018556)' : 'var(--color-text-tertiary, #64748b)',
-                boxShadow: activeTab === 'preview' ? '0 1px 2px rgba(0,0,0,0.06)' : 'none',
-                transition: 'all 0.15s ease',
-              }}
-            >
-              <Eye size={12} />
-              Pratinjau
-            </button>
+            {/* Sliding Pill Indicator */}
+            {tabReady && (
+              <motion.div
+                animate={{ left: tabPill.left, width: tabPill.width }}
+                transition={{ type: 'spring', bounce: 0.25, duration: 0.5 }}
+                style={{
+                  position: 'absolute',
+                  top: 3,
+                  bottom: 3,
+                  background: 'var(--color-surface, #ffffff)',
+                  boxShadow: 'var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.08))',
+                  borderRadius: 9999,
+                  border: '1px solid var(--color-border, #e2e8f0)',
+                  zIndex: 0,
+                  pointerEvents: 'none',
+                }}
+              />
+            )}
+
+            {EDITOR_TABS.map((tab, i) => {
+              const isActive = activeTab === tab.id
+              return (
+                <button
+                  key={tab.id}
+                  ref={(el) => { tabBtnRefs.current[i] = el }}
+                  type="button"
+                  onClick={() => {
+                    setActiveTab(tab.id as 'write' | 'preview')
+                    setIsEmojiOpen(false)
+                  }}
+                  style={{
+                    position: 'relative',
+                    zIndex: 1,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 5,
+                    padding: '4px 11px',
+                    border: 'none',
+                    background: 'transparent',
+                    borderRadius: 9999,
+                    cursor: 'pointer',
+                    fontSize: '11.5px',
+                    fontWeight: isActive ? 600 : 500,
+                    color: isActive ? 'var(--color-primary, #018556)' : 'var(--color-text-secondary, #64748b)',
+                    transition: 'color 0.2s ease',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {tab.icon}
+                  <span>{tab.label}</span>
+                </button>
+              )
+            })}
           </div>
         </div>
 
