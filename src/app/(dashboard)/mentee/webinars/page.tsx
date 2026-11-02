@@ -291,7 +291,7 @@ function WebinarCard({
   const scheduledTime = new Date(webinar.scheduledAt).getTime()
   const isEnded = Boolean(webinar.isEnded) || (scheduledTime + 24 * 60 * 60 * 1000 < Date.now())
   const isFull = Boolean(webinar.quota && (webinar._count?.registrations || 0) >= webinar.quota)
-  const isRegistrationClosed = webinar.status === 'CLOSED' || webinar.status === 'COMPLETED' || isEnded || isFull || Date.now() >= scheduledTime
+  const isRegistrationClosed = webinar.status === 'CLOSED' || webinar.status === 'COMPLETED' || isEnded || isFull || Date.now() >= (scheduledTime - 2 * 60 * 60 * 1000)
 
   return (
     <Link

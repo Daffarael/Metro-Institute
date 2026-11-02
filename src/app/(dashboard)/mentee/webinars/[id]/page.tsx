@@ -394,8 +394,9 @@ export default function MenteeWebinarDetailPage() {
   // ATAU fallback pengaman 24 jam setelah waktu jadwal
   const isEnded = Boolean(webinar.isEnded) || webinar.liveStatus === 'ENDED' || currentTime > (scheduledStart.getTime() + 24 * 60 * 60 * 1000)
 
-  // Pendaftaran dibuka hingga jadwal sesi dimulai (atau sesi diakhiri admin / kuota penuh)
-  const isRegistrationClosed = isEnded || currentTime >= scheduledStart.getTime()
+  // Batas pendaftaran H-2 jam sebelum acara dimulai
+  const registrationDeadline = new Date(scheduledStart.getTime() - 2 * 60 * 60 * 1000)
+  const isRegistrationClosed = isEnded || currentTime >= registrationDeadline.getTime()
 
   const isUpcoming = !isEnded && currentTime < openTime.getTime()
 
@@ -884,6 +885,12 @@ export default function MenteeWebinarDetailPage() {
                   >
 
                     <Lock size={16} strokeWidth={2} /> Pendaftaran Ditutup
+
+                  </div>
+
+                  <div style={{ textAlign: 'center', marginTop: 6, fontSize: '11.5px', color: 'var(--color-text-tertiary)' }}>
+
+                    Batas pendaftaran H-2 jam sebelum acara telah berakhir.
 
                   </div>
 
