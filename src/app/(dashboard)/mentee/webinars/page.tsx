@@ -226,7 +226,7 @@ function WebinarCard({
       >
         {/* Thumbnail Area - 150px height matching Bootcamp & Mini Course */}
         <div style={{
-          height: 150,
+          aspectRatio: '16/9',
           background: 'var(--color-bg)',
           borderRadius: '12px 12px 0 0',
           borderBottom: '1px solid var(--color-border-subtle)',

@@ -286,7 +286,7 @@ function BootcampCard({ bootcamp }: { bootcamp: Bootcamp }) {
 
         {/* Thumbnail */}
         <div style={{
-          height: 150, background: 'var(--color-bg)',
+          aspectRatio: '16/9', background: 'var(--color-bg)',
           borderRadius: '12px 12px 0 0',
           borderBottom: '1px solid var(--color-border-subtle)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
