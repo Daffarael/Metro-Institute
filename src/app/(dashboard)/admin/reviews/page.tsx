@@ -178,7 +178,15 @@ export default function AdminReviewsPage() {
                           </td>
                           <td style={{ padding: 'var(--space-3) var(--space-4)', color: 'var(--color-text-secondary)', fontSize: '12px', whiteSpace: 'nowrap' }}>{formatDate(r.createdAt)}</td>
                           <td style={{ padding: 'var(--space-3) var(--space-4)' }}>
-                            <span style={{ padding: '2px 10px', borderRadius: 'var(--radius-full)', fontSize: '11px', fontWeight: 600, background: isVisible ? '#ECFDF5' : '#F3F4F6', color: isVisible ? 'var(--color-primary)' : '#6B7280' }}>
+                            <span style={{
+                              padding: '3px 10px',
+                              borderRadius: 'var(--radius-full)',
+                              fontSize: '11px',
+                              fontWeight: 700,
+                              background: isVisible ? 'var(--color-primary)' : '#4B5563',
+                              color: '#ffffff',
+                              boxShadow: isVisible ? '0 1px 2px rgba(1, 133, 86, 0.25)' : 'none'
+                            }}>
                               {isVisible ? 'Ditampilkan' : 'Disembunyikan'}
                             </span>
                           </td>
