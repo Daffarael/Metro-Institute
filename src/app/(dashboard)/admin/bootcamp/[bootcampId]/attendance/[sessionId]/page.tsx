@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
 import {
-  Users, CheckCircle2, XCircle, Clock, ShieldCheck, Search,
+  Users, CheckCircle2, Clock, Search,
   Filter, ArrowLeft, RefreshCw, Edit3, X, Video, AlertCircle,
-  ExternalLink, Check, Upload, FileText, Loader2, FileSpreadsheet
+  ExternalLink, Upload, FileText, Loader2, FileSpreadsheet
 } from 'lucide-react'
 import api from '@/lib/axios'
 import AdminPageHeader from '@/components/admin/AdminPageHeader'
@@ -206,22 +206,20 @@ export default function SessionAttendancePage() {
     })
   }
 
-  const filteredAttendees = useMemo(() => {
-    if (!data?.attendees) return []
-    return data.attendees.filter(a => {
-      const matchSearch =
-        a.name.toLowerCase().includes(search.toLowerCase()) ||
-        a.email.toLowerCase().includes(search.toLowerCase())
+  const attendees = data?.attendees ?? []
+  const filteredAttendees = attendees.filter(a => {
+    const matchSearch =
+      a.name.toLowerCase().includes(search.toLowerCase()) ||
+      a.email.toLowerCase().includes(search.toLowerCase())
 
-      if (!matchSearch) return false
+    if (!matchSearch) return false
 
-      if (statusFilter === 'ALL') return true
-      if (statusFilter === 'PRESENT') return a.status === 'PRESENT' || a.status === 'MANUAL'
-      if (statusFilter === 'EXCUSED') return a.status === 'EXCUSED'
-      if (statusFilter === 'ABSENT') return a.status === 'ABSENT' || a.status === 'UNRECORDED'
-      return true
-    })
-  }, [data?.attendees, search, statusFilter])
+    if (statusFilter === 'ALL') return true
+    if (statusFilter === 'PRESENT') return a.status === 'PRESENT' || a.status === 'MANUAL'
+    if (statusFilter === 'EXCUSED') return a.status === 'EXCUSED'
+    if (statusFilter === 'ABSENT') return a.status === 'ABSENT' || a.status === 'UNRECORDED'
+    return true
+  })
 
   const formatDateTime = (iso?: string | null) => {
     if (!iso) return '-'
@@ -289,7 +287,6 @@ export default function SessionAttendancePage() {
           { label: session.bootcampTitle || 'Detail Bootcamp', href: `/admin/bootcamp/${params.bootcampId}/schedules` },
           { label: 'Presensi Google Meet' },
         ]}
-        description={`Sistem presensi 100% otomatis via Google Workspace Meet API. Minimal hadir ${session.thresholdPct}% (${session.minRequiredMinutes} dari ${session.durationMinutes} menit).`}
         action={
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
             <button
@@ -300,16 +297,16 @@ export default function SessionAttendancePage() {
                 gap: 6,
                 padding: '8px 16px',
                 borderRadius: 'var(--radius-md)',
-                border: '1.5px solid #018556',
-                background: '#f0fdf4',
-                color: '#018556',
+                border: '1px solid var(--color-border)',
+                background: '#ffffff',
+                color: 'var(--color-text-primary)',
                 fontSize: '13px',
-                fontWeight: 700,
+                fontWeight: 600,
                 cursor: 'pointer',
                 transition: 'all 0.15s ease',
               }}
             >
-              <Upload size={14} /> Upload CSV Presensi
+              <Upload size={14} /> Upload CSV
             </button>
             <button
               onClick={() => refetch()}
@@ -321,15 +318,15 @@ export default function SessionAttendancePage() {
                 padding: '8px 16px',
                 borderRadius: 'var(--radius-md)',
                 border: '1px solid var(--color-border)',
-                background: 'var(--color-surface)',
-                color: 'var(--color-text-secondary)',
+                background: '#ffffff',
+                color: 'var(--color-text-primary)',
                 fontSize: '13px',
                 fontWeight: 600,
                 cursor: 'pointer',
                 transition: 'all 0.15s ease',
               }}
             >
-              <RefreshCw size={14} className={isFetching ? 'animate-spin' : ''} /> Refresh Data
+              <RefreshCw size={14} className={isFetching ? 'animate-spin' : ''} /> Refresh
             </button>
             {session.liveUrl && (
               <a
@@ -357,179 +354,84 @@ export default function SessionAttendancePage() {
         }
       />
 
-      {/* ── Google Workspace Integration Banner ────────────────── */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: 12,
-          padding: '14px 20px',
-          background: 'linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%)',
-          border: '1px solid #bbf7d0',
-          borderRadius: 'var(--radius-xl)',
-          marginBottom: 24,
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div
-            style={{
-              width: 36,
-              height: 36,
-              borderRadius: '50%',
-              background: '#22c55e',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#fff',
-              flexShrink: 0,
-            }}
-          >
-            <Check size={18} />
-          </div>
-          <div>
-            <div style={{ fontSize: '14px', fontWeight: 700, color: '#166534' }}>
-              Google Meet Attendance Tracking Aktif
-            </div>
-            <div style={{ fontSize: '12.5px', color: '#15803d' }}>
-              Data kehadiran dikirim otomatis oleh server Google saat meeting selesai. Tanpa perlu rekap manual atau upload CSV.
-            </div>
-          </div>
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              padding: '4px 10px',
-              borderRadius: 20,
-              background: '#dcfce7',
-              border: '1px solid #86efac',
-              fontSize: '12px',
-              fontWeight: 700,
-              color: '#166534',
-            }}
-          >
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e', display: 'inline-block' }} />
-            REAL-TIME SYNC
-          </span>
-        </div>
-      </div>
-
-      {/* ── KPI Stat Cards ─────────────────────────────────────── */}
+      {/* ── KPI Stat Cards (Clean Solid Modern) ───────────────── */}
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-          gap: 16,
-          marginBottom: 24,
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          gap: 14,
+          marginBottom: 20,
         }}
       >
         {/* Card 1: Total Enrolled */}
         <div
           style={{
-            background: 'var(--color-surface)',
+            background: '#ffffff',
             border: '1px solid var(--color-border)',
-            borderRadius: 'var(--radius-xl)',
-            padding: '18px 20px',
-            boxShadow: 'var(--shadow-sm)',
+            borderRadius: 14,
+            padding: '16px 20px',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-            <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-secondary)' }}>
-              Total Terdaftar
-            </span>
-            <Users size={18} color="var(--color-text-tertiary)" />
+          <div style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: 6 }}>
+            Total Mentee
           </div>
-          <div style={{ fontSize: '24px', fontWeight: 800, color: 'var(--color-text-primary)' }}>
-            {summary.totalEnrolled} <span style={{ fontSize: '14px', fontWeight: 500, color: 'var(--color-text-secondary)' }}>Mentee</span>
-          </div>
-          <div style={{ fontSize: '12px', color: 'var(--color-text-tertiary)', marginTop: 4 }}>
-            Terdaftar di batch ini
+          <div style={{ fontSize: '26px', fontWeight: 800, color: 'var(--color-text-primary)' }}>
+            {summary.totalEnrolled}
           </div>
         </div>
 
-        {/* Card 2: Hadir (>= 80%) */}
+        {/* Card 2: Hadir */}
         <div
           style={{
-            background: 'var(--color-surface)',
-            border: '1px solid #bbf7d0',
-            borderRadius: 'var(--radius-xl)',
-            padding: '18px 20px',
-            boxShadow: 'var(--shadow-sm)',
+            background: '#ffffff',
+            border: '1px solid var(--color-border)',
+            borderRadius: 14,
+            padding: '16px 20px',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-            <span style={{ fontSize: '13px', fontWeight: 600, color: '#166534' }}>
-              Hadir (≥ {session.minRequiredMinutes} mnt)
-            </span>
-            <CheckCircle2 size={18} color="#22c55e" />
+          <div style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: 6 }}>
+            Hadir
           </div>
-          <div style={{ fontSize: '24px', fontWeight: 800, color: '#166534' }}>
-            {summary.countPresent}{' '}
-            <span style={{ fontSize: '13.5px', fontWeight: 600, color: '#15803d' }}>
-              ({summary.totalEnrolled > 0 ? Math.round((summary.countPresent / summary.totalEnrolled) * 100) : 0}%)
-            </span>
-          </div>
-          <div style={{ fontSize: '12px', color: '#16a34a', marginTop: 4 }}>
-            Memenuhi syarat kehadiran sesi
+          <div style={{ fontSize: '26px', fontWeight: 800, color: '#018556' }}>
+            {summary.countPresent}
           </div>
         </div>
 
-        {/* Card 3: Tidak Hadir (< 80%) */}
+        {/* Card 3: Tidak Hadir */}
         <div
           style={{
-            background: 'var(--color-surface)',
-            border: '1px solid #fecdd3',
-            borderRadius: 'var(--radius-xl)',
-            padding: '18px 20px',
-            boxShadow: 'var(--shadow-sm)',
+            background: '#ffffff',
+            border: '1px solid var(--color-border)',
+            borderRadius: 14,
+            padding: '16px 20px',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-            <span style={{ fontSize: '13px', fontWeight: 600, color: '#9f1239' }}>
-              Tidak Hadir (&lt; {session.minRequiredMinutes} mnt)
-            </span>
-            <XCircle size={18} color="#f43f5e" />
+          <div style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: 6 }}>
+            Tidak Hadir
           </div>
-          <div style={{ fontSize: '24px', fontWeight: 800, color: '#9f1239' }}>
-            {summary.countAbsent}{' '}
-            <span style={{ fontSize: '13.5px', fontWeight: 600, color: '#be123c' }}>
-              ({summary.totalEnrolled > 0 ? Math.round((summary.countAbsent / summary.totalEnrolled) * 100) : 0}%)
-            </span>
-          </div>
-          <div style={{ fontSize: '12px', color: '#e11d48', marginTop: 4 }}>
-            Durasi kurang dari ambang batas
+          <div style={{ fontSize: '26px', fontWeight: 800, color: '#dc2626' }}>
+            {summary.countAbsent}
           </div>
         </div>
 
-        {/* Card 4: Izin Disetujui */}
+        {/* Card 4: Izin */}
         <div
           style={{
-            background: 'var(--color-surface)',
-            border: '1px solid #bfdbfe',
-            borderRadius: 'var(--radius-xl)',
-            padding: '18px 20px',
-            boxShadow: 'var(--shadow-sm)',
+            background: '#ffffff',
+            border: '1px solid var(--color-border)',
+            borderRadius: 14,
+            padding: '16px 20px',
+            boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-            <span style={{ fontSize: '13px', fontWeight: 600, color: '#1e40af' }}>
-              Izin Disetujui
-            </span>
-            <ShieldCheck size={18} color="#3b82f6" />
+          <div style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--color-text-secondary)', marginBottom: 6 }}>
+            Izin
           </div>
-          <div style={{ fontSize: '24px', fontWeight: 800, color: '#1e40af' }}>
-            {summary.countExcused}{' '}
-            <span style={{ fontSize: '13.5px', fontWeight: 600, color: '#2563eb' }}>
-              ({summary.totalEnrolled > 0 ? Math.round((summary.countExcused / summary.totalEnrolled) * 100) : 0}%)
-            </span>
-          </div>
-          <div style={{ fontSize: '12px', color: '#3b82f6', marginTop: 4 }}>
-            Override manual oleh admin
+          <div style={{ fontSize: '26px', fontWeight: 800, color: '#2563eb' }}>
+            {summary.countExcused}
           </div>
         </div>
       </div>
@@ -539,9 +441,9 @@ export default function SessionAttendancePage() {
         style={{
           background: 'var(--color-surface)',
           border: '1px solid var(--color-border)',
-          borderRadius: 'var(--radius-xl)',
-          padding: '16px 20px',
-          boxShadow: 'var(--shadow-sm)',
+          borderRadius: 14,
+          padding: '12px 16px',
+          boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
           marginBottom: 16,
           display: 'flex',
           alignItems: 'center',
@@ -551,12 +453,12 @@ export default function SessionAttendancePage() {
         }}
       >
         {/* Search */}
-        <div style={{ position: 'relative', flex: '1 1 280px', maxWidth: 420 }}>
+        <div style={{ position: 'relative', flex: '1 1 260px', maxWidth: 380 }}>
           <Search
-            size={16}
+            size={15}
             style={{
               position: 'absolute',
-              left: 14,
+              left: 12,
               top: '50%',
               transform: 'translateY(-50%)',
               color: 'var(--color-text-tertiary)',
@@ -569,12 +471,12 @@ export default function SessionAttendancePage() {
             onChange={(e) => setSearch(e.target.value)}
             style={{
               width: '100%',
-              padding: '9px 14px 9px 38px',
+              padding: '8px 12px 8px 34px',
               borderRadius: 'var(--radius-md)',
               border: '1px solid var(--color-border)',
               background: 'var(--color-bg)',
               color: 'var(--color-text-primary)',
-              fontSize: '13.5px',
+              fontSize: '13px',
               outline: 'none',
               transition: 'border-color 0.15s ease',
             }}
@@ -594,12 +496,12 @@ export default function SessionAttendancePage() {
               onClick={() => setStatusFilter(tab.id as any)}
               style={{
                 padding: '6px 14px',
-                borderRadius: 'var(--radius-full)',
+                borderRadius: 'var(--radius-md)',
                 fontSize: '12.5px',
                 fontWeight: 600,
                 border: statusFilter === tab.id ? '1px solid var(--color-primary)' : '1px solid var(--color-border)',
-                background: statusFilter === tab.id ? 'var(--color-primary)' : 'transparent',
-                color: statusFilter === tab.id ? '#fff' : 'var(--color-text-secondary)',
+                background: statusFilter === tab.id ? 'var(--color-primary)' : '#ffffff',
+                color: statusFilter === tab.id ? '#ffffff' : 'var(--color-text-secondary)',
                 cursor: 'pointer',
                 transition: 'all 0.15s ease',
               }}
@@ -756,62 +658,24 @@ export default function SessionAttendancePage() {
 
                       {/* Status Badge */}
                       <td style={{ padding: '14px 16px' }}>
-                        {isPresent ? (
-                          <span
-                            style={{
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: 5,
-                              padding: '4px 10px',
-                              borderRadius: 'var(--radius-full)',
-                              background: '#f0fdf4',
-                              border: '1px solid #bbf7d0',
-                              color: '#166534',
-                              fontSize: '12px',
-                              fontWeight: 700,
-                            }}
-                          >
-                            <CheckCircle2 size={13} color="#22c55e" /> Hadir
-                          </span>
-                        ) : isExcused ? (
-                          <span
-                            style={{
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: 5,
-                              padding: '4px 10px',
-                              borderRadius: 'var(--radius-full)',
-                              background: '#eff6ff',
-                              border: '1px solid #bfdbfe',
-                              color: '#1e40af',
-                              fontSize: '12px',
-                              fontWeight: 700,
-                            }}
-                          >
-                            <ShieldCheck size={13} color="#3b82f6" /> Izin Disetujui
-                          </span>
-                        ) : (
-                          <span
-                            style={{
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: 5,
-                              padding: '4px 10px',
-                              borderRadius: 'var(--radius-full)',
-                              background: '#fff1f2',
-                              border: '1px solid #fecdd3',
-                              color: '#9f1239',
-                              fontSize: '12px',
-                              fontWeight: 700,
-                            }}
-                          >
-                            <XCircle size={13} color="#f43f5e" /> Tidak Hadir
-                          </span>
-                        )}
+                        <span
+                          style={{
+                            display: 'inline-block',
+                            padding: '4px 10px',
+                            borderRadius: 6,
+                            background: isPresent ? '#018556' : isExcused ? '#2563eb' : '#dc2626',
+                            color: '#ffffff',
+                            fontSize: '12px',
+                            fontWeight: 600,
+                            letterSpacing: '0.01em',
+                          }}
+                        >
+                          {isPresent ? 'Hadir' : isExcused ? 'Izin' : 'Tidak Hadir'}
+                        </span>
 
                         {attendee.markedByAdmin && (
                           <div style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 4 }}>
-                            Override Admin {attendee.adminNotes ? `(${attendee.adminNotes})` : ''}
+                            Manual Admin {attendee.adminNotes ? `(${attendee.adminNotes})` : ''}
                           </div>
                         )}
                       </td>
@@ -1075,9 +939,9 @@ export default function SessionAttendancePage() {
                 </label>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
                   {[
-                    { id: 'PRESENT', label: 'Hadir', desc: 'Lulus sesi', border: '#bbf7d0', activeBg: '#f0fdf4', color: '#166534' },
-                    { id: 'EXCUSED', label: 'Izin', desc: 'Disetujui', border: '#bfdbfe', activeBg: '#eff6ff', color: '#1e40af' },
-                    { id: 'ABSENT', label: 'Tidak Hadir', desc: 'Gagal', border: '#fecdd3', activeBg: '#fff1f2', color: '#9f1239' },
+                    { id: 'PRESENT', label: 'Hadir', activeBg: '#018556' },
+                    { id: 'EXCUSED', label: 'Izin', activeBg: '#2563eb' },
+                    { id: 'ABSENT', label: 'Tidak Hadir', activeBg: '#dc2626' },
                   ].map((s) => (
                     <button
                       key={s.id}
@@ -1085,17 +949,18 @@ export default function SessionAttendancePage() {
                       onClick={() => setOverrideStatus(s.id as any)}
                       style={{
                         padding: '10px 8px',
-                        borderRadius: 'var(--radius-lg)',
-                        border: overrideStatus === s.id ? `2px solid ${s.color}` : '1px solid var(--color-border)',
-                        background: overrideStatus === s.id ? s.activeBg : 'var(--color-bg)',
-                        color: overrideStatus === s.id ? s.color : 'var(--color-text-secondary)',
+                        borderRadius: 'var(--radius-md)',
+                        border: overrideStatus === s.id ? '1px solid transparent' : '1px solid var(--color-border)',
+                        background: overrideStatus === s.id ? s.activeBg : '#ffffff',
+                        color: overrideStatus === s.id ? '#ffffff' : 'var(--color-text-primary)',
                         textAlign: 'center',
                         cursor: 'pointer',
+                        fontWeight: 600,
+                        fontSize: '13px',
                         transition: 'all 0.15s ease',
                       }}
                     >
-                      <div style={{ fontWeight: 700, fontSize: '13px' }}>{s.label}</div>
-                      <div style={{ fontSize: '11px', opacity: 0.8 }}>{s.desc}</div>
+                      {s.label}
                     </button>
                   ))}
                 </div>

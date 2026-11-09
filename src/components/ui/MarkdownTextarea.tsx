@@ -892,7 +892,6 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
               Klik tombol di atas atau ketik langsung simbol <code>**teks tebal**</code>, <code>*teks miring*</code>, dan emoji.
             </span>
           </div>
-          <span style={{ fontSize: '11px', color: '#94a3b8' }}>{currentValue.length} karakter</span>
         </div>
       </div>
     )
