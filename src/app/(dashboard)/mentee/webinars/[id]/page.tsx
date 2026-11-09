@@ -13,16 +13,12 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 
 import {
-
   Calendar, Clock, Users, Video, ChevronRight, CheckCircle2,
-
-  ExternalLink, PlayCircle, Lock, Zap, Share2, X, Award, Play
-
+  PlayCircle, Lock, Zap, X, Award, Play
 } from 'lucide-react'
 
 import api from '@/lib/axios'
-
-import { ROUTES, formatDate, formatRupiah, FIELD_LABELS, ensureAbsoluteUrl } from '@/lib/utils'
+import { ROUTES, formatDate, formatRupiah, ensureAbsoluteUrl } from '@/lib/utils'
 
 import { toast } from 'sonner'
 
@@ -2119,7 +2115,7 @@ export default function MenteeWebinarDetailPage() {
 
               <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: '0 0 16px 0' }}>
 
-                Kamu akan mendaftar ke webinar <strong>"{webinar.title}"</strong> tanpa dipungut biaya. Akses ruang sesi akan langsung tercatat di akunmu.
+                Kamu akan mendaftar ke webinar <strong>&ldquo;{webinar.title}&rdquo;</strong> tanpa dipungut biaya. Akses ruang sesi akan langsung tercatat di akunmu.
 
               </p>
 

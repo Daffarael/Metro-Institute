@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { useQuery } from '@tanstack/react-query'
-import { PlaySquare, Flame, CheckCircle2, Circle, ArrowRight, Calendar, PlayCircle, Clock, Trophy, ChevronRight, ChevronLeft, Search, Zap, Code, Layout, Smartphone, Star, MessageCircle, GraduationCap } from 'lucide-react'
+import { PlaySquare, Flame, CheckCircle2, Circle, ArrowRight, ChevronRight, ChevronLeft, MessageCircle, GraduationCap } from 'lucide-react'
 import api from '@/lib/axios'
 import { useAuthStore } from '@/stores/auth.store'
 import { ROUTES, formatRupiah, formatDate, BADGE_LABELS } from '@/lib/utils'
@@ -48,6 +48,7 @@ const BADGE_XP: Record<string, number> = {
 
 export default function BasecampPage() {
   const { user } = useAuthStore()
+  const [nowMs] = useState(() => Date.now())
   const activeCoursesRef = useRef<HTMLDivElement>(null)
   const [canScrollLeft, setCanScrollLeft] = useState(false)
   const [canScrollRight, setCanScrollRight] = useState(false)
@@ -369,10 +370,10 @@ export default function BasecampPage() {
                   gap: 'var(--space-4)',
                   overflowX: 'auto',
                   padding: 'var(--space-4) var(--space-5)',
-                  cursor: isDownRef.current ? 'grabbing' : 'grab',
+                  cursor: 'grab',
                   userSelect: 'none',
                   WebkitOverflowScrolling: 'touch',
-                  scrollBehavior: isDownRef.current ? 'auto' : 'smooth',
+                  scrollBehavior: 'smooth',
                 }}
               >
                 {data.activeCourses.map((course) => (
@@ -427,7 +428,6 @@ export default function BasecampPage() {
               </div>
               <div style={{ padding: 'var(--space-4) var(--space-5)', display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
                 {data.upcomingLive.map((live) => {
-                  const nowMs = Date.now()
                   const schedMs = new Date(live.scheduledAt).getTime()
                   const isSoon = schedMs - nowMs < 15 * 60 * 1000 && nowMs <= schedMs + 90 * 60 * 1000
                   const isEnded = nowMs > schedMs + 90 * 60 * 1000

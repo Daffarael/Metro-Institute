@@ -3,7 +3,7 @@
 import MarkdownText from '@/components/ui/MarkdownText'
 
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { motion } from 'motion/react'
 import Link from 'next/link'
@@ -77,7 +77,6 @@ interface QuizQuestion {
 
 export default function BootcampLearningPlayerPage() {
   const { id: bootcampId, sessionId } = useParams<{ id: string; sessionId: string }>()
-  const router = useRouter()
   const queryClient = useQueryClient()
   const [activeTab, setActiveTab] = useState<'overview' | 'notes' | 'qna'>('overview')
   const [playedSeconds, setPlayedSeconds] = useState(0)
@@ -88,7 +87,6 @@ export default function BootcampLearningPlayerPage() {
   const [note, setNote] = useState('')
   const [qnaMessage, setQnaMessage] = useState('')
   const [assignmentLink, setAssignmentLink] = useState('')
-  const playerRef = useRef<unknown>(null)
   const completeTriggerRef = useRef(false)
   const [mounted, setMounted] = useState(false)
 
@@ -256,7 +254,7 @@ export default function BootcampLearningPlayerPage() {
       completeTriggerRef.current = true
       completeMutation.mutate()
     }
-  }, [isCompleted, data])
+  }, [isCompleted, data, completeMutation])
 
   if (isLoading || !mounted) {
     return (
