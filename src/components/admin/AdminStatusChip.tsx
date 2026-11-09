@@ -10,8 +10,9 @@ const STATUS_MAP: Record<string, ChipStyle> = {
   PUBLISHED:      { color: '#018556', label: 'Tayang' }, // Metro Green
   OPEN:           { color: '#018556', label: 'Pendaftaran Dibuka' }, // Green
   CLOSED:         { color: '#DC2626', label: 'Pendaftaran Ditutup' }, // Deep Red
-  ONGOING:        { color: '#DC2626', label: 'Pendaftaran Ditutup' }, // Closed
-  COMPLETED:      { color: '#1F2937', label: 'Selesai' }, // Deep Slate
+  ONGOING:        { color: '#2563EB', label: 'Sedang Berlangsung' }, // Blue
+  COMPLETED:      { color: '#475569', label: 'Berakhir' }, // Deep Slate/Gray
+  ENDED:          { color: '#475569', label: 'Berakhir' },
   // RegistrationStatus
   ACTIVE:         { color: '#018556', label: 'Aktif' },
   INACTIVE:       { color: '#DC2626', label: 'Nonaktif' },

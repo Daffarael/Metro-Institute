@@ -166,8 +166,9 @@ export default function BootcampListPage() {
 // Hanging Signboard Component - Compact, Mirip desain & animasi 'Gratis' di Landing Page Ebook
 function HangingSignboard({ status }: { status: string }) {
   const isOpen = status === 'OPEN'
+  const isCompleted = status === 'COMPLETED'
+  const isOngoing = status === 'ONGOING'
 
-  // Hanya ada 2 status: Pendaftaran Dibuka & Pendaftaran Ditutup
   const config = isOpen
     ? {
         bg: '#063D2A',
@@ -175,6 +176,22 @@ function HangingSignboard({ status }: { status: string }) {
         subText: 'PENDAFTARAN',
         mainText: 'DIBUKA',
         subColor: '#D1FAE5',
+      }
+    : isCompleted
+    ? {
+        bg: '#1E293B',
+        stroke: '#64748B',
+        subText: 'EVENT',
+        mainText: 'BERAKHIR',
+        subColor: '#CBD5E1',
+      }
+    : isOngoing
+    ? {
+        bg: '#1E3A8A',
+        stroke: '#3B82F6',
+        subText: 'SEDANG',
+        mainText: 'BERLANGSUNG',
+        subColor: '#DBEAFE',
       }
     : {
         bg: '#450A0A',

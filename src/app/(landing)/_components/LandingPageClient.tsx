@@ -48,9 +48,10 @@ const FIELD_LABEL: Record<string, string> = {
 
 const BATCH_BADGE: Record<string, { label: string; color: string }> = {
   OPEN:        { label: 'Pendaftaran Dibuka',  color: '#03764F' },
-  ONGOING:     { label: 'Pendaftaran Ditutup', color: '#DC2626' },
+  ONGOING:     { label: 'Sedang Berlangsung',  color: '#2563EB' },
   CLOSED:      { label: 'Pendaftaran Ditutup', color: '#DC2626' },
-  COMING_SOON: { label: 'Pendaftaran Ditutup', color: '#DC2626' },
+  COMING_SOON: { label: 'Segera Hadir',        color: '#D97706' },
+  COMPLETED:   { label: 'Berakhir',            color: '#475569' },
 }
 
 export default function LandingPageClient({
@@ -106,14 +107,16 @@ export default function LandingPageClient({
     if (regClose && b.registrationDeadline && (b.registrationDeadline.endsWith('T00:00:00.000Z') || !b.registrationDeadline.includes('T'))) {
       regClose = new Date(regClose.getTime() + 24 * 60 * 60 * 1000 - 1)
     }
+    const start = b.batchStartDate ? new Date(b.batchStartDate) : null
     const end = b.batchEndDate ? new Date(b.batchEndDate) : null
 
-    // Status: hanya dibuka atau sudah ditutup
+    // Status: Dibuka, Ditutup, atau Berakhir
     let statusText = 'Pendaftaran Dibuka'
     const isDeadlinePassed = Boolean(regClose && now >= regClose)
-    const isEnded = Boolean(end && now > end)
-    const isClosed = isDeadlinePassed || isEnded || (b.batchStatus === 'CLOSED' && (!regClose || now >= regClose))
-    if (isClosed) {
+    const isEnded = Boolean(end && now > end) || Boolean(start && !end && now > new Date(start.getTime() + 24 * 3600 * 1000 - 1)) || b.batchStatus === 'COMPLETED'
+    if (isEnded) {
+      statusText = 'Berakhir'
+    } else if (isDeadlinePassed || (b.batchStatus === 'CLOSED' && (!regClose || now >= regClose))) {
       statusText = 'Pendaftaran Sudah Ditutup'
     } else if (regOpen && now < regOpen) {
       statusText = 'Pendaftaran Belum Dibuka'

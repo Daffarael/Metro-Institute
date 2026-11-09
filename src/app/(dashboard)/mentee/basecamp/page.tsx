@@ -427,18 +427,28 @@ export default function BasecampPage() {
               </div>
               <div style={{ padding: 'var(--space-4) var(--space-5)', display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
                 {data.upcomingLive.map((live) => {
-                  const isSoon = new Date(live.scheduledAt).getTime() - Date.now() < 15 * 60 * 1000
+                  const nowMs = Date.now()
+                  const schedMs = new Date(live.scheduledAt).getTime()
+                  const isSoon = schedMs - nowMs < 15 * 60 * 1000 && nowMs <= schedMs + 90 * 60 * 1000
+                  const isEnded = nowMs > schedMs + 90 * 60 * 1000
+
                   return (
                     <div key={live.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--space-4)' }}>
                       <div style={{ minWidth: 0 }}>
                         <div style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginBottom: 2 }}>{formatDate(live.scheduledAt)}</div>
                         <div style={{ fontSize: '13px', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{live.title}</div>
                       </div>
-                      <a href={live.liveUrl} target="_blank" rel="noopener noreferrer"
-                        className={`btn btn-sm ${isSoon ? 'btn-primary' : 'btn-secondary'}`}
-                        style={{ flexShrink: 0, opacity: isSoon ? 1 : 0.5, pointerEvents: isSoon ? 'auto' : 'none', fontSize: '12px' }}>
-                        Masuk
-                      </a>
+                      {isEnded ? (
+                        <span style={{ fontSize: '11.5px', color: 'var(--color-text-tertiary)', padding: '4px 8px', background: 'var(--color-surface)', borderRadius: 6, border: '1px solid var(--color-border-subtle)' }}>
+                          Berakhir
+                        </span>
+                      ) : (
+                        <a href={live.liveUrl} target="_blank" rel="noopener noreferrer"
+                          className={`btn btn-sm ${isSoon ? 'btn-primary' : 'btn-secondary'}`}
+                          style={{ flexShrink: 0, opacity: isSoon ? 1 : 0.5, pointerEvents: isSoon ? 'auto' : 'none', fontSize: '12px' }}>
+                          Masuk
+                        </a>
+                      )}
                     </div>
                   )
                 })}
@@ -530,7 +540,7 @@ export default function BasecampPage() {
               <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', marginBottom: 'var(--space-4)', lineHeight: 1.5 }}>
                 Bergabung di Discord eksklusif Metro Institute.
               </p>
-              <a href="https://discord.com" target="_blank" rel="noopener noreferrer"
+              <a href="https://discord.gg/hVW8g2bzU" target="_blank" rel="noopener noreferrer"
                 className="btn btn-primary"
                 style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 6, fontSize: '13px', fontWeight: 600 }}>
                 <MessageCircle size={14} /> Gabung Discord

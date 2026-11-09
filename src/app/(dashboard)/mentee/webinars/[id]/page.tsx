@@ -75,6 +75,8 @@ interface WebinarDetail {
 
   isFeatured: boolean
 
+  status?: string
+
   isRegistered?: boolean
 
   attended?: boolean
@@ -358,8 +360,8 @@ export default function MenteeWebinarDetailPage() {
 
 
   // Sesi dinyatakan Selesai JIKA diakhiri manual oleh admin (isEnded = true / liveStatus = 'ENDED')
-  // ATAU fallback pengaman 24 jam setelah waktu jadwal
-  const isEnded = Boolean(webinar.isEnded) || webinar.liveStatus === 'ENDED' || currentTime > (scheduledStart.getTime() + 24 * 60 * 60 * 1000)
+  // ATAU status COMPLETED / waktu pelaksanaan sesi telah berakhir
+  const isEnded = Boolean(webinar.isEnded) || webinar.liveStatus === 'ENDED' || webinar.status === 'COMPLETED' || currentTime > scheduledEnd.getTime()
 
   // Batas pendaftaran H-2 jam sebelum acara dimulai
   const registrationDeadline = new Date(scheduledStart.getTime() - 2 * 60 * 60 * 1000)

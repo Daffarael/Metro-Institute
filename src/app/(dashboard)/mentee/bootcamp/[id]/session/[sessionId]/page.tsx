@@ -28,6 +28,7 @@ interface Session {
   videoDuration?: number
   liveUrl?: string
   liveScheduledAt?: string
+  isLiveEnded?: boolean
   attendanceWindowMin?: number
   materials?: Array<{ name: string; url: string }>
   isFreePreview: boolean
@@ -527,7 +528,7 @@ export default function BootcampLearningPlayerPage() {
                   </div>
 
                   {/* Actions: Join Live button on header right */}
-                  {currentSession.attendance?.status === 'ABSENT' ? (
+                  {(currentSession.isLiveEnded || currentSession.attendance?.status === 'ABSENT') ? (
                     <div style={{
                       padding: '7px 16px',
                       background: '#f8fafc',
@@ -535,7 +536,7 @@ export default function BootcampLearningPlayerPage() {
                       border: '1px solid #e2e8f0',
                       color: '#64748b',
                       fontSize: '12.5px',
-                      fontWeight: 500
+                      fontWeight: 600
                     }}>
                       Sesi live telah berakhir
                     </div>

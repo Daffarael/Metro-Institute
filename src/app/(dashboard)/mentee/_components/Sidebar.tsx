@@ -201,7 +201,7 @@ export function Sidebar({
             onToggle={() => {}}
             onSelect={(value: any) => {
               if (value === '#discord') {
-                window.open('https://discord.com', '_blank')
+                window.open('https://discord.gg/hVW8g2bzU', '_blank')
               } else {
                 router.push(value)
                 if (isMobile) setIsMobileOpen?.(false)
