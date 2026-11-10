@@ -18,7 +18,6 @@ import {
   CreditCard,
   MessageCircle,
   ChevronRight,
-  Files,
   Search
 } from 'lucide-react';
 import './apple-spotlight.css';
@@ -240,22 +239,7 @@ interface AppleSpotlightProps {
 }
 
 const AppleSpotlight = ({
-  shortcuts = [
-    {
-      label: 'Clipboard',
-      icon: <Files />,
-      onClick: async (setSearchValue) => {
-        try {
-          const text = await navigator.clipboard.readText();
-          if (text) {
-            setSearchValue(text);
-          }
-        } catch (err) {
-          console.error("Gagal membaca clipboard:", err);
-        }
-      }
-    }
-  ],
+  shortcuts = [],
   isOpen = true,
   handleClose = () => {}
 }: AppleSpotlightProps) => {
