@@ -52,7 +52,7 @@ const bootcampSchema = z.object({
   purchaseCloseAt: z.string().min(1, 'Wajib diisi'),
   startDate:       z.string().min(1, 'Wajib diisi'),
   endDate:         z.string().min(1, 'Wajib diisi'),
-  status:          z.enum(['DRAFT', 'PUBLISHED', 'OPEN', 'CLOSED']),
+  status:          z.enum(['DRAFT', 'PUBLISHED']),
   certificateTemplateId: z.string().optional().nullable(),
   thumbnailUrl:    z.string().optional().nullable(),
 })
@@ -68,6 +68,8 @@ interface Bootcamp {
   field?: string
   fields: string[]
   level?: string
+  isPublished?: boolean
+  batchStatus?: string
   status: string
   price: number
   quota?: number
@@ -93,8 +95,15 @@ const FIELD_LABELS: Record<string, string> = { UI_UX: 'UI/UX', FRONTEND: 'Fronte
 const STATUS_OPTIONS = [
   { value: 'DRAFT', label: 'Draf' },
   { value: 'PUBLISHED', label: 'Tayang' },
+] as const
+
+const FILTER_STATUS_OPTIONS = [
+  { value: 'PUBLISHED', label: 'Tayang' },
+  { value: 'DRAFT', label: 'Draf' },
   { value: 'OPEN', label: 'Pendaftaran Dibuka' },
   { value: 'CLOSED', label: 'Pendaftaran Ditutup' },
+  { value: 'ONGOING', label: 'Sedang Berlangsung' },
+  { value: 'COMPLETED', label: 'Berakhir' },
 ] as const
 
 // ─── Input / Select style helpers ─────────────────────────
@@ -142,15 +151,7 @@ function BootcampModal({
       purchaseCloseAt: toLocalDateInput(bootcamp?.purchaseCloseAt || (bootcamp as any)?.registrationDeadline),
       startDate:       toLocalDateInput(bootcamp?.startDate || (bootcamp as any)?.batchStartDate),
       endDate:         toLocalDateInput(bootcamp?.endDate || (bootcamp as any)?.batchEndDate),
-      status: (() => {
-        if (!bootcamp) return 'DRAFT'
-        if ((bootcamp as any).isPublished === false || bootcamp.status === 'DRAFT') return 'DRAFT'
-        const deadline = bootcamp.purchaseCloseAt || (bootcamp as any).registrationDeadline
-        if (deadline && new Date(deadline).getTime() > Date.now()) {
-          return 'OPEN'
-        }
-        return (bootcamp.status as any) ?? 'PUBLISHED'
-      })(),
+      status: (bootcamp?.isPublished || (bootcamp?.status && bootcamp.status !== 'DRAFT')) ? 'PUBLISHED' : 'DRAFT',
       certificateTemplateId: bootcamp?.certificateTemplateId ?? null,
       thumbnailUrl:    bootcamp?.thumbnailUrl ?? '',
     },
@@ -158,10 +159,8 @@ function BootcampModal({
 
   const mutation = useMutation({
     mutationFn: (data: BootcampForm) => {
-      const isDeadlineFuture = data.purchaseCloseAt && (new Date(`${data.purchaseCloseAt}T23:59:59+07:00`).getTime() > Date.now())
       const payload = {
         ...data,
-        status: (data.status === 'CLOSED' && isDeadlineFuture) ? 'OPEN' : data.status,
         quota: Number(data.quota) || 50,
         fields: [data.field],
       }
@@ -417,7 +416,7 @@ function BootcampModal({
                     )
                   }}
                 />
-                {!bootcamp?.hasCurriculum && (
+                {!bootcamp?.hasCurriculum ? (
                   <p style={{ fontSize: '12px', color: '#64748b', marginTop: 6, lineHeight: 1.4 }}>
                     Tambahkan materi di{' '}
                     {bootcamp?.id ? (
@@ -433,6 +432,10 @@ function BootcampModal({
                       <span style={{ color: '#018556', fontWeight: 600 }}>Kurikulum</span>
                     )}{' '}
                     untuk mengaktifkan status Tayang.
+                  </p>
+                ) : (
+                  <p style={{ fontSize: '11.5px', color: '#64748b', marginTop: 6, lineHeight: 1.4 }}>
+                    Waktu pendaftaran dibuka, ditutup, pelaksanaan, dan berakhir otomatis ditentukan oleh tanggal di atas.
                   </p>
                 )}
               </div>
@@ -619,7 +622,7 @@ export default function AdminBootcampPage() {
           value={filters.status ?? ''}
           onChange={val => setFilters(f => ({ ...f, status: val || undefined, page: 1 }))}
           placeholder="Semua Status"
-          options={STATUS_OPTIONS.map(s => ({ value: s.value, label: s.label }))}
+          options={FILTER_STATUS_OPTIONS.map(s => ({ value: s.value, label: s.label }))}
           width={180}
         />
       </div>
@@ -783,6 +786,7 @@ export default function AdminBootcampPage() {
       <AnimatePresence>
         {modal && (
           <BootcampModal
+            key={modal === 'new' ? 'new' : (modal as Bootcamp).id}
             bootcamp={modal === 'new' ? undefined : modal as Bootcamp}
             onClose={() => setModal(null)}
           />
