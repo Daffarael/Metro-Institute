@@ -228,6 +228,7 @@ const AppleSpotlight = ({
     : [];
 
   const currentPageLabel = allPages.find((page) => page.link === pathname)?.label || 'Search';
+  const isExpanded = Boolean(searchValue && searchResults.length > 0);
 
   return (
     <div className="as-overlay" ref={wrapperRef}>
@@ -235,7 +236,7 @@ const AppleSpotlight = ({
         onClick={(e) => e.stopPropagation()}
         className="as-main-wrapper group"
       >
-        <div className="as-search-box">
+        <div className={`as-search-box ${isExpanded ? 'is-expanded' : ''}`}>
           <SpotlightInput
             placeholder={
               searchPlaceholder
