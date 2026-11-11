@@ -843,17 +843,13 @@ export default function BootcampLearningPlayerPage() {
                 {/* Deskripsi / Isi Materi Teks (In-App Article) */}
                 {(currentSession.description) ? (
                   <div style={{
-                    fontSize: '15px',
-                    color: '#1e293b',
-                    lineHeight: 1.85,
-                    whiteSpace: 'pre-wrap',
                     background: '#f8fafc',
                     padding: '24px 28px',
                     borderRadius: 14,
                     border: '1px solid #e2e8f0',
                     boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.02)'
                   }}>
-                    {currentSession.description}
+                    <MarkdownText content={currentSession.description} />
                   </div>
                 ) : (
                   <div style={{

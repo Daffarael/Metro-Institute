@@ -133,28 +133,44 @@ function parseBlocks(content: string): React.ReactNode[] {
       continue
     }
 
+    // Horizontal Rule: --- or *** or ___
+    if (line.trim().match(/^([-*_]){3,}$/)) {
+      blocks.push(
+        <hr
+          key={key++}
+          style={{
+            border: 'none',
+            borderTop: '1px solid #e2e8f0',
+            margin: '22px 0',
+          }}
+        />
+      )
+      i++
+      continue
+    }
+
     // Headings: # H1, ## H2, ### H3
-    const headingMatch = line.match(/^(#{1,3})\s+(.*)$/)
+    const headingMatch = line.match(/^(#{1,6})\s+(.*)$/)
     if (headingMatch) {
       const level = headingMatch[1].length
       const text = headingMatch[2]
       if (level === 1) {
         blocks.push(
-          <h3 key={key++} style={{ fontSize: '16px', fontWeight: 700, margin: '12px 0 6px', color: 'var(--color-text-primary, #0f172a)' }}>
+          <h2 key={key++} style={{ fontSize: '20px', fontWeight: 800, margin: '22px 0 10px', color: '#0f172a', letterSpacing: '-0.02em', lineHeight: 1.3 }}>
             {parseInline(text)}
-          </h3>
+          </h2>
         )
       } else if (level === 2) {
         blocks.push(
-          <h4 key={key++} style={{ fontSize: '14.5px', fontWeight: 700, margin: '10px 0 4px', color: 'var(--color-text-primary, #0f172a)' }}>
+          <h3 key={key++} style={{ fontSize: '18px', fontWeight: 700, margin: '20px 0 8px', color: '#0f172a', letterSpacing: '-0.01em', lineHeight: 1.35 }}>
             {parseInline(text)}
-          </h4>
+          </h3>
         )
       } else {
         blocks.push(
-          <h5 key={key++} style={{ fontSize: '13.5px', fontWeight: 600, margin: '8px 0 4px', color: 'var(--color-text-primary, #0f172a)' }}>
+          <h4 key={key++} style={{ fontSize: '16px', fontWeight: 700, margin: '18px 0 6px', color: '#0f172a', lineHeight: 1.4 }}>
             {parseInline(text)}
-          </h5>
+          </h4>
         )
       }
       i++
@@ -172,14 +188,15 @@ function parseBlocks(content: string): React.ReactNode[] {
         <blockquote
           key={key++}
           style={{
-            margin: '8px 0',
-            padding: '6px 12px',
-            borderLeft: '3px solid var(--color-primary, #018556)',
-            background: 'rgba(1, 133, 86, 0.04)',
+            margin: '12px 0',
+            padding: '8px 16px',
+            borderLeft: '3.5px solid var(--color-primary, #018556)',
+            background: 'rgba(1, 133, 86, 0.05)',
             borderRadius: '0 8px 8px 0',
-            color: 'var(--color-text-secondary, #475569)',
-            fontSize: '0.95em',
-            fontStyle: 'italic',
+            color: '#334155',
+            fontSize: '14px',
+            fontStyle: 'normal',
+            lineHeight: 1.65,
           }}
         >
           {quoteLines.map((ql, qIdx) => (
@@ -207,16 +224,17 @@ function parseBlocks(content: string): React.ReactNode[] {
         <ul
           key={key++}
           style={{
-            margin: '6px 0',
-            paddingLeft: '20px',
+            margin: '8px 0 14px',
+            paddingLeft: '22px',
             listStyleType: 'disc',
             display: 'flex',
             flexDirection: 'column',
-            gap: 4,
+            gap: 6,
+            color: '#334155',
           }}
         >
           {listItems.map((item, idx) => (
-            <li key={idx} style={{ lineHeight: 1.55 }}>
+            <li key={idx} style={{ lineHeight: 1.7, fontSize: '14.5px' }}>
               {parseInline(item)}
             </li>
           ))}
@@ -242,16 +260,17 @@ function parseBlocks(content: string): React.ReactNode[] {
         <ol
           key={key++}
           style={{
-            margin: '6px 0',
-            paddingLeft: '20px',
+            margin: '8px 0 14px',
+            paddingLeft: '22px',
             listStyleType: 'decimal',
             display: 'flex',
             flexDirection: 'column',
-            gap: 4,
+            gap: 6,
+            color: '#334155',
           }}
         >
           {listItems.map((item, idx) => (
-            <li key={idx} style={{ lineHeight: 1.55 }}>
+            <li key={idx} style={{ lineHeight: 1.7, fontSize: '14.5px' }}>
               {parseInline(item)}
             </li>
           ))}
@@ -265,7 +284,8 @@ function parseBlocks(content: string): React.ReactNode[] {
     while (
       i < lines.length &&
       lines[i].trim() &&
-      !lines[i].match(/^(#{1,3})\s+/) &&
+      !lines[i].trim().match(/^([-*_]){3,}$/) &&
+      !lines[i].match(/^(#{1,6})\s+/) &&
       !lines[i].startsWith('> ') &&
       !lines[i].match(/^(\s*)([-*•])\s+/) &&
       !lines[i].match(/^(\s*)\d+\.\s+/)
@@ -275,7 +295,7 @@ function parseBlocks(content: string): React.ReactNode[] {
     }
 
     blocks.push(
-      <div key={key++} style={{ margin: '6px 0', lineHeight: 1.6 }}>
+      <div key={key++} style={{ margin: '8px 0 14px', lineHeight: 1.8, fontSize: '14.5px', color: '#334155' }}>
         {pLines.map((pl, plIdx) => (
           <React.Fragment key={plIdx}>
             {plIdx > 0 && <br />}
