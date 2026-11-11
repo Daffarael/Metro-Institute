@@ -142,7 +142,7 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
     description: current?.description || '',
     type: current?.type || '', 
     scheduledAt: toLocalDatetimeValue(current?.liveScheduledAt || current?.scheduledAt),
-    durationMin: current?.videoDuration ?? (current?.durationMin ?? 90),
+    durationMin: current?.videoDuration ? (current.videoDuration > 120 ? Math.round(current.videoDuration / 60) : current.videoDuration) : (current?.durationMin ?? 3),
     meetingUrl: current?.liveUrl || (current?.meetingUrl || ''),
     videoUrl: current?.videoUrl || '', 
     materialUrl: (Array.isArray(current?.materials) && current?.materials?.[0]?.url) ? current.materials[0].url : (current?.materialUrl || ''), 
@@ -169,7 +169,7 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
         description: freshSession.description || '',
         type: freshSession.type || '',
         scheduledAt: toLocalDatetimeValue(freshSession.liveScheduledAt || freshSession.scheduledAt),
-        durationMin: freshSession.videoDuration ?? (freshSession.durationMin ?? 90),
+        durationMin: freshSession.videoDuration ? (freshSession.videoDuration > 120 ? Math.round(freshSession.videoDuration / 60) : freshSession.videoDuration) : (freshSession.durationMin ?? 3),
         meetingUrl: freshSession.liveUrl || (freshSession.meetingUrl || ''),
         videoUrl: freshSession.videoUrl || '',
         materialUrl: (Array.isArray(freshSession.materials) && freshSession.materials[0]?.url) ? freshSession.materials[0].url : (freshSession.materialUrl || ''),
@@ -200,8 +200,8 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
         assignmentDeadline: deadlineIso,
         liveUrl: form.meetingUrl,
         meetingUrl: form.meetingUrl,
-        videoDuration: Number(form.durationMin) || 90,
-        durationMin: Number(form.durationMin) || 90,
+        videoDuration: form.type === 'MATERIAL' ? (Number(form.durationMin) || 3) * 60 : (Number(form.durationMin) || 90),
+        durationMin: Number(form.durationMin) || (form.type === 'MATERIAL' ? 3 : 90),
         isFreePreview: form.isPreview,
         isPreview: form.isPreview,
         xpReward: Number(form.xpReward) || 10,
@@ -305,17 +305,36 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
 
           {/* Fields for MATERIAL */}
           {form.type === 'MATERIAL' && (
-            <div>
-              <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>
-                Isi Tulisan / Artikel Materi Pembelajaran (In-App Reading) <span style={{ color: 'var(--color-error)' }}>*</span>
-              </label>
-              <MarkdownTextarea 
-                value={form.description} 
-                onChange={v => f('description', v)} 
-                placeholder="Tulis isi materi pembelajaran di sini..." 
-                rows={8}
-                minHeight={180}
-              />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+              <div>
+                <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>
+                  Durasi Membaca Minimum (Menit) <span style={{ color: 'var(--color-error)' }}>*</span>
+                </label>
+                <input 
+                  type="number" 
+                  min={1} 
+                  max={120} 
+                  value={form.durationMin || 3} 
+                  onChange={e => f('durationMin', Math.max(1, Number(e.target.value)))} 
+                  placeholder="3" 
+                  style={inputStyle} 
+                />
+                <span style={{ fontSize: '11px', color: '#64748b', marginTop: 4, display: 'block' }}>
+                  Mentee wajib membaca materi selama durasi ini sebelum tombol &quot;Selesaikan Modul&quot; aktif.
+                </span>
+              </div>
+              <div>
+                <label style={{ fontSize: 'var(--text-xs)', fontWeight: 700, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>
+                  Isi Tulisan / Artikel Materi Pembelajaran (In-App Reading) <span style={{ color: 'var(--color-error)' }}>*</span>
+                </label>
+                <MarkdownTextarea 
+                  value={form.description} 
+                  onChange={v => f('description', v)} 
+                  placeholder="Tulis isi materi pembelajaran di sini..." 
+                  rows={8}
+                  minHeight={180}
+                />
+              </div>
             </div>
           )}
 

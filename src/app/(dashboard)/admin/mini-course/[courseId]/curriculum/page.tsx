@@ -156,6 +156,7 @@ function AddSessionModal({ courseId, editSession, onClose }: { courseId: string;
     videoUrl: editSession?.videoUrl || '', 
     materialUrl: (editSession?.materials as any)?.[0]?.url || (editSession as any)?.materialUrl || '', 
     assignmentDescription: (editSession as any)?.assignmentDescription || '',
+    durationMin: (editSession as any)?.videoDuration ? ((editSession as any).videoDuration > 120 ? Math.round((editSession as any).videoDuration / 60) : (editSession as any).videoDuration) : ((editSession as any)?.durationMin ?? 3),
     isPreview: editSession?.isFreePreview ?? ((editSession as any)?.isPreview ?? false),
     xpReward: (editSession as any)?.xpReward !== undefined ? (editSession as any).xpReward : 10
   })
@@ -178,6 +179,8 @@ function AddSessionModal({ courseId, editSession, onClose }: { courseId: string;
       }
       const payload: any = { 
         ...form, 
+        durationMin: Number(form.durationMin) || 3,
+        videoDuration: (Number(form.durationMin) || 3) * 60,
         isFreePreview: form.isPreview,
         materials: form.materialUrl ? [{ name: 'Materi', url: form.materialUrl }] : [],
         materialUrl: form.materialUrl,
@@ -256,17 +259,36 @@ return (
             </div>
           )}
           {form.type === 'MATERIAL' && (
-            <div>
-              <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>
-                Isi Tulisan / Artikel Materi Pembelajaran (In-App Reading) <span style={{ color: 'var(--color-error)' }}>*</span>
-              </label>
-              <MarkdownTextarea 
-                value={form.description} 
-                onChange={v => f('description', v)} 
-                placeholder="Tulis isi materi pembelajaran di sini..." 
-                rows={8}
-                minHeight={180}
-              />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+              <div>
+                <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 4 }}>
+                  Durasi Membaca Minimum (Menit) <span style={{ color: 'var(--color-error)' }}>*</span>
+                </label>
+                <input 
+                  type="number" 
+                  min={1} 
+                  max={120} 
+                  value={form.durationMin || 3} 
+                  onChange={e => f('durationMin', Math.max(1, Number(e.target.value)))} 
+                  placeholder="3" 
+                  style={inputStyle} 
+                />
+                <span style={{ fontSize: '11px', color: '#64748b', marginTop: 4, display: 'block' }}>
+                  Mentee wajib membaca materi selama durasi ini sebelum tombol &quot;Selesaikan Modul&quot; aktif.
+                </span>
+              </div>
+              <div>
+                <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>
+                  Isi Tulisan / Artikel Materi Pembelajaran (In-App Reading) <span style={{ color: 'var(--color-error)' }}>*</span>
+                </label>
+                <MarkdownTextarea 
+                  value={form.description} 
+                  onChange={v => f('description', v)} 
+                  placeholder="Tulis isi materi pembelajaran di sini..." 
+                  rows={8}
+                  minHeight={180}
+                />
+              </div>
             </div>
           )}
           {form.type === 'QUIZ' && (

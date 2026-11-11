@@ -52,6 +52,7 @@ export default function CourseLearningPlayerPage() {
   const [playedRatio, setPlayedRatio] = useState(0)
   const [hasDownloaded, setHasDownloaded] = useState(false)
   const [isCompleted, setIsCompleted] = useState(false)
+  const [elapsedReadingSeconds, setElapsedReadingSeconds] = useState(0)
   const [expandedChapters, setExpandedChapters] = useState<Set<string>>(new Set(['0']))
   const [note, setNote] = useState('')
   const [qnaMessage, setQnaMessage] = useState('')
@@ -66,6 +67,7 @@ export default function CourseLearningPlayerPage() {
   useEffect(() => {
     setPlayedRatio(0)
     setHasDownloaded(false)
+    setElapsedReadingSeconds(0)
     completeTriggerRef.current = false
   }, [sessionId])
 
@@ -146,6 +148,35 @@ export default function CourseLearningPlayerPage() {
     const fd = new FormData()
     fd.append('file', file)
     uploadAssignmentMutation.mutate(fd)
+  }
+
+  const isMaterial = data?.currentSession?.type === 'MATERIAL'
+  const isAlreadyDone = Boolean(isCompleted || data?.currentSession?.isCompleted)
+
+  const readingDurationSeconds = useMemo(() => {
+    if (!data?.currentSession) return 180
+    const raw = data.currentSession.videoDuration
+    if (!raw || raw <= 0) return 180
+    return raw < 60 ? raw * 60 : raw
+  }, [data?.currentSession])
+
+  const readingMinutes = Math.max(1, Math.round(readingDurationSeconds / 60))
+
+  useEffect(() => {
+    if (!isMaterial || isAlreadyDone) return
+    const interval = setInterval(() => {
+      setElapsedReadingSeconds((prev) => prev + 1)
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [isMaterial, isAlreadyDone, sessionId])
+
+  const remainingReadingSeconds = Math.max(0, readingDurationSeconds - elapsedReadingSeconds)
+  const isReadingComplete = isAlreadyDone || remainingReadingSeconds <= 0
+
+  const formatCountdown = (sec: number) => {
+    const m = Math.floor(sec / 60)
+    const s = sec % 60
+    return `${m}:${s < 10 ? '0' : ''}${s}`
   }
 
   if (isLoading || !data) {
@@ -565,35 +596,75 @@ export default function CourseLearningPlayerPage() {
                         <Lock size={14} /> Tonton min. 90% ({Math.min(99, Math.round(playedRatio * 100))}%)
                       </button>
                     )
-                  ) : (currentSession.type === 'MATERIAL' || parsedMaterials.length > 0) ? (
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => completeMutation.mutate()}
-                      disabled={completeMutation.isPending}
-                      style={{
-                        padding: '9px 18px',
-                        background: 'var(--color-primary)',
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: 10,
-                        fontWeight: 600,
-                        fontSize: '13px',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: 6,
-                        cursor: 'pointer',
-                        boxShadow: '0 2px 8px rgba(16, 185, 129, 0.25)'
-                      }}
-                    >
-                      {completeMutation.isPending ? (
-                        <Loader2 size={16} className="animate-spin" />
-                      ) : (
-                        <>
-                          <CheckCircle2 size={16} /> Tandai Selesai
-                        </>
-                      )}
-                    </motion.button>
+                  ) : currentSession.type === 'MATERIAL' ? (
+                    isAlreadyDone ? (
+                      <div
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          padding: '9px 18px',
+                          borderRadius: 10,
+                          background: '#ecfdf5',
+                          color: 'var(--color-primary)',
+                          border: '1px solid #a7f3d0',
+                          fontWeight: 700,
+                          fontSize: '13px'
+                        }}
+                      >
+                        <CheckCircle2 size={16} /> Selesai
+                      </div>
+                    ) : !isReadingComplete ? (
+                      <button
+                        type="button"
+                        disabled
+                        title={`Baca materi minimal ${readingMinutes} menit untuk mengaktifkan tombol selesai.`}
+                        style={{
+                          padding: '9px 18px',
+                          background: '#f8fafc',
+                          color: '#64748b',
+                          border: '1.5px solid #e2e8f0',
+                          borderRadius: 10,
+                          fontWeight: 700,
+                          fontSize: '13px',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          cursor: 'not-allowed',
+                        }}
+                      >
+                        <Lock size={14} color="#94a3b8" /> Baca min. {readingMinutes}m ({formatCountdown(remainingReadingSeconds)})
+                      </button>
+                    ) : (
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => completeMutation.mutate()}
+                        disabled={completeMutation.isPending}
+                        style={{
+                          padding: '9px 18px',
+                          background: 'var(--color-primary)',
+                          color: '#ffffff',
+                          border: 'none',
+                          borderRadius: 10,
+                          fontWeight: 700,
+                          fontSize: '13px',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          cursor: 'pointer',
+                          boxShadow: '0 2px 8px rgba(1, 133, 86, 0.25)'
+                        }}
+                      >
+                        {completeMutation.isPending ? (
+                          <Loader2 size={16} className="animate-spin" />
+                        ) : (
+                          <>
+                            <CheckCircle2 size={16} /> Selesaikan Modul
+                          </>
+                        )}
+                      </motion.button>
+                    )
                   ) : currentSession.type === 'QUIZ' ? (
                     <div
                       style={{
@@ -681,7 +752,7 @@ export default function CourseLearningPlayerPage() {
                             padding: '4px 10px',
                             borderRadius: 6,
                           }}>
-                            5 Menit Baca • Metro Institute Exclusive
+                            {readingMinutes} Menit Baca • Metro Institute Exclusive
                           </span>
                         </div>
                       </div>
@@ -715,38 +786,74 @@ export default function CourseLearningPlayerPage() {
 
                       {/* Tombol Penyelesaian Sesi Langsung di Bawah Artikel */}
                       <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 18 }}>
-                        <motion.button
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                          onClick={() => completeMutation.mutate()}
-                          disabled={completeMutation.isPending || isCompleted || currentSession.isCompleted}
-                          style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: 8,
-                            padding: '10px 22px',
-                            borderRadius: 'var(--radius-md)',
-                            background: (isCompleted || currentSession.isCompleted) ? '#ecfdf5' : 'var(--color-primary)',
-                            color: (isCompleted || currentSession.isCompleted) ? 'var(--color-primary)' : '#ffffff',
-                            border: (isCompleted || currentSession.isCompleted) ? '1px solid #a7f3d0' : 'none',
-                            fontWeight: 700,
-                            fontSize: '13.5px',
-                            cursor: (isCompleted || currentSession.isCompleted) ? 'default' : 'pointer',
-                            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.04)',
-                          }}
-                        >
-                          {completeMutation.isPending ? (
-                            <Loader2 size={16} className="animate-spin" />
-                          ) : (isCompleted || currentSession.isCompleted) ? (
-                            <>
-                              <CheckCircle2 size={16} /> Modul Selesai Dibaca ✓
-                            </>
-                          ) : (
-                            <>
-                              <CheckCircle2 size={16} /> Selesai Membaca Modul
-                            </>
-                          )}
-                        </motion.button>
+                        {isAlreadyDone ? (
+                          <div
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 8,
+                              padding: '10px 22px',
+                              borderRadius: 'var(--radius-md)',
+                              background: '#ecfdf5',
+                              color: 'var(--color-primary)',
+                              border: '1px solid #a7f3d0',
+                              fontWeight: 700,
+                              fontSize: '13.5px',
+                            }}
+                          >
+                            <CheckCircle2 size={16} /> Modul Selesai Dibaca ✓
+                          </div>
+                        ) : !isReadingComplete ? (
+                          <button
+                            type="button"
+                            disabled
+                            title={`Baca materi minimal ${readingMinutes} menit untuk mengaktifkan tombol ini.`}
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 8,
+                              padding: '10px 22px',
+                              borderRadius: 'var(--radius-md)',
+                              background: '#f8fafc',
+                              color: '#64748b',
+                              border: '1.5px solid #e2e8f0',
+                              fontWeight: 700,
+                              fontSize: '13.5px',
+                              cursor: 'not-allowed',
+                            }}
+                          >
+                            <Lock size={15} color="#94a3b8" /> Baca min. {readingMinutes}m ({formatCountdown(remainingReadingSeconds)})
+                          </button>
+                        ) : (
+                          <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => completeMutation.mutate()}
+                            disabled={completeMutation.isPending}
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 8,
+                              padding: '10px 22px',
+                              borderRadius: 'var(--radius-md)',
+                              background: 'var(--color-primary)',
+                              color: '#ffffff',
+                              border: 'none',
+                              fontWeight: 700,
+                              fontSize: '13.5px',
+                              cursor: 'pointer',
+                              boxShadow: '0 2px 8px rgba(1, 133, 86, 0.25)',
+                            }}
+                          >
+                            {completeMutation.isPending ? (
+                              <Loader2 size={16} className="animate-spin" />
+                            ) : (
+                              <>
+                                <CheckCircle2 size={16} /> Selesai Membaca Modul
+                              </>
+                            )}
+                          </motion.button>
+                        )}
                       </div>
 
                       {/* File Materi Pendukung & Tautan Tambahan (Opsional) */}
