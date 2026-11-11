@@ -39,6 +39,7 @@ import { CSS } from '@dnd-kit/utilities'
 interface CourseSession {
   id: string; title: string; type: 'VIDEO' | 'MATERIAL' | 'QUIZ'
   videoUrl?: string; materialUrl?: string; materials?: any; isFreePreview: boolean; order: number; xpReward?: number
+  description?: string
 }
 interface MiniCourse { id: string; title: string }
 
@@ -150,6 +151,7 @@ function AddSessionModal({ courseId, editSession, onClose }: { courseId: string;
   const qc = useQueryClient()
   const [form, setForm] = useState({ 
     title: editSession?.title || '', 
+    description: editSession?.description || '',
     type: editSession?.type || '', 
     videoUrl: editSession?.videoUrl || '', 
     materialUrl: (editSession?.materials as any)?.[0]?.url || (editSession as any)?.materialUrl || '', 
@@ -255,9 +257,28 @@ return (
             </div>
           )}
           {form.type === 'MATERIAL' && (
-            <div>
-              <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 4 }}>URL Materi</label>
-              <input value={form.materialUrl} onChange={e => f('materialUrl', e.target.value)} placeholder="https://..." style={inputStyle} />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+              <div>
+                <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 4 }}>
+                  Isi Tulisan / Artikel Materi Pembelajaran (In-App Reading) <span style={{ color: 'var(--color-error)' }}>*</span>
+                </label>
+                <p style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginBottom: 6, marginTop: -2 }}>
+                  Tulis isi materi di sini. Mentee akan membaca modul ini secara langsung di dalam aplikasi tanpa perlu membuka Google Drive atau unduh file luar.
+                </p>
+                <MarkdownTextarea 
+                  value={form.description} 
+                  onChange={v => f('description', v)} 
+                  placeholder="Tulis materi pembelajaran di sini (mendukung Markdown, heading #, poin -, tips, contoh kode, dll)..." 
+                  rows={8}
+                  minHeight={180}
+                />
+              </div>
+              <div>
+                <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 4 }}>
+                  Tautan Referensi Tambahan <span style={{ color: 'var(--color-text-tertiary)', fontWeight: 400 }}>(Opsional)</span>
+                </label>
+                <input value={form.materialUrl} onChange={e => f('materialUrl', e.target.value)} placeholder="Opsional: Tautan web atau dokumentasi resmi pendukung..." style={inputStyle} />
+              </div>
             </div>
           )}
           {form.type === 'QUIZ' && (
