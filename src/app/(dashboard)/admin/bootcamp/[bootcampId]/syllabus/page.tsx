@@ -312,7 +312,7 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
               <MarkdownTextarea 
                 value={form.description} 
                 onChange={v => f('description', v)} 
-                placeholder="Tulis materi pembelajaran di sini (mendukung Markdown, heading #, poin -, tips, contoh kode, dll)..." 
+                placeholder="Tulis isi materi pembelajaran di sini..." 
                 rows={8}
                 minHeight={180}
               />

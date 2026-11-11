@@ -161,7 +161,7 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
       defaultValue = '',
       onChange,
       onBlur,
-      placeholder = 'Tuliskan deskripsi di sini... (klik tombol di atas untuk format Tebal, Miring, Poin, atau Emoji)',
+      placeholder = 'Tuliskan deskripsi di sini...',
       rows = 4,
       minHeight = 115,
       name,
