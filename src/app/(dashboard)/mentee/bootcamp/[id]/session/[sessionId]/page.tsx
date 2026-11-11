@@ -1100,17 +1100,16 @@ export default function BootcampLearningPlayerPage() {
                             style={{
                               display: 'inline-flex',
                               alignItems: 'center',
-                              gap: 6,
                               padding: '9px 18px',
                               borderRadius: 10,
-                              background: '#ecfdf5',
-                              color: 'var(--color-primary)',
-                              border: '1px solid #a7f3d0',
+                              background: '#018556',
+                              color: '#ffffff',
+                              border: 'none',
                               fontWeight: 700,
                               fontSize: '13px'
                             }}
                           >
-                            <CheckCircle2 size={16} /> Selesai
+                            Selesai
                           </div>
                         ) : !isReadingComplete ? (
                           <button
@@ -1343,17 +1342,16 @@ export default function BootcampLearningPlayerPage() {
                             style={{
                               display: 'inline-flex',
                               alignItems: 'center',
-                              gap: 8,
                               padding: '10px 22px',
                               borderRadius: 'var(--radius-md)',
-                              background: '#ecfdf5',
-                              color: 'var(--color-primary)',
-                              border: '1px solid #a7f3d0',
+                              background: '#018556',
+                              color: '#ffffff',
+                              border: 'none',
                               fontWeight: 700,
                               fontSize: '13.5px',
                             }}
                           >
-                            <CheckCircle2 size={16} /> Modul Selesai Dibaca ✓
+                            Selesai
                           </div>
                         ) : !isReadingComplete ? (
                           <button
@@ -1385,10 +1383,9 @@ export default function BootcampLearningPlayerPage() {
                             style={{
                               display: 'inline-flex',
                               alignItems: 'center',
-                              gap: 8,
                               padding: '10px 22px',
                               borderRadius: 'var(--radius-md)',
-                              background: 'var(--color-primary)',
+                              background: '#018556',
                               color: '#ffffff',
                               border: 'none',
                               fontWeight: 700,
@@ -1400,9 +1397,7 @@ export default function BootcampLearningPlayerPage() {
                             {completeMutation.isPending ? (
                               <Loader2 size={16} className="animate-spin" />
                             ) : (
-                              <>
-                                <CheckCircle2 size={16} /> Selesai Membaca Modul
-                              </>
+                              'Selesaikan Modul'
                             )}
                           </motion.button>
                         )}
