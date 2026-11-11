@@ -252,14 +252,31 @@ return (
             </div>
           </div>
           {form.type === 'VIDEO' && (
-            <div>
-              <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>
-                Konten Video Pembelajaran <span style={{ color: 'var(--color-error)' }}>*</span>
-              </label>
-              <VideoInputWithUpload
-                value={form.videoUrl}
-                onChange={(url) => f('videoUrl', url)}
-              />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+              <div>
+                <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>
+                  Konten Video Pembelajaran <span style={{ color: 'var(--color-error)' }}>*</span>
+                </label>
+                <VideoInputWithUpload
+                  value={form.videoUrl}
+                  onChange={(url) => f('videoUrl', url)}
+                />
+              </div>
+              <div>
+                <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>
+                  Deskripsi / Ringkasan Video (Tentang Sesi Ini)
+                </label>
+                <MarkdownTextarea 
+                  value={form.description} 
+                  onChange={v => f('description', v)} 
+                  placeholder="Tulis ringkasan atau penjelasan materi video di sini..." 
+                  rows={4}
+                  minHeight={120}
+                />
+                <span style={{ fontSize: '11px', color: '#64748b', marginTop: 4, display: 'block' }}>
+                  Deskripsi ini akan ditampilkan pada tab Ringkasan di aplikasi mobile dan web mentee.
+                </span>
+              </div>
             </div>
           )}
           {form.type === 'MATERIAL' && (
