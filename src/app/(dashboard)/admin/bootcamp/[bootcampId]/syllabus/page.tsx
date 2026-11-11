@@ -142,7 +142,7 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
     description: current?.description || '',
     type: current?.type || '', 
     scheduledAt: toLocalDatetimeValue(current?.liveScheduledAt || current?.scheduledAt),
-    durationMin: current?.videoDuration ? (current.videoDuration > 120 ? Math.round(current.videoDuration / 60) : current.videoDuration) : (current?.durationMin ?? 3),
+    durationMin: current?.videoDuration !== undefined && current?.videoDuration !== null ? (current.videoDuration > 120 ? Math.round(current.videoDuration / 60) : current.videoDuration) : (current?.durationMin !== undefined ? current.durationMin : (current?.type === 'MATERIAL' ? 0 : 3)),
     meetingUrl: current?.liveUrl || (current?.meetingUrl || ''),
     videoUrl: current?.videoUrl || '', 
     materialUrl: (Array.isArray(current?.materials) && current?.materials?.[0]?.url) ? current.materials[0].url : (current?.materialUrl || ''), 
@@ -169,7 +169,7 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
         description: freshSession.description || '',
         type: freshSession.type || '',
         scheduledAt: toLocalDatetimeValue(freshSession.liveScheduledAt || freshSession.scheduledAt),
-        durationMin: freshSession.videoDuration ? (freshSession.videoDuration > 120 ? Math.round(freshSession.videoDuration / 60) : freshSession.videoDuration) : (freshSession.durationMin ?? 3),
+        durationMin: freshSession.videoDuration !== undefined && freshSession.videoDuration !== null ? (freshSession.videoDuration > 120 ? Math.round(freshSession.videoDuration / 60) : freshSession.videoDuration) : (freshSession.durationMin !== undefined ? freshSession.durationMin : (freshSession.type === 'MATERIAL' ? 0 : 3)),
         meetingUrl: freshSession.liveUrl || (freshSession.meetingUrl || ''),
         videoUrl: freshSession.videoUrl || '',
         materialUrl: (Array.isArray(freshSession.materials) && freshSession.materials[0]?.url) ? freshSession.materials[0].url : (freshSession.materialUrl || ''),
@@ -193,6 +193,9 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
       const scheduledIso = toIsoDatetime(form.scheduledAt)
       const deadlineIso = toIsoDatetime(form.assignmentDeadline)
 
+      const rawDurMin = form.durationMin === '' || form.durationMin === null || form.durationMin === undefined ? 0 : Number(form.durationMin)
+      const safeDurMin = isNaN(rawDurMin) ? 0 : Math.max(0, rawDurMin)
+
       let payload: any = { 
         ...form, 
         scheduledAt: scheduledIso,
@@ -200,8 +203,8 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
         assignmentDeadline: deadlineIso,
         liveUrl: form.meetingUrl,
         meetingUrl: form.meetingUrl,
-        videoDuration: form.type === 'MATERIAL' ? (Number(form.durationMin) || 3) * 60 : (Number(form.durationMin) || 90),
-        durationMin: Number(form.durationMin) || (form.type === 'MATERIAL' ? 3 : 90),
+        videoDuration: form.type === 'MATERIAL' ? safeDurMin * 60 : (safeDurMin || 90),
+        durationMin: safeDurMin,
         isFreePreview: form.isPreview,
         isPreview: form.isPreview,
         xpReward: Number(form.xpReward) || 10,
@@ -312,15 +315,18 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
                 </label>
                 <input 
                   type="number" 
-                  min={1} 
+                  min={0} 
                   max={120} 
-                  value={form.durationMin || 3} 
-                  onChange={e => f('durationMin', Math.max(1, Number(e.target.value)))} 
-                  placeholder="3" 
+                  value={form.durationMin !== undefined && form.durationMin !== null ? form.durationMin : ''} 
+                  onChange={e => {
+                    const val = e.target.value
+                    f('durationMin', val === '' ? '' : Math.max(0, Number(val)))
+                  }} 
+                  placeholder="0" 
                   style={inputStyle} 
                 />
                 <span style={{ fontSize: '11px', color: '#64748b', marginTop: 4, display: 'block' }}>
-                  Mentee wajib membaca materi selama durasi ini sebelum tombol &quot;Selesaikan Modul&quot; aktif.
+                  Mentee wajib membaca materi selama durasi ini sebelum tombol &quot;Selesaikan Modul&quot; aktif (isi 0 jika tanpa batas waktu).
                 </span>
               </div>
               <div>

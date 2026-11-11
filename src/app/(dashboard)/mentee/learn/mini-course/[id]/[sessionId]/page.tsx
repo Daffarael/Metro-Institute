@@ -154,13 +154,13 @@ export default function CourseLearningPlayerPage() {
   const isAlreadyDone = Boolean(isCompleted || data?.currentSession?.isCompleted)
 
   const readingDurationSeconds = useMemo(() => {
-    if (!data?.currentSession) return 180
+    if (!data?.currentSession) return 0
     const raw = data.currentSession.videoDuration
-    if (!raw || raw <= 0) return 180
+    if (raw === undefined || raw === null || raw <= 0) return 0
     return raw < 60 ? raw * 60 : raw
   }, [data?.currentSession])
 
-  const readingMinutes = Math.max(1, Math.round(readingDurationSeconds / 60))
+  const readingMinutes = Math.round(readingDurationSeconds / 60)
 
   useEffect(() => {
     if (!isMaterial || isAlreadyDone) return
@@ -752,7 +752,7 @@ export default function CourseLearningPlayerPage() {
                             padding: '4px 10px',
                             borderRadius: 6,
                           }}>
-                            {readingMinutes} Menit Baca • Metro Institute Exclusive
+                            {readingMinutes > 0 ? `${readingMinutes} Menit Baca` : 'Bacaan Mandiri'} • Metro Institute Exclusive
                           </span>
                         </div>
                       </div>

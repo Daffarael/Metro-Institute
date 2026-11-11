@@ -156,7 +156,9 @@ function AddSessionModal({ courseId, editSession, onClose }: { courseId: string;
     videoUrl: editSession?.videoUrl || '', 
     materialUrl: (editSession?.materials as any)?.[0]?.url || (editSession as any)?.materialUrl || '', 
     assignmentDescription: (editSession as any)?.assignmentDescription || '',
-    durationMin: (editSession as any)?.videoDuration ? ((editSession as any).videoDuration > 120 ? Math.round((editSession as any).videoDuration / 60) : (editSession as any).videoDuration) : ((editSession as any)?.durationMin ?? 3),
+    durationMin: (editSession as any)?.videoDuration !== undefined && (editSession as any)?.videoDuration !== null
+      ? ((editSession as any).videoDuration > 120 ? Math.round((editSession as any).videoDuration / 60) : (editSession as any).videoDuration)
+      : ((editSession as any)?.durationMin !== undefined ? (editSession as any).durationMin : (editSession?.type === 'MATERIAL' ? 0 : 3)),
     isPreview: editSession?.isFreePreview ?? ((editSession as any)?.isPreview ?? false),
     xpReward: (editSession as any)?.xpReward !== undefined ? (editSession as any).xpReward : 10
   })
@@ -177,10 +179,12 @@ function AddSessionModal({ courseId, editSession, onClose }: { courseId: string;
       if (form.type === 'VIDEO' && form.videoUrl && (form.videoUrl.includes('youtube.com') || form.videoUrl.includes('youtu.be'))) {
         throw new Error('Harap hapus atau ganti tautan YouTube dengan video baru sebelum menyimpan.')
       }
+      const rawDurMin = form.durationMin === '' || form.durationMin === null || form.durationMin === undefined ? 0 : Number(form.durationMin)
+      const safeDurMin = isNaN(rawDurMin) ? 0 : Math.max(0, rawDurMin)
       const payload: any = { 
         ...form, 
-        durationMin: Number(form.durationMin) || 3,
-        videoDuration: (Number(form.durationMin) || 3) * 60,
+        durationMin: safeDurMin,
+        videoDuration: safeDurMin * 60,
         isFreePreview: form.isPreview,
         materials: form.materialUrl ? [{ name: 'Materi', url: form.materialUrl }] : [],
         materialUrl: form.materialUrl,
@@ -266,15 +270,18 @@ return (
                 </label>
                 <input 
                   type="number" 
-                  min={1} 
+                  min={0} 
                   max={120} 
-                  value={form.durationMin || 3} 
-                  onChange={e => f('durationMin', Math.max(1, Number(e.target.value)))} 
-                  placeholder="3" 
+                  value={form.durationMin !== undefined && form.durationMin !== null ? form.durationMin : ''} 
+                  onChange={e => {
+                    const val = e.target.value
+                    f('durationMin', val === '' ? '' : Math.max(0, Number(val)))
+                  }} 
+                  placeholder="0" 
                   style={inputStyle} 
                 />
                 <span style={{ fontSize: '11px', color: '#64748b', marginTop: 4, display: 'block' }}>
-                  Mentee wajib membaca materi selama durasi ini sebelum tombol &quot;Selesaikan Modul&quot; aktif.
+                  Mentee wajib membaca materi selama durasi ini sebelum tombol &quot;Selesaikan Modul&quot; aktif (isi 0 jika tanpa batas waktu).
                 </span>
               </div>
               <div>
