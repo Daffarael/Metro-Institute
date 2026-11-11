@@ -8,7 +8,8 @@ import api from '@/lib/axios'
 import AdminPageHeader from '@/components/admin/AdminPageHeader'
 import CleanCombobox from '@/components/admin/CleanCombobox'
 import { toast } from 'sonner'
-import { Save, Upload, Type, X } from 'lucide-react'
+import { Save, Upload, Type, X, Eye, Minus, Plus, Award } from 'lucide-react'
+import { Dialog, DialogContent } from '@/components/ui/dialog'
 
 interface DragItem {
   id: string
@@ -27,7 +28,7 @@ const DEFAULT_ITEMS: DragItem[] = [
   { id: 'MenteeName', type: 'text', label: 'NAMA MENTEE', x: 400, y: 300, fontSize: 32, color: '#000000' },
   { id: 'CourseName', type: 'text', label: 'JUDUL KURSUS / BOOTCAMP', x: 400, y: 360, fontSize: 24, color: '#4B5563' },
   { id: 'Date', type: 'text', label: 'Tanggal Lulus', x: 200, y: 450, fontSize: 16, color: '#6B7280' },
-  { id: 'CredentialId', type: 'text', label: 'ID Kredensial', x: 600, y: 450, fontSize: 16, color: '#6B7280' },
+  { id: 'CredentialId', type: 'text', label: 'ID Kredensial', x: 600, y: 450, fontSize: 10, color: '#6B7280' },
   { id: 'CeoName', type: 'text', label: 'Nama CEO', x: 200, y: 500, fontSize: 18, color: '#000000' },
   { id: 'LeadName', type: 'text', label: 'Nama Lead Community', x: 600, y: 500, fontSize: 18, color: '#000000' },
 ]
@@ -43,6 +44,7 @@ export default function CertificateTemplateEditor() {
   const [items, setItems] = useState<DragItem[]>(DEFAULT_ITEMS)
   const [selectedItem, setSelectedItem] = useState<string | null>(null)
   const [guides, setGuides] = useState<{ v: number | null, h: number | null }>({ v: null, h: null })
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false)
   
   const containerRef = useRef<HTMLDivElement>(null)
   const dragStartRef = useRef<{ id: string, width: number, x: number, fontSize: number } | null>(null)
@@ -208,13 +210,38 @@ export default function CertificateTemplateEditor() {
           { label: isNew ? 'Baru' : 'Edit' }
         ]}
         action={
-          <button
-            onClick={handleSave}
-            disabled={saveMutation.isPending}
-            style={{ padding: '10px 20px', borderRadius: '100px', background: 'var(--color-primary)', color: '#fff', border: 'none', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, fontSize: '13px', boxShadow: '0 4px 12px rgba(1, 133, 86, 0.2)', transition: 'all 0.2s' }}
-          >
-            <Save size={16} /> {saveMutation.isPending ? 'Menyimpan...' : 'Simpan Template'}
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <button
+              type="button"
+              onClick={() => setIsPreviewOpen(true)}
+              style={{
+                padding: '9px 16px',
+                borderRadius: '100px',
+                background: '#fff',
+                border: '1px solid var(--color-border)',
+                color: 'var(--color-text-primary)',
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                fontSize: '13px',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                transition: 'all 0.2s',
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = '#f8fafc'}
+              onMouseLeave={e => e.currentTarget.style.background = '#fff'}
+            >
+              <Eye size={15} /> Pratinjau Sertifikat
+            </button>
+            <button
+              onClick={handleSave}
+              disabled={saveMutation.isPending}
+              style={{ padding: '10px 20px', borderRadius: '100px', background: 'var(--color-primary)', color: '#fff', border: 'none', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8, fontSize: '13px', boxShadow: '0 4px 12px rgba(1, 133, 86, 0.2)', transition: 'all 0.2s' }}
+            >
+              <Save size={16} /> {saveMutation.isPending ? 'Menyimpan...' : 'Simpan Template'}
+            </button>
+          </div>
         }
       />
 
@@ -281,6 +308,7 @@ export default function CertificateTemplateEditor() {
                   <input type="file" accept="image/png, image/jpeg" style={{ display: 'none' }} onChange={e => e.target.files && handleUpload(e.target.files[0], 'signature')} disabled={isUploading} />
                 </label>
                 <button 
+                  type="button"
                   onClick={() => {
                     const newTextItem: DragItem = {
                       id: `Text_${Date.now()}`,
@@ -299,6 +327,46 @@ export default function CertificateTemplateEditor() {
                   onMouseLeave={e => e.currentTarget.style.borderColor = '#cbd5e1'}
                 >
                   <Type size={16} /> Tambah Teks Khusus
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const cred = items.find(i => i.id === 'CredentialId')
+                    if (cred) {
+                      setSelectedItem('CredentialId')
+                    } else {
+                      const newCred: DragItem = {
+                        id: 'CredentialId',
+                        type: 'text',
+                        label: 'ID Kredensial',
+                        x: 600,
+                        y: 450,
+                        fontSize: 10,
+                        color: '#6B7280'
+                      }
+                      setItems(prev => [...prev, newCred])
+                      setSelectedItem('CredentialId')
+                    }
+                  }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 8,
+                    padding: '10px 16px',
+                    borderRadius: '8px',
+                    background: selectedItem === 'CredentialId' ? '#e8f5e9' : '#f8fafc',
+                    border: selectedItem === 'CredentialId' ? '1.5px solid var(--color-primary)' : '1px dashed #cbd5e1',
+                    cursor: 'pointer',
+                    color: selectedItem === 'CredentialId' ? 'var(--color-primary)' : '#475569',
+                    fontSize: '13px',
+                    fontWeight: 600,
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--color-primary)'}
+                  onMouseLeave={e => e.currentTarget.style.borderColor = selectedItem === 'CredentialId' ? 'var(--color-primary)' : '#cbd5e1'}
+                >
+                  <Type size={16} /> Atur / Kecilkan ID Kredensial
                 </button>
               </div>
               <p style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 8 }}>Tambahkan gambar PNG transparan atau teks khusus.</p>
@@ -371,6 +439,87 @@ export default function CertificateTemplateEditor() {
                           <p style={{ fontSize: '10px', color: 'var(--color-text-tertiary)', marginTop: 4 }}>* Teks ini akan diisi otomatis oleh sistem.</p>
                         )}
                       </div>
+
+                      {selectedItem === 'CredentialId' && (
+                        <div style={{ gridColumn: '1 / -1', background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px', padding: '12px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                            <label style={{ fontSize: '11px', fontWeight: 700, color: 'var(--color-primary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                              Fitur Kecilkan Kredensial
+                            </label>
+                            <span style={{ fontSize: '11px', fontWeight: 700, color: '#334155' }}>
+                              {items.find(i => i.id === selectedItem)?.fontSize || 10} px
+                            </span>
+                          </div>
+                          
+                          {/* Quick Preset Buttons */}
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6, marginBottom: 10 }}>
+                            {[
+                              { label: '7px', val: 7 },
+                              { label: '8px', val: 8 },
+                              { label: '10px', val: 10 },
+                              { label: '12px', val: 12 },
+                            ].map(p => (
+                              <button
+                                key={p.val}
+                                type="button"
+                                onClick={() => updateItem('CredentialId', { fontSize: p.val })}
+                                style={{
+                                  padding: '5px 4px',
+                                  borderRadius: '6px',
+                                  border: (items.find(i => i.id === 'CredentialId')?.fontSize === p.val)
+                                    ? '1.5px solid var(--color-primary)'
+                                    : '1px solid #CBD5E1',
+                                  background: (items.find(i => i.id === 'CredentialId')?.fontSize === p.val)
+                                    ? '#E8F5E9'
+                                    : '#FFFFFF',
+                                  color: (items.find(i => i.id === 'CredentialId')?.fontSize === p.val)
+                                    ? 'var(--color-primary)'
+                                    : '#334155',
+                                  fontSize: '11px',
+                                  fontWeight: 700,
+                                  cursor: 'pointer',
+                                  textAlign: 'center',
+                                  transition: 'all 0.15s',
+                                }}
+                              >
+                                {p.label}
+                              </button>
+                            ))}
+                          </div>
+
+                          {/* Stepper + Slider */}
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <button
+                              type="button"
+                              onClick={() => updateItem('CredentialId', prev => ({ fontSize: Math.max(6, (prev.fontSize || 10) - 1) }))}
+                              style={{ width: 28, height: 28, borderRadius: 6, border: '1px solid #CBD5E1', background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                              title="Kecilkan 1px"
+                            >
+                              <Minus size={13} />
+                            </button>
+                            <input
+                              type="range"
+                              min="6"
+                              max="20"
+                              value={items.find(i => i.id === 'CredentialId')?.fontSize || 10}
+                              onChange={e => updateItem('CredentialId', { fontSize: Number(e.target.value) })}
+                              style={{ flex: 1, accentColor: 'var(--color-primary)', cursor: 'pointer' }}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => updateItem('CredentialId', prev => ({ fontSize: Math.min(30, (prev.fontSize || 10) + 1) }))}
+                              style={{ width: 28, height: 28, borderRadius: 6, border: '1px solid #CBD5E1', background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                              title="Besarkan 1px"
+                            >
+                              <Plus size={13} />
+                            </button>
+                          </div>
+                          
+                          <p style={{ fontSize: '10px', color: '#64748B', marginTop: 8, lineHeight: 1.4 }}>
+                            * Tips: Ukuran 8px - 10px sangat ideal agar ID Kredensial tampil elegan tanpa menutupi ornamen sertifikat.
+                          </p>
+                        </div>
+                      )}
                       <div>
                         <label style={{ display: 'block', fontSize: '11px', color: 'var(--color-text-tertiary)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Ukuran (px)</label>
                         <input 
@@ -616,7 +765,7 @@ export default function CertificateTemplateEditor() {
                                 width: Math.round(Math.max(50, Math.min(800, start.width + (offset * handle.multX)))),
                                 x: start.x + offset / 2
                               } : {
-                                fontSize: Math.round(Math.max(10, Math.min(120, start.fontSize + (offset * handle.multX * 0.5)))),
+                                fontSize: Math.round(Math.max(6, Math.min(120, start.fontSize + (offset * handle.multX * 0.5)))),
                                 x: start.x + offset / 2
                               })
                             })
@@ -642,6 +791,86 @@ export default function CertificateTemplateEditor() {
           </div>
         </div>
       </div>
+
+      {/* Live Certificate Preview Dialog */}
+      <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
+        <DialogContent style={{ maxWidth: '920px', width: '100%', maxHeight: '92vh', padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px', borderBottom: '1px solid var(--color-border)', background: '#fff' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Award size={18} color="var(--color-primary)" />
+              <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-text-primary)' }}>Pratinjau Langsung Desain Sertifikat</span>
+            </div>
+            <span style={{ fontSize: '12px', color: '#64748B' }}>Contoh Data Nyata (Mock)</span>
+          </div>
+
+          <div style={{ padding: '24px', background: '#F8FAFC', overflowY: 'auto', display: 'flex', justifyContent: 'center' }}>
+            <div
+              style={{
+                width: 800,
+                height: 600,
+                minWidth: 800,
+                minHeight: 600,
+                background: bgImage ? `url(${bgImage}) center/cover no-repeat` : '#FFFFFF',
+                position: 'relative',
+                boxShadow: '0 10px 30px rgba(0,0,0,0.12)',
+                borderRadius: '4px',
+                overflow: 'hidden',
+                backgroundColor: '#fff',
+                transform: 'scale(min(1, calc((90vw - 80px) / 800)))',
+                transformOrigin: 'top center',
+              }}
+            >
+              {items.map(item => {
+                const getMockText = () => {
+                  switch (item.id) {
+                    case 'MenteeName': return 'Daffarael Anaqi Ali';
+                    case 'CourseName': return name || 'Belajar Figma Dari Nol';
+                    case 'Date': return '11 November 2026';
+                    case 'CredentialId': return 'METRO-COURSE-102';
+                    case 'CeoName': return 'Nama CEO';
+                    case 'LeadName': return 'Daffarael Anaqi Ali';
+                    default: return item.label;
+                  }
+                };
+
+                return (
+                  <div
+                    key={item.id}
+                    style={{
+                      position: 'absolute',
+                      left: item.x,
+                      top: item.y,
+                      transform: 'translate(-50%, -50%)',
+                      fontSize: `${item.fontSize}px`,
+                      color: item.color,
+                      fontWeight: 700,
+                      width: item.width ? `${item.width}px` : undefined,
+                      whiteSpace: item.width ? 'pre-wrap' : 'nowrap',
+                      wordBreak: 'break-word',
+                      textAlign: 'center',
+                      mixBlendMode: item.transparentBg ? 'multiply' : 'normal',
+                    }}
+                  >
+                    {item.type === 'image' && item.src ? (
+                      <img
+                        src={
+                          item.transparentBg && item.src.includes('/image/upload/') && !item.src.includes('e_make_transparent')
+                            ? item.src.replace('/image/upload/', '/image/upload/e_make_transparent:20/')
+                            : item.src
+                        }
+                        alt={item.label}
+                        style={{ width: item.width || 150, display: 'block', pointerEvents: 'none' }}
+                      />
+                    ) : (
+                      getMockText()
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

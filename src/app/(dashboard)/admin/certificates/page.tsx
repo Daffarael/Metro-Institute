@@ -8,7 +8,7 @@
 
 import { useState } from 'react'
 import { useQuery, keepPreviousData } from '@tanstack/react-query'
-import { Download, Award } from 'lucide-react'
+import { Download, Award, Eye } from 'lucide-react'
 import api from '@/lib/axios'
 import { formatDate } from '@/lib/utils'
 import AdminPageHeader from '@/components/admin/AdminPageHeader'
@@ -155,12 +155,55 @@ export default function AdminCertificatesPage() {
                       {formatDate(cert.issuedAt)}
                     </td>
                     <td style={{ padding: 'var(--space-3) var(--space-4)' }}>
-                      <button
-                        onClick={() => setPreviewId(cert.credentialId)}
-                        style={{ display: 'flex', alignItems: 'center', gap: 4, padding: '5px 10px', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-border)', background: 'transparent', fontSize: '12px', fontWeight: 500, cursor: 'pointer' }}
-                      >
-                        <Download size={12} /> Unduh
-                      </button>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <button
+                          onClick={() => setPreviewId(cert.credentialId)}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 4,
+                            padding: '5px 10px',
+                            borderRadius: 'var(--radius-md)',
+                            border: '1px solid var(--color-border)',
+                            background: '#fff',
+                            fontSize: '12px',
+                            fontWeight: 600,
+                            color: 'var(--color-primary)',
+                            cursor: 'pointer',
+                            transition: 'all 0.15s',
+                          }}
+                          onMouseEnter={e => e.currentTarget.style.background = '#f0fdf4'}
+                          onMouseLeave={e => e.currentTarget.style.background = '#fff'}
+                          title="Pratinjau Sertifikat"
+                        >
+                          <Eye size={12} /> Pratinjau
+                        </button>
+                        <a
+                          href={`/certificate/${cert.credentialId}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 4,
+                            padding: '5px 10px',
+                            borderRadius: 'var(--radius-md)',
+                            border: '1px solid var(--color-border)',
+                            background: 'transparent',
+                            fontSize: '12px',
+                            fontWeight: 500,
+                            color: 'var(--color-text-secondary)',
+                            textDecoration: 'none',
+                            cursor: 'pointer',
+                            transition: 'all 0.15s',
+                          }}
+                          onMouseEnter={e => e.currentTarget.style.background = 'var(--color-bg)'}
+                          onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                          title="Buka / Unduh Halaman Sertifikat"
+                        >
+                          <Download size={12} /> Unduh
+                        </a>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -180,13 +223,32 @@ export default function AdminCertificatesPage() {
       </AnimatePresence>
 
       <Dialog open={!!previewId} onOpenChange={(open) => !open && setPreviewId(null)}>
-        <DialogContent style={{ maxWidth: '900px', width: '100%', height: '85vh', padding: 0, overflow: 'hidden' }}>
+        <DialogContent style={{ maxWidth: '920px', width: '100%', height: '88vh', padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px', borderBottom: '1px solid var(--color-border)', background: '#fff' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Award size={18} color="var(--color-primary)" />
+              <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-text-primary)' }}>Pratinjau Sertifikat</span>
+              {previewId && <span style={{ fontSize: '12px', fontWeight: 600, color: '#475569', background: '#f1f5f9', padding: '2px 8px', borderRadius: '4px' }}>{previewId}</span>}
+            </div>
+            {previewId && (
+              <a
+                href={`/certificate/${previewId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-primary)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}
+              >
+                Buka Tab Baru ↗
+              </a>
+            )}
+          </div>
           {previewId && (
-            <iframe 
-              src={`/certificate/${previewId}?modal=true`} 
-              style={{ width: '100%', height: '100%', border: 'none' }} 
-              title="Certificate Preview"
-            />
+            <div style={{ flex: 1, position: 'relative', background: '#f8fafc' }}>
+              <iframe 
+                src={`/certificate/${previewId}?modal=true`} 
+                style={{ width: '100%', height: '100%', border: 'none' }} 
+                title="Certificate Preview"
+              />
+            </div>
           )}
         </DialogContent>
       </Dialog>
