@@ -767,58 +767,35 @@ export default function CourseLearningPlayerPage() {
                         <Lock size={14} /> Tonton min. 90% ({Math.min(99, Math.round(playedRatio * 100))}%)
                       </button>
                     )
-                  ) : parsedMaterials.length > 0 ? (
-                    hasDownloaded ? (
-                      <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => completeMutation.mutate()}
-                        disabled={completeMutation.isPending}
-                        style={{
-                          padding: '9px 18px',
-                          background: 'var(--color-primary)',
-                          color: '#fff',
-                          border: 'none',
-                          borderRadius: 10,
-                          fontWeight: 600,
-                          fontSize: '13px',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: 6,
-                          cursor: 'pointer',
-                          boxShadow: '0 2px 8px rgba(16, 185, 129, 0.25)'
-                        }}
-                      >
-                        {completeMutation.isPending ? (
-                          <Loader2 size={16} className="animate-spin" />
-                        ) : (
-                          <>
-                            <CheckCircle2 size={16} /> Tandai Selesai
-                          </>
-                        )}
-                      </motion.button>
-                    ) : (
-                      <button
-                        disabled
-                        title="Unduh dokumen materi pembelajaran di atas terlebih dahulu"
-                        style={{
-                          padding: '9px 18px',
-                          background: '#f8fafc',
-                          color: '#94a3b8',
-                          border: '1px solid #e2e8f0',
-                          borderRadius: 10,
-                          fontWeight: 600,
-                          fontSize: '13px',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: 6,
-                          cursor: 'not-allowed',
-                          opacity: 0.8
-                        }}
-                      >
-                        <Lock size={14} /> Unduh Materi Dahulu
-                      </button>
-                    )
+                  ) : (currentSession.type === 'MATERIAL' || parsedMaterials.length > 0) ? (
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => completeMutation.mutate()}
+                      disabled={completeMutation.isPending}
+                      style={{
+                        padding: '9px 18px',
+                        background: 'var(--color-primary)',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: 10,
+                        fontWeight: 600,
+                        fontSize: '13px',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        cursor: 'pointer',
+                        boxShadow: '0 2px 8px rgba(16, 185, 129, 0.25)'
+                      }}
+                    >
+                      {completeMutation.isPending ? (
+                        <Loader2 size={16} className="animate-spin" />
+                      ) : (
+                        <>
+                          <CheckCircle2 size={16} /> Tandai Selesai
+                        </>
+                      )}
+                    </motion.button>
                   ) : currentSession.type === 'QUIZ' ? (
                     <div
                       style={{
