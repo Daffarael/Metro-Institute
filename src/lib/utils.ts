@@ -134,8 +134,8 @@ export function getProductBadgeStyle(type?: string | null): ProductBadgeConfig {
   if (t.includes('inspire') || t.includes('webinar') || t.includes('talk')) {
     return {
       label: 'INSPIRE TALKS',
-      bg: '#D97706', // Metro Warm Gold / Amber
-      color: '#FFFFFF',
+      bg: '#FAE653', // Metro Accent Yellow
+      color: '#063D2A', // Metro Deep Forest text for crisp readability
     }
   }
   return {

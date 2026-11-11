@@ -33,8 +33,8 @@ const STATUS_MAP: Record<string, ChipStyle> = {
   // Types
   BOOTCAMP:       { color: '#018556', label: 'Bootcamp' },
   MINI_COURSE:    { color: '#063D2A', label: 'Mini Course' },
-  WEBINAR:        { color: '#D97706', label: 'Inspire Talk' },
-  INSPIRE_TALK:   { color: '#D97706', label: 'Inspire Talk' },
+  WEBINAR:        { color: '#CA8A04', label: 'Inspire Talk' },
+  INSPIRE_TALK:   { color: '#CA8A04', label: 'Inspire Talk' },
 }
 
 interface AdminStatusChipProps {
