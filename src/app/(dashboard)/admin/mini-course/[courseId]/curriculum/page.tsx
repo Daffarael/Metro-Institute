@@ -273,9 +273,6 @@ return (
                   rows={4}
                   minHeight={120}
                 />
-                <span style={{ fontSize: '11px', color: '#64748b', marginTop: 4, display: 'block' }}>
-                  Deskripsi ini akan ditampilkan pada tab Ringkasan di aplikasi mobile dan web mentee.
-                </span>
               </div>
             </div>
           )}
