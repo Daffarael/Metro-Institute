@@ -428,6 +428,7 @@ export function CardTabs({ items, activeId, onChange, children }: CardTabsProps)
   const rowRef = useRef<HTMLDivElement | null>(null)
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([])
   const [plateau, setPlateau] = useState({ x: 0, width: 0, height: 0, ready: false })
+  const [hoveredId, setHoveredId] = useState<string | null>(null)
 
   const selectedIndex = items.findIndex((i) => i.id === activeId)
 
@@ -497,6 +498,7 @@ export function CardTabs({ items, activeId, onChange, children }: CardTabsProps)
 
         {items.map((item, index) => {
           const selected = item.id === activeId
+          const isHovered = hoveredId === item.id && !selected
           const Icon = item.icon
           return (
             <button
@@ -506,31 +508,24 @@ export function CardTabs({ items, activeId, onChange, children }: CardTabsProps)
               type="button"
               aria-selected={selected}
               tabIndex={selected ? 0 : -1}
-              onClick={() => onChange(item.id)}
+              onClick={() => {
+                setHoveredId(null)
+                onChange(item.id)
+              }}
+              onMouseEnter={() => setHoveredId(item.id)}
+              onMouseLeave={() => setHoveredId(null)}
               style={{
                 position: 'relative',
                 zIndex: 1,
                 padding: '9px 18px',
-                background: 'none',
+                background: isHovered ? 'rgba(255, 255, 255, 0.45)' : 'transparent',
                 border: 'none',
                 cursor: 'pointer',
                 fontSize: '13.5px',
                 outline: 'none',
                 borderRadius: '8px 8px 0 0',
-                color: selected ? '#0f172a' : '#475569',
-                transition: 'all 0.15s ease',
-              }}
-              onMouseEnter={(e) => {
-                if (!selected) {
-                  e.currentTarget.style.color = '#0f172a'
-                  e.currentTarget.style.background = 'rgba(255,255,255,0.45)'
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!selected) {
-                  e.currentTarget.style.color = '#475569'
-                  e.currentTarget.style.background = 'none'
-                }
+                color: selected ? '#0f172a' : (isHovered ? '#0f172a' : '#475569'),
+                transition: 'background-color 0.15s ease, color 0.15s ease',
               }}
             >
               <span style={{ display: 'grid', placeItems: 'center' }}>

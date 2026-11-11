@@ -1100,6 +1100,7 @@ export default function BootcampLearningPlayerPage() {
                             style={{
                               display: 'inline-flex',
                               alignItems: 'center',
+                              gap: 6,
                               padding: '9px 18px',
                               borderRadius: 10,
                               background: '#018556',
@@ -1109,7 +1110,7 @@ export default function BootcampLearningPlayerPage() {
                               fontSize: '13px'
                             }}
                           >
-                            Selesai
+                            <CheckCircle2 size={16} color="#ffffff" /> Selesai
                           </div>
                         ) : !isReadingComplete ? (
                           <button
@@ -1279,35 +1280,6 @@ export default function BootcampLearningPlayerPage() {
                 {activeTab === 'overview' && (
                   currentSession.type === 'MATERIAL' ? (
                     <div className="animate-fade-in">
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, marginBottom: 18 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                          <span style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: 6,
-                            padding: '5px 12px',
-                            borderRadius: 8,
-                            background: '#ffffff', border: '1px solid #e2e8f0',
-                            color: 'var(--color-primary)',
-                            fontSize: '12px',
-                            fontWeight: 700,
-                            letterSpacing: '0.02em',
-                          }}>
-                            <BookOpen size={13} color="var(--color-primary)" /> Modul Bacaan (In-App Reading)
-                          </span>
-                          <span style={{
-                            fontSize: '12px',
-                            fontWeight: 600,
-                            color: '#64748b',
-                            background: '#f1f5f9',
-                            padding: '5px 12px',
-                            borderRadius: 8,
-                          }}>
-                            {readingMinutes > 0 ? `${readingMinutes} Menit Baca` : 'Bacaan Mandiri'} • Metro Institute Exclusive
-                          </span>
-                        </div>
-                      </div>
-
                       {currentSession.description ? (
                         <div style={{
                           background: '#f8fafc',
@@ -1342,6 +1314,7 @@ export default function BootcampLearningPlayerPage() {
                             style={{
                               display: 'inline-flex',
                               alignItems: 'center',
+                              gap: 8,
                               padding: '10px 22px',
                               borderRadius: 'var(--radius-md)',
                               background: '#018556',
@@ -1351,7 +1324,7 @@ export default function BootcampLearningPlayerPage() {
                               fontSize: '13.5px',
                             }}
                           >
-                            Selesai
+                            <CheckCircle2 size={16} color="#ffffff" /> Selesai
                           </div>
                         ) : !isReadingComplete ? (
                           <button
@@ -1539,7 +1512,7 @@ export default function BootcampLearningPlayerPage() {
                         onClick={() => addQnaMutation.mutate()} disabled={addQnaMutation.isPending || !qnaMessage.trim()}
                         style={{
                           padding: '0 20px', borderRadius: 10, border: 'none',
-                          background: '#0f172a', color: '#fff', fontWeight: 600, fontSize: '13px',
+                          background: 'var(--color-primary)', color: '#fff', fontWeight: 600, fontSize: '13px',
                           cursor: qnaMessage.trim() ? 'pointer' : 'not-allowed', opacity: qnaMessage.trim() ? 1 : 0.6,
                           display: 'flex', alignItems: 'center', gap: 6
                         }}
