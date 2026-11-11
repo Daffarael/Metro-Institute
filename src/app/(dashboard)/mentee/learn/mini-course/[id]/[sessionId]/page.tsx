@@ -336,169 +336,7 @@ export default function CourseLearningPlayerPage() {
                 isCompleted={currentSession.isCompleted || isCompleted}
                 onComplete={() => completeMutation.mutate()}
               />
-            ) : (
-              <div style={{
-                background: '#ffffff',
-                borderRadius: 16,
-                padding: '24px 28px',
-                border: '1px solid #e2e8f0',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 20
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 6,
-                      padding: '4px 10px',
-                      borderRadius: 6,
-                      background: '#ffffff', border: '1px solid #e2e8f0',
-                      color: 'var(--color-primary)',
-                      fontSize: '12px',
-                      fontWeight: 700,
-                      letterSpacing: '0.02em',
-                    }}>
-                      <BookOpen size={13} color="var(--color-primary)" /> Modul Bacaan (In-App Reading)
-                    </span>
-                    <span style={{
-                      fontSize: '12px',
-                      fontWeight: 600,
-                      color: '#64748b',
-                      background: '#f1f5f9',
-                      padding: '4px 10px',
-                      borderRadius: 6,
-                    }}>
-                      5 Menit Baca • Metro Institute Exclusive
-                    </span>
-                  </div>
-                </div>
-
-                {/* Deskripsi / Isi Materi Teks (In-App Article) */}
-                {(currentSession.description || currentSession.assignmentDescription) ? (
-                  <div style={{
-                    background: '#f8fafc',
-                    padding: '24px 28px',
-                    borderRadius: 14,
-                    border: '1px solid #e2e8f0',
-                    boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.02)'
-                  }}>
-                    <MarkdownText content={currentSession.description || currentSession.assignmentDescription} />
-                  </div>
-                ) : (
-                  <div style={{
-                    background: '#f8fafc',
-                    padding: '24px',
-                    borderRadius: 14,
-                    border: '1px solid #e2e8f0',
-                    textAlign: 'center',
-                    color: '#64748b',
-                    fontSize: '14px',
-                    lineHeight: 1.6
-                  }}>
-                    <BookOpen size={28} style={{ margin: '0 auto 10px', color: '#94a3b8' }} />
-                    <p style={{ fontWeight: 600, color: '#334155', margin: '0 0 4px' }}>Modul Bacaan Siap Dipelajari</p>
-                    <p style={{ margin: 0, fontSize: '13px' }}>Silakan simak isi materi ringkasan atau diskusikan pada tab Tanya Jawab.</p>
-                  </div>
-                )}
-
-                {/* Tombol Penyelesaian Sesi Langsung In-App */}
-                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 4 }}>
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => completeMutation.mutate()}
-                    disabled={completeMutation.isPending || isCompleted || currentSession.isCompleted}
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: 8,
-                      padding: '10px 22px',
-                      borderRadius: 'var(--radius-md)',
-                      background: (isCompleted || currentSession.isCompleted) ? '#ecfdf5' : 'var(--color-primary)',
-                      color: (isCompleted || currentSession.isCompleted) ? 'var(--color-primary)' : '#ffffff',
-                      border: (isCompleted || currentSession.isCompleted) ? '1px solid #a7f3d0' : 'none',
-                      fontWeight: 700,
-                      fontSize: '13.5px',
-                      cursor: (isCompleted || currentSession.isCompleted) ? 'default' : 'pointer',
-                      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.04)',
-                    }}
-                  >
-                    {completeMutation.isPending ? (
-                      <Loader2 size={16} className="animate-spin" />
-                    ) : (isCompleted || currentSession.isCompleted) ? (
-                      <>
-                        <CheckCircle2 size={16} /> Modul Selesai Dibaca ✓
-                      </>
-                    ) : (
-                      <>
-                        <CheckCircle2 size={16} /> Selesai Membaca Modul
-                      </>
-                    )}
-                  </motion.button>
-                </div>
-
-                {/* File Materi Pendukung & Tautan Tambahan (Opsional) */}
-                {parsedMaterials.length > 0 && (
-                  <div style={{ marginTop: 8, paddingTop: 16, borderTop: '1px dashed #e2e8f0', display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    <div style={{ fontSize: '12px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                      Tautan Referensi Tambahan (Opsional)
-                    </div>
-                    {parsedMaterials.map((mat: any, idx: number) => {
-                      const displayName = mat.name && mat.name !== 'Materi' ? mat.name : (currentSession.title ? `Dokumen Referensi - ${currentSession.title}` : `Referensi ${idx + 1}`)
-                      return (
-                        <a
-                          key={idx}
-                          href={mat.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            gap: 12,
-                            padding: '10px 14px',
-                            border: '1px solid #e2e8f0',
-                            borderRadius: 10,
-                            textDecoration: 'none',
-                            background: '#f8fafc',
-                            transition: 'all 0.15s ease',
-                            cursor: 'pointer'
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.borderColor = 'var(--color-primary)';
-                            e.currentTarget.style.background = '#ffffff';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.borderColor = '#e2e8f0';
-                            e.currentTarget.style.background = '#f8fafc';
-                          }}
-                        >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flex: 1 }}>
-                            <FileText size={16} color="var(--color-primary)" />
-                            <span style={{
-                              fontSize: '13px',
-                              fontWeight: 600,
-                              color: '#334155',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              whiteSpace: 'nowrap'
-                            }}>
-                              {displayName}
-                            </span>
-                          </div>
-                          <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-primary)', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                            Buka Referensi <ExternalLink size={12} />
-                          </span>
-                        </a>
-                      )
-                    })}
-                  </div>
-                )}
-              </div>
-            )}
+            ) : null}
 
             {/* Session Info Header & Quick Actions */}
             <div style={{
@@ -808,7 +646,7 @@ export default function CourseLearningPlayerPage() {
             {/* CardTabs — browser-tab style like bootcamp */}
             <CardTabs
               items={[
-                { id: 'overview', label: 'Ringkasan', icon: BookOpen },
+                { id: 'overview', label: currentSession.type === 'MATERIAL' ? 'Materi' : 'Ringkasan', icon: BookOpen },
                 { id: 'notes', label: 'Catatan', icon: StickyNote },
                 { id: 'qna', label: 'Tanya Jawab', icon: MessageSquare },
               ]}
@@ -817,14 +655,168 @@ export default function CourseLearningPlayerPage() {
             >
               <div style={{ minHeight: 280 }}>
                 {activeTab === 'overview' && (
-                  <div className="animate-fade-in">
-                    <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#0f172a', marginBottom: 12 }}>
-                      Tentang Sesi Ini
-                    </h3>
-                    <p style={{ color: '#475569', lineHeight: 1.75, fontSize: '14.5px', margin: 0 }}>
-                      {currentSession.assignmentDescription || "Sesi ini akan membahas materi secara mendalam sesuai kurikulum yang telah disusun. Pastikan Anda menyimak dengan baik."}
-                    </p>
-                  </div>
+                  currentSession.type === 'MATERIAL' ? (
+                    <div className="animate-fade-in">
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12, marginBottom: 18 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                          <span style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 6,
+                            padding: '4px 10px',
+                            borderRadius: 6,
+                            background: '#ffffff', border: '1px solid #e2e8f0',
+                            color: 'var(--color-primary)',
+                            fontSize: '12px',
+                            fontWeight: 700,
+                            letterSpacing: '0.02em',
+                          }}>
+                            <BookOpen size={13} color="var(--color-primary)" /> Modul Bacaan (In-App Reading)
+                          </span>
+                          <span style={{
+                            fontSize: '12px',
+                            fontWeight: 600,
+                            color: '#64748b',
+                            background: '#f1f5f9',
+                            padding: '4px 10px',
+                            borderRadius: 6,
+                          }}>
+                            5 Menit Baca • Metro Institute Exclusive
+                          </span>
+                        </div>
+                      </div>
+
+                      {(currentSession.description || currentSession.assignmentDescription) ? (
+                        <div style={{
+                          background: '#f8fafc',
+                          padding: '24px 28px',
+                          borderRadius: 14,
+                          border: '1px solid #e2e8f0',
+                          boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.02)'
+                        }}>
+                          <MarkdownText content={currentSession.description || currentSession.assignmentDescription} />
+                        </div>
+                      ) : (
+                        <div style={{
+                          background: '#f8fafc',
+                          padding: '24px',
+                          borderRadius: 14,
+                          border: '1px solid #e2e8f0',
+                          textAlign: 'center',
+                          color: '#64748b',
+                          fontSize: '14px',
+                          lineHeight: 1.6
+                        }}>
+                          <BookOpen size={28} style={{ margin: '0 auto 10px', color: '#94a3b8' }} />
+                          <p style={{ fontWeight: 600, color: '#334155', margin: '0 0 4px' }}>Modul Bacaan Siap Dipelajari</p>
+                          <p style={{ margin: 0, fontSize: '13px' }}>Belum ada isi materi yang ditambahkan untuk modul ini.</p>
+                        </div>
+                      )}
+
+                      {/* Tombol Penyelesaian Sesi Langsung di Bawah Artikel */}
+                      <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 18 }}>
+                        <motion.button
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => completeMutation.mutate()}
+                          disabled={completeMutation.isPending || isCompleted || currentSession.isCompleted}
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 8,
+                            padding: '10px 22px',
+                            borderRadius: 'var(--radius-md)',
+                            background: (isCompleted || currentSession.isCompleted) ? '#ecfdf5' : 'var(--color-primary)',
+                            color: (isCompleted || currentSession.isCompleted) ? 'var(--color-primary)' : '#ffffff',
+                            border: (isCompleted || currentSession.isCompleted) ? '1px solid #a7f3d0' : 'none',
+                            fontWeight: 700,
+                            fontSize: '13.5px',
+                            cursor: (isCompleted || currentSession.isCompleted) ? 'default' : 'pointer',
+                            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.04)',
+                          }}
+                        >
+                          {completeMutation.isPending ? (
+                            <Loader2 size={16} className="animate-spin" />
+                          ) : (isCompleted || currentSession.isCompleted) ? (
+                            <>
+                              <CheckCircle2 size={16} /> Modul Selesai Dibaca ✓
+                            </>
+                          ) : (
+                            <>
+                              <CheckCircle2 size={16} /> Selesai Membaca Modul
+                            </>
+                          )}
+                        </motion.button>
+                      </div>
+
+                      {/* File Materi Pendukung & Tautan Tambahan (Opsional) */}
+                      {parsedMaterials.length > 0 && (
+                        <div style={{ marginTop: 20, paddingTop: 16, borderTop: '1px dashed #e2e8f0', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                          <div style={{ fontSize: '12px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                            Tautan Referensi Tambahan (Opsional)
+                          </div>
+                          {parsedMaterials.map((mat: any, idx: number) => {
+                            const displayName = mat.name && mat.name !== 'Materi' ? mat.name : (currentSession.title ? `Dokumen Referensi - ${currentSession.title}` : `Referensi ${idx + 1}`)
+                            return (
+                              <a
+                                key={idx}
+                                href={mat.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'space-between',
+                                  gap: 12,
+                                  padding: '10px 14px',
+                                  border: '1px solid #e2e8f0',
+                                  borderRadius: 10,
+                                  textDecoration: 'none',
+                                  background: '#f8fafc',
+                                  transition: 'all 0.15s ease',
+                                  cursor: 'pointer'
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.borderColor = 'var(--color-primary)';
+                                  e.currentTarget.style.background = '#ffffff';
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.borderColor = '#e2e8f0';
+                                  e.currentTarget.style.background = '#f8fafc';
+                                }}
+                              >
+                                <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flex: 1 }}>
+                                  <FileText size={16} color="var(--color-primary)" />
+                                  <span style={{
+                                    fontSize: '13px',
+                                    fontWeight: 600,
+                                    color: '#334155',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap'
+                                  }}>
+                                    {displayName}
+                                  </span>
+                                </div>
+                                <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-primary)', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                                  Buka Referensi <ExternalLink size={12} />
+                                </span>
+                              </a>
+                            )
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="animate-fade-in">
+                      <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#0f172a', marginBottom: 12 }}>
+                        Tentang Sesi Ini
+                      </h3>
+                      <p style={{ color: '#475569', lineHeight: 1.75, fontSize: '14.5px', margin: 0 }}>
+                        {currentSession.assignmentDescription || "Sesi ini akan membahas materi secara mendalam sesuai kurikulum yang telah disusun. Pastikan Anda menyimak dengan baik."}
+                      </p>
+                    </div>
+                  )
                 )}
 
                 {activeTab === 'notes' && (
