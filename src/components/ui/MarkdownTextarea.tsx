@@ -263,9 +263,10 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
     }
 
     /**
-     * Sisipkan awalan baris (daftar poin, nomor, kutipan)
+     * Sisipkan atau ubah format awalan baris secara cerdas (Heading, Poin, Nomor)
+     * Tidak akan menduplikasi jika diklik berulang kali
      */
-    const insertLinePrefix = (prefix: string) => {
+    const toggleLinePrefix = (type: 'heading' | 'bullet' | 'number') => {
       const textarea = textareaRef.current
       if (!textarea) return
 
@@ -274,17 +275,97 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
       const end = textarea.selectionEnd
 
       const lineStart = currentValue.lastIndexOf('\n', start - 1) + 1
-      const beforeLine = currentValue.slice(0, lineStart)
-      const afterLine = currentValue.slice(lineStart)
+      const lineEndIndex = currentValue.indexOf('\n', start)
+      const lineEnd = lineEndIndex === -1 ? currentValue.length : lineEndIndex
 
-      const nextVal = `${beforeLine}${prefix}${afterLine}`
+      const beforeLine = currentValue.slice(0, lineStart)
+      const lineText = currentValue.slice(lineStart, lineEnd)
+      const afterLine = currentValue.slice(lineEnd)
+
+      let newLineText = ''
+      let cursorOffset = 0
+
+      // Pola list yang sudah ada di baris
+      const bulletMatch = lineText.match(/^(\s*)([-*])\s(.*)$/)
+      const numberMatch = lineText.match(/^(\s*)(\d+)\.\s(.*)$/)
+      const headingMatch = lineText.match(/^(\s*)(#{1,6})\s(.*)$/)
+
+      if (type === 'bullet') {
+        if (bulletMatch) {
+          // Baris sudah berupa poin, jangan duplikasi (tetap satu poin)
+          return
+        } else if (numberMatch) {
+          // Ubah dari nomor ke poin
+          newLineText = `${numberMatch[1]}- ${numberMatch[3]}`
+          cursorOffset = newLineText.length - lineText.length
+        } else if (headingMatch) {
+          newLineText = `${headingMatch[1]}- ${headingMatch[3]}`
+          cursorOffset = newLineText.length - lineText.length
+        } else {
+          // Tambahkan poin ke baris saat ini
+          const indentMatch = lineText.match(/^(\s*)(.*)$/)
+          const indent = indentMatch ? indentMatch[1] : ''
+          const rest = indentMatch ? indentMatch[2] : lineText
+          newLineText = `${indent}- ${rest}`
+          cursorOffset = 2
+        }
+      } else if (type === 'number') {
+        // Tentukan angka nomor yang tepat (berdasarkan baris sebelumnya jika ada)
+        let targetNum = 1
+        if (lineStart > 0) {
+          const prevText = currentValue.slice(0, lineStart - 1)
+          const prevLineStart = prevText.lastIndexOf('\n') + 1
+          const prevLine = prevText.slice(prevLineStart)
+          const prevNumMatch = prevLine.match(/^(\s*)(\d+)\.\s/)
+          if (prevNumMatch) {
+            targetNum = parseInt(prevNumMatch[2], 10) + 1
+          }
+        }
+
+        if (numberMatch) {
+          // Baris sudah berupa nomor, jangan duplikasi (1. 1. 1.)
+          return
+        } else if (bulletMatch) {
+          // Ubah dari poin ke nomor
+          newLineText = `${bulletMatch[1]}${targetNum}. ${bulletMatch[3]}`
+          cursorOffset = newLineText.length - lineText.length
+        } else if (headingMatch) {
+          newLineText = `${headingMatch[1]}${targetNum}. ${headingMatch[3]}`
+          cursorOffset = newLineText.length - lineText.length
+        } else {
+          const indentMatch = lineText.match(/^(\s*)(.*)$/)
+          const indent = indentMatch ? indentMatch[1] : ''
+          const rest = indentMatch ? indentMatch[2] : lineText
+          const prefix = `${indent}${targetNum}. `
+          newLineText = `${prefix}${rest}`
+          cursorOffset = prefix.length
+        }
+      } else if (type === 'heading') {
+        if (headingMatch) {
+          return
+        } else if (bulletMatch) {
+          newLineText = `${bulletMatch[1]}### ${bulletMatch[3]}`
+          cursorOffset = newLineText.length - lineText.length
+        } else if (numberMatch) {
+          newLineText = `${numberMatch[1]}### ${numberMatch[3]}`
+          cursorOffset = newLineText.length - lineText.length
+        } else {
+          const indentMatch = lineText.match(/^(\s*)(.*)$/)
+          const indent = indentMatch ? indentMatch[1] : ''
+          const rest = indentMatch ? indentMatch[2] : lineText
+          newLineText = `${indent}### ${rest}`
+          cursorOffset = 4
+        }
+      }
+
+      const nextVal = `${beforeLine}${newLineText}${afterLine}`
       updateValue(nextVal)
 
       setTimeout(() => {
         if (textareaRef.current) {
           textareaRef.current.focus()
-          const newPos = start + prefix.length
-          textareaRef.current.setSelectionRange(newPos, end + prefix.length)
+          const newPos = Math.min(nextVal.length, Math.max(0, start + cursorOffset))
+          textareaRef.current.setSelectionRange(newPos, newPos)
         }
       }, 10)
     }
@@ -317,11 +398,93 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
         e.preventDefault()
         insertFormatting('**', '**', 'teks tebal')
+        return
       }
       // Shortcut Italic: Ctrl+I / Cmd+I
-      else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'i') {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'i') {
         e.preventDefault()
         insertFormatting('*', '*', 'teks miring')
+        return
+      }
+
+      // Enter key: Otomatis lanjut ke nomor/poin berikutnya
+      if (e.key === 'Enter' && !e.shiftKey) {
+        const textarea = textareaRef.current
+        if (!textarea) return
+
+        const start = textarea.selectionStart
+        const end = textarea.selectionEnd
+        if (start !== end) return // jika ada seleksi, biarkan behavior default browser
+
+        const lineStart = currentValue.lastIndexOf('\n', start - 1) + 1
+        const lineBeforeCursor = currentValue.slice(lineStart, start)
+
+        const bulletMatch = lineBeforeCursor.match(/^(\s*)([-*])\s(.*)$/)
+        const numberMatch = lineBeforeCursor.match(/^(\s*)(\d+)\.\s(.*)$/)
+
+        if (bulletMatch) {
+          e.preventDefault()
+          const indent = bulletMatch[1]
+          const content = bulletMatch[3].trim()
+
+          if (content.length === 0) {
+            // Jika baris poin masih kosong, tekan Enter untuk mengakhiri daftar (kembali ke baris normal)
+            const nextVal = currentValue.slice(0, lineStart) + currentValue.slice(start)
+            updateValue(nextVal)
+            setTimeout(() => {
+              if (textareaRef.current) {
+                textareaRef.current.focus()
+                textareaRef.current.setSelectionRange(lineStart, lineStart)
+              }
+            }, 10)
+          } else {
+            // Lanjutkan ke baris poin berikutnya di bawah
+            const insertion = `\n${indent}- `
+            const nextVal = currentValue.slice(0, start) + insertion + currentValue.slice(start)
+            updateValue(nextVal)
+            setTimeout(() => {
+              if (textareaRef.current) {
+                textareaRef.current.focus()
+                const newPos = start + insertion.length
+                textareaRef.current.setSelectionRange(newPos, newPos)
+              }
+            }, 10)
+          }
+          return
+        }
+
+        if (numberMatch) {
+          e.preventDefault()
+          const indent = numberMatch[1]
+          const currentNum = parseInt(numberMatch[2], 10)
+          const content = numberMatch[3].trim()
+
+          if (content.length === 0) {
+            // Jika baris nomor masih kosong, tekan Enter untuk mengakhiri daftar nomor
+            const nextVal = currentValue.slice(0, lineStart) + currentValue.slice(start)
+            updateValue(nextVal)
+            setTimeout(() => {
+              if (textareaRef.current) {
+                textareaRef.current.focus()
+                textareaRef.current.setSelectionRange(lineStart, lineStart)
+              }
+            }, 10)
+          } else {
+            // Lanjutkan ke nomor berikutnya secara berurutan (1 -> 2 -> 3 ...)
+            const nextNum = currentNum + 1
+            const insertion = `\n${indent}${nextNum}. `
+            const nextVal = currentValue.slice(0, start) + insertion + currentValue.slice(start)
+            updateValue(nextVal)
+            setTimeout(() => {
+              if (textareaRef.current) {
+                textareaRef.current.focus()
+                const newPos = start + insertion.length
+                textareaRef.current.setSelectionRange(newPos, newPos)
+              }
+            }, 10)
+          }
+          return
+        }
       }
     }
 
@@ -449,7 +612,7 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
             <button
               type="button"
               disabled={disabled || activeTab === 'preview'}
-              onClick={() => insertLinePrefix('### ')}
+              onClick={() => toggleLinePrefix('heading')}
               title="Buat Judul / Sub-bab (###)"
               style={{
                 display: 'inline-flex',
@@ -481,7 +644,7 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
             <button
               type="button"
               disabled={disabled || activeTab === 'preview'}
-              onClick={() => insertLinePrefix('- ')}
+              onClick={() => toggleLinePrefix('bullet')}
               title="Daftar Butir Poin (-)"
               style={{
                 display: 'inline-flex',
@@ -513,7 +676,7 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
             <button
               type="button"
               disabled={disabled || activeTab === 'preview'}
-              onClick={() => insertLinePrefix('1. ')}
+              onClick={() => toggleLinePrefix('number')}
               title="Daftar Berurutan (1. )"
               style={{
                 display: 'inline-flex',
@@ -869,30 +1032,6 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
             )}
           </div>
         )}
-
-        {/* Footer Helper Petunjuk Penggunaan */}
-        <div
-          style={{
-            padding: '7px 12px',
-            background: 'var(--color-bg, #f8fafc)',
-            borderTop: '1px solid rgba(0, 0, 0, 0.05)',
-            borderRadius: '0 0 12px 12px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            fontSize: '11.5px',
-            color: 'var(--color-text-tertiary, #64748b)',
-            flexWrap: 'wrap',
-            gap: 6,
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-            <span style={{ fontWeight: 600, color: 'var(--color-text-secondary, #475569)' }}>Bantuan:</span>
-            <span>
-              Klik tombol di atas atau ketik langsung simbol <code>**teks tebal**</code>, <code>*teks miring*</code>, dan emoji.
-            </span>
-          </div>
-        </div>
       </div>
     )
   }

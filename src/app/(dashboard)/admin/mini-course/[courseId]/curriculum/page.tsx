@@ -243,7 +243,6 @@ return (
                 placeholder="Pilih tipe konten"
               />
             </div>
-            <p style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 3 }}>Mini Course tidak memiliki sesi LIVE.</p>
           </div>
           {form.type === 'VIDEO' && (
             <div>
@@ -257,28 +256,17 @@ return (
             </div>
           )}
           {form.type === 'MATERIAL' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
-              <div>
-                <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 4 }}>
-                  Isi Tulisan / Artikel Materi Pembelajaran (In-App Reading) <span style={{ color: 'var(--color-error)' }}>*</span>
-                </label>
-                <p style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginBottom: 6, marginTop: -2 }}>
-                  Tulis isi materi di sini. Mentee akan membaca modul ini secara langsung di dalam aplikasi tanpa perlu membuka Google Drive atau unduh file luar.
-                </p>
-                <MarkdownTextarea 
-                  value={form.description} 
-                  onChange={v => f('description', v)} 
-                  placeholder="Tulis materi pembelajaran di sini (mendukung Markdown, heading #, poin -, tips, contoh kode, dll)..." 
-                  rows={8}
-                  minHeight={180}
-                />
-              </div>
-              <div>
-                <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 4 }}>
-                  Tautan Referensi Tambahan <span style={{ color: 'var(--color-text-tertiary)', fontWeight: 400 }}>(Opsional)</span>
-                </label>
-                <input value={form.materialUrl} onChange={e => f('materialUrl', e.target.value)} placeholder="Opsional: Tautan web atau dokumentasi resmi pendukung..." style={inputStyle} />
-              </div>
+            <div>
+              <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'block', marginBottom: 6 }}>
+                Isi Tulisan / Artikel Materi Pembelajaran (In-App Reading) <span style={{ color: 'var(--color-error)' }}>*</span>
+              </label>
+              <MarkdownTextarea 
+                value={form.description} 
+                onChange={v => f('description', v)} 
+                placeholder="Tulis materi pembelajaran di sini (mendukung Markdown, heading #, poin -, tips, contoh kode, dll)..." 
+                rows={8}
+                minHeight={180}
+              />
             </div>
           )}
           {form.type === 'QUIZ' && (
@@ -414,7 +402,6 @@ return (
               placeholder="10" 
               style={inputStyle} 
             />
-            <p style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 3 }}>Poin XP yang diperoleh mentee setelah menyelesaikan sesi ini (default: 10 XP).</p>
           </div>
 
           {/* Clean Neutral Preview Toggle Card */}
