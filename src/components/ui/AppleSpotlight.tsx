@@ -30,13 +30,12 @@ interface SearchResult {
 
 interface SpotlightPlaceholderProps {
   text: string;
-  className?: string;
 }
 
-const SpotlightPlaceholder = ({ text, className = '' }: SpotlightPlaceholderProps) => {
+const SpotlightPlaceholder = ({ text }: SpotlightPlaceholderProps) => {
   return (
     <div
-      className={`as-placeholder ${className}`}
+      className="as-placeholder"
       style={{
         position: 'absolute',
         inset: 0,
@@ -48,25 +47,20 @@ const SpotlightPlaceholder = ({ text, className = '' }: SpotlightPlaceholderProp
         pointerEvents: 'none',
       }}
     >
-      <AnimatePresence mode="popLayout">
-        <motion.p
-          key={`placeholder-${text}`}
-          initial={{ opacity: 0, y: 5 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -5 }}
-          transition={{ duration: 0.15, ease: 'easeOut' }}
-          style={{
-            margin: 0,
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            width: '100%',
-            maxWidth: '100%',
-          }}
-        >
-          {text}
-        </motion.p>
-      </AnimatePresence>
+      <p
+        style={{
+          margin: 0,
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          width: '100%',
+          maxWidth: '100%',
+          color: 'var(--color-text-secondary)',
+          fontSize: '0.875rem',
+        }}
+      >
+        {text}
+      </p>
     </div>
   );
 };
@@ -76,7 +70,6 @@ interface SpotlightInputProps {
   hidePlaceholder: boolean;
   value: string;
   onChange: (value: string) => void;
-  placeholderClassName?: string;
 }
 
 const SpotlightInput = ({
@@ -84,7 +77,6 @@ const SpotlightInput = ({
   hidePlaceholder,
   value,
   onChange,
-  placeholderClassName
 }: SpotlightInputProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -95,7 +87,7 @@ const SpotlightInput = ({
       </div>
       <div className="as-input-wrapper">
         {!hidePlaceholder && (
-          <SpotlightPlaceholder text={placeholder} className={placeholderClassName} />
+          <SpotlightPlaceholder text={placeholder} />
         )}
 
         <input
@@ -236,34 +228,29 @@ const AppleSpotlight = ({
         onClick={(e) => e.stopPropagation()}
         className="as-main-wrapper group"
       >
-        <div className={`as-search-box ${isExpanded ? 'is-expanded' : ''}`}>
+        <div className={`as-search-box ${isExpanded ? 'is-focused' : ''}`}>
           <SpotlightInput
             placeholder={
               searchPlaceholder
                 ? searchPlaceholder
-                : hoveredSearchResult !== null
-                ? searchResults[hoveredSearchResult]?.label ?? currentPageLabel
                 : currentPageLabel
             }
-            placeholderClassName={
-              hoveredSearchResult !== null ? 'as-placeholder-active' : ''
-            }
-            hidePlaceholder={!(hoveredSearchResult !== null || !searchValue)}
+            hidePlaceholder={Boolean(searchValue)}
             value={searchValue}
             onChange={handleSearchValueChange}
           />
-
-          {searchValue && searchResults.length > 0 && (
-            <SearchResultsContainer
-              searchResults={searchResults}
-              onHover={setHoveredSearchResult}
-              onResultClick={() => {
-                setSearchValue('');
-                setHoveredSearchResult(null);
-              }}
-            />
-          )}
         </div>
+
+        {searchValue && searchResults.length > 0 && (
+          <SearchResultsContainer
+            searchResults={searchResults}
+            onHover={setHoveredSearchResult}
+            onResultClick={() => {
+              setSearchValue('');
+              setHoveredSearchResult(null);
+            }}
+          />
+        )}
       </div>
     </div>
   );

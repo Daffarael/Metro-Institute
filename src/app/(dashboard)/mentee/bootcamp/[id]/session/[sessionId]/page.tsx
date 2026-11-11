@@ -825,178 +825,144 @@ export default function BootcampLearningPlayerPage() {
                       fontWeight: 700,
                       letterSpacing: '0.02em',
                     }}>
-                      <BookOpen size={13} color="var(--color-primary)" /> Modul Pembelajaran
+                      <BookOpen size={13} color="var(--color-primary)" /> Modul Bacaan (In-App Reading)
                     </span>
-                    {parsedMaterials.length > 0 && (
-                      <span style={{
-                        fontSize: '12px',
-                        fontWeight: 600,
-                        color: '#64748b',
-                        background: '#f1f5f9',
-                        padding: '5px 12px',
-                        borderRadius: 8,
-                      }}>
-                        {parsedMaterials.length} File Lampiran
-                      </span>
-                    )}
+                    <span style={{
+                      fontSize: '12px',
+                      fontWeight: 600,
+                      color: '#64748b',
+                      background: '#f1f5f9',
+                      padding: '5px 12px',
+                      borderRadius: 8,
+                    }}>
+                      5 Menit Baca • Metro Institute Exclusive
+                    </span>
                   </div>
                 </div>
 
-                {/* Jika materi teks tanpa berkas unduhan lampiran */}
-                {parsedMaterials.length === 0 && (
+                {/* Deskripsi / Isi Materi Teks (In-App Article) */}
+                {(currentSession.description) ? (
                   <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    flexWrap: 'wrap',
-                    gap: 14,
-                    padding: '16px 20px',
+                    fontSize: '15px',
+                    color: '#1e293b',
+                    lineHeight: 1.85,
+                    whiteSpace: 'pre-wrap',
                     background: '#f8fafc',
-                    borderRadius: 12,
-                    border: '1px solid #e2e8f0'
+                    padding: '24px 28px',
+                    borderRadius: 14,
+                    border: '1px solid #e2e8f0',
+                    boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.02)'
                   }}>
-                    <span style={{ fontSize: '13.5px', color: '#64748b' }}>
-                      Silakan pelajari isi modul pada tab <strong>Ringkasan</strong> di bawah.
-                    </span>
-                    {!isCompleted && !currentSession.isCompleted && (
-                      <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => completeMutation.mutate()}
-                        disabled={completeMutation.isPending}
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: 6,
-                          padding: '9px 18px',
-                          borderRadius: 'var(--radius-md)',
-                          background: 'var(--color-primary)',
-                          color: '#ffffff',
-                          border: 'none',
-                          fontWeight: 600,
-                          fontSize: '13px',
-                          cursor: 'pointer',
-                          boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
-                        }}
-                      >
-                        {completeMutation.isPending ? (
-                          <Loader2 size={15} className="animate-spin" />
-                        ) : (
-                          <>
-                            <CheckCircle2 size={15} /> Selesai Membaca Materi
-                          </>
-                        )}
-                      </motion.button>
-                    )}
+                    {currentSession.description}
+                  </div>
+                ) : (
+                  <div style={{
+                    background: '#f8fafc',
+                    padding: '24px',
+                    borderRadius: 14,
+                    border: '1px solid #e2e8f0',
+                    textAlign: 'center',
+                    color: '#64748b',
+                    fontSize: '14px',
+                    lineHeight: 1.6
+                  }}>
+                    <BookOpen size={28} style={{ margin: '0 auto 10px', color: '#94a3b8' }} />
+                    <p style={{ fontWeight: 600, color: '#334155', margin: '0 0 4px' }}>Modul Bacaan Siap Dipelajari</p>
+                    <p style={{ margin: 0, fontSize: '13px' }}>Silakan simak isi ringkasan materi atau lanjutkan ke sesi berikutnya dengan menekan tombol selesaikan di bawah.</p>
                   </div>
                 )}
 
-                {/* File Materi Pendukung & Unduhan — Otomatis Selesai Saat Diunduh */}
+                {/* Tombol Penyelesaian Sesi Langsung In-App */}
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 4 }}>
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => completeMutation.mutate()}
+                    disabled={completeMutation.isPending || isCompleted || currentSession.isCompleted}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      padding: '10px 22px',
+                      borderRadius: 'var(--radius-md)',
+                      background: (isCompleted || currentSession.isCompleted) ? '#ecfdf5' : 'var(--color-primary)',
+                      color: (isCompleted || currentSession.isCompleted) ? 'var(--color-primary)' : '#ffffff',
+                      border: (isCompleted || currentSession.isCompleted) ? '1px solid #a7f3d0' : 'none',
+                      fontWeight: 700,
+                      fontSize: '13.5px',
+                      cursor: (isCompleted || currentSession.isCompleted) ? 'default' : 'pointer',
+                      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.04)',
+                    }}
+                  >
+                    {completeMutation.isPending ? (
+                      <Loader2 size={16} className="animate-spin" />
+                    ) : (isCompleted || currentSession.isCompleted) ? (
+                      <>
+                        <CheckCircle2 size={16} /> Modul Selesai Dibaca ✓
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle2 size={16} /> Selesai Membaca Modul
+                      </>
+                    )}
+                  </motion.button>
+                </div>
+
+                {/* File Materi Pendukung & Tautan Tambahan (Opsional) */}
                 {parsedMaterials.length > 0 && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <div style={{ marginTop: 8, paddingTop: 16, borderTop: '1px dashed #e2e8f0', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    <div style={{ fontSize: '12px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                      Tautan Referensi Tambahan (Opsional)
+                    </div>
                     {parsedMaterials.map((mat: any, idx: number) => {
-                      const displayName = mat.name && mat.name !== 'Materi' ? mat.name : (currentSession.title ? `Dokumen - ${currentSession.title}` : `Materi Pembelajaran ${idx + 1}`)
+                      const displayName = mat.name && mat.name !== 'Materi' ? mat.name : (currentSession.title ? `Dokumen Referensi - ${currentSession.title}` : `Referensi ${idx + 1}`)
                       return (
                         <a
                           key={idx}
                           href={mat.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          onClick={() => {
-                            setHasDownloaded(true)
-                            if (!currentSession.isCompleted && !isCompleted) {
-                              completeMutation.mutate()
-                            }
-                          }}
                           style={{
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'space-between',
-                            gap: 16,
-                            padding: '14px 18px',
+                            gap: 12,
+                            padding: '10px 14px',
                             border: '1px solid #e2e8f0',
-                            borderRadius: 12,
+                            borderRadius: 10,
                             textDecoration: 'none',
-                            background: '#ffffff',
+                            background: '#f8fafc',
                             transition: 'all 0.15s ease',
-                            boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
                             cursor: 'pointer'
                           }}
                           onMouseEnter={(e) => {
                             e.currentTarget.style.borderColor = 'var(--color-primary)';
-                            e.currentTarget.style.boxShadow = '0 2px 8px rgba(16, 185, 129, 0.08)';
+                            e.currentTarget.style.background = '#ffffff';
                           }}
                           onMouseLeave={(e) => {
                             e.currentTarget.style.borderColor = '#e2e8f0';
-                            e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.02)';
+                            e.currentTarget.style.background = '#f8fafc';
                           }}
                         >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0, flex: 1 }}>
-                            <div style={{
-                              width: 40,
-                              height: 40,
-                              borderRadius: 10,
-                              background: '#f8fafc', border: '1px solid #e2e8f0',
-                              color: 'var(--color-primary)',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              flexShrink: 0
-                            }}>
-                              <FileText size={20} />
-                            </div>
-                            <div style={{ minWidth: 0, flex: 1 }}>
-                              <div style={{
-                                fontSize: '14px',
-                                fontWeight: 600,
-                                color: '#0f172a',
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                whiteSpace: 'nowrap'
-                              }}>
-                                {displayName}
-                              </div>
-                              <div style={{ fontSize: '12px', color: '#64748b', marginTop: 2 }}>
-                                Dokumen Pembelajaran • Unduh untuk menyelesaikan sesi
-                              </div>
-                            </div>
-                          </div>
-
-                          <motion.div
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              gap: 6,
-                              padding: '8px 16px',
-                              background: 'var(--color-primary)',
-                              color: '#ffffff',
-                              borderRadius: 'var(--radius-md)',
-                              fontWeight: 600,
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flex: 1 }}>
+                            <FileText size={16} color="var(--color-primary)" />
+                            <span style={{
                               fontSize: '13px',
-                              flexShrink: 0,
-                              boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)'
-                            }}
-                          >
-                            <Download size={14} /> Unduh
-                          </motion.div>
+                              fontWeight: 600,
+                              color: '#334155',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap'
+                            }}>
+                              {displayName}
+                            </span>
+                          </div>
+                          <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-primary)', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                            Buka Referensi <ExternalLink size={12} />
+                          </span>
                         </a>
                       )
                     })}
-                  </div>
-                )}
-
-                {/* If no description and no materials */}
-                {!currentSession.description && !currentSession.assignmentDescription && parsedMaterials.length === 0 && (
-                  <div style={{
-                    textAlign: 'center',
-                    padding: '32px 0',
-                    color: '#64748b',
-                    fontSize: '14px'
-                  }}>
-                    Materi pembelajaran untuk sesi ini dapat Anda diskusikan langsung pada tab <strong>Tanya Jawab</strong> atau buat <strong>Catatan</strong> pribadi di bawah.
                   </div>
                 )}
               </div>
