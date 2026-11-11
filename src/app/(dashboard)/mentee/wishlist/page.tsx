@@ -81,33 +81,32 @@ export default function WishlistPage() {
                   >
                     <Trash2 size={13} color="#EF4444" />
                   </button>
-                  {(() => {
-                    const badge = getProductBadgeStyle(item.productType)
-                    return (
-                      <div style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        padding: '4px 10px',
-                        background: badge.bg,
-                        borderRadius: '0 0 8px 0',
-                        fontSize: '9px',
-                        fontWeight: 700,
-                        color: badge.color,
-                        letterSpacing: '0.04em',
-                        whiteSpace: 'nowrap',
-                        zIndex: 2,
-                        lineHeight: 1.4,
-                      }}>
-                        {badge.label}
-                      </div>
-                    )
-                  })()}
                 </div>
 
                 {/* Body */}
                 <div style={{ padding: 'var(--space-4)', flex: 1, display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-                  <span style={{ fontSize: '11px', fontWeight: 600, color: FIELD_COLORS[product.field] }}>{FIELD_LABELS[product.field]?.split(' ')[0]}</span>
+                  {(() => {
+                    const badge = getProductBadgeStyle(item.productType)
+                    return (
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6, marginBottom: 2 }}>
+                        <span style={{ fontSize: '11px', fontWeight: 600, color: FIELD_COLORS[product.field] }}>{FIELD_LABELS[product.field]?.split(' ')[0]}</span>
+                        <span style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          padding: '2px 7px',
+                          borderRadius: '5px',
+                          background: badge.bg,
+                          color: badge.color,
+                          fontSize: '9px',
+                          fontWeight: 800,
+                          letterSpacing: '0.03em',
+                          lineHeight: 1.2,
+                        }}>
+                          {badge.label}
+                        </span>
+                      </div>
+                    )
+                  })()}
                   <h3 style={{ fontSize: 'var(--text-sm)', fontWeight: 700, lineHeight: 1.4, flex: 1 }} className="line-clamp-2">{product.title}</h3>
                   {product.rating > 0 && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: 3, fontSize: '11px', color: 'var(--color-text-secondary)' }}>

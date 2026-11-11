@@ -391,28 +391,6 @@ export default function BasecampPage() {
                       onMouseLeave={e => (e.currentTarget.style.boxShadow = 'none')}
                     >
                       <div style={{ height: 100, background: 'var(--color-bg)', borderBottom: '1px solid var(--color-border-subtle)', position: 'relative', flexShrink: 0 }}>
-                        {(() => {
-                          const badge = getProductBadgeStyle(course.type)
-                          return (
-                            <div style={{
-                              position: 'absolute',
-                              top: 0,
-                              left: 0,
-                              padding: '3px 8px',
-                              background: badge.bg,
-                              borderRadius: '0 0 7px 0',
-                              fontSize: '9px',
-                              fontWeight: 700,
-                              color: badge.color,
-                              letterSpacing: '0.04em',
-                              whiteSpace: 'nowrap',
-                              zIndex: 2,
-                              lineHeight: 1.3,
-                            }}>
-                              {badge.label}
-                            </div>
-                          )
-                        })()}
                         {course.thumbnail
                           ? <img src={course.thumbnail} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} draggable={false} />
                           : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -421,14 +399,30 @@ export default function BasecampPage() {
                         }
                       </div>
                       <div style={{ padding: 'var(--space-3) var(--space-4)', background: 'var(--color-surface)' }}>
-                        {(() => {
-                          const badge = getProductBadgeStyle(course.type)
-                          return (
-                            <div style={{ fontSize: '10px', fontWeight: 700, color: badge.bg, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>
-                              {badge.label}
-                            </div>
-                          )
-                        })()}
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6, marginBottom: 6 }}>
+                          <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--color-text-secondary)' }}>
+                            {course.field || 'Design & Tech'}
+                          </span>
+                          {(() => {
+                            const badge = getProductBadgeStyle(course.type)
+                            return (
+                              <span style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                padding: '2px 6.5px',
+                                borderRadius: '4px',
+                                background: badge.bg,
+                                color: badge.color,
+                                fontSize: '8.5px',
+                                fontWeight: 800,
+                                letterSpacing: '0.04em',
+                                lineHeight: 1.2,
+                              }}>
+                                {badge.label}
+                              </span>
+                            )
+                          })()}
+                        </div>
                         <div style={{ fontSize: '13px', fontWeight: 600, lineHeight: 1.4, marginBottom: 8, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
                           {course.title}
                         </div>

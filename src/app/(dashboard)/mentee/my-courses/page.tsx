@@ -295,25 +295,6 @@ function CourseCard({ course }: { course: EnrolledCourse }) {
         e.currentTarget.style.boxShadow = 'none'
       }}
     >
-      {/* Type badge — top-left corner */}
-      <div style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        padding: '4px 10px',
-        background: badge.bg,
-        borderRadius: '11px 0 8px 0',
-        fontSize: '10px',
-        fontWeight: 700,
-        color: badge.color,
-        letterSpacing: '0.04em',
-        whiteSpace: 'nowrap',
-        zIndex: 2,
-        lineHeight: 1.4,
-      }}>
-        {badge.label}
-      </div>
-
       {/* Thumbnail */}
       <div style={{
         aspectRatio: '16/9', background: 'var(--color-bg)',
@@ -337,19 +318,39 @@ function CourseCard({ course }: { course: EnrolledCourse }) {
       {/* Content Area */}
       <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', flex: 1 }}>
         
-        {/* Meta: Field · Level */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-          <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-secondary)' }}>
-            {FIELD_LABELS[course.field as keyof typeof FIELD_LABELS] || course.field}
+        {/* Meta Header: Field · Level (Left) & Product Type Badge (Right) */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, marginBottom: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0, overflow: 'hidden' }}>
+            <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-secondary)', whiteSpace: 'nowrap' }}>
+              {FIELD_LABELS[course.field as keyof typeof FIELD_LABELS] || course.field}
+            </span>
+            {course.level && (
+              <>
+                <span style={{ fontSize: '14px', color: 'var(--color-border)', lineHeight: 0 }}>•</span>
+                <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--color-text-tertiary)', whiteSpace: 'nowrap' }}>
+                  {LEVEL_LABELS[course.level as keyof typeof LEVEL_LABELS] || course.level}
+                </span>
+              </>
+            )}
+          </div>
+
+          {/* Type badge — top-right corner of white card */}
+          <span style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            padding: '2.5px 8.5px',
+            borderRadius: '6px',
+            background: badge.bg,
+            color: badge.color,
+            fontSize: '9.5px',
+            fontWeight: 800,
+            letterSpacing: '0.04em',
+            whiteSpace: 'nowrap',
+            flexShrink: 0,
+            lineHeight: 1.3,
+          }}>
+            {badge.label}
           </span>
-          {course.level && (
-            <>
-              <span style={{ fontSize: '14px', color: 'var(--color-border)', lineHeight: 0 }}>•</span>
-              <span style={{ fontSize: '12px', fontWeight: 500, color: 'var(--color-text-tertiary)' }}>
-                {LEVEL_LABELS[course.level as keyof typeof LEVEL_LABELS] || course.level}
-              </span>
-            </>
-          )}
         </div>
 
         {/* Title */}
