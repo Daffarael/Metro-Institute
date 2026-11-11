@@ -6,12 +6,12 @@ import { motion, AnimatePresence } from 'motion/react'
 import Link from 'next/link'
 import { BookOpen, Play, CheckCircle2, Lock } from 'lucide-react'
 import api from '@/lib/axios'
-import { ROUTES, FIELD_LABELS, LEVEL_LABELS } from '@/lib/utils'
+import { ROUTES, FIELD_LABELS, LEVEL_LABELS, getProductBadgeStyle } from '@/lib/utils'
 import CleanCombobox from '@/components/admin/CleanCombobox'
 import AdminEmptyState from '@/components/admin/AdminEmptyState'
 
 interface EnrolledCourse {
-  id: string; title: string; type: 'bootcamp' | 'mini-course'
+  id: string; title: string; type: 'bootcamp' | 'mini-course' | 'webinar'
   progress: number; thumbnailUrl?: string; thumbnail?: string; field: string
   accessUntil?: string; level?: string; startDate?: string
 }
@@ -28,6 +28,7 @@ const TYPE_OPTIONS = [
   { value: '', label: 'Semua Tipe' },
   { value: 'bootcamp', label: 'Bootcamp' },
   { value: 'mini-course', label: 'Mini Course' },
+  { value: 'webinar', label: 'Inspire Talk' },
 ]
 
 const STATUS_OPTIONS = [
@@ -65,13 +66,22 @@ export default function MyCoursesPage() {
   const { data: courses = [], isLoading, isFetching } = useQuery<EnrolledCourse[]>({
     queryKey: ['my-courses'],
     queryFn: async () => {
-      const [bootcamps, miniCourses] = await Promise.all([
+      const [bootcamps, miniCourses, webinars] = await Promise.all([
         api.get('/bootcamps/enrolled').then((r) => r.data.data).catch(() => []),
         api.get('/courses/enrolled').then((r) => r.data.data).catch(() => []),
+        api.get('/webinars/my/registered').then((r) => r.data.data).catch(() => []),
       ])
       return [
-        ...bootcamps.map((b: EnrolledCourse)   => ({ ...b, type: 'bootcamp'    as const })),
-        ...miniCourses.map((c: EnrolledCourse) => ({ ...c, type: 'mini-course' as const })),
+        ...bootcamps.map((b: any)   => ({ ...b, type: 'bootcamp'    as const })),
+        ...miniCourses.map((c: any) => ({ ...c, type: 'mini-course' as const })),
+        ...webinars.map((w: any)    => ({
+          id: w.id,
+          title: w.title,
+          type: 'webinar' as const,
+          progress: 100,
+          thumbnailUrl: w.bannerUrl,
+          field: w.field || 'GENERAL',
+        })),
       ]
     },
   })
@@ -93,7 +103,7 @@ export default function MyCoursesPage() {
     const parts: string[] = []
     if (querySearch) parts.push(`kata kunci "${querySearch}"`)
     if (activeFilters.field)  parts.push(`bidang "${FIELD_LABELS[activeFilters.field as keyof typeof FIELD_LABELS]}"`)
-    if (activeFilters.type)   parts.push(`tipe "${activeFilters.type === 'bootcamp' ? 'Bootcamp' : 'Mini Course'}"`)
+    if (activeFilters.type)   parts.push(`tipe "${activeFilters.type === 'bootcamp' ? 'Bootcamp' : activeFilters.type === 'mini-course' ? 'Mini Course' : 'Inspire Talk'}"`)
     if (activeFilters.status) parts.push(`status "${STATUS_OPTIONS.find(o => o.value === activeFilters.status)?.label}"`)
     return `Tidak ada kursus yang cocok dengan kriteria: ${parts.join(', ')}.`
   }
@@ -249,12 +259,19 @@ export default function MyCoursesPage() {
 }
 
 function CourseCard({ course }: { course: EnrolledCourse }) {
+  const isWebinar = course.type === 'webinar'
   const href = course.type === 'bootcamp'
     ? ROUTES.BOOTCAMP_DETAIL(course.id)
+    : isWebinar
+    ? ROUTES.WEBINAR_DETAIL(course.id)
     : ROUTES.COURSE_DETAIL(course.id)
   const learnHref = course.type === 'bootcamp'
     ? ROUTES.LEARN_BOOTCAMP(course.id)
+    : isWebinar
+    ? ROUTES.WEBINAR_DETAIL(course.id)
     : ROUTES.LEARN_COURSE(course.id)
+
+  const badge = getProductBadgeStyle(course.type)
 
   return (
     <div
@@ -284,17 +301,17 @@ function CourseCard({ course }: { course: EnrolledCourse }) {
         top: 0,
         left: 0,
         padding: '4px 10px',
-        background: course.type === 'bootcamp' ? 'var(--color-primary)' : '#3B82F6',
+        background: badge.bg,
         borderRadius: '11px 0 8px 0',
         fontSize: '10px',
-        fontWeight: 600,
-        color: '#fff',
-        letterSpacing: '0.03em',
+        fontWeight: 700,
+        color: badge.color,
+        letterSpacing: '0.04em',
         whiteSpace: 'nowrap',
         zIndex: 2,
         lineHeight: 1.4,
       }}>
-        {course.type === 'bootcamp' ? 'BOOTCAMP' : 'MINI COURSE'}
+        {badge.label}
       </div>
 
       {/* Thumbnail */}
@@ -360,7 +377,7 @@ function CourseCard({ course }: { course: EnrolledCourse }) {
           <div style={{ height: 6, background: 'var(--color-border-subtle)', borderRadius: 3, overflow: 'hidden' }}>
             <div style={{ 
               height: '100%', 
-              background: course.progress >= 100 ? 'var(--color-primary)' : '#3B82F6', 
+              background: course.progress >= 100 ? 'var(--color-primary)' : badge.bg, 
               width: `${course.progress}%`,
               borderRadius: 3 
             }} />
@@ -396,7 +413,7 @@ function CourseCard({ course }: { course: EnrolledCourse }) {
               color: '#fff', fontSize: '13px', fontWeight: 600,
               textDecoration: 'none', whiteSpace: 'nowrap'
             }}>
-              <Play size={14} fill="currentColor" /> {course.progress > 0 ? 'Lanjut' : 'Mulai'}
+              <Play size={14} fill="currentColor" /> {isWebinar ? 'Akses' : course.progress > 0 ? 'Lanjut' : 'Mulai'}
             </Link>
           )}
         </div>

@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query'
 import { PlaySquare, Flame, CheckCircle2, Circle, ArrowRight, ChevronRight, ChevronLeft, MessageCircle, GraduationCap } from 'lucide-react'
 import api from '@/lib/axios'
 import { useAuthStore } from '@/stores/auth.store'
-import { ROUTES, formatRupiah, formatDate, BADGE_LABELS } from '@/lib/utils'
+import { ROUTES, formatRupiah, formatDate, BADGE_LABELS, getProductBadgeStyle } from '@/lib/utils'
 import { motion } from 'framer-motion'
 
 interface BasecampData {
@@ -391,6 +391,28 @@ export default function BasecampPage() {
                       onMouseLeave={e => (e.currentTarget.style.boxShadow = 'none')}
                     >
                       <div style={{ height: 100, background: 'var(--color-bg)', borderBottom: '1px solid var(--color-border-subtle)', position: 'relative', flexShrink: 0 }}>
+                        {(() => {
+                          const badge = getProductBadgeStyle(course.type)
+                          return (
+                            <div style={{
+                              position: 'absolute',
+                              top: 0,
+                              left: 0,
+                              padding: '3px 8px',
+                              background: badge.bg,
+                              borderRadius: '0 0 7px 0',
+                              fontSize: '9px',
+                              fontWeight: 700,
+                              color: badge.color,
+                              letterSpacing: '0.04em',
+                              whiteSpace: 'nowrap',
+                              zIndex: 2,
+                              lineHeight: 1.3,
+                            }}>
+                              {badge.label}
+                            </div>
+                          )
+                        })()}
                         {course.thumbnail
                           ? <img src={course.thumbnail} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} draggable={false} />
                           : <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -399,9 +421,14 @@ export default function BasecampPage() {
                         }
                       </div>
                       <div style={{ padding: 'var(--space-3) var(--space-4)', background: 'var(--color-surface)' }}>
-                        <div style={{ fontSize: '10px', fontWeight: 600, color: 'var(--color-primary)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>
-                          {course.type === 'bootcamp' ? 'Bootcamp' : 'Mini Course'}
-                        </div>
+                        {(() => {
+                          const badge = getProductBadgeStyle(course.type)
+                          return (
+                            <div style={{ fontSize: '10px', fontWeight: 700, color: badge.bg, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>
+                              {badge.label}
+                            </div>
+                          )
+                        })()}
                         <div style={{ fontSize: '13px', fontWeight: 600, lineHeight: 1.4, marginBottom: 8, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
                           {course.title}
                         </div>

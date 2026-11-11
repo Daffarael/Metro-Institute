@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Link from 'next/link'
 import { Heart, BookOpen, Trash2, Star, ChevronRight } from 'lucide-react'
 import api from '@/lib/axios'
-import { ROUTES, FIELD_LABELS, FIELD_COLORS, formatRupiah } from '@/lib/utils'
+import { ROUTES, FIELD_LABELS, FIELD_COLORS, formatRupiah, getProductBadgeStyle } from '@/lib/utils'
 import { toast } from 'sonner'
 
 interface WishlistItem {
@@ -81,9 +81,28 @@ export default function WishlistPage() {
                   >
                     <Trash2 size={13} color="#EF4444" />
                   </button>
-                  <div style={{ position: 'absolute', top: 8, left: 8, padding: '3px 8px', borderRadius: 'var(--radius-full)', background: 'rgba(255,255,255,0.9)', fontSize: '10px', fontWeight: 700, color: 'var(--color-text-secondary)' }}>
-                    {isBootcamp ? 'Bootcamp' : 'Mini Course'}
-                  </div>
+                  {(() => {
+                    const badge = getProductBadgeStyle(item.productType)
+                    return (
+                      <div style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        padding: '4px 10px',
+                        background: badge.bg,
+                        borderRadius: '0 0 8px 0',
+                        fontSize: '9px',
+                        fontWeight: 700,
+                        color: badge.color,
+                        letterSpacing: '0.04em',
+                        whiteSpace: 'nowrap',
+                        zIndex: 2,
+                        lineHeight: 1.4,
+                      }}>
+                        {badge.label}
+                      </div>
+                    )
+                  })()}
                 </div>
 
                 {/* Body */}

@@ -108,6 +108,43 @@ export const BADGE_LABELS: Record<string, string> = {
   METRO_MASTER: 'Metro Master',
 }
 
+// ── Product Badge Color Harmonization (Strict Metro Brand Identity) ──────
+export interface ProductBadgeConfig {
+  label: string
+  bg: string
+  color: string
+}
+
+export function getProductBadgeStyle(type?: string | null): ProductBadgeConfig {
+  const t = (type || '').toLowerCase()
+  if (t.includes('bootcamp')) {
+    return {
+      label: 'BOOTCAMP',
+      bg: '#018556', // Metro Signature Primary Green
+      color: '#FFFFFF',
+    }
+  }
+  if (t.includes('mini') || t.includes('course')) {
+    return {
+      label: 'MINI COURSE',
+      bg: '#063D2A', // Metro Deep Forest Emerald
+      color: '#FFFFFF',
+    }
+  }
+  if (t.includes('inspire') || t.includes('webinar') || t.includes('talk')) {
+    return {
+      label: 'INSPIRE TALKS',
+      bg: '#D97706', // Metro Warm Gold / Amber
+      color: '#FFFFFF',
+    }
+  }
+  return {
+    label: 'PROGRAM',
+    bg: '#018556',
+    color: '#FFFFFF',
+  }
+}
+
 // ── Rupiah Formatter ───────────────────────────────────────
 export function formatRupiah(amount: number): string {
   return new Intl.NumberFormat('id-ID', {
