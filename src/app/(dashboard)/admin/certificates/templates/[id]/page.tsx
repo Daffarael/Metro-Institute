@@ -72,7 +72,12 @@ export default function CertificateTemplateEditor() {
         setType(tpl.type)
         setBgImage(tpl.bgImage)
         if (tpl.config && Array.isArray(tpl.config)) {
-          setItems(tpl.config)
+          const hasCred = tpl.config.some((i: any) => i.id === 'CredentialId')
+          if (!hasCred) {
+            setItems([...tpl.config, { id: 'CredentialId', type: 'text', label: 'ID Kredensial', x: 600, y: 450, fontSize: 10, color: '#6B7280' }])
+          } else {
+            setItems(tpl.config)
+          }
         }
       }
     }
@@ -328,46 +333,6 @@ export default function CertificateTemplateEditor() {
                 >
                   <Type size={16} /> Tambah Teks Khusus
                 </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    const cred = items.find(i => i.id === 'CredentialId')
-                    if (cred) {
-                      setSelectedItem('CredentialId')
-                    } else {
-                      const newCred: DragItem = {
-                        id: 'CredentialId',
-                        type: 'text',
-                        label: 'ID Kredensial',
-                        x: 600,
-                        y: 450,
-                        fontSize: 10,
-                        color: '#6B7280'
-                      }
-                      setItems(prev => [...prev, newCred])
-                      setSelectedItem('CredentialId')
-                    }
-                  }}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 8,
-                    padding: '10px 16px',
-                    borderRadius: '8px',
-                    background: selectedItem === 'CredentialId' ? '#e8f5e9' : '#f8fafc',
-                    border: selectedItem === 'CredentialId' ? '1.5px solid var(--color-primary)' : '1px dashed #cbd5e1',
-                    cursor: 'pointer',
-                    color: selectedItem === 'CredentialId' ? 'var(--color-primary)' : '#475569',
-                    fontSize: '13px',
-                    fontWeight: 600,
-                    transition: 'all 0.2s'
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--color-primary)'}
-                  onMouseLeave={e => e.currentTarget.style.borderColor = selectedItem === 'CredentialId' ? 'var(--color-primary)' : '#cbd5e1'}
-                >
-                  <Type size={16} /> Atur / Kecilkan ID Kredensial
-                </button>
               </div>
               <p style={{ fontSize: '11px', color: 'var(--color-text-tertiary)', marginTop: 8 }}>Tambahkan gambar PNG transparan atau teks khusus.</p>
             </div>
@@ -381,24 +346,25 @@ export default function CertificateTemplateEditor() {
             {selectedItem ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '11px', color: 'var(--color-text-tertiary)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Elemen Terpilih</label>
-                  <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-primary)', background: 'var(--color-primary-light)', padding: '6px 10px', borderRadius: '6px', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                  <label style={{ display: 'block', fontSize: '11px', color: 'var(--color-text-tertiary)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Elemen Terpilih</label>
+                  <div style={{ fontSize: '13px', fontWeight: 700, color: '#018556', background: '#E8F5E9', border: '1px solid #A7F3D0', padding: '6px 12px', borderRadius: '6px', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
                     {items.find(i => i.id === selectedItem)?.label}
                     <button
                       onClick={() => setSelectedItem(null)}
                       style={{
                         background: 'transparent', border: 'none', cursor: 'pointer', padding: 0,
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        color: 'var(--color-primary)', opacity: 0.7, transition: 'opacity 0.2s'
+                        color: '#018556', opacity: 0.8, transition: 'opacity 0.2s'
                       }}
                       onMouseEnter={e => e.currentTarget.style.opacity = '1'}
-                      onMouseLeave={e => e.currentTarget.style.opacity = '0.7'}
+                      onMouseLeave={e => e.currentTarget.style.opacity = '0.8'}
                       title="Batalkan Pilihan"
                     >
                       <X size={14} strokeWidth={2.5} />
                     </button>
                   </div>
                 </div>
+
                 <div className="grid-cols-2" style={{ display: 'grid', gap: '16px' }}>
                   {items.find(i => i.id === selectedItem)?.type === 'image' ? (
                     <>
@@ -418,7 +384,7 @@ export default function CertificateTemplateEditor() {
                             type="checkbox" 
                             checked={items.find(i => i.id === selectedItem)?.transparentBg || false} 
                             onChange={e => updateItem(selectedItem, { transparentBg: e.target.checked })}
-                            style={{ width: 16, height: 16, accentColor: 'var(--color-primary)' }}
+                            style={{ width: 16, height: 16, accentColor: '#018556' }}
                           />
                           <span style={{ fontSize: '12px', fontWeight: 500, color: '#3f3f46' }}>Aktifkan</span>
                         </label>
@@ -435,91 +401,8 @@ export default function CertificateTemplateEditor() {
                           disabled={['MenteeName', 'CourseName', 'Date', 'CredentialId'].includes(selectedItem)}
                           style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid rgba(0,0,0,0.1)', fontSize: '13px', outline: 'none', background: ['MenteeName', 'CourseName', 'Date', 'CredentialId'].includes(selectedItem) ? '#f4f4f5' : '#fff' }} 
                         />
-                        {['MenteeName', 'CourseName', 'Date', 'CredentialId'].includes(selectedItem) && (
-                          <p style={{ fontSize: '10px', color: 'var(--color-text-tertiary)', marginTop: 4 }}>* Teks ini akan diisi otomatis oleh sistem.</p>
-                        )}
                       </div>
 
-                      {selectedItem === 'CredentialId' && (
-                        <div style={{ gridColumn: '1 / -1', background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px', padding: '12px' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-                            <label style={{ fontSize: '11px', fontWeight: 700, color: 'var(--color-primary)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-                              Fitur Kecilkan Kredensial
-                            </label>
-                            <span style={{ fontSize: '11px', fontWeight: 700, color: '#334155' }}>
-                              {items.find(i => i.id === selectedItem)?.fontSize || 10} px
-                            </span>
-                          </div>
-                          
-                          {/* Quick Preset Buttons */}
-                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6, marginBottom: 10 }}>
-                            {[
-                              { label: '7px', val: 7 },
-                              { label: '8px', val: 8 },
-                              { label: '10px', val: 10 },
-                              { label: '12px', val: 12 },
-                            ].map(p => (
-                              <button
-                                key={p.val}
-                                type="button"
-                                onClick={() => updateItem('CredentialId', { fontSize: p.val })}
-                                style={{
-                                  padding: '5px 4px',
-                                  borderRadius: '6px',
-                                  border: (items.find(i => i.id === 'CredentialId')?.fontSize === p.val)
-                                    ? '1.5px solid var(--color-primary)'
-                                    : '1px solid #CBD5E1',
-                                  background: (items.find(i => i.id === 'CredentialId')?.fontSize === p.val)
-                                    ? '#E8F5E9'
-                                    : '#FFFFFF',
-                                  color: (items.find(i => i.id === 'CredentialId')?.fontSize === p.val)
-                                    ? 'var(--color-primary)'
-                                    : '#334155',
-                                  fontSize: '11px',
-                                  fontWeight: 700,
-                                  cursor: 'pointer',
-                                  textAlign: 'center',
-                                  transition: 'all 0.15s',
-                                }}
-                              >
-                                {p.label}
-                              </button>
-                            ))}
-                          </div>
-
-                          {/* Stepper + Slider */}
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <button
-                              type="button"
-                              onClick={() => updateItem('CredentialId', prev => ({ fontSize: Math.max(6, (prev.fontSize || 10) - 1) }))}
-                              style={{ width: 28, height: 28, borderRadius: 6, border: '1px solid #CBD5E1', background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                              title="Kecilkan 1px"
-                            >
-                              <Minus size={13} />
-                            </button>
-                            <input
-                              type="range"
-                              min="6"
-                              max="20"
-                              value={items.find(i => i.id === 'CredentialId')?.fontSize || 10}
-                              onChange={e => updateItem('CredentialId', { fontSize: Number(e.target.value) })}
-                              style={{ flex: 1, accentColor: 'var(--color-primary)', cursor: 'pointer' }}
-                            />
-                            <button
-                              type="button"
-                              onClick={() => updateItem('CredentialId', prev => ({ fontSize: Math.min(30, (prev.fontSize || 10) + 1) }))}
-                              style={{ width: 28, height: 28, borderRadius: 6, border: '1px solid #CBD5E1', background: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                              title="Besarkan 1px"
-                            >
-                              <Plus size={13} />
-                            </button>
-                          </div>
-                          
-                          <p style={{ fontSize: '10px', color: '#64748B', marginTop: 8, lineHeight: 1.4 }}>
-                            * Tips: Ukuran 8px - 10px sangat ideal agar ID Kredensial tampil elegan tanpa menutupi ornamen sertifikat.
-                          </p>
-                        </div>
-                      )}
                       <div>
                         <label style={{ display: 'block', fontSize: '11px', color: 'var(--color-text-tertiary)', marginBottom: 4, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Ukuran (px)</label>
                         <input 
@@ -549,28 +432,30 @@ export default function CertificateTemplateEditor() {
                           onChange={e => updateItem(selectedItem, { width: e.target.value ? Number(e.target.value) : undefined })}
                           style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid rgba(0,0,0,0.1)', fontSize: '13px', outline: 'none' }} 
                         />
-                        <p style={{ fontSize: '10px', color: 'var(--color-text-tertiary)', marginTop: 4 }}>* Kosongkan untuk lebar otomatis, atau gunakan kotak biru di kiri/kanan teks pada kanvas untuk mengatur batas baris.</p>
                       </div>
                     </>
                   )}
                 </div>
-                <div className="grid-cols-2" style={{ display: 'grid', gap: '8px', marginTop: '8px' }}>
-                  <button 
-                    onClick={() => {
-                      setItems(prev => prev.filter(i => i.id !== selectedItem))
-                      setSelectedItem(null)
-                    }} 
-                    style={{ width: '100%', padding: '8px', fontSize: '12px', fontWeight: 600, borderRadius: '6px', background: '#fee2e2', color: '#ef4444', border: 'none', cursor: 'pointer', transition: 'background 0.2s' }} 
-                    onMouseEnter={e => e.currentTarget.style.background = '#fecaca'} 
-                    onMouseLeave={e => e.currentTarget.style.background = '#fee2e2'}
-                  >
-                    Hapus Elemen
-                  </button>
+
+                <div style={{ display: 'grid', gridTemplateColumns: ['MenteeName', 'CourseName', 'Date', 'CredentialId', 'CeoName', 'LeadName'].includes(selectedItem) ? '1fr' : '1fr 1fr', gap: '8px', marginTop: '12px' }}>
+                  {!['MenteeName', 'CourseName', 'Date', 'CredentialId', 'CeoName', 'LeadName'].includes(selectedItem) && (
+                    <button 
+                      onClick={() => {
+                        setItems(prev => prev.filter(i => i.id !== selectedItem))
+                        setSelectedItem(null)
+                      }} 
+                      style={{ width: '100%', padding: '10px 14px', fontSize: '13px', fontWeight: 700, borderRadius: '8px', background: '#DC2626', color: '#FFFFFF', border: 'none', cursor: 'pointer', transition: 'background 0.2s' }} 
+                      onMouseEnter={e => e.currentTarget.style.background = '#B91C1C'} 
+                      onMouseLeave={e => e.currentTarget.style.background = '#DC2626'}
+                    >
+                      Hapus Elemen
+                    </button>
+                  )}
                   <button 
                     onClick={() => setSelectedItem(null)} 
-                    style={{ width: '100%', padding: '8px', fontSize: '12px', fontWeight: 600, borderRadius: '6px', background: '#f4f4f5', color: '#52525b', border: 'none', cursor: 'pointer', transition: 'background 0.2s' }} 
-                    onMouseEnter={e => e.currentTarget.style.background = '#e4e4e7'} 
-                    onMouseLeave={e => e.currentTarget.style.background = '#f4f4f5'}
+                    style={{ width: '100%', padding: '10px 14px', fontSize: '13px', fontWeight: 600, borderRadius: '8px', background: '#F1F5F9', color: '#334155', border: '1px solid #CBD5E1', cursor: 'pointer', transition: 'background 0.2s' }} 
+                    onMouseEnter={e => e.currentTarget.style.background = '#E2E8F0'} 
+                    onMouseLeave={e => e.currentTarget.style.background = '#F1F5F9'}
                   >
                     Tutup
                   </button>
