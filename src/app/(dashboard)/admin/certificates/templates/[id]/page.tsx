@@ -680,12 +680,14 @@ export default function CertificateTemplateEditor() {
       {/* Live Certificate Preview Dialog */}
       <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
         <DialogContent style={{ maxWidth: '920px', width: '100%', maxHeight: '92vh', padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px', borderBottom: '1px solid var(--color-border)', background: '#fff' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px', paddingRight: '56px', borderBottom: '1px solid var(--color-border)', background: '#fff' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <Award size={18} color="var(--color-primary)" />
               <span style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-text-primary)' }}>Pratinjau Langsung Desain Sertifikat</span>
+              <span style={{ fontSize: '11px', fontWeight: 600, color: '#018556', background: '#E8F5E9', border: '1px solid #A7F3D0', padding: '2px 8px', borderRadius: '4px' }}>
+                Contoh Data Nyata (Mock)
+              </span>
             </div>
-            <span style={{ fontSize: '12px', color: '#64748B' }}>Contoh Data Nyata (Mock)</span>
           </div>
 
           <div style={{ padding: '24px', background: '#F8FAFC', overflowY: 'auto', display: 'flex', justifyContent: 'center' }}>
