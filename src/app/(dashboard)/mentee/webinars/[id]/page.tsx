@@ -639,97 +639,9 @@ export default function MenteeWebinarDetailPage() {
 
                 ) : isLiveWindow ? (
 
-                  /* Terdaftar dan SEDANG BERLANGSUNG */
+                  /* Terdaftar dan SEDANG BERLANGSUNG: Tombol akses utama sudah tersedia di tab Jadwal & Akses */
 
-                  webinar.meetingUrl ? (
-
-                    <div>
-
-                      <a href={ensureAbsoluteUrl(webinar.meetingUrl)} target="_blank" rel="noreferrer" style={{ textDecoration: 'none', display: 'block' }}>
-
-                        <motion.div
-
-                          whileHover={{ scale: 1.02 }}
-
-                          whileTap={{ scale: 0.98 }}
-
-                          style={{
-
-                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-
-                            width: '100%', padding: '12px 0',
-
-                            background: isOvertime ? '#D97706' : 'var(--color-primary)', color: '#fff',
-
-                            borderRadius: 8, fontWeight: 700, fontSize: '14px',
-
-                          }}
-
-                        >
-
-                          <PlayCircle size={16} strokeWidth={2} /> Masuk Live Room Sekarang
-
-                        </motion.div>
-
-                      </a>
-
-                      {isOvertime && (
-
-                        <div style={{ textAlign: 'center', marginTop: 8, fontSize: '11.5px', color: '#D97706', fontWeight: 500 }}>
-
-                          Sesi sedang berlangsung (waktu tambahan / Q&A)
-
-                        </div>
-
-                      )}
-
-                    </div>
-
-                  ) : (
-
-                    <div>
-
-                      <motion.div
-
-                        whileHover={{ scale: 1.02 }}
-
-                        whileTap={{ scale: 0.98 }}
-
-                        onClick={() => setActiveTab('schedule')}
-
-                        style={{
-
-                          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-
-                          width: '100%', padding: '12px 0',
-
-                          background: isOvertime ? '#D97706' : 'var(--color-primary)', color: '#fff',
-
-                          borderRadius: 8, fontWeight: 700, fontSize: '14px',
-
-                          cursor: 'pointer',
-
-                        }}
-
-                      >
-
-                        <PlayCircle size={16} strokeWidth={2} /> Masuk Live Room
-
-                      </motion.div>
-
-                      {isOvertime && (
-
-                        <div style={{ textAlign: 'center', marginTop: 8, fontSize: '11.5px', color: '#D97706', fontWeight: 500 }}>
-
-                          Sesi sedang berlangsung (waktu tambahan / Q&A)
-
-                        </div>
-
-                      )}
-
-                    </div>
-
-                  )
+                  null
 
                 ) : (
 
