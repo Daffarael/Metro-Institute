@@ -355,34 +355,26 @@ export default function MenteeWebinarDetailPage() {
 
 
 
-  // Sesi dinyatakan Selesai JIKA diakhiri manual oleh admin (isEnded = true / liveStatus = 'ENDED')
-  // ATAU status COMPLETED / waktu pelaksanaan sesi telah berakhir
-  const isEnded = Boolean(webinar.isEnded) || webinar.liveStatus === 'ENDED' || webinar.status === 'COMPLETED' || currentTime > scheduledEnd.getTime()
+  // Sesi dinyatakan Selesai HANYA JIKA diakhiri manual oleh admin / webhook (isEnded = true / liveStatus = 'ENDED' / status = 'COMPLETED')
+  // Melewati jam jadwal BUKAN berarti sesi selesai otomatis, melainkan sesi sedang OVERTIME (masih live/diskusi/Q&A)
+  const isEnded = Boolean(webinar.isEnded) || webinar.liveStatus === 'ENDED' || webinar.status === 'COMPLETED'
 
   // Batas pendaftaran H-2 jam sebelum acara dimulai
   const registrationDeadline = new Date(scheduledStart.getTime() - 2 * 60 * 60 * 1000)
   const isRegistrationClosed = isEnded || currentTime >= registrationDeadline.getTime()
 
   const isUpcoming = !isEnded && currentTime < openTime.getTime()
-
   const isLiveWindow = !isEnded && currentTime >= openTime.getTime()
 
   // Overtime: Sesi melewati jadwal durasi awal, namun admin belum mengakhiri sesi (masih diskusi/Q&A)
-
   const isOvertime = isLiveWindow && currentTime > scheduledEnd.getTime()
 
   const isFree = webinar.price === 0
-
   const isFull = !!webinar.quota && (webinar._count?.registrations || 0) >= webinar.quota
 
-
-
-  // Waktu berakhir aktual sesuai saat admin klik selesaikan (atau fallback durasi jadwal)
-
-  const actualEndTime = webinar.endedAt
-
+  // Waktu berakhir aktual: hanya jika endedAt ada dan setelah scheduledStart; jika tidak selalu gunakan scheduledEnd
+  const actualEndTime = (webinar.endedAt && new Date(webinar.endedAt).getTime() > scheduledStart.getTime())
     ? new Date(webinar.endedAt)
-
     : scheduledEnd
 
 
