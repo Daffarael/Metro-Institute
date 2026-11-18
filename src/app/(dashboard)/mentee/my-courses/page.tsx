@@ -74,14 +74,17 @@ export default function MyCoursesPage() {
       return [
         ...bootcamps.map((b: any)   => ({ ...b, type: 'bootcamp'    as const })),
         ...miniCourses.map((c: any) => ({ ...c, type: 'mini-course' as const })),
-        ...webinars.map((w: any)    => ({
-          id: w.id,
-          title: w.title,
-          type: 'webinar' as const,
-          progress: 100,
-          thumbnailUrl: w.bannerUrl,
-          field: w.field || 'GENERAL',
-        })),
+        ...webinars.map((w: any)    => {
+          const isAttended = Boolean(w.attended || w.attendanceStatus === 'PRESENT')
+          return {
+            id: w.id,
+            title: w.title,
+            type: 'webinar' as const,
+            progress: isAttended ? 100 : 0,
+            thumbnailUrl: w.bannerUrl,
+            field: w.field || 'GENERAL',
+          }
+        }),
       ]
     },
   })
@@ -370,9 +373,13 @@ function CourseCard({ course }: { course: EnrolledCourse }) {
         {/* Progress */}
         <div style={{ marginTop: 'auto', marginBottom: 20 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, fontSize: '12px' }}>
-            <span style={{ color: 'var(--color-text-tertiary)', fontWeight: 500 }}>Progress</span>
+            <span style={{ color: 'var(--color-text-tertiary)', fontWeight: 500 }}>
+              {isWebinar ? 'Status' : 'Progress'}
+            </span>
             <span style={{ color: course.progress >= 100 ? 'var(--color-primary)' : 'var(--color-text-primary)', fontWeight: 600 }}>
-              {course.progress >= 100 ? 'Selesai' : `${course.progress}%`}
+              {isWebinar
+                ? (course.progress >= 100 ? 'Hadir (Selesai)' : 'Terdaftar')
+                : (course.progress >= 100 ? 'Selesai' : course.progress > 0 ? `${course.progress}%` : 'Belum Mulai')}
             </span>
           </div>
           <div style={{ height: 6, background: 'var(--color-border-subtle)', borderRadius: 3, overflow: 'hidden' }}>
@@ -380,7 +387,8 @@ function CourseCard({ course }: { course: EnrolledCourse }) {
               height: '100%', 
               background: course.progress >= 100 ? 'var(--color-primary)' : badge.bg, 
               width: `${course.progress}%`,
-              borderRadius: 3 
+              borderRadius: 3,
+              transition: 'width 0.4s ease'
             }} />
           </div>
         </div>
@@ -410,11 +418,20 @@ function CourseCard({ course }: { course: EnrolledCourse }) {
             <Link href={learnHref} style={{ 
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
               padding: '8px 12px', borderRadius: 'var(--radius-md)',
-              background: 'var(--color-primary)', border: '1px solid var(--color-primary)',
+              background: course.progress >= 100 ? '#018556' : 'var(--color-primary)',
+              border: `1px solid ${course.progress >= 100 ? '#018556' : 'var(--color-primary)'}`,
               color: '#fff', fontSize: '13px', fontWeight: 600,
               textDecoration: 'none', whiteSpace: 'nowrap'
             }}>
-              <Play size={14} fill="currentColor" /> {isWebinar ? 'Akses' : course.progress > 0 ? 'Lanjut' : 'Mulai'}
+              {course.progress >= 100 ? (
+                <>
+                  <CheckCircle2 size={14} /> {isWebinar ? 'Lihat Detail' : 'Lihat Materi'}
+                </>
+              ) : (
+                <>
+                  <Play size={14} fill="currentColor" /> {isWebinar ? 'Akses' : course.progress > 0 ? 'Lanjut' : 'Mulai Belajar'}
+                </>
+              )}
             </Link>
           )}
         </div>
