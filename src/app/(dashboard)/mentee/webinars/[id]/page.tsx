@@ -1429,7 +1429,7 @@ export default function MenteeWebinarDetailPage() {
 
                             }}>
 
-                              {isOvertime ? 'WAKTU TAMBAHAN' : 'LIVE'}
+                              LIVE
 
                             </span>
 
@@ -1437,11 +1437,7 @@ export default function MenteeWebinarDetailPage() {
 
                           <p style={{ fontSize: '12.5px', color: 'var(--color-text-tertiary)', margin: '2px 0 0' }}>
 
-                            {isOvertime
-
-                              ? 'Sesi melewati estimasi durasi awal, namun diskusi & Q&A masih berlangsung aktif.'
-
-                              : 'Sesi sedang berlangsung via Google Meet / Zoom'}
+                            Sesi sedang berlangsung via Google Meet / Zoom
 
                           </p>
 
@@ -1573,7 +1569,7 @@ export default function MenteeWebinarDetailPage() {
 
                           ? 'Sesi live streaming untuk webinar ini telah berakhir. Anda dapat menyaksikan kembali video rekaman pembahasannya di bawah ini.'
 
-                          : 'Sesi live streaming untuk Inspire Talk ini telah berakhir. Terima kasih telah berpartisipasi! Rekaman materi akan segera diperbarui jika telah siap.'}
+                          : 'Sesi live streaming untuk Inspire Talk ini telah berakhir. Terima kasih telah berpartisipasi!'}
 
                       </p>
 
