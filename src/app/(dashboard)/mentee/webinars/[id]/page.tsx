@@ -1175,199 +1175,95 @@ export default function MenteeWebinarDetailPage() {
 
 
 
-                {/* Status Kehadiran Mentee jika sesi sudah selesai / ada data kehadiran aktual */}
+                {/* Status Kehadiran Sukses & Sertifikat (Hanya muncul jika sesi telah selesai dan mentee terverifikasi Hadir) */}
 
-                {webinar.isRegistered && (
+                {webinar.isRegistered && isEnded && (webinar.attendance?.status === 'PRESENT' || webinar.attendance?.status === 'MANUAL' || webinar.attendance?.status === 'EXCUSED' || webinar.attendance?.certificate) && (
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <div style={{
 
-                    {webinar.attendance && (!isUpcoming || webinar.attendance.durationMinutes > 0) && (
+                    padding: '16px 20px',
 
-                      <div style={{
+                    borderRadius: 14,
 
-                        padding: '16px 20px',
+                    background: '#f0fdf4',
 
-                        borderRadius: 14,
+                    border: '1.5px solid #bbf7d0',
 
-                        background: '#ffffff',
+                    display: 'flex',
 
-                        border: '1.5px solid #cbd5e1',
+                    alignItems: 'center',
 
-                        display: 'flex',
+                    justifyContent: 'space-between',
 
-                        flexDirection: 'column',
+                    flexWrap: 'wrap',
 
-                        gap: 12,
+                    gap: 12,
+
+                  }}>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+
+                      <span style={{
+
+                        display: 'inline-flex', alignItems: 'center', gap: 6,
+
+                        padding: '4px 12px', borderRadius: 20,
+
+                        background: '#018556', color: '#ffffff',
+
+                        fontSize: '12.5px', fontWeight: 700
 
                       }}>
 
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
+                        <CheckCircle2 size={15} color="#ffffff" /> Hadir Terverifikasi
 
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-
-                            {(webinar.attendance.status === 'PRESENT' || webinar.attendance.status === 'MANUAL') ? (
-
-                              <span style={{
-
-                                display: 'inline-flex', alignItems: 'center', gap: 6,
-
-                                padding: '4px 12px', borderRadius: 20,
-
-                                background: '#018556', color: '#ffffff',
-
-                                fontSize: '12.5px', fontWeight: 700
-
-                              }}>
-
-                                <CheckCircle2 size={15} color="#ffffff" /> Hadir Terverifikasi
-
-                              </span>
-
-                            ) : webinar.attendance.status === 'EXCUSED' ? (
-
-                              <span style={{
-
-                                display: 'inline-flex', alignItems: 'center', gap: 6,
-
-                                padding: '4px 12px', borderRadius: 20,
-
-                                background: '#2563eb', color: '#ffffff',
-
-                                fontSize: '12.5px', fontWeight: 700
-
-                              }}>
-
-                                <Award size={15} color="#ffffff" /> Izin Disetujui
-
-                              </span>
-
-                            ) : (
-
-                              <span style={{
-
-                                display: 'inline-flex', alignItems: 'center', gap: 6,
-
-                                padding: '4px 12px', borderRadius: 20,
-
-                                background: '#475569', color: '#ffffff',
-
-                                fontSize: '12.5px', fontWeight: 700
-
-                              }}>
-
-                                <Clock size={15} color="#ffffff" /> Durasi Kurang
-
-                              </span>
-
-                            )}
+                      </span>
 
 
 
-                            <span style={{ fontSize: '13px', fontWeight: 700, color: '#334155' }}>
+                      {webinar.attendance?.xpAwarded ? (
 
-                              {webinar.attendance.durationMinutes} dari {webinar.attendance.sessionDurationMinutes || webinar.duration} menit
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: '12px', fontWeight: 700, color: '#d97706', background: '#fef3c7', padding: '4px 10px', borderRadius: 6 }}>
 
-                            </span>
-
-                          </div>
-
-
-
-                          {(webinar.attendance.status === 'PRESENT' || webinar.attendance.status === 'MANUAL' || webinar.attendance.status === 'EXCUSED') && (
-
-                            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: '12px', fontWeight: 700, color: '#d97706', background: '#fef3c7', padding: '4px 10px', borderRadius: 6 }}>
-
-                              <Zap size={13} fill="#d97706" /> +{webinar.attendance.xpAwarded || webinar.xpReward || 25} XP Didapatkan
-
-                            </div>
-
-                          )}
+                          <Zap size={13} fill="#d97706" /> +{webinar.attendance.xpAwarded} XP Didapatkan
 
                         </div>
 
+                      ) : null}
 
-
-                        {/* Durasi Progress Bar */}
-
-                        <div style={{ width: '100%', height: 6, background: '#e2e8f0', borderRadius: 4, overflow: 'hidden' }}>
-
-                          <div style={{
-
-                            width: `${Math.min(100, Math.round((webinar.attendance.durationMinutes / (webinar.attendance.sessionDurationMinutes || webinar.duration)) * 100))}%`,
-
-                            height: '100%',
-
-                            background: (webinar.attendance.status === 'PRESENT' || webinar.attendance.status === 'MANUAL')
-
-                              ? '#22c55e'
-
-                              : webinar.attendance.status === 'EXCUSED'
-
-                              ? '#3b82f6'
-
-                              : '#94a3b8',
-
-                            borderRadius: 4
-
-                          }} />
-
-                        </div>
+                    </div>
 
 
 
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10, marginTop: 4 }}>
+                    {webinar.attendance?.certificate && (
 
-                          <p style={{ margin: 0, fontSize: '12.5px', color: '#475569', lineHeight: 1.5 }}>
+                      <Link href="/mentee/certificates" style={{ textDecoration: 'none' }}>
 
-                            {(webinar.attendance.status === 'PRESENT' || webinar.attendance.status === 'MANUAL')
+                        <motion.div
 
-                              ? 'Kehadiranmu telah terverifikasi secara otomatis oleh sistem melalui Google Meet. Reward XP telah diberikan.'
+                          whileHover={{ scale: 1.02 }}
 
-                              : webinar.attendance.status === 'EXCUSED'
+                          whileTap={{ scale: 0.98 }}
 
-                              ? `Izin kehadiran telah disetujui admin: "${webinar.attendance.adminNotes || 'Disetujui'}". Kehadiran sesi ini telah diverifikasi.`
+                          style={{
 
-                              : `Durasi aktifmu di Google Meet (${webinar.attendance.durationMinutes} menit) belum mencapai syarat minimal 80% (${webinar.attendance.minRequiredMinutes} menit). Reward XP terkunci.`}
+                            display: 'inline-flex', alignItems: 'center', gap: 6,
 
-                          </p>
+                            padding: '8px 16px', borderRadius: 8,
 
+                            background: 'var(--color-primary)', color: '#fff',
 
+                            fontSize: '12.5px', fontWeight: 600, cursor: 'pointer'
 
-                          {webinar.attendance.certificate && (
+                          }}
 
-                            <Link href="/mentee/certificates" style={{ textDecoration: 'none' }}>
+                        >
 
-                              <motion.div
+                          <Award size={14} /> Buka Sertifikat Saya
 
-                                whileHover={{ scale: 1.02 }}
+                        </motion.div>
 
-                                whileTap={{ scale: 0.98 }}
-
-                                style={{
-
-                                  display: 'inline-flex', alignItems: 'center', gap: 6,
-
-                                  padding: '8px 16px', borderRadius: 8,
-
-                                  background: 'var(--color-primary)', color: '#fff',
-
-                                  fontSize: '12.5px', fontWeight: 600, cursor: 'pointer'
-
-                                }}
-
-                              >
-
-                                <Award size={14} /> Buka Sertifikat Saya
-
-                              </motion.div>
-
-                            </Link>
-
-                          )}
-
-                        </div>
-
-                      </div>
+                      </Link>
 
                     )}
 

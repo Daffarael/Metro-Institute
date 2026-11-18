@@ -742,7 +742,7 @@ export default function BootcampDetailPage() {
                             </span>
                           </div>
                           <div style={{ fontSize: '13px', color: '#475569', lineHeight: 1.5 }}>
-                            Syarat Penerbitan: Tuntaskan 100% seluruh sesi (hadir min. 80% pada setiap sesi Live Google Meet, serta selesaikan semua materi, kuis, dan tugas praktik).
+                            Syarat Penerbitan: Tuntaskan seluruh sesi (hadir pada setiap sesi Live Google Meet, serta selesaikan semua materi, kuis, dan tugas praktik).
                           </div>
                         </div>
                       </div>
@@ -785,10 +785,10 @@ export default function BootcampDetailPage() {
                         </div>
                         <div>
                           <div style={{ fontSize: '13px', fontWeight: 800, color: '#0f172a' }}>
-                            Sesi Live Google Meet (Syarat Hadir 80%)
+                            Sesi Live Google Meet
                           </div>
                           <div style={{ fontSize: '12px', color: '#475569', lineHeight: 1.45, marginTop: 2 }}>
-                            Wajib aktif minimal 80% dari total menit sesi agar tercatat Hadir.
+                            Ikuti sesi live bersama mentor di Google Meet hingga tuntas.
                           </div>
                         </div>
                       </div>
@@ -933,12 +933,12 @@ export default function BootcampDetailPage() {
                       // Additional details for subtitle
                       let detailText = ''
                       if (isLive) {
-                        if (s.attendance?.durationMinutes > 0) {
-                          detailText = `${s.attendance.durationMinutes}/${s.durationMinutes} mnt`
+                        if (s.attendance?.status === 'PRESENT' || s.attendance?.status === 'MANUAL') {
+                          detailText = 'Hadir'
                         } else if (s.liveScheduledAt) {
                           detailText = formatDate(s.liveScheduledAt)
                         } else {
-                          detailText = 'Min. hadir 80%'
+                          detailText = 'Sesi Live'
                         }
                       } else if (s.videoDuration) {
                         detailText = formatDuration(s.videoDuration)
