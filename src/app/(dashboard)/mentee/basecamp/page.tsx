@@ -561,11 +561,37 @@ export default function BasecampPage() {
               <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', marginBottom: 'var(--space-4)', lineHeight: 1.5 }}>
                 Bergabung di Discord eksklusif Metro Institute.
               </p>
-              <a href="https://discord.gg/hVW8g2bzU" target="_blank" rel="noopener noreferrer"
-                className="btn btn-primary"
-                style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 6, fontSize: '13px', fontWeight: 600 }}>
-                <MessageCircle size={14} /> Gabung Discord
-              </a>
+              <motion.a
+                href="https://discord.gg/hVW8g2bzU"
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={{
+                  scale: 1.015,
+                  backgroundColor: '#6370F4',
+                  boxShadow: '0 6px 16px rgba(88, 101, 242, 0.28)',
+                }}
+                whileTap={{ scale: 0.985 }}
+                transition={{ duration: 0.15, ease: 'easeOut' }}
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: 8,
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  padding: '9px 16px',
+                  borderRadius: 'var(--radius-md)',
+                  background: '#5865F2',
+                  color: '#ffffff',
+                  textDecoration: 'none',
+                  border: '1.5px solid #5865F2',
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 6px rgba(88, 101, 242, 0.18)',
+                }}
+              >
+                <MessageCircle size={15} /> Gabung Discord
+              </motion.a>
             </div>
           </div>
 
