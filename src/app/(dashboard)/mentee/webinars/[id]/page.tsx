@@ -1435,12 +1435,6 @@ export default function MenteeWebinarDetailPage() {
 
                           </div>
 
-                          <p style={{ fontSize: '12.5px', color: 'var(--color-text-tertiary)', margin: '2px 0 0' }}>
-
-                            Sesi sedang berlangsung via Google Meet / Zoom
-
-                          </p>
-
                         </div>
 
                       </div>
