@@ -1395,9 +1395,9 @@ export default function MenteeWebinarDetailPage() {
 
                           width: 32, height: 32, borderRadius: 8,
 
-                          background: isOvertime ? 'rgba(217, 119, 6, 0.1)' : 'rgba(1, 133, 86, 0.08)',
+                          background: isOvertime ? 'rgba(250, 230, 83, 0.25)' : 'rgba(1, 133, 86, 0.08)',
 
-                          color: isOvertime ? '#D97706' : 'var(--color-primary)',
+                          color: isOvertime ? '#854D0E' : 'var(--color-primary)',
 
                           display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
 
@@ -1421,7 +1421,11 @@ export default function MenteeWebinarDetailPage() {
 
                               fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: 6,
 
-                              background: isOvertime ? '#D97706' : 'var(--color-primary)', color: '#fff',
+                              background: isOvertime ? '#FAE653' : 'var(--color-primary)',
+
+                              color: isOvertime ? '#0D1117' : '#fff',
+
+                              border: isOvertime ? '1px solid #e6d13a' : 'none',
 
                             }}>
 
@@ -1487,7 +1491,11 @@ export default function MenteeWebinarDetailPage() {
 
                                 padding: '12px 24px', borderRadius: 8,
 
-                                background: isOvertime ? '#D97706' : 'var(--color-primary)', color: '#fff',
+                                background: isOvertime ? '#FAE653' : 'var(--color-primary)',
+
+                                color: isOvertime ? '#0D1117' : '#fff',
+
+                                border: isOvertime ? '1px solid #e6d13a' : 'none',
 
                                 fontWeight: 700, fontSize: '14px', cursor: 'pointer',
 
