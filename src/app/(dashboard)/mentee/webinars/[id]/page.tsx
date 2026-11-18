@@ -1241,9 +1241,21 @@ export default function MenteeWebinarDetailPage() {
 
                       <Video size={15} color="var(--color-primary)" />
 
-                      <span><strong>Platform:</strong> Google Meet / Online Live Stream</span>
+                      <span><strong>Platform:</strong> Google Meet</span>
 
                     </div>
+
+                    {webinar.xpReward ? (
+
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+
+                        <Zap size={15} color="#d97706" />
+
+                        <span><strong>Hadiah:</strong> +{webinar.xpReward} XP Kehadiran</span>
+
+                      </div>
+
+                    ) : null}
 
                   </div>
 
@@ -1251,113 +1263,13 @@ export default function MenteeWebinarDetailPage() {
 
 
 
-                {/* Presensi Otomatis via Google Meet & Syarat Sertifikat / XP */}
+                {/* Status Kehadiran Mentee jika sesi sudah selesai / ada data kehadiran aktual */}
 
                 {webinar.isRegistered && (
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
 
-                    {/* Callout Presensi Ringkas */}
-
-                    <div style={{
-
-                      padding: '12px 16px',
-
-                      borderRadius: 12,
-
-                      background: 'var(--color-bg)',
-
-                      border: '1px solid var(--color-border-subtle)',
-
-                      display: 'flex',
-
-                      alignItems: 'center',
-
-                      gap: 12,
-
-                    }}>
-
-                      <Clock size={16} color="var(--color-text-secondary)" style={{ flexShrink: 0 }} />
-
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-
-                        <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--color-text-primary)' }}>
-
-                          Presensi 100% Otomatis via Google Meet:
-
-                        </span>
-
-                        <span style={{ fontSize: '12.5px', color: 'var(--color-text-secondary)', lineHeight: 1.4 }}>
-
-                          Tidak perlu mengisi formulir manual atau presensi chat. Cukup masuk menggunakan email akun yang terdaftar.
-
-                        </span>
-
-                      </div>
-
-                    </div>
-
-
-
-                    {/* Syarat Sertifikat & XP Banner */}
-
-                    <div style={{
-
-                      padding: '12px 16px',
-
-                      borderRadius: 12,
-
-                      background: 'rgba(16, 185, 129, 0.05)',
-
-                      border: '1px solid rgba(16, 185, 129, 0.15)',
-
-                      display: 'flex',
-
-                      alignItems: 'center',
-
-                      justifyContent: 'space-between',
-
-                      flexWrap: 'wrap',
-
-                      gap: 10,
-
-                    }}>
-
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-
-                        <Award size={18} color="var(--color-primary)" />
-
-                        <div>
-
-                          <span style={{ fontSize: '13px', color: 'var(--color-text-primary)', fontWeight: 600 }}>
-
-                            Syarat Kehadiran & +{webinar.xpReward || 25} XP:
-
-                          </span>
-
-                          <span style={{ fontSize: '12.5px', color: 'var(--color-text-secondary)', marginLeft: 6 }}>
-
-                            Hadir minimal {webinar.attendanceThresholdPct || 80}% durasi ({Math.round((webinar.duration || 90) * ((webinar.attendanceThresholdPct || 80) / 100))} menit).
-
-                          </span>
-
-                        </div>
-
-                      </div>
-
-                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: '12px', fontWeight: 700, color: '#d97706', background: 'rgba(245, 158, 11, 0.1)', padding: '3px 8px', borderRadius: 6 }}>
-
-                        <Zap size={13} fill="#d97706" /> +{webinar.xpReward || 25} XP
-
-                      </div>
-
-                    </div>
-
-
-
-                    {/* Status Kehadiran Mentee jika sesi sudah selesai / ada data attendance */}
-
-                    {webinar.attendance && (
+                    {webinar.attendance && (!isUpcoming || webinar.attendance.durationMinutes > 0) && (
 
                       <div style={{
 
@@ -1609,9 +1521,9 @@ export default function MenteeWebinarDetailPage() {
 
 
 
-                      <p style={{ fontSize: '13.5px', color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: 0 }}>
+                      <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', lineHeight: 1.5, margin: 0 }}>
 
-                        Tautan Google Meet / Zoom akan otomatis aktif di halaman ini mulai pukul <strong>{formatTimeOnly(openTime)} WIB</strong> {timeUntilOpen ? `(${timeUntilOpen})` : ''}. Silakan simpan jadwal ke kalender agar Anda mendapatkan pengingat saat sesi dimulai.
+                        Tautan Google Meet akan otomatis aktif pukul <strong>{formatTimeOnly(openTime)} WIB</strong> {timeUntilOpen ? `(${timeUntilOpen})` : ''}.
 
                       </p>
 
