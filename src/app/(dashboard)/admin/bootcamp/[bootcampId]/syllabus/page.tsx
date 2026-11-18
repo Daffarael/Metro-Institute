@@ -157,7 +157,7 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
     current?.quizOptions && Array.isArray(current.quizOptions) && current.quizOptions.length > 0
       ? current.quizOptions
       : [
-          { id: Math.random().toString(36).substr(2, 9), question: '', options: [{ id: 'A', text: '', isCorrect: true }, { id: 'B', text: '', isCorrect: false }, { id: 'C', text: '', isCorrect: false }, { id: 'D', text: '', isCorrect: false }] }
+          { id: Math.random().toString(36).substr(2, 9), question: '', explanation: '', options: [{ id: 'A', text: '', isCorrect: true }, { id: 'B', text: '', isCorrect: false }, { id: 'C', text: '', isCorrect: false }, { id: 'D', text: '', isCorrect: false }] }
         ]
   )
 
@@ -445,6 +445,24 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
                           </div>
                         ))}
                       </div>
+
+                      {/* Input Penjelasan / Pembahasan Soal */}
+                      <div style={{ marginTop: 14 }}>
+                        <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                          <span>💡</span> Penjelasan / Pembahasan Soal:
+                        </label>
+                        <textarea
+                          value={q.explanation || ''}
+                          onChange={(e) => {
+                            const newQuiz = [...quizOptions];
+                            newQuiz[qIndex].explanation = e.target.value;
+                            setQuizOptions(newQuiz);
+                          }}
+                          placeholder="Tuliskan pembahasan atau alasan mengapa jawaban ini benar..."
+                          rows={2}
+                          style={{ ...inputStyle, resize: 'vertical', fontSize: '12.5px', lineHeight: 1.5 }}
+                        />
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -457,6 +475,7 @@ function AddSessionModal({ bootcampId, chapterId, editSession, onClose }: any) {
                     { 
                       id: Math.random().toString(36).substr(2, 9), 
                       question: '', 
+                      explanation: '',
                       options: [
                         { id: 'A', text: '', isCorrect: true }, 
                         { id: 'B', text: '', isCorrect: false }, 

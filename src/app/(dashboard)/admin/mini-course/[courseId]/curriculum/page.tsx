@@ -167,7 +167,7 @@ function AddSessionModal({ courseId, editSession, onClose }: { courseId: string;
     (editSession as any)?.quizOptions && Array.isArray((editSession as any).quizOptions) && (editSession as any).quizOptions.length > 0
       ? (editSession as any).quizOptions
       : [
-          { id: Math.random().toString(36).substr(2, 9), question: '', options: [{ id: 'A', text: '', isCorrect: true }, { id: 'B', text: '', isCorrect: false }, { id: 'C', text: '', isCorrect: false }, { id: 'D', text: '', isCorrect: false }] }
+          { id: Math.random().toString(36).substr(2, 9), question: '', explanation: '', options: [{ id: 'A', text: '', isCorrect: true }, { id: 'B', text: '', isCorrect: false }, { id: 'C', text: '', isCorrect: false }, { id: 'D', text: '', isCorrect: false }] }
         ]
   )
 
@@ -384,6 +384,24 @@ return (
                           </div>
                         ))}
                       </div>
+
+                      {/* Input Penjelasan / Pembahasan Soal */}
+                      <div style={{ marginTop: 14 }}>
+                        <label style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-text-secondary)', display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                          <span>💡</span> Penjelasan / Pembahasan Soal:
+                        </label>
+                        <textarea
+                          value={q.explanation || ''}
+                          onChange={(e) => {
+                            const newQuiz = [...quizOptions];
+                            newQuiz[qIndex].explanation = e.target.value;
+                            setQuizOptions(newQuiz);
+                          }}
+                          placeholder="Tuliskan pembahasan atau alasan mengapa jawaban ini benar..."
+                          rows={2}
+                          style={{ ...inputStyle, resize: 'vertical', fontSize: '13px', lineHeight: 1.5 }}
+                        />
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -396,6 +414,7 @@ return (
                     { 
                       id: Math.random().toString(36).substr(2, 9), 
                       question: '', 
+                      explanation: '',
                       options: [
                         { id: 'A', text: '', isCorrect: true }, 
                         { id: 'B', text: '', isCorrect: false }, 

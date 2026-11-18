@@ -72,6 +72,7 @@ interface LearningData {
 interface QuizQuestion {
   id: string
   question: string
+  explanation?: string
   options: Array<{ id: string; text: string; isCorrect: boolean }>
 }
 
@@ -1748,6 +1749,7 @@ function InteractiveQuiz({
           return {
             id: q.id || `q-${idx}`,
             question: q.question,
+            explanation: q.explanation || '',
             options: q.options.map((opt: any, oIdx: number) => ({
               id: opt.id || String.fromCharCode(65 + oIdx),
               text: opt.text || '',
@@ -1892,6 +1894,83 @@ function InteractiveQuiz({
             ? `Selamat! Anda berhasil memperoleh skor ${score}% (lulus syarat minimal 80%). Sesi ini telah ditandai selesai dan Anda dapat melanjutkan.`
             : `Skor Anda saat ini ${score}%. Sesuai aturan, Anda wajib menjawab minimal 80% soal dengan benar untuk menyelesaikan sesi kuis ini dan melanjutkan ke materi berikutnya.`}
         </p>
+
+        {/* Riwayat Jawaban & Pembahasan */}
+        <div style={{ width: '100%', maxWidth: 640, marginTop: 8, marginBottom: 24, textAlign: 'left' }}>
+          <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span>📋</span> Riwayat Jawaban & Pembahasan:
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            {questions.map((q, qIndex) => {
+              const selectedOptId = answers[q.id]
+              const correctOpt = q.options.find((o) => o.isCorrect)
+              const isQCorrect = selectedOptId && correctOpt && selectedOptId === correctOpt.id
+              const selectedOpt = q.options.find((o) => o.id === selectedOptId)
+
+              return (
+                <div
+                  key={q.id}
+                  style={{
+                    padding: '16px',
+                    borderRadius: 12,
+                    background: isQCorrect ? '#f0fdf4' : '#fffbeb',
+                    border: `1px solid ${isQCorrect ? '#bbf7d0' : '#fde68a'}`,
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8, marginBottom: 8 }}>
+                    <h4 style={{ fontSize: '13.5px', fontWeight: 700, color: '#0f172a', margin: 0 }}>
+                      {qIndex + 1}. {q.question}
+                    </h4>
+                    <span
+                      style={{
+                        padding: '2px 8px',
+                        borderRadius: 6,
+                        fontSize: '11px',
+                        fontWeight: 700,
+                        background: isQCorrect ? '#dcfce7' : '#fee2e2',
+                        color: isQCorrect ? '#166534' : '#991b1b',
+                        flexShrink: 0,
+                      }}
+                    >
+                      {isQCorrect ? 'BENAR' : 'SALAH'}
+                    </span>
+                  </div>
+
+                  <div style={{ fontSize: '12.5px', color: '#475569', marginBottom: 6 }}>
+                    <strong>Pilihan Anda:</strong> {selectedOpt ? selectedOpt.text : 'Tidak dijawab'}{' '}
+                    {isQCorrect ? '✅' : '❌'}
+                  </div>
+
+                  {!isQCorrect && correctOpt && (
+                    <div style={{ fontSize: '12.5px', color: '#166534', marginBottom: 8 }}>
+                      <strong>Kunci Jawaban:</strong> {correctOpt.text} ✅
+                    </div>
+                  )}
+
+                  <div
+                    style={{
+                      marginTop: 8,
+                      padding: '10px 12px',
+                      borderRadius: 8,
+                      background: '#ffffff',
+                      border: '1px solid #e2e8f0',
+                      fontSize: '12.5px',
+                      color: '#334155',
+                      lineHeight: 1.5,
+                    }}
+                  >
+                    <span style={{ fontWeight: 700, color: '#0f172a' }}>💡 Pembahasan: </span>
+                    {q.explanation && q.explanation.trim()
+                      ? q.explanation
+                      : correctOpt
+                      ? `Jawaban yang benar adalah "${correctOpt.text}".`
+                      : 'Pelajari materi kembali untuk memahami topik ini.'}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, flexWrap: 'wrap' }}>
           {isPassed && (
