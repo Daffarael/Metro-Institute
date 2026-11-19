@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import katex from 'katex'
-import Prism from '@/lib/prism'
+import Prism, { getGrammar } from '@/lib/prism'
 
 import {
   Copy,
@@ -171,30 +171,14 @@ function applyTokenStyles(html: string): string {
   })
 }
 
-function getPrismInstance(): any {
-  if (typeof window !== 'undefined' && (window as any).Prism?.languages) {
-    return (window as any).Prism
-  }
-  if (typeof globalThis !== 'undefined' && (globalThis as any).Prism?.languages) {
-    return (globalThis as any).Prism
-  }
-  return (Prism as any)?.default || Prism
-}
-
 function renderPrismLines(code: string, lang: string): React.ReactNode[] {
   const norm = lang.toLowerCase().trim()
-  const p = getPrismInstance()
-  const prismGrammarKey = LANGUAGE_GRAMMAR_MAP[norm] || norm
-  const grammar = p?.languages?.[prismGrammarKey] || p?.languages?.javascript || p?.languages?.clike
+  const grammar = getGrammar(norm)
 
   let html = ''
-  if (grammar && typeof p?.highlight === 'function') {
+  if (grammar && typeof Prism.highlight === 'function') {
     try {
-      html = p.highlight(
-        code,
-        grammar,
-        p?.languages && prismGrammarKey in p.languages ? prismGrammarKey : 'javascript'
-      )
+      html = Prism.highlight(code, grammar, norm)
     } catch {
       html = ''
     }
