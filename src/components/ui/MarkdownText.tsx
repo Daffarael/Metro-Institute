@@ -2,22 +2,7 @@
 
 import React, { useState } from 'react'
 import katex from 'katex'
-import Prism from 'prismjs'
-import 'prismjs/components/prism-markup'
-import 'prismjs/components/prism-css'
-import 'prismjs/components/prism-javascript'
-import 'prismjs/components/prism-typescript'
-import 'prismjs/components/prism-python'
-import 'prismjs/components/prism-sql'
-import 'prismjs/components/prism-bash'
-import 'prismjs/components/prism-json'
-import 'prismjs/components/prism-java'
-import 'prismjs/components/prism-kotlin'
-import 'prismjs/components/prism-dart'
-import 'prismjs/components/prism-c'
-import 'prismjs/components/prism-cpp'
-import 'prismjs/components/prism-csharp'
-import 'prismjs/components/prism-php'
+import Prism from '@/lib/prism'
 
 import {
   Copy,
@@ -62,12 +47,18 @@ const LANGUAGE_LABELS: Record<string, string> = {
   typescript: 'TYPESCRIPT',
   py: 'PYTHON',
   python: 'PYTHON',
+  python3: 'PYTHON',
+  py3: 'PYTHON',
   html: 'HTML',
   xml: 'XML',
   css: 'CSS',
   scss: 'SCSS',
   json: 'JSON',
   sql: 'SQL',
+  mysql: 'SQL',
+  postgres: 'SQL',
+  postgresql: 'SQL',
+  sqlite: 'SQL',
   sh: 'BASH / SHELL',
   bash: 'BASH / SHELL',
   shell: 'BASH / SHELL',
@@ -76,11 +67,13 @@ const LANGUAGE_LABELS: Record<string, string> = {
   kt: 'KOTLIN',
   kotlin: 'KOTLIN',
   dart: 'DART / FLUTTER',
+  flutter: 'DART / FLUTTER',
   cpp: 'C++',
   'c++': 'C++',
   c: 'C',
   cs: 'C#',
   csharp: 'C#',
+  'c#': 'C#',
   php: 'PHP',
   go: 'GO',
   rust: 'RUST',
@@ -93,6 +86,8 @@ const LANGUAGE_GRAMMAR_MAP: Record<string, string> = {
   typescript: 'typescript',
   py: 'python',
   python: 'python',
+  python3: 'python',
+  py3: 'python',
   html: 'markup',
   xml: 'markup',
   markup: 'markup',
@@ -100,6 +95,10 @@ const LANGUAGE_GRAMMAR_MAP: Record<string, string> = {
   scss: 'css',
   json: 'json',
   sql: 'sql',
+  mysql: 'sql',
+  postgres: 'sql',
+  postgresql: 'sql',
+  sqlite: 'sql',
   sh: 'bash',
   bash: 'bash',
   shell: 'bash',
@@ -108,11 +107,13 @@ const LANGUAGE_GRAMMAR_MAP: Record<string, string> = {
   kt: 'kotlin',
   kotlin: 'kotlin',
   dart: 'dart',
+  flutter: 'dart',
   cpp: 'cpp',
   'c++': 'cpp',
   c: 'c',
   cs: 'csharp',
   csharp: 'csharp',
+  'c#': 'csharp',
   php: 'php',
 }
 
@@ -173,12 +174,22 @@ function applyTokenStyles(html: string): string {
 function renderPrismLines(code: string, lang: string): React.ReactNode[] {
   const norm = lang.toLowerCase().trim()
   const prismGrammarKey = LANGUAGE_GRAMMAR_MAP[norm] || norm
-  const grammar = Prism.languages[prismGrammarKey] || Prism.languages.javascript
+  const grammar = Prism.languages[prismGrammarKey] || Prism.languages.javascript || Prism.languages.clike
 
   let html = ''
-  try {
-    html = Prism.highlight(code, grammar, prismGrammarKey)
-  } catch {
+  if (grammar) {
+    try {
+      html = Prism.highlight(
+        code,
+        grammar,
+        prismGrammarKey in Prism.languages ? prismGrammarKey : 'javascript'
+      )
+    } catch {
+      html = ''
+    }
+  }
+
+  if (!html) {
     html = code
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
