@@ -157,7 +157,8 @@ function renderPrismLines(code: string, lang: string): React.ReactNode[] {
         {lineIdx + 1}
       </span>
       <span
-        style={{ flex: 1, whiteSpace: 'pre' }}
+        className="code-line-text"
+        style={{ flex: 1, whiteSpace: 'pre', color: '#e6edf3' }}
         dangerouslySetInnerHTML={{ __html: lineHtml || '&nbsp;' }}
       />
     </div>
@@ -252,15 +253,30 @@ function CodeBlock({ code, language = 'plaintext' }: CodeBlockProps) {
       </div>
 
       {/* Code Body */}
-      <div
+      <pre
+        className={`language-${normLang} code-dark-block`}
         style={{
+          margin: 0,
           padding: '14px 16px',
+          background: 'transparent',
           overflowX: 'auto',
           maxHeight: 520,
+          color: '#e6edf3',
         }}
       >
-        {renderPrismLines(cleanCode, language)}
-      </div>
+        <code
+          className={`language-${normLang}`}
+          style={{
+            display: 'block',
+            color: '#e6edf3',
+            background: 'transparent',
+            padding: 0,
+            border: 'none',
+          }}
+        >
+          {renderPrismLines(cleanCode, language)}
+        </code>
+      </pre>
     </div>
   )
 }

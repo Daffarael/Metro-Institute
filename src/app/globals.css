@@ -1373,3 +1373,72 @@ input[type="number"] {
 .course-list-mobile::-webkit-scrollbar-thumb:hover {
   background: var(--color-text-tertiary);
 }
+
+/* -----------------------------------------------------------
+   PRISM.JS HIGH-CONTRAST SYNTAX HIGHLIGHTING (GITHUB/VS CODE)
+----------------------------------------------------------- */
+.code-dark-block,
+.code-dark-block code,
+.code-line-text {
+  color: #e6edf3 !important;
+}
+
+.code-dark-block .token.comment,
+.code-dark-block .token.prolog,
+.code-dark-block .token.doctype,
+.code-dark-block .token.cdata {
+  color: #8b949e !important;
+  font-style: italic;
+}
+
+.code-dark-block .token.punctuation {
+  color: #c9d1d9 !important;
+}
+
+.code-dark-block .token.property,
+.code-dark-block .token.tag,
+.code-dark-block .token.constant,
+.code-dark-block .token.symbol,
+.code-dark-block .token.deleted {
+  color: #79c0ff !important;
+}
+
+.code-dark-block .token.boolean,
+.code-dark-block .token.number {
+  color: #ffa657 !important;
+  font-weight: 600;
+}
+
+.code-dark-block .token.selector,
+.code-dark-block .token.attr-name,
+.code-dark-block .token.string,
+.code-dark-block .token.char,
+.code-dark-block .token.builtin,
+.code-dark-block .token.inserted {
+  color: #7ee787 !important;
+}
+
+.code-dark-block .token.operator,
+.code-dark-block .token.entity,
+.code-dark-block .token.url {
+  color: #ff7b72 !important;
+}
+
+.code-dark-block .token.atrule,
+.code-dark-block .token.attr-value,
+.code-dark-block .token.keyword {
+  color: #ff7b72 !important;
+  font-weight: 600;
+}
+
+.code-dark-block .token.function,
+.code-dark-block .token.class-name {
+  color: #d2a8ff !important;
+  font-weight: 600;
+}
+
+.code-dark-block .token.regex,
+.code-dark-block .token.important,
+.code-dark-block .token.variable {
+  color: #ffa657 !important;
+}

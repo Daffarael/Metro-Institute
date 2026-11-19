@@ -165,10 +165,17 @@ export default function CourseLearningPlayerPage() {
   useEffect(() => {
     if (!isMaterial || isAlreadyDone) return
     const interval = setInterval(() => {
-      setElapsedReadingSeconds((prev) => prev + 1)
+      setElapsedReadingSeconds((prev) => {
+        const next = prev + 1
+        if (readingDurationSeconds > 0 && next >= readingDurationSeconds && !completeTriggerRef.current && !isCompleted && !data?.currentSession?.isCompleted) {
+          completeTriggerRef.current = true
+          completeMutation.mutate()
+        }
+        return next
+      })
     }, 1000)
     return () => clearInterval(interval)
-  }, [isMaterial, isAlreadyDone, sessionId])
+  }, [isMaterial, isAlreadyDone, sessionId, readingDurationSeconds, isCompleted, data, completeMutation])
 
   const remainingReadingSeconds = Math.max(0, readingDurationSeconds - elapsedReadingSeconds)
   const isReadingComplete = isAlreadyDone || remainingReadingSeconds <= 0
@@ -614,27 +621,6 @@ export default function CourseLearningPlayerPage() {
                       >
                         <CheckCircle2 size={16} color="#ffffff" /> Selesai
                       </div>
-                    ) : !isReadingComplete ? (
-                      <button
-                        type="button"
-                        disabled
-                        title={`Baca materi minimal ${readingMinutes} menit untuk mengaktifkan tombol selesai.`}
-                        style={{
-                          padding: '9px 18px',
-                          background: '#f8fafc',
-                          color: '#64748b',
-                          border: '1.5px solid #e2e8f0',
-                          borderRadius: 10,
-                          fontWeight: 700,
-                          fontSize: '13px',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: 6,
-                          cursor: 'not-allowed',
-                        }}
-                      >
-                        <Lock size={14} color="#94a3b8" /> Baca min. {readingMinutes}m ({formatCountdown(remainingReadingSeconds)})
-                      </button>
                     ) : (
                       <motion.button
                         whileHover={{ scale: 1.02 }}
@@ -774,27 +760,6 @@ export default function CourseLearningPlayerPage() {
                           >
                             <CheckCircle2 size={16} color="#ffffff" /> Selesai
                           </div>
-                        ) : !isReadingComplete ? (
-                          <button
-                            type="button"
-                            disabled
-                            title={`Baca materi minimal ${readingMinutes} menit untuk mengaktifkan tombol ini.`}
-                            style={{
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              gap: 8,
-                              padding: '10px 22px',
-                              borderRadius: 'var(--radius-md)',
-                              background: '#f8fafc',
-                              color: '#64748b',
-                              border: '1.5px solid #e2e8f0',
-                              fontWeight: 700,
-                              fontSize: '13.5px',
-                              cursor: 'not-allowed',
-                            }}
-                          >
-                            <Lock size={15} color="#94a3b8" /> Baca min. {readingMinutes}m ({formatCountdown(remainingReadingSeconds)})
-                          </button>
                         ) : (
                           <motion.button
                             whileHover={{ scale: 1.02 }}
