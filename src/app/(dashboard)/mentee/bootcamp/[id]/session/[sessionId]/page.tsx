@@ -90,6 +90,10 @@ export default function BootcampLearningPlayerPage() {
   const [note, setNote] = useState('')
   const [qnaMessage, setQnaMessage] = useState('')
   const [assignmentLink, setAssignmentLink] = useState('')
+  const [assignmentFileUrl, setAssignmentFileUrl] = useState('')
+  const [assignmentFileName, setAssignmentFileName] = useState('')
+  const [isUploadingAssignmentFile, setIsUploadingAssignmentFile] = useState(false)
+  const assignmentFileInputRef = useRef<HTMLInputElement>(null)
   const [showJoinLiveModal, setShowJoinLiveModal] = useState(false)
   const completeTriggerRef = useRef(false)
   const [mounted, setMounted] = useState(false)
@@ -217,10 +221,35 @@ export default function BootcampLearningPlayerPage() {
     onError: () => toast.error('Gagal mengirim pertanyaan'),
   })
 
+  const handleAssignmentFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setIsUploadingAssignmentFile(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      const res = await api.post('/mentee/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+      if (res.data?.url) {
+        setAssignmentFileUrl(res.data.url)
+        setAssignmentFileName(file.name)
+        toast.success(`File "${file.name}" berhasil diunggah`)
+      }
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Gagal mengunggah file tugas')
+    } finally {
+      setIsUploadingAssignmentFile(false)
+      if (e.target) e.target.value = ''
+    }
+  }
+
   const submitAssignmentMutation = useMutation({
     mutationFn: () =>
       api.post(`/mentee/bootcamps/${bootcampId}/sessions/${sessionId}/assignments`, {
-        linkUrl: assignmentLink,
+        linkUrl: assignmentLink.trim() || undefined,
+        fileUrl: assignmentFileUrl.trim() || undefined,
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['learn-bootcamp', bootcampId, sessionId] })
@@ -235,9 +264,13 @@ export default function BootcampLearningPlayerPage() {
     if (data?.currentSession) {
       setIsCompleted(data.currentSession.isCompleted)
       completeTriggerRef.current = false
-      if (data.currentSession.assignment?.linkUrl) {
-        setAssignmentLink(data.currentSession.assignment.linkUrl)
-      }
+      setAssignmentLink(data.currentSession.assignment?.linkUrl || '')
+      setAssignmentFileUrl(data.currentSession.assignment?.fileUrl || '')
+      setAssignmentFileName(
+        data.currentSession.assignment?.fileUrl
+          ? data.currentSession.assignment.fileUrl.split('/').pop() || 'Lampiran Tugas'
+          : ''
+      )
     }
   }, [data?.currentSession])
 
@@ -709,53 +742,181 @@ export default function BootcampLearningPlayerPage() {
                   </div>
                 </div>
 
-                {/* Submission Form */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  <label style={{ fontSize: '13px', fontWeight: 600, color: '#334155' }}>
-                    Tautan Pengumpulan Tugas (Google Drive / GitHub / Figma):
-                  </label>
-                  <div style={{ display: 'flex', gap: 10 }}>
+                {/* Submission Form: Link URL & File Upload */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  {/* 1. Tautan Link */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    <label style={{ fontSize: '13px', fontWeight: 600, color: '#334155' }}>
+                      Tautan Tugas (Google Drive / GitHub / Figma):
+                    </label>
                     <input
                       type="url"
                       value={assignmentLink}
                       onChange={(e) => setAssignmentLink(e.target.value)}
-                      placeholder="https://..."
+                      placeholder="https://github.com/... atau https://figma.com/..."
                       style={{
-                        flex: 1, padding: '10px 16px', borderRadius: 'var(--radius-md)',
+                        width: '100%', padding: '10px 14px', borderRadius: 10,
                         border: '1px solid #cbd5e1', background: '#fff',
-                        fontSize: '13.5px', outline: 'none'
+                        fontSize: '13.5px', color: '#0f172a', outline: 'none'
                       }}
                     />
+                  </div>
+
+                  {/* 2. Upload File (PDF, ZIP, Gambar, Dokumen) */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    <label style={{ fontSize: '13px', fontWeight: 600, color: '#334155' }}>
+                      Unggah File Tugas (PDF, ZIP, Gambar, atau Dokumen):
+                    </label>
+                    <input
+                      ref={assignmentFileInputRef}
+                      type="file"
+                      accept=".pdf,.zip,.rar,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.png,.jpg,.jpeg,.webp,.fig,.py,.sql,.js,.ts"
+                      onChange={handleAssignmentFileUpload}
+                      style={{ display: 'none' }}
+                    />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                      <button
+                        type="button"
+                        onClick={() => assignmentFileInputRef.current?.click()}
+                        disabled={isUploadingAssignmentFile}
+                        style={{
+                          padding: '9px 16px',
+                          borderRadius: 10,
+                          border: '1px solid #cbd5e1',
+                          background: '#f8fafc',
+                          color: '#0f172a',
+                          fontSize: '13px',
+                          fontWeight: 600,
+                          cursor: isUploadingAssignmentFile ? 'not-allowed' : 'pointer',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 8,
+                        }}
+                      >
+                        {isUploadingAssignmentFile ? (
+                          <>
+                            <Loader2 size={15} className="animate-spin" /> Mengunggah File...
+                          </>
+                        ) : (
+                          <>
+                            <Upload size={15} /> Pilih File dari Perangkat
+                          </>
+                        )}
+                      </button>
+
+                      {assignmentFileUrl && (
+                        <div style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 8,
+                          padding: '7px 12px',
+                          borderRadius: 8,
+                          background: '#f0fdf4',
+                          border: '1px solid #bbf7d0',
+                          fontSize: '12.5px',
+                          color: '#018556',
+                          fontWeight: 600,
+                        }}>
+                          <FileText size={14} />
+                          <a
+                            href={assignmentFileUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ color: '#018556', textDecoration: 'underline', maxWidth: 220, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+                          >
+                            {assignmentFileName || 'File Terunggah'}
+                          </a>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setAssignmentFileUrl('')
+                              setAssignmentFileName('')
+                            }}
+                            style={{
+                              background: 'none',
+                              border: 'none',
+                              color: '#64748b',
+                              cursor: 'pointer',
+                              padding: '0 2px',
+                              fontSize: '13px',
+                              fontWeight: 700,
+                            }}
+                            title="Hapus file"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Submit Button */}
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 4 }}>
                     <motion.button
+                      type="button"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => submitAssignmentMutation.mutate()}
-                      disabled={submitAssignmentMutation.isPending || !assignmentLink.trim()}
+                      disabled={submitAssignmentMutation.isPending || isUploadingAssignmentFile || (!assignmentLink.trim() && !assignmentFileUrl.trim())}
                       style={{
-                        padding: '10px 20px', borderRadius: 'var(--radius-md)', border: 'none',
-                        background: 'var(--color-primary)', color: '#fff', fontWeight: 600, fontSize: '13px',
-                        cursor: assignmentLink.trim() ? 'pointer' : 'not-allowed',
-                        opacity: assignmentLink.trim() ? 1 : 0.6, display: 'inline-flex', alignItems: 'center', gap: 6,
+                        padding: '10px 22px', borderRadius: 10, border: 'none',
+                        background: 'var(--color-primary)', color: '#fff', fontWeight: 600, fontSize: '13.5px',
+                        cursor: (assignmentLink.trim() || assignmentFileUrl.trim()) ? 'pointer' : 'not-allowed',
+                        opacity: (assignmentLink.trim() || assignmentFileUrl.trim()) ? 1 : 0.55,
+                        display: 'inline-flex', alignItems: 'center', gap: 8,
                         boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)'
                       }}
                     >
-                      <Upload size={15} /> {submitAssignmentMutation.isPending ? 'Mengirim...' : 'Kumpulkan'}
+                      <Upload size={15} /> {submitAssignmentMutation.isPending ? 'Mengirim...' : 'Kumpulkan Tugas'}
                     </motion.button>
                   </div>
 
                   {currentSession.assignment && (
                     <div style={{
-                      marginTop: 6, padding: '12px 16px', borderRadius: 10, background: '#ffffff', border: '1.5px solid var(--color-primary)', display: 'flex', alignItems: 'center', gap: 10, boxShadow: '0 1px 2px rgba(0, 0, 0, 0.04)'
+                      marginTop: 4, padding: '14px 16px', borderRadius: 12, background: '#f8fafc', border: '1.5px solid var(--color-primary)', display: 'flex', flexDirection: 'column', gap: 8
                     }}>
-                      <CheckCircle2 size={16} color="var(--color-primary)" />
-                      <div style={{ fontSize: '13px', color: '#0f172a' }}>
-                        <strong>Tugas telah dikumpulkan</strong> pada {new Date(currentSession.assignment.submittedAt || Date.now()).toLocaleDateString('id-ID')}.
-                        {currentSession.assignment.score !== undefined && (
-                          <span style={{ marginLeft: 6, fontWeight: 700, color: 'var(--color-primary)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: '13px', color: '#0f172a' }}>
+                          <CheckCircle2 size={16} color="var(--color-primary)" />
+                          <span>
+                            <strong>Tugas telah dikumpulkan</strong> pada {new Date(currentSession.assignment.submittedAt || Date.now()).toLocaleDateString('id-ID')}.
+                          </span>
+                        </div>
+                        {currentSession.assignment.score !== undefined && currentSession.assignment.score !== null && (
+                          <span style={{ padding: '3px 10px', borderRadius: 6, background: '#018556', color: '#fff', fontSize: '12px', fontWeight: 700 }}>
                             Nilai: {currentSession.assignment.score}/100
                           </span>
                         )}
                       </div>
+
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                        {currentSession.assignment.linkUrl && (
+                          <a
+                            href={currentSession.assignment.linkUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 8, background: '#ffffff', border: '1px solid #cbd5e1', color: '#0f172a', fontSize: '12px', fontWeight: 600, textDecoration: 'none' }}
+                          >
+                            <ExternalLink size={13} /> Buka Tautan Tugas
+                          </a>
+                        )}
+                        {currentSession.assignment.fileUrl && (
+                          <a
+                            href={currentSession.assignment.fileUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 8, background: '#ffffff', border: '1px solid #cbd5e1', color: '#0f172a', fontSize: '12px', fontWeight: 600, textDecoration: 'none' }}
+                          >
+                            <FileText size={13} /> Buka File Lampiran
+                          </a>
+                        )}
+                      </div>
+
+                      {currentSession.assignment.feedback && (
+                        <div style={{ fontSize: '12.5px', color: '#334155', paddingTop: 6, borderTop: '1px solid #e2e8f0' }}>
+                          <strong>Feedback Mentor:</strong> {currentSession.assignment.feedback}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
