@@ -8,6 +8,7 @@ import api from '@/lib/axios'
 import { useAuthStore } from '@/stores/auth.store'
 import { ROUTES, formatRupiah, formatDate, BADGE_LABELS, getProductBadgeStyle } from '@/lib/utils'
 import { motion } from 'framer-motion'
+import LiveJoinConfirmModal from '@/components/mentee/LiveJoinConfirmModal'
 
 interface BasecampData {
   user: {
@@ -49,6 +50,7 @@ const BADGE_XP: Record<string, number> = {
 export default function BasecampPage() {
   const { user } = useAuthStore()
   const [nowMs] = useState(() => Date.now())
+  const [selectedLiveUrl, setSelectedLiveUrl] = useState<string | null>(null)
   const activeCoursesRef = useRef<HTMLDivElement>(null)
   const [canScrollLeft, setCanScrollLeft] = useState(false)
   const [canScrollRight, setCanScrollRight] = useState(false)
@@ -464,11 +466,13 @@ export default function BasecampPage() {
                           Berakhir
                         </span>
                       ) : (
-                        <a href={live.liveUrl} target="_blank" rel="noopener noreferrer"
+                        <button
+                          type="button"
+                          onClick={() => isSoon && setSelectedLiveUrl(live.liveUrl)}
                           className={`btn btn-sm ${isSoon ? 'btn-primary' : 'btn-secondary'}`}
                           style={{ flexShrink: 0, opacity: isSoon ? 1 : 0.5, pointerEvents: isSoon ? 'auto' : 'none', fontSize: '12px' }}>
                           Masuk
-                        </a>
+                        </button>
                       )}
                     </div>
                   )
@@ -598,6 +602,11 @@ export default function BasecampPage() {
         </div>
       </div>
 
+      <LiveJoinConfirmModal
+        isOpen={Boolean(selectedLiveUrl)}
+        onClose={() => setSelectedLiveUrl(null)}
+        meetingUrl={selectedLiveUrl}
+      />
     </div>
   )
 }

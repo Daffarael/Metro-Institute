@@ -28,6 +28,7 @@ import { useUIStore } from '@/stores/ui.store'
 
 import { CardTabs } from '@/components/ui/AnimatedTabs'
 import CheckoutModal from '@/components/mentee/CheckoutModal'
+import LiveJoinConfirmModal from '@/components/mentee/LiveJoinConfirmModal'
 
 
 
@@ -138,6 +139,8 @@ export default function MenteeWebinarDetailPage() {
   const [activeTab, setActiveTab] = useState<'overview' | 'schedule' | 'speaker'>('overview')
 
   const [showConfirmModal, setShowConfirmModal] = useState(false)
+
+  const [showJoinLiveModal, setShowJoinLiveModal] = useState(false)
 
   const [currentTime, setCurrentTime] = useState(Date.now())
 
@@ -1457,47 +1460,22 @@ export default function MenteeWebinarDetailPage() {
 
                         <div>
 
-                          <a
-
-                            href={ensureAbsoluteUrl(webinar.meetingUrl)}
-
-                            target="_blank"
-
-                            rel="noreferrer"
-
-                            style={{ textDecoration: 'none', display: 'inline-block' }}
-
+                          <motion.button
+                            type="button"
+                            onClick={() => setShowJoinLiveModal(true)}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            style={{
+                              display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                              padding: '12px 24px', borderRadius: 8,
+                              background: isOvertime ? '#FAE653' : 'var(--color-primary)',
+                              color: isOvertime ? '#0D1117' : '#fff',
+                              border: isOvertime ? '1px solid #e6d13a' : 'none',
+                              fontWeight: 700, fontSize: '14px', cursor: 'pointer',
+                            }}
                           >
-
-                            <motion.div
-
-                              whileHover={{ scale: 1.02 }}
-
-                              whileTap={{ scale: 0.98 }}
-
-                              style={{
-
-                                display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-
-                                padding: '12px 24px', borderRadius: 8,
-
-                                background: isOvertime ? '#FAE653' : 'var(--color-primary)',
-
-                                color: isOvertime ? '#0D1117' : '#fff',
-
-                                border: isOvertime ? '1px solid #e6d13a' : 'none',
-
-                                fontWeight: 700, fontSize: '14px', cursor: 'pointer',
-
-                              }}
-
-                            >
-
-                              <PlayCircle size={16} strokeWidth={2} /> Masuk Ruang Sesi Sekarang
-
-                            </motion.div>
-
-                          </a>
+                            <PlayCircle size={16} strokeWidth={2} /> Masuk Ruang Sesi Sekarang
+                          </motion.button>
 
                         </div>
 
@@ -1932,6 +1910,13 @@ export default function MenteeWebinarDetailPage() {
           onSuccess={handleCheckoutSuccess}
         />
       )}
+
+      <LiveJoinConfirmModal
+        isOpen={showJoinLiveModal}
+        onClose={() => setShowJoinLiveModal(false)}
+        meetingUrl={webinar?.meetingUrl}
+        sessionTitle={webinar?.title}
+      />
     </div>
   )
 }

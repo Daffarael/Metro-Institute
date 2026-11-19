@@ -18,6 +18,7 @@ import api from '@/lib/axios'
 import { ROUTES, formatDuration, formatDate } from '@/lib/utils'
 import { CardTabs } from '@/components/ui/AnimatedTabs'
 import CourseVideoPlayer from '@/components/CourseVideoPlayer'
+import LiveJoinConfirmModal from '@/components/mentee/LiveJoinConfirmModal'
 
 interface Session {
   id: string
@@ -89,6 +90,7 @@ export default function BootcampLearningPlayerPage() {
   const [note, setNote] = useState('')
   const [qnaMessage, setQnaMessage] = useState('')
   const [assignmentLink, setAssignmentLink] = useState('')
+  const [showJoinLiveModal, setShowJoinLiveModal] = useState(false)
   const completeTriggerRef = useRef(false)
   const [mounted, setMounted] = useState(false)
 
@@ -578,32 +580,28 @@ export default function BootcampLearningPlayerPage() {
                       Sesi live telah berakhir
                     </div>
                   ) : currentSession.liveUrl ? (
-                    <a
-                      href={currentSession.liveUrl.startsWith('http') ? currentSession.liveUrl : `https://${currentSession.liveUrl}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ textDecoration: 'none' }}
+                    <motion.button
+                      type="button"
+                      onClick={() => setShowJoinLiveModal(true)}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 8,
+                        padding: '9px 20px',
+                        borderRadius: 10,
+                        background: 'var(--color-primary)',
+                        color: '#fff',
+                        border: 'none',
+                        fontWeight: 600,
+                        fontSize: '13px',
+                        boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+                        cursor: 'pointer'
+                      }}
                     >
-                      <motion.div
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: 8,
-                          padding: '9px 20px',
-                          borderRadius: 10,
-                          background: 'var(--color-primary)',
-                          color: '#fff',
-                          fontWeight: 600,
-                          fontSize: '13px',
-                          boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        <Video size={15} /> Masuk Ruang Sesi Live <ExternalLink size={13} />
-                      </motion.div>
-                    </a>
+                      <Video size={15} /> Masuk Ruang Sesi Live <ExternalLink size={13} />
+                    </motion.button>
                   ) : (
                     <div style={{
                       padding: '6px 14px',
@@ -2230,6 +2228,13 @@ function InteractiveQuiz({
           )}
         </div>
       </div>
+
+      <LiveJoinConfirmModal
+        isOpen={showJoinLiveModal}
+        onClose={() => setShowJoinLiveModal(false)}
+        meetingUrl={currentSession?.liveUrl}
+        sessionTitle={currentSession?.title}
+      />
     </div>
   )
 }
