@@ -2,15 +2,30 @@
 
 import React, { useState } from 'react'
 import katex from 'katex'
+import Prism from 'prismjs'
+import 'prismjs/components/prism-markup'
+import 'prismjs/components/prism-css'
+import 'prismjs/components/prism-javascript'
+import 'prismjs/components/prism-typescript'
+import 'prismjs/components/prism-python'
+import 'prismjs/components/prism-sql'
+import 'prismjs/components/prism-bash'
+import 'prismjs/components/prism-json'
+import 'prismjs/components/prism-java'
+import 'prismjs/components/prism-kotlin'
+import 'prismjs/components/prism-dart'
+import 'prismjs/components/prism-c'
+import 'prismjs/components/prism-cpp'
+import 'prismjs/components/prism-csharp'
+import 'prismjs/components/prism-php'
+
 import {
   Copy,
   Check,
   Terminal,
-  Maximize2,
   X,
   ExternalLink,
   Sigma,
-  FileCode2,
   ZoomIn
 } from 'lucide-react'
 
@@ -34,7 +49,7 @@ function renderKatexHtml(tex: string, displayMode: boolean): string {
   }
 }
 
-// ─── Code Block Component with Syntax Highlighting & Copy ─────────────
+// ─── Code Block Component with Prism.js Syntax Highlighting ──────────
 interface CodeBlockProps {
   code: string
   language?: string
@@ -48,6 +63,7 @@ const LANGUAGE_LABELS: Record<string, string> = {
   py: 'PYTHON',
   python: 'PYTHON',
   html: 'HTML',
+  xml: 'XML',
   css: 'CSS',
   scss: 'SCSS',
   json: 'JSON',
@@ -55,190 +71,104 @@ const LANGUAGE_LABELS: Record<string, string> = {
   sh: 'BASH / SHELL',
   bash: 'BASH / SHELL',
   shell: 'BASH / SHELL',
+  zsh: 'BASH / SHELL',
   java: 'JAVA',
+  kt: 'KOTLIN',
   kotlin: 'KOTLIN',
   dart: 'DART / FLUTTER',
   cpp: 'C++',
+  'c++': 'C++',
   c: 'C',
   cs: 'C#',
   csharp: 'C#',
   php: 'PHP',
   go: 'GO',
   rust: 'RUST',
-  xml: 'XML',
-  yaml: 'YAML',
-  yml: 'YAML',
-  markdown: 'MARKDOWN',
-  md: 'MARKDOWN',
 }
 
-function highlightSyntax(code: string, lang: string): React.ReactNode[] {
-  const lines = code.split('\n')
-  const l = lang.toLowerCase()
+const LANGUAGE_GRAMMAR_MAP: Record<string, string> = {
+  js: 'javascript',
+  javascript: 'javascript',
+  ts: 'typescript',
+  typescript: 'typescript',
+  py: 'python',
+  python: 'python',
+  html: 'markup',
+  xml: 'markup',
+  markup: 'markup',
+  css: 'css',
+  scss: 'css',
+  json: 'json',
+  sql: 'sql',
+  sh: 'bash',
+  bash: 'bash',
+  shell: 'bash',
+  zsh: 'bash',
+  java: 'java',
+  kt: 'kotlin',
+  kotlin: 'kotlin',
+  dart: 'dart',
+  cpp: 'cpp',
+  'c++': 'cpp',
+  c: 'c',
+  cs: 'csharp',
+  csharp: 'csharp',
+  php: 'php',
+}
 
-  // Token definition regex
-  const isSql = l === 'sql'
-  const isPython = l === 'py' || l === 'python'
-  const isHtml = l === 'html' || l === 'xml'
+function renderPrismLines(code: string, lang: string): React.ReactNode[] {
+  const norm = lang.toLowerCase().trim()
+  const prismGrammarKey = LANGUAGE_GRAMMAR_MAP[norm] || norm
+  const grammar = Prism.languages[prismGrammarKey] || Prism.languages.javascript
 
-  // Generic patterns
-  const KEYWORD_REGEX = isSql
-    ? /\b(SELECT|FROM|WHERE|INSERT|INTO|VALUES|UPDATE|SET|DELETE|JOIN|LEFT|RIGHT|INNER|OUTER|GROUP|BY|ORDER|HAVING|LIMIT|CREATE|TABLE|ALTER|DROP|AND|OR|NOT|IN|AS|DISTINCT|COUNT|SUM|AVG|MAX|MIN|PRIMARY|KEY|FOREIGN|REFERENCES|CASE|WHEN|THEN|ELSE|END|UNION|ALL|EXISTS|IS|NULL)\b/i
-    : /\b(const|let|var|function|class|return|if|else|switch|case|for|while|do|async|await|import|export|from|default|new|this|try|catch|finally|throw|typeof|instanceof|interface|type|enum|public|private|protected|static|readonly|extends|implements|package|def|lambda|elif|except|with|yield|pass|raise|break|continue|nil|fn|mut|struct|impl|match)\b/
+  let html = ''
+  try {
+    html = Prism.highlight(code, grammar, prismGrammarKey)
+  } catch {
+    html = code
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+  }
 
-  return lines.map((line, lineIdx) => {
-    const tokens: React.ReactNode[] = []
-    let cursor = 0
-    let keyIdx = 0
-
-    // Single-line comment check
-    let commentIdx = -1
-    if (isPython) {
-      commentIdx = line.indexOf('#')
-    } else if (isSql) {
-      commentIdx = line.indexOf('--')
-    } else {
-      commentIdx = line.indexOf('//')
-    }
-
-    const codePart = commentIdx >= 0 ? line.slice(0, commentIdx) : line
-    const commentPart = commentIdx >= 0 ? line.slice(commentIdx) : ''
-
-    // Tokenize strings, numbers, keywords in codePart
-    const tokenRegex = /(".*?"|'.*?'|`.*?`|\b\d+(\.\d+)?\b|[a-zA-Z_$][a-zA-Z0-9_$]*|[+\-*/%=<>!&|^~]+|[()[\]{}.,;])/g
-    let match: RegExpExecArray | null
-
-    while ((match = tokenRegex.exec(codePart)) !== null) {
-      if (match.index > cursor) {
-        tokens.push(
-          <span key={keyIdx++} style={{ color: '#abb2bf' }}>
-            {codePart.slice(cursor, match.index)}
-          </span>
-        )
-      }
-
-      const val = match[0]
-
-      // String literal
-      if (
-        (val.startsWith('"') && val.endsWith('"')) ||
-        (val.startsWith("'") && val.endsWith("'")) ||
-        (val.startsWith('`') && val.endsWith('`'))
-      ) {
-        tokens.push(
-          <span key={keyIdx++} style={{ color: '#98c379' }}>
-            {val}
-          </span>
-        )
-      }
-      // Numeric literal
-      else if (/^\d+(\.\d+)?$/.test(val)) {
-        tokens.push(
-          <span key={keyIdx++} style={{ color: '#d19a66' }}>
-            {val}
-          </span>
-        )
-      }
-      // Keyword
-      else if (KEYWORD_REGEX.test(val)) {
-        tokens.push(
-          <span key={keyIdx++} style={{ color: '#c678dd', fontWeight: 600 }}>
-            {val}
-          </span>
-        )
-      }
-      // Boolean / Null / Undefined
-      else if (/^(true|false|null|undefined|None|True|False|nil)$/i.test(val)) {
-        tokens.push(
-          <span key={keyIdx++} style={{ color: '#e5c07b', fontWeight: 600 }}>
-            {val}
-          </span>
-        )
-      }
-      // Function call
-      else if (
-        match.index + val.length < codePart.length &&
-        codePart[match.index + val.length] === '('
-      ) {
-        tokens.push(
-          <span key={keyIdx++} style={{ color: '#61afef' }}>
-            {val}
-          </span>
-        )
-      }
-      // Standard identifier / variable
-      else if (/^[a-zA-Z_$][a-zA-Z0-9_$]*$/.test(val)) {
-        tokens.push(
-          <span key={keyIdx++} style={{ color: '#e06c75' }}>
-            {val}
-          </span>
-        )
-      }
-      // Operators & punctuation
-      else {
-        tokens.push(
-          <span key={keyIdx++} style={{ color: '#56b6c2' }}>
-            {val}
-          </span>
-        )
-      }
-
-      cursor = tokenRegex.lastIndex
-    }
-
-    if (cursor < codePart.length) {
-      tokens.push(
-        <span key={keyIdx++} style={{ color: '#abb2bf' }}>
-          {codePart.slice(cursor)}
-        </span>
-      )
-    }
-
-    // Append comment if exists
-    if (commentPart) {
-      tokens.push(
-        <span key={keyIdx++} style={{ color: '#5c6370', fontStyle: 'italic' }}>
-          {commentPart}
-        </span>
-      )
-    }
-
-    return (
-      <div
-        key={lineIdx}
+  const lines = html.split('\n')
+  return lines.map((lineHtml, lineIdx) => (
+    <div
+      key={lineIdx}
+      style={{
+        display: 'flex',
+        lineHeight: '1.65',
+        fontFamily: "'JetBrains Mono', 'Fira Code', Consolas, Menlo, Monaco, monospace",
+        fontSize: '13px',
+      }}
+    >
+      <span
         style={{
-          display: 'flex',
-          lineHeight: '1.65',
-          fontFamily: "'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
-          fontSize: '13px',
+          userSelect: 'none',
+          color: '#6e7681',
+          minWidth: '32px',
+          paddingRight: '16px',
+          textAlign: 'right',
+          flexShrink: 0,
+          opacity: 0.75,
+          fontSize: '12px',
         }}
       >
-        <span
-          style={{
-            userSelect: 'none',
-            color: '#4b5263',
-            minWidth: '32px',
-            paddingRight: '16px',
-            textAlign: 'right',
-            flexShrink: 0,
-            opacity: 0.7,
-            fontSize: '12px',
-          }}
-        >
-          {lineIdx + 1}
-        </span>
-        <span style={{ flex: 1, whiteSpace: 'pre' }}>
-          {tokens.length > 0 ? tokens : ' '}
-        </span>
-      </div>
-    )
-  })
+        {lineIdx + 1}
+      </span>
+      <span
+        style={{ flex: 1, whiteSpace: 'pre' }}
+        dangerouslySetInnerHTML={{ __html: lineHtml || '&nbsp;' }}
+      />
+    </div>
+  ))
 }
 
 function CodeBlock({ code, language = 'plaintext' }: CodeBlockProps) {
   const [copied, setCopied] = useState(false)
   const cleanCode = code.trimEnd()
-  const displayLang = LANGUAGE_LABELS[language.toLowerCase()] || (language ? language.toUpperCase() : 'CODE')
+  const normLang = language.toLowerCase().trim()
+  const displayLang = LANGUAGE_LABELS[normLang] || (language ? language.toUpperCase() : 'CODE')
 
   const handleCopy = () => {
     navigator.clipboard.writeText(cleanCode)
@@ -317,7 +247,7 @@ function CodeBlock({ code, language = 'plaintext' }: CodeBlockProps) {
           }}
         >
           {copied ? <Check size={12} strokeWidth={3} /> : <Copy size={12} strokeWidth={2.2} />}
-          <span>{copied ? 'Tersalin!' : 'Salin Kode'}</span>
+          <span>{copied ? 'Tersalin' : 'Salin'}</span>
         </button>
       </div>
 
@@ -329,7 +259,7 @@ function CodeBlock({ code, language = 'plaintext' }: CodeBlockProps) {
           maxHeight: 520,
         }}
       >
-        {highlightSyntax(cleanCode, language)}
+        {renderPrismLines(cleanCode, language)}
       </div>
     </div>
   )
@@ -368,7 +298,6 @@ function MathBlock({ equation }: MathBlockProps) {
         overflowX: 'auto',
       }}
     >
-      {/* Top right label & copy */}
       <div
         style={{
           width: '100%',
@@ -390,12 +319,12 @@ function MathBlock({ equation }: MathBlockProps) {
           }}
         >
           <Sigma size={13} strokeWidth={2.5} />
-          PERSAMAAN MATEMATIKA / RUMUS
+          RUMUS
         </span>
         <button
           type="button"
           onClick={handleCopy}
-          title="Salin sintaks rumus LaTeX"
+          title="Salin sintaks LaTeX"
           style={{
             display: 'inline-flex',
             alignItems: 'center',
@@ -412,11 +341,10 @@ function MathBlock({ equation }: MathBlockProps) {
           }}
         >
           {copied ? <Check size={11} strokeWidth={3} /> : <Copy size={11} strokeWidth={2} />}
-          <span>{copied ? 'Tersalin' : 'Salin Rumus'}</span>
+          <span>{copied ? 'Tersalin' : 'Salin'}</span>
         </button>
       </div>
 
-      {/* Rendered Equation */}
       <div
         style={{
           width: '100%',
@@ -478,7 +406,7 @@ function ImageBlock({ src, alt = '', caption = '' }: ImageBlockProps) {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={src}
-            alt={alt || 'Gambar materi pembelajaran'}
+            alt={alt || 'Gambar'}
             loading="lazy"
             style={{
               display: 'block',
@@ -488,7 +416,6 @@ function ImageBlock({ src, alt = '', caption = '' }: ImageBlockProps) {
               margin: '0 auto',
             }}
           />
-          {/* Hover Overlay Hint */}
           <div
             style={{
               position: 'absolute',
@@ -528,7 +455,6 @@ function ImageBlock({ src, alt = '', caption = '' }: ImageBlockProps) {
         )}
       </figure>
 
-      {/* Lightbox Modal */}
       {isOpen && (
         <div
           onClick={() => setIsOpen(false)}
@@ -546,7 +472,6 @@ function ImageBlock({ src, alt = '', caption = '' }: ImageBlockProps) {
             animation: 'fadeIn 0.2s ease',
           }}
         >
-          {/* Top Bar with Close button */}
           <div
             style={{
               position: 'absolute',
@@ -599,7 +524,6 @@ function ImageBlock({ src, alt = '', caption = '' }: ImageBlockProps) {
             </button>
           </div>
 
-          {/* Full Image */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={src}
@@ -636,27 +560,9 @@ function ImageBlock({ src, alt = '', caption = '' }: ImageBlockProps) {
 }
 
 // ─── Inline Markdown & Inline Math Parser ─────────────────────────────
-/**
- * Parses inline Markdown formatting:
- * - Math equations: `$formula$` and `\(formula\)`
- * - Inline code: `code`
- * - Bold / Italic: ***bold italic***, **bold**, *italic*
- * - Strikethrough: ~~strikethrough~~
- * - Links: [text](url)
- * - Images inline: ![alt](url)
- */
 function parseInline(text: string): React.ReactNode[] {
   if (!text) return []
 
-  // Regex tokens
-  // 1: Inline Math $...$ (ensure not just currency like $100)
-  // 2: Inline code `...`
-  // 3: Inline image ![...](...)
-  // 4: Bold italic ***...*** or ___...___
-  // 5: Bold **...** or __...__
-  // 6: Italic *...* or _..._
-  // 7: Strikethrough ~~...~~
-  // 8: Link [...] (...)
   const regex = /(\$(?:\\\$|[^\$])+\$)|(`[^`]+`)|(!\[([^\]]*)\]\(([^)]+)\))|(\*\*\*[^*]+\*\*\*|___[^_]+___)|(\*\*[^*]+\*\*|__[^_]+__)|(\*[^*]+\*|_[^_]+_)|(~~[^~]+~~)|(\[[^\]]+\]\([^)]+\))/g
 
   const nodes: React.ReactNode[] = []
@@ -676,7 +582,6 @@ function parseInline(text: string): React.ReactNode[] {
       const tex = val.slice(1, -1)
       const isPureCurrency = /^\d+(,\d+)*(\.\d+)?$/.test(tex.trim())
       if (isPureCurrency) {
-        // Tampilkan sebagai nilai mata uang biasa jika hanya angka seperti $100
         nodes.push(<React.Fragment key={key++}>{val}</React.Fragment>)
       } else {
         const html = renderKatexHtml(tex, false)
@@ -807,7 +712,6 @@ function parseBlocks(content: string): React.ReactNode[] {
   while (i < lines.length) {
     const line = lines[i]
 
-    // Empty line
     if (!line.trim()) {
       i++
       continue
@@ -815,7 +719,8 @@ function parseBlocks(content: string): React.ReactNode[] {
 
     // 1. Fenced Code Block: ```[lang] ... ```
     if (line.trim().startsWith('```')) {
-      const lang = line.trim().slice(3).trim()
+      const rawLang = line.trim().slice(3).trim()
+      const lang = rawLang || 'plaintext'
       const codeLines: string[] = []
       i++
       while (i < lines.length && !lines[i].trim().startsWith('```')) {
@@ -823,7 +728,7 @@ function parseBlocks(content: string): React.ReactNode[] {
         i++
       }
       if (i < lines.length && lines[i].trim().startsWith('```')) {
-        i++ // consume closing ```
+        i++
       }
       blocks.push(<CodeBlock key={key++} code={codeLines.join('\n')} language={lang} />)
       continue
@@ -833,13 +738,11 @@ function parseBlocks(content: string): React.ReactNode[] {
     if (line.trim().startsWith('$$')) {
       const trimmed = line.trim()
       if (trimmed.endsWith('$$') && trimmed.length > 4) {
-        // Single line $$formula$$
         const eq = trimmed.slice(2, -2)
         blocks.push(<MathBlock key={key++} equation={eq} />)
         i++
         continue
       } else {
-        // Multi-line $$ ... $$
         const eqLines: string[] = []
         i++
         while (i < lines.length && !lines[i].trim().endsWith('$$')) {

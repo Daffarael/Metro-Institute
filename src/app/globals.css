@@ -3,7 +3,8 @@
 @import '../styles/animations.css';
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "katex/dist/katex.min.css";
+@import "katex/dist/katex.min.css";
+@import "prismjs/themes/prism-tomorrow.min.css";
 
 @custom-variant dark (&:is(.dark *));
 
