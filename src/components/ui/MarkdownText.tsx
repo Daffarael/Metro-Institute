@@ -116,6 +116,60 @@ const LANGUAGE_GRAMMAR_MAP: Record<string, string> = {
   php: 'php',
 }
 
+const TOKEN_STYLES: Record<string, Record<string, string>> = {
+  comment: { color: '#8b949e !important', 'font-style': 'italic' },
+  prolog: { color: '#8b949e !important', 'font-style': 'italic' },
+  doctype: { color: '#8b949e !important', 'font-style': 'italic' },
+  cdata: { color: '#8b949e !important', 'font-style': 'italic' },
+  punctuation: { color: '#c9d1d9 !important' },
+  property: { color: '#79c0ff !important' },
+  tag: { color: '#7ee787 !important' },
+  constant: { color: '#79c0ff !important' },
+  symbol: { color: '#79c0ff !important' },
+  deleted: { color: '#ffa198 !important', background: 'rgba(255,129,130,0.15)' },
+  boolean: { color: '#ff7b72 !important', 'font-weight': '600' },
+  number: { color: '#ffa657 !important' },
+  selector: { color: '#7ee787 !important' },
+  'attr-name': { color: '#79c0ff !important' },
+  string: { color: '#a5d6ff !important' },
+  char: { color: '#a5d6ff !important' },
+  builtin: { color: '#79c0ff !important' },
+  inserted: { color: '#7ee787 !important' },
+  operator: { color: '#ff7b72 !important' },
+  entity: { color: '#ff7b72 !important' },
+  url: { color: '#79c0ff !important' },
+  atrule: { color: '#ff7b72 !important', 'font-weight': '600' },
+  'attr-value': { color: '#a5d6ff !important' },
+  keyword: { color: '#ff7b72 !important', 'font-weight': '600' },
+  function: { color: '#d2a8ff !important', 'font-weight': '600' },
+  'function-name': { color: '#d2a8ff !important', 'font-weight': '600' },
+  'class-name': { color: '#ffa657 !important', 'font-weight': '600' },
+  regex: { color: '#7ee787 !important' },
+  important: { color: '#ff7b72 !important', 'font-weight': '600' },
+  variable: { color: '#ffa657 !important' },
+  parameter: { color: '#e6edf3 !important' },
+  'triple-quoted-string': { color: '#a5d6ff !important', 'font-style': 'italic' },
+}
+
+function applyTokenStyles(html: string): string {
+  return html.replace(/<span class="token ([^"]+)">/g, (match, classes) => {
+    const classList = classes.split(/\s+/)
+    const merged: Record<string, string> = {}
+    for (const c of classList) {
+      if (TOKEN_STYLES[c]) {
+        Object.assign(merged, TOKEN_STYLES[c])
+      }
+    }
+    const styleStr = Object.entries(merged)
+      .map(([k, v]) => `${k}: ${v};`)
+      .join(' ')
+    if (styleStr) {
+      return `<span class="token ${classes}" style="${styleStr}">`
+    }
+    return match
+  })
+}
+
 function renderPrismLines(code: string, lang: string): React.ReactNode[] {
   const norm = lang.toLowerCase().trim()
   const prismGrammarKey = LANGUAGE_GRAMMAR_MAP[norm] || norm
@@ -130,6 +184,9 @@ function renderPrismLines(code: string, lang: string): React.ReactNode[] {
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
   }
+
+  // Inject direct inline styles into Prism tokens to guarantee vibrant colors
+  html = applyTokenStyles(html)
 
   const lines = html.split('\n')
   return lines.map((lineHtml, lineIdx) => (

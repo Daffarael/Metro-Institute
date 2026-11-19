@@ -1378,9 +1378,11 @@ input[type="number"] {
    PRISM.JS HIGH-CONTRAST SYNTAX HIGHLIGHTING (GITHUB/VS CODE)
 ----------------------------------------------------------- */
 .code-dark-block,
-.code-dark-block code,
+.code-dark-block code {
+  color: #e6edf3;
+}
 .code-line-text {
-  color: #e6edf3 !important;
+  color: #e6edf3;
 }
 
 .code-dark-block .token.comment,
