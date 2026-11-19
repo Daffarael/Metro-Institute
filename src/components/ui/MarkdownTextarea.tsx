@@ -15,20 +15,18 @@ import {
   Edit3,
   Search,
   X,
-  Sparkles,
   Upload,
   Loader2,
   Check,
   Link as LinkIcon,
-  Plus,
   Terminal,
-  FileCode2,
-  HelpCircle
+  FileCode2
 } from 'lucide-react'
 import { motion } from 'motion/react'
 import { toast } from 'sonner'
 import katex from 'katex'
 import api from '@/lib/axios'
+import CleanCombobox, { ComboboxOption } from '@/components/admin/CleanCombobox'
 import MarkdownText from './MarkdownText'
 
 // ─── Katalog Emoji Sopan & Profesional ────────────────────────────
@@ -144,53 +142,64 @@ const POLITE_EMOJI_CATEGORIES: EmojiCategory[] = [
   }
 ]
 
-// ─── Preset Rumus Matematika Populer (Equation Word-Style) ────────────
+// ─── Preset Rumus Matematika (Equation Presets) ───────────────────────
 interface MathPreset {
   label: string
-  category: string
   latex: string
-  display: string
 }
 
 const MATH_PRESETS: MathPreset[] = [
-  // Pecahan & Akar
-  { label: 'Pecahan', category: 'Dasar', latex: '\\frac{a}{b}', display: '\\frac{a}{b}' },
-  { label: 'Akar Kuadrat', category: 'Dasar', latex: '\\sqrt{x}', display: '\\sqrt{x}' },
-  { label: 'Akar Pangkat n', category: 'Dasar', latex: '\\sqrt[n]{x}', display: '\\sqrt[n]{x}' },
-  { label: 'Pangkat', category: 'Dasar', latex: 'x^{2}', display: 'x^2' },
-  { label: 'Indeks Bawah', category: 'Dasar', latex: 'x_{i}', display: 'x_i' },
-  // Aljabar & Rumus
-  { label: 'Persamaan Kuadrat ABC', category: 'Aljabar', latex: 'x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}', display: 'x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}' },
-  { label: 'Pythagoras', category: 'Aljabar', latex: 'a^2 + b^2 = c^2', display: 'a^2 + b^2 = c^2' },
-  { label: 'Penjumlahan (Sigma)', category: 'Kalkulus', latex: '\\sum_{i=1}^{n} x_i', display: '\\sum_{i=1}^{n} x_i' },
-  { label: 'Integral Tertentu', category: 'Kalkulus', latex: '\\int_{a}^{b} f(x) \\, dx', display: '\\int_{a}^{b} f(x) dx' },
-  { label: 'Limit', category: 'Kalkulus', latex: '\\lim_{x \\to 0} f(x)', display: '\\lim_{x \\to 0} f(x)' },
-  // Matriks & Vektor
-  { label: 'Matriks 2x2', category: 'Matriks', latex: '\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}', display: '\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}' },
-  { label: 'Vektor 2D', category: 'Matriks', latex: '\\vec{v} = \\begin{pmatrix} x \\\\ y \\end{pmatrix}', display: '\\vec{v} = \\begin{pmatrix} x \\\\ y \\end{pmatrix}' },
-  // Computer Science & AI
-  { label: 'Kompleksitas Big-O', category: 'Komputer', latex: 'O(n \\log n)', display: 'O(n \\log n)' },
-  { label: 'Akurasi Model ML', category: 'Komputer', latex: '\\text{Akurasi} = \\frac{TP + TN}{TP + TN + FP + FN}', display: '\\text{Akurasi} = \\frac{TP + TN}{\\text{Total}}' },
-  { label: 'Cosine Similarity', category: 'Komputer', latex: '\\text{sim}(A, B) = \\frac{A \\cdot B}{\\|A\\| \\|B\\|}', display: '\\text{sim}(A, B) = \\frac{A \\cdot B}{\\|A\\| \\|B\\|}' },
-  { label: 'Sigmoid Activation', category: 'Komputer', latex: '\\sigma(z) = \\frac{1}{1 + e^{-z}}', display: '\\sigma(z) = \\frac{1}{1 + e^{-z}}' },
-  { label: 'Probabilitas Bayes', category: 'Statistik', latex: 'P(A|B) = \\frac{P(B|A) P(A)}{P(B)}', display: 'P(A|B) = \\frac{P(B|A) P(A)}{P(B)}' },
-  { label: 'Rata-rata (Mean)', category: 'Statistik', latex: '\\bar{x} = \\frac{1}{n} \\sum_{i=1}^{n} x_i', display: '\\bar{x} = \\frac{1}{n} \\sum x_i' },
+  { label: 'Pecahan', latex: '\\frac{a}{b}' },
+  { label: 'Akar', latex: '\\sqrt{x}' },
+  { label: 'Pangkat', latex: 'x^{2}' },
+  { label: 'Indeks', latex: 'x_{i}' },
+  { label: 'Kuadratik', latex: 'x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}' },
+  { label: 'Pythagoras', latex: 'a^2 + b^2 = c^2' },
+  { label: 'Sigma', latex: '\\sum_{i=1}^{n} x_i' },
+  { label: 'Integral', latex: '\\int_{a}^{b} f(x) \\, dx' },
+  { label: 'Limit', latex: '\\lim_{x \\to 0} f(x)' },
+  { label: 'Matriks 2x2', latex: '\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}' },
+  { label: 'Vektor 2D', latex: '\\vec{v} = \\begin{pmatrix} x \\\\ y \\end{pmatrix}' },
+  { label: 'Big-O', latex: 'O(n \\log n)' },
+  { label: 'Akurasi ML', latex: '\\text{Akurasi} = \\frac{TP + TN}{TP + TN + FP + FN}' },
+  { label: 'Cosine Sim', latex: '\\text{sim}(A, B) = \\frac{A \\cdot B}{\\|A\\| \\|B\\|}' },
+  { label: 'Sigmoid', latex: '\\sigma(z) = \\frac{1}{1 + e^{-z}}' },
+  { label: 'Bayes', latex: 'P(A|B) = \\frac{P(B|A) P(A)}{P(B)}' },
+  { label: 'Rata-rata', latex: '\\bar{x} = \\frac{1}{n} \\sum_{i=1}^{n} x_i' },
 ]
 
-// ─── Bahasa Pemrograman untuk Code Block ─────────────────────────────
-const PROGRAMMING_LANGUAGES = [
-  { id: 'javascript', name: 'JavaScript', sample: '// Contoh fungsi JavaScript\nfunction hitungTotal(a, b) {\n  return a + b;\n}' },
-  { id: 'typescript', name: 'TypeScript', sample: '// Contoh fungsi TypeScript\ninterface User {\n  id: string;\n  name: string;\n}\n\nconst greet = (u: User): string => `Halo, ${u.name}!`;' },
-  { id: 'python', name: 'Python', sample: '# Contoh fungsi Python\ndef hitung_luas(panjang: float, lebar: float) -> float:\n    return panjang * lebar\n\nprint(hitung_luas(10, 5))' },
-  { id: 'html', name: 'HTML', sample: '<div class="container">\n  <h1>Judul Halaman</h1>\n  <p>Deskripsi materi pembelajaran.</p>\n</div>' },
-  { id: 'css', name: 'CSS', sample: '.card {\n  display: flex;\n  border-radius: 12px;\n  background: #ffffff;\n  box-shadow: 0 4px 12px rgba(0,0,0,0.08);\n}' },
-  { id: 'sql', name: 'SQL Database', sample: '-- Contoh Query Database SQL\nSELECT users.id, users.name, COUNT(orders.id) AS total_orders\nFROM users\nLEFT JOIN orders ON users.id = orders.user_id\nGROUP BY users.id\nORDER BY total_orders DESC\nLIMIT 10;' },
-  { id: 'java', name: 'Java', sample: 'public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, Metro Institute!");\n    }\n}' },
-  { id: 'kotlin', name: 'Kotlin (Android)', sample: 'data class Mentee(val id: String, val name: String)\n\nfun main() {\n    val mentee = Mentee("1", "Daffarael")\n    println("Selamat datang, ${mentee.name}")\n}' },
-  { id: 'dart', name: 'Dart / Flutter', sample: 'import "package:flutter/material.dart";\n\nWidget buildCard(String title) {\n  return Card(\n    child: Text(title),\n  );\n}' },
-  { id: 'bash', name: 'Bash / Shell', sample: '# Perintah terminal / CLI\nnpm install\nnpm run dev' },
-  { id: 'json', name: 'JSON Data', sample: '{\n  "status": "success",\n  "statusCode": 200,\n  "data": {\n    "message": "Data materi berhasil dimuat"\n  }\n}' },
+// ─── Opsi Bahasa Pemrograman untuk CleanCombobox ─────────────────────
+const LANGUAGE_OPTIONS: ComboboxOption[] = [
+  { value: 'javascript', label: 'JavaScript' },
+  { value: 'typescript', label: 'TypeScript' },
+  { value: 'python', label: 'Python' },
+  { value: 'html', label: 'HTML' },
+  { value: 'css', label: 'CSS' },
+  { value: 'sql', label: 'SQL (Database)' },
+  { value: 'java', label: 'Java' },
+  { value: 'kotlin', label: 'Kotlin (Android)' },
+  { value: 'dart', label: 'Dart / Flutter' },
+  { value: 'json', label: 'JSON' },
+  { value: 'bash', label: 'Bash / Shell' },
+  { value: 'cpp', label: 'C++' },
+  { value: 'php', label: 'PHP' },
 ]
+
+const LANGUAGE_SAMPLES: Record<string, string> = {
+  javascript: '// Contoh fungsi JavaScript\nfunction hitungTotal(a, b) {\n  return a + b;\n}',
+  typescript: '// Contoh fungsi TypeScript\nconst greet = (name: string): string => `Halo, ${name}!`;',
+  python: '# Contoh fungsi Python\ndef hitung_luas(panjang: float, lebar: float) -> float:\n    return panjang * lebar',
+  html: '<div class="container">\n  <h1>Judul Materi</h1>\n  <p>Deskripsi materi pembelajaran.</p>\n</div>',
+  css: '.card {\n  display: flex;\n  border-radius: 12px;\n  background: #ffffff;\n}',
+  sql: 'SELECT id, name, email FROM users WHERE is_active = true ORDER BY name ASC;',
+  java: 'public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}',
+  kotlin: 'fun main() {\n    val greeting = "Halo Metro Institute"\n    println(greeting)\n}',
+  dart: 'Widget build(BuildContext context) {\n  return Text("Hello Flutter");\n}',
+  json: '{\n  "status": "success",\n  "data": []\n}',
+  bash: 'npm install\nnpm run dev',
+  cpp: '#include <iostream>\nint main() {\n    std::cout << "Hello World!";\n    return 0;\n}',
+  php: '<?php\necho "Hello World!";\n?>',
+}
 
 export interface MarkdownTextareaProps {
   value?: string
@@ -254,7 +263,7 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
     // Modal Code
     const [isCodeModalOpen, setIsCodeModalOpen] = useState(false)
     const [selectedLang, setSelectedLang] = useState('javascript')
-    const [codeContent, setCodeContent] = useState(PROGRAMMING_LANGUAGES[0].sample)
+    const [codeContent, setCodeContent] = useState(LANGUAGE_SAMPLES.javascript)
     const [codeMode, setCodeMode] = useState<'block' | 'inline'>('block')
 
     // Modal Equation / Rumus
@@ -307,9 +316,6 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
       onChange?.(newVal)
     }
 
-    /**
-     * Sisipkan atau bungkus teks dengan format markdown di sekitar seleksi kursor
-     */
     const insertFormatting = (prefix: string, suffix: string = '', defaultPlaceholder: string = '') => {
       const textarea = textareaRef.current
       if (!textarea) return
@@ -342,9 +348,6 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
       }, 10)
     }
 
-    /**
-     * Sisipkan atau ubah format awalan baris secara cerdas (Heading, Poin, Nomor)
-     */
     const toggleLinePrefix = (type: 'heading' | 'bullet' | 'number') => {
       const textarea = textareaRef.current
       if (!textarea) return
@@ -442,9 +445,6 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
       }, 10)
     }
 
-    /**
-     * Sisipkan emoji ke posisi kursor saat ini
-     */
     const insertEmoji = (emoji: string) => {
       const textarea = textareaRef.current
       if (!textarea) return
@@ -465,9 +465,6 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
       }, 10)
     }
 
-    /**
-     * Sisipkan teks utuh langsung ke posisi kursor (misal blok gambar, kode, atau rumus)
-     */
     const insertRawSnippet = (snippet: string) => {
       const textarea = textareaRef.current
       if (!textarea) {
@@ -513,7 +510,7 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
 
         if (res.data?.success && res.data?.url) {
           setImageUrl(res.data.url)
-          toast.success('Gambar berhasil diunggah!')
+          toast.success('Gambar berhasil diunggah')
         } else {
           throw new Error('Gagal mengunggah gambar.')
         }
@@ -535,13 +532,13 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
       const caption = imageCaption.trim()
       const snippet = caption
         ? `\n\n![${caption}](${imageUrl.trim()} "${caption}")\n\n`
-        : `\n\n![Ilustrasi Materi](${imageUrl.trim()})\n\n`
+        : `\n\n![Gambar](${imageUrl.trim()})\n\n`
 
       insertRawSnippet(snippet)
       setIsImageModalOpen(false)
       setImageUrl('')
       setImageCaption('')
-      toast.success('Gambar berhasil disisipkan ke materi!')
+      toast.success('Foto berhasil disisipkan')
     }
 
     // Submit Sisipkan Kode
@@ -554,14 +551,14 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
         insertRawSnippet(`\n\n\`\`\`${selectedLang}\n${code}\n\`\`\`\n\n`)
       }
       setIsCodeModalOpen(false)
-      toast.success('Cuplikan kode berhasil disisipkan!')
+      toast.success('Kode berhasil disisipkan')
     }
 
     // Submit Sisipkan Rumus KaTeX
     const handleInsertMath = () => {
       const tex = mathLatex.trim()
       if (!tex) {
-        toast.error('Rumus matematika tidak boleh kosong.')
+        toast.error('Rumus tidak boleh kosong.')
         return
       }
 
@@ -571,24 +568,21 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
         insertRawSnippet(`\n\n$$\n${tex}\n$$\n\n`)
       }
       setIsMathModalOpen(false)
-      toast.success('Rumus matematika berhasil disisipkan!')
+      toast.success('Rumus berhasil disisipkan')
     }
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-      // Shortcut Bold: Ctrl+B / Cmd+B
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
         e.preventDefault()
         insertFormatting('**', '**', 'teks tebal')
         return
       }
-      // Shortcut Italic: Ctrl+I / Cmd+I
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'i') {
         e.preventDefault()
         insertFormatting('*', '*', 'teks miring')
         return
       }
 
-      // Enter key: Otomatis lanjut ke nomor/poin berikutnya
       if (e.key === 'Enter' && !e.shiftKey) {
         const textarea = textareaRef.current
         if (!textarea) return
@@ -665,7 +659,6 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
       }
     }
 
-    // Filter daftar emoji berdasarkan pencarian atau kategori aktif
     const filteredEmojis = useMemo(() => {
       if (!emojiSearch.trim()) {
         const cat = POLITE_EMOJI_CATEGORIES.find((c) => c.id === selectedCategory)
@@ -690,7 +683,6 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
       return matches
     }, [emojiSearch, selectedCategory])
 
-    // Live Render KaTeX Preview di Modal Rumus
     const renderedMathPreview = useMemo(() => {
       try {
         return katex.renderToString(mathLatex.trim() || 'f(x)', {
@@ -718,7 +710,7 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
           ...style,
         }}
       >
-        {/* Toolbar Header - Word-Like Rich Editor Toolbar */}
+        {/* Toolbar Header - Clean & Minimal */}
         <div
           style={{
             display: 'flex',
@@ -732,9 +724,9 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
             flexWrap: 'wrap',
           }}
         >
-          {/* Tombol Format Teks Lengkap dengan Label */}
+          {/* Tombol Format */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 4, flexWrap: 'wrap' }}>
-            {/* Tombol Tebal (Bold) */}
+            {/* Tebal */}
             <button
               type="button"
               disabled={disabled || activeTab === 'preview'}
@@ -753,14 +745,13 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
                 fontSize: '12px',
                 fontWeight: 600,
                 opacity: activeTab === 'preview' ? 0.4 : 1,
-                transition: 'all 0.15s ease',
               }}
             >
               <Bold size={13} strokeWidth={2.5} />
               <span>Tebal</span>
             </button>
 
-            {/* Tombol Miring (Italic) */}
+            {/* Miring */}
             <button
               type="button"
               disabled={disabled || activeTab === 'preview'}
@@ -779,19 +770,18 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
                 fontSize: '12px',
                 fontWeight: 600,
                 opacity: activeTab === 'preview' ? 0.4 : 1,
-                transition: 'all 0.15s ease',
               }}
             >
               <Italic size={13} strokeWidth={2.5} />
               <span>Miring</span>
             </button>
 
-            {/* Tombol Judul (Heading) */}
+            {/* Judul */}
             <button
               type="button"
               disabled={disabled || activeTab === 'preview'}
               onClick={() => toggleLinePrefix('heading')}
-              title="Buat Judul / Sub-bab (###)"
+              title="Buat Judul (###)"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -805,19 +795,18 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
                 fontSize: '12px',
                 fontWeight: 600,
                 opacity: activeTab === 'preview' ? 0.4 : 1,
-                transition: 'all 0.15s ease',
               }}
             >
               <Heading size={13} strokeWidth={2.5} />
               <span>Judul</span>
             </button>
 
-            {/* Tombol Daftar Poin */}
+            {/* Poin */}
             <button
               type="button"
               disabled={disabled || activeTab === 'preview'}
               onClick={() => toggleLinePrefix('bullet')}
-              title="Daftar Butir Poin (-)"
+              title="Daftar Poin (-)"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -831,19 +820,18 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
                 fontSize: '12px',
                 fontWeight: 600,
                 opacity: activeTab === 'preview' ? 0.4 : 1,
-                transition: 'all 0.15s ease',
               }}
             >
               <List size={13} strokeWidth={2.5} />
               <span>Poin</span>
             </button>
 
-            {/* Tombol Daftar Nomor */}
+            {/* Nomor */}
             <button
               type="button"
               disabled={disabled || activeTab === 'preview'}
               onClick={() => toggleLinePrefix('number')}
-              title="Daftar Berurutan (1. )"
+              title="Daftar Nomor (1. )"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -857,7 +845,6 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
                 fontSize: '12px',
                 fontWeight: 600,
                 opacity: activeTab === 'preview' ? 0.4 : 1,
-                transition: 'all 0.15s ease',
               }}
             >
               <ListOrdered size={13} strokeWidth={2.5} />
@@ -866,12 +853,12 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
 
             <div style={{ width: 1, height: 18, background: 'rgba(0,0,0,0.1)', margin: '0 3px' }} />
 
-            {/* 📷 Tombol Foto / Gambar (Word Style) */}
+            {/* 📷 Foto */}
             <button
               type="button"
               disabled={disabled || activeTab === 'preview'}
               onClick={() => setIsImageModalOpen(true)}
-              title="Sisipkan Foto / Ilustrasi ke Materi (Unggah atau Tautan URL)"
+              title="Sisipkan Foto"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -885,25 +872,18 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
                 fontSize: '12px',
                 fontWeight: 600,
                 opacity: activeTab === 'preview' ? 0.4 : 1,
-                transition: 'all 0.15s ease',
-              }}
-              onMouseEnter={(e) => {
-                if (activeTab === 'write') e.currentTarget.style.background = 'rgba(1, 133, 86, 0.08)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = '#ffffff'
               }}
             >
               <ImageIcon size={13} strokeWidth={2.5} />
               <span>Foto</span>
             </button>
 
-            {/* 💻 Tombol Kode Program (Syntax Highlighting) */}
+            {/* 💻 Kode */}
             <button
               type="button"
               disabled={disabled || activeTab === 'preview'}
               onClick={() => setIsCodeModalOpen(true)}
-              title="Sisipkan Cuplikan Kode Program (JavaScript, Python, HTML, SQL, Dart, dll.)"
+              title="Sisipkan Kode"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -917,25 +897,18 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
                 fontSize: '12px',
                 fontWeight: 600,
                 opacity: activeTab === 'preview' ? 0.4 : 1,
-                transition: 'all 0.15s ease',
-              }}
-              onMouseEnter={(e) => {
-                if (activeTab === 'write') e.currentTarget.style.background = 'rgba(1, 133, 86, 0.08)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = '#ffffff'
               }}
             >
               <Code size={13} strokeWidth={2.5} />
               <span>Kode</span>
             </button>
 
-            {/* 📐 Tombol Rumus Matematika (Word Equation Editor) */}
+            {/* 📐 Rumus */}
             <button
               type="button"
               disabled={disabled || activeTab === 'preview'}
               onClick={() => setIsMathModalOpen(true)}
-              title="Sisipkan Rumus Matematika / Sains / Algoritma (KaTeX Equation Editor)"
+              title="Sisipkan Rumus Matematika"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -949,13 +922,6 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
                 fontSize: '12px',
                 fontWeight: 600,
                 opacity: activeTab === 'preview' ? 0.4 : 1,
-                transition: 'all 0.15s ease',
-              }}
-              onMouseEnter={(e) => {
-                if (activeTab === 'write') e.currentTarget.style.background = 'rgba(1, 133, 86, 0.08)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = '#ffffff'
               }}
             >
               <Sigma size={13} strokeWidth={2.5} />
@@ -964,13 +930,13 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
 
             <div style={{ width: 1, height: 18, background: 'rgba(0,0,0,0.1)', margin: '0 3px' }} />
 
-            {/* Tombol Emoji */}
+            {/* Emoji */}
             <button
               ref={emojiButtonRef}
               type="button"
               disabled={disabled || activeTab === 'preview'}
               onClick={() => setIsEmojiOpen(!isEmojiOpen)}
-              title="Buka Pilihan Emoji Sopan & Santun"
+              title="Pilih Emoji"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -984,7 +950,6 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
                 fontSize: '12px',
                 fontWeight: 600,
                 opacity: activeTab === 'preview' ? 0.4 : 1,
-                transition: 'all 0.15s ease',
               }}
             >
               <Smile size={13} color={isEmojiOpen ? 'var(--color-primary, #018556)' : '#475569'} strokeWidth={2.5} />
@@ -992,7 +957,7 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
             </button>
           </div>
 
-          {/* Switcher Tab: Tulis vs Pratinjau dengan Animasi Sliding Pill */}
+          {/* Switcher Tab: Tulis vs Pratinjau */}
           <div
             style={{
               position: 'relative',
@@ -1059,7 +1024,7 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
           </div>
         </div>
 
-        {/* ── Popover Pemilih Emoji Sopan ────────────────────────────── */}
+        {/* ── Popover Pemilih Emoji ──────────────────────────────────── */}
         {isEmojiOpen && (
           <div
             ref={emojiPopoverRef}
@@ -1081,9 +1046,8 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
           >
             <div style={{ padding: '10px 12px', borderBottom: '1px solid #f1f5f9', background: '#f8fafc' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-                <span style={{ fontSize: '12px', fontWeight: 700, color: '#0f172a', display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <Sparkles size={13} color="var(--color-primary, #018556)" />
-                  Emoji Sopan & Profesional
+                <span style={{ fontSize: '12px', fontWeight: 700, color: '#0f172a' }}>
+                  Pilih Emoji
                 </span>
                 <button
                   type="button"
@@ -1172,7 +1136,7 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
           </div>
         )}
 
-        {/* ── MODAL SISIPKAN FOTO / GAMBAR (WORD STYLE) ──────────────── */}
+        {/* ── MODAL SISIPKAN FOTO (CLEAN & MINIMAL) ──────────────────── */}
         {isImageModalOpen && (
           <div
             style={{
@@ -1191,10 +1155,10 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
             <div
               style={{
                 width: '100%',
-                maxWidth: 480,
+                maxWidth: 460,
                 background: '#ffffff',
-                borderRadius: 16,
-                boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
+                borderRadius: 14,
+                boxShadow: '0 20px 40px rgba(0,0,0,0.18)',
                 border: '1px solid #e2e8f0',
                 display: 'flex',
                 flexDirection: 'column',
@@ -1204,7 +1168,7 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
               {/* Header Modal */}
               <div
                 style={{
-                  padding: '16px 20px',
+                  padding: '14px 18px',
                   background: '#f8fafc',
                   borderBottom: '1px solid #e2e8f0',
                   display: 'flex',
@@ -1213,79 +1177,92 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div style={{ background: 'rgba(1, 133, 86, 0.1)', color: 'var(--color-primary, #018556)', padding: 7, borderRadius: 8 }}>
-                    <ImageIcon size={18} strokeWidth={2.5} />
+                  <div style={{ background: 'rgba(1, 133, 86, 0.1)', color: 'var(--color-primary, #018556)', padding: 6, borderRadius: 8 }}>
+                    <ImageIcon size={16} strokeWidth={2.5} />
                   </div>
-                  <div>
-                    <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a', margin: 0 }}>
-                      Sisipkan Foto / Ilustrasi
-                    </h3>
-                    <p style={{ fontSize: '12px', color: '#64748b', margin: 0 }}>
-                      Tambahkan gambar pendukung materi seperti di Word
-                    </p>
-                  </div>
+                  <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a', margin: 0 }}>
+                    Sisipkan Foto
+                  </h3>
                 </div>
                 <button
                   type="button"
                   onClick={() => setIsImageModalOpen(false)}
                   style={{ background: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: 4 }}
                 >
-                  <X size={18} />
+                  <X size={16} />
                 </button>
               </div>
 
-              {/* Tab Selector */}
-              <div style={{ display: 'flex', borderBottom: '1px solid #e2e8f0', background: '#f8fafc', padding: '0 20px' }}>
-                <button
-                  type="button"
-                  onClick={() => setImageTab('upload')}
+              {/* Segmented Pill Tab Selector */}
+              <div style={{ padding: '14px 18px 0', background: '#ffffff' }}>
+                <div
                   style={{
-                    padding: '10px 16px',
-                    border: 'none',
-                    background: 'transparent',
-                    borderBottom: imageTab === 'upload' ? '2px solid var(--color-primary, #018556)' : '2px solid transparent',
-                    color: imageTab === 'upload' ? 'var(--color-primary, #018556)' : '#64748b',
-                    fontWeight: imageTab === 'upload' ? 700 : 500,
-                    fontSize: '13px',
-                    cursor: 'pointer',
                     display: 'flex',
-                    alignItems: 'center',
-                    gap: 6,
+                    background: '#f1f5f9',
+                    borderRadius: 8,
+                    padding: 3,
+                    gap: 3,
                   }}
                 >
-                  <Upload size={14} />
-                  Unggah dari Komputer
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setImageTab('url')}
-                  style={{
-                    padding: '10px 16px',
-                    border: 'none',
-                    background: 'transparent',
-                    borderBottom: imageTab === 'url' ? '2px solid var(--color-primary, #018556)' : '2px solid transparent',
-                    color: imageTab === 'url' ? 'var(--color-primary, #018556)' : '#64748b',
-                    fontWeight: imageTab === 'url' ? 700 : 500,
-                    fontSize: '13px',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 6,
-                  }}
-                >
-                  <LinkIcon size={14} />
-                  Tautan URL Gambar
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => setImageTab('upload')}
+                    style={{
+                      flex: 1,
+                      padding: '7px 12px',
+                      borderRadius: 6,
+                      border: 'none',
+                      background: imageTab === 'upload' ? '#ffffff' : 'transparent',
+                      color: imageTab === 'upload' ? 'var(--color-primary, #018556)' : '#64748b',
+                      fontWeight: imageTab === 'upload' ? 700 : 500,
+                      fontSize: '12.5px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 6,
+                      boxShadow: imageTab === 'upload' ? '0 1px 3px rgba(0,0,0,0.06)' : 'none',
+                      transition: 'all 0.15s ease',
+                    }}
+                  >
+                    <Upload size={13} />
+                    Unggah File
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setImageTab('url')}
+                    style={{
+                      flex: 1,
+                      padding: '7px 12px',
+                      borderRadius: 6,
+                      border: 'none',
+                      background: imageTab === 'url' ? '#ffffff' : 'transparent',
+                      color: imageTab === 'url' ? 'var(--color-primary, #018556)' : '#64748b',
+                      fontWeight: imageTab === 'url' ? 700 : 500,
+                      fontSize: '12.5px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 6,
+                      boxShadow: imageTab === 'url' ? '0 1px 3px rgba(0,0,0,0.06)' : 'none',
+                      transition: 'all 0.15s ease',
+                    }}
+                  >
+                    <LinkIcon size={13} />
+                    Tautan URL
+                  </button>
+                </div>
               </div>
 
               {/* Body Form Modal */}
-              <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div style={{ padding: '14px 18px', display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {imageTab === 'upload' ? (
                   <div>
                     {imageUrl ? (
-                      <div style={{ position: 'relative', width: '100%', height: 160, borderRadius: 10, overflow: 'hidden', border: '1px solid #e2e8f0', background: '#f8fafc' }}>
+                      <div style={{ position: 'relative', width: '100%', height: 150, borderRadius: 10, overflow: 'hidden', border: '1px solid #e2e8f0', background: '#f8fafc' }}>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={imageUrl} alt="Thumbnail preview" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                        <img src={imageUrl} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                         <button
                           type="button"
                           onClick={() => setImageUrl('')}
@@ -1297,15 +1274,15 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
                             color: '#ffffff',
                             border: 'none',
                             borderRadius: '50%',
-                            width: 26,
-                            height: 26,
+                            width: 24,
+                            height: 24,
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
                             cursor: 'pointer',
                           }}
                         >
-                          <X size={14} />
+                          <X size={13} />
                         </button>
                       </div>
                     ) : (
@@ -1313,34 +1290,31 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
                         onClick={() => fileInputRef.current?.click()}
                         style={{
                           width: '100%',
-                          height: 140,
+                          height: 125,
                           borderRadius: 10,
-                          border: '2px dashed #cbd5e1',
+                          border: '1.5px dashed #cbd5e1',
                           background: '#f8fafc',
                           display: 'flex',
                           flexDirection: 'column',
                           alignItems: 'center',
                           justifyContent: 'center',
                           cursor: isUploadingImage ? 'not-allowed' : 'pointer',
-                          gap: 8,
-                          transition: 'all 0.15s ease',
+                          gap: 6,
                         }}
                       >
                         {isUploadingImage ? (
                           <>
-                            <Loader2 size={24} className="animate-spin" color="var(--color-primary, #018556)" />
-                            <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 600 }}>Sedang mengunggah...</span>
+                            <Loader2 size={22} className="animate-spin" color="var(--color-primary, #018556)" />
+                            <span style={{ fontSize: '12.5px', color: '#64748b', fontWeight: 600 }}>Mengunggah...</span>
                           </>
                         ) : (
                           <>
-                            <div style={{ background: '#ffffff', padding: 8, borderRadius: '50%', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
-                              <Upload size={20} color="var(--color-primary, #018556)" />
-                            </div>
-                            <span style={{ fontSize: '13px', fontWeight: 600, color: '#0f172a' }}>
-                              Klik untuk pilih file gambar
+                            <Upload size={18} color="var(--color-primary, #018556)" />
+                            <span style={{ fontSize: '12.5px', fontWeight: 600, color: '#0f172a' }}>
+                              Pilih file gambar atau seret ke sini
                             </span>
                             <span style={{ fontSize: '11px', color: '#94a3b8' }}>
-                              Format JPG, PNG, WEBP, GIF (Maks. 5MB)
+                              PNG, JPG, WEBP (maks. 5MB)
                             </span>
                           </>
                         )}
@@ -1359,17 +1333,17 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
                   </div>
                 ) : (
                   <div>
-                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#0f172a', marginBottom: 6 }}>
-                      Tautan URL Gambar <span style={{ color: '#ef4444' }}>*</span>
+                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#0f172a', marginBottom: 4 }}>
+                      Tautan Gambar
                     </label>
                     <input
                       type="url"
                       value={imageUrl}
                       onChange={(e) => setImageUrl(e.target.value)}
-                      placeholder="https://contoh.com/gambar-arsitektur.png"
+                      placeholder="https://example.com/foto.png"
                       style={{
                         width: '100%',
-                        padding: '9px 12px',
+                        padding: '8px 11px',
                         borderRadius: 8,
                         border: '1px solid #cbd5e1',
                         fontSize: '13px',
@@ -1380,19 +1354,19 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
                   </div>
                 )}
 
-                {/* Caption / Alt Text Input */}
+                {/* Caption Input */}
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#0f172a', marginBottom: 6 }}>
-                    Keterangan Gambar / Caption (Opsional)
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#0f172a', marginBottom: 4 }}>
+                    Keterangan (Opsional)
                   </label>
                   <input
                     type="text"
                     value={imageCaption}
                     onChange={(e) => setImageCaption(e.target.value)}
-                    placeholder="Contoh: Gambar 1.1 Diagram Alur Sistem E-Learning"
+                    placeholder="Tulis keterangan foto..."
                     style={{
                       width: '100%',
-                      padding: '9px 12px',
+                      padding: '8px 11px',
                       borderRadius: 8,
                       border: '1px solid #cbd5e1',
                       fontSize: '13px',
@@ -1406,25 +1380,25 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
               {/* Footer Modal */}
               <div
                 style={{
-                  padding: '14px 20px',
+                  padding: '12px 18px',
                   background: '#f8fafc',
                   borderTop: '1px solid #e2e8f0',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'flex-end',
-                  gap: 10,
+                  gap: 8,
                 }}
               >
                 <button
                   type="button"
                   onClick={() => setIsImageModalOpen(false)}
                   style={{
-                    padding: '8px 14px',
-                    borderRadius: 8,
+                    padding: '7px 13px',
+                    borderRadius: 7,
                     border: '1px solid #cbd5e1',
                     background: '#ffffff',
                     color: '#64748b',
-                    fontSize: '13px',
+                    fontSize: '12.5px',
                     fontWeight: 600,
                     cursor: 'pointer',
                   }}
@@ -1436,28 +1410,24 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
                   disabled={!imageUrl.trim() || isUploadingImage}
                   onClick={handleInsertImage}
                   style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    padding: '8px 18px',
-                    borderRadius: 8,
+                    padding: '7px 16px',
+                    borderRadius: 7,
                     border: 'none',
                     background: (!imageUrl.trim() || isUploadingImage) ? '#94a3b8' : 'var(--color-primary, #018556)',
                     color: '#ffffff',
-                    fontSize: '13px',
+                    fontSize: '12.5px',
                     fontWeight: 600,
                     cursor: (!imageUrl.trim() || isUploadingImage) ? 'not-allowed' : 'pointer',
                   }}
                 >
-                  <Plus size={14} />
-                  Sisipkan Foto ke Materi
+                  Sisipkan Foto
                 </button>
               </div>
             </div>
           </div>
         )}
 
-        {/* ── MODAL SISIPKAN KODE PROGRAM (SYNTAX HIGHLIGHTING) ───────── */}
+        {/* ── MODAL SISIPKAN KODE (CLEAN & DENGAN CLEANCOMBOBOX) ─────── */}
         {isCodeModalOpen && (
           <div
             style={{
@@ -1476,62 +1446,66 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
             <div
               style={{
                 width: '100%',
-                maxWidth: 580,
+                maxWidth: 540,
                 background: '#ffffff',
-                borderRadius: 16,
-                boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
+                borderRadius: 14,
+                boxShadow: '0 20px 40px rgba(0,0,0,0.18)',
                 border: '1px solid #e2e8f0',
                 display: 'flex',
                 flexDirection: 'column',
-                overflow: 'hidden',
+                overflow: 'visible',
               }}
             >
               {/* Header Modal */}
               <div
                 style={{
-                  padding: '16px 20px',
+                  padding: '14px 18px',
                   background: '#f8fafc',
                   borderBottom: '1px solid #e2e8f0',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
+                  borderRadius: '14px 14px 0 0',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div style={{ background: 'rgba(1, 133, 86, 0.1)', color: 'var(--color-primary, #018556)', padding: 7, borderRadius: 8 }}>
-                    <Code size={18} strokeWidth={2.5} />
+                  <div style={{ background: 'rgba(1, 133, 86, 0.1)', color: 'var(--color-primary, #018556)', padding: 6, borderRadius: 8 }}>
+                    <Code size={16} strokeWidth={2.5} />
                   </div>
-                  <div>
-                    <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a', margin: 0 }}>
-                      Sisipkan Cuplikan Kode Program
-                    </h3>
-                    <p style={{ fontSize: '12px', color: '#64748b', margin: 0 }}>
-                      Format kode dengan pewarnaan sintaks (syntax highlighting) dan nomor baris
-                    </p>
-                  </div>
+                  <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a', margin: 0 }}>
+                    Sisipkan Kode
+                  </h3>
                 </div>
                 <button
                   type="button"
                   onClick={() => setIsCodeModalOpen(false)}
                   style={{ background: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: 4 }}
                 >
-                  <X size={18} />
+                  <X size={16} />
                 </button>
               </div>
 
               {/* Body Form Modal */}
-              <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: 14 }}>
-                {/* Pilihan Jenis Kode */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{ padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {/* Segmented Pill Mode Switcher */}
+                <div
+                  style={{
+                    display: 'flex',
+                    background: '#f1f5f9',
+                    borderRadius: 8,
+                    padding: 3,
+                    gap: 3,
+                  }}
+                >
                   <button
                     type="button"
                     onClick={() => setCodeMode('block')}
                     style={{
                       flex: 1,
-                      padding: '8px 12px',
-                      borderRadius: 8,
-                      border: codeMode === 'block' ? '2px solid var(--color-primary, #018556)' : '1px solid #cbd5e1',
-                      background: codeMode === 'block' ? 'rgba(1, 133, 86, 0.05)' : '#ffffff',
+                      padding: '7px 12px',
+                      borderRadius: 6,
+                      border: 'none',
+                      background: codeMode === 'block' ? '#ffffff' : 'transparent',
                       color: codeMode === 'block' ? 'var(--color-primary, #018556)' : '#64748b',
                       fontWeight: codeMode === 'block' ? 700 : 500,
                       fontSize: '12.5px',
@@ -1540,20 +1514,22 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
                       alignItems: 'center',
                       justifyContent: 'center',
                       gap: 6,
+                      boxShadow: codeMode === 'block' ? '0 1px 3px rgba(0,0,0,0.06)' : 'none',
+                      transition: 'all 0.15s ease',
                     }}
                   >
-                    <Terminal size={14} />
-                    Blok Program Lengkap (Code Block)
+                    <Terminal size={13} />
+                    Blok Program
                   </button>
                   <button
                     type="button"
                     onClick={() => setCodeMode('inline')}
                     style={{
                       flex: 1,
-                      padding: '8px 12px',
-                      borderRadius: 8,
-                      border: codeMode === 'inline' ? '2px solid var(--color-primary, #018556)' : '1px solid #cbd5e1',
-                      background: codeMode === 'inline' ? 'rgba(1, 133, 86, 0.05)' : '#ffffff',
+                      padding: '7px 12px',
+                      borderRadius: 6,
+                      border: 'none',
+                      background: codeMode === 'inline' ? '#ffffff' : 'transparent',
                       color: codeMode === 'inline' ? 'var(--color-primary, #018556)' : '#64748b',
                       fontWeight: codeMode === 'inline' ? 700 : 500,
                       fontSize: '12.5px',
@@ -1562,68 +1538,51 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
                       alignItems: 'center',
                       justifyContent: 'center',
                       gap: 6,
+                      boxShadow: codeMode === 'inline' ? '0 1px 3px rgba(0,0,0,0.06)' : 'none',
+                      transition: 'all 0.15s ease',
                     }}
                   >
-                    <FileCode2 size={14} />
-                    Kode Sebaris (Inline Code)
+                    <FileCode2 size={13} />
+                    Kode Sebaris
                   </button>
                 </div>
 
-                {/* Dropdown Bahasa (Jika Mode Blok) */}
+                {/* Combobox Bahasa Pemrograman (CleanCombobox) */}
                 {codeMode === 'block' && (
                   <div>
-                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#0f172a', marginBottom: 6 }}>
+                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#0f172a', marginBottom: 5 }}>
                       Bahasa Pemrograman
                     </label>
-                    <select
+                    <CleanCombobox
+                      options={LANGUAGE_OPTIONS}
                       value={selectedLang}
-                      onChange={(e) => {
-                        const newLang = e.target.value
+                      onChange={(newLang) => {
                         setSelectedLang(newLang)
-                        const sampleFound = PROGRAMMING_LANGUAGES.find((p) => p.id === newLang)
-                        if (sampleFound && (!codeContent.trim() || PROGRAMMING_LANGUAGES.some((p) => p.sample === codeContent))) {
-                          setCodeContent(sampleFound.sample)
+                        if (LANGUAGE_SAMPLES[newLang] && (!codeContent.trim() || Object.values(LANGUAGE_SAMPLES).includes(codeContent))) {
+                          setCodeContent(LANGUAGE_SAMPLES[newLang])
                         }
                       }}
-                      style={{
-                        width: '100%',
-                        padding: '8px 12px',
-                        borderRadius: 8,
-                        border: '1px solid #cbd5e1',
-                        fontSize: '13px',
-                        outline: 'none',
-                        background: '#ffffff',
-                        color: '#0f172a',
-                      }}
-                    >
-                      {PROGRAMMING_LANGUAGES.map((lang) => (
-                        <option key={lang.id} value={lang.id}>
-                          {lang.name}
-                        </option>
-                      ))}
-                    </select>
+                      placeholder="Pilih bahasa..."
+                      width="100%"
+                      allowClear={false}
+                    />
                   </div>
                 )}
 
-                {/* Textarea Kode */}
+                {/* Editor Kode */}
                 <div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-                    <label style={{ fontSize: '12px', fontWeight: 600, color: '#0f172a' }}>
-                      Isi Kode Program
-                    </label>
-                    <span style={{ fontSize: '11px', color: '#94a3b8' }}>
-                      Monospace Editor
-                    </span>
-                  </div>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#0f172a', marginBottom: 5 }}>
+                    Kode
+                  </label>
                   <textarea
-                    rows={codeMode === 'block' ? 8 : 3}
+                    rows={codeMode === 'block' ? 7 : 3}
                     value={codeContent}
                     onChange={(e) => setCodeContent(e.target.value)}
-                    placeholder="Tuliskan kode program di sini..."
+                    placeholder="Tuliskan kode di sini..."
                     style={{
                       width: '100%',
-                      padding: '12px 14px',
-                      borderRadius: 10,
+                      padding: '11px 13px',
+                      borderRadius: 8,
                       border: '1px solid #cbd5e1',
                       background: '#0d1117',
                       color: '#e6edf3',
@@ -1641,25 +1600,26 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
               {/* Footer Modal */}
               <div
                 style={{
-                  padding: '14px 20px',
+                  padding: '12px 18px',
                   background: '#f8fafc',
                   borderTop: '1px solid #e2e8f0',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'flex-end',
-                  gap: 10,
+                  gap: 8,
+                  borderRadius: '0 0 14px 14px',
                 }}
               >
                 <button
                   type="button"
                   onClick={() => setIsCodeModalOpen(false)}
                   style={{
-                    padding: '8px 14px',
-                    borderRadius: 8,
+                    padding: '7px 13px',
+                    borderRadius: 7,
                     border: '1px solid #cbd5e1',
                     background: '#ffffff',
                     color: '#64748b',
-                    fontSize: '13px',
+                    fontSize: '12.5px',
                     fontWeight: 600,
                     cursor: 'pointer',
                   }}
@@ -1670,28 +1630,24 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
                   type="button"
                   onClick={handleInsertCode}
                   style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    padding: '8px 18px',
-                    borderRadius: 8,
+                    padding: '7px 16px',
+                    borderRadius: 7,
                     border: 'none',
                     background: 'var(--color-primary, #018556)',
                     color: '#ffffff',
-                    fontSize: '13px',
+                    fontSize: '12.5px',
                     fontWeight: 600,
                     cursor: 'pointer',
                   }}
                 >
-                  <Plus size={14} />
-                  Sisipkan Kode ke Materi
+                  Sisipkan Kode
                 </button>
               </div>
             </div>
           </div>
         )}
 
-        {/* ── MODAL SISIPKAN RUMUS MATEMATIKA (WORD EQUATION EDITOR) ─── */}
+        {/* ── MODAL SISIPKAN RUMUS (CLEAN & MINIMAL) ─────────────────── */}
         {isMathModalOpen && (
           <div
             style={{
@@ -1710,11 +1666,11 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
             <div
               style={{
                 width: '100%',
-                maxWidth: 620,
+                maxWidth: 540,
                 maxHeight: '90vh',
                 background: '#ffffff',
-                borderRadius: 16,
-                boxShadow: '0 20px 40px rgba(0,0,0,0.2)',
+                borderRadius: 14,
+                boxShadow: '0 20px 40px rgba(0,0,0,0.18)',
                 border: '1px solid #e2e8f0',
                 display: 'flex',
                 flexDirection: 'column',
@@ -1724,8 +1680,9 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
               {/* Header Modal */}
               <div
                 style={{
-                  padding: '16px 20px',
+                  padding: '14px 18px',
                   background: '#f8fafc',
+                  borderTop: 'none',
                   borderBottom: '1px solid #e2e8f0',
                   display: 'flex',
                   alignItems: 'center',
@@ -1733,52 +1690,41 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div style={{ background: 'rgba(1, 133, 86, 0.1)', color: 'var(--color-primary, #018556)', padding: 7, borderRadius: 8 }}>
-                    <Sigma size={18} strokeWidth={2.5} />
+                  <div style={{ background: 'rgba(1, 133, 86, 0.1)', color: 'var(--color-primary, #018556)', padding: 6, borderRadius: 8 }}>
+                    <Sigma size={16} strokeWidth={2.5} />
                   </div>
-                  <div>
-                    <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#0f172a', margin: 0 }}>
-                      Word-Like Equation Editor (Rumus Matematika & Sains)
-                    </h3>
-                    <p style={{ fontSize: '12px', color: '#64748b', margin: 0 }}>
-                      Tulis rumus pecahan, akar, sigma, kalkulus, dan AI dengan format indah
-                    </p>
-                  </div>
+                  <h3 style={{ fontSize: '14px', fontWeight: 700, color: '#0f172a', margin: 0 }}>
+                    Sisipkan Rumus Matematika
+                  </h3>
                 </div>
                 <button
                   type="button"
                   onClick={() => setIsMathModalOpen(false)}
                   style={{ background: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: 4 }}
                 >
-                  <X size={18} />
+                  <X size={16} />
                 </button>
               </div>
 
               {/* Body Form Modal */}
-              <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: 14, overflowY: 'auto' }}>
-                {/* Live Preview KaTeX Rumus */}
+              <div style={{ padding: '16px 18px', display: 'flex', flexDirection: 'column', gap: 12, overflowY: 'auto' }}>
+                {/* Live Preview Box */}
                 <div>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-                    <span style={{ fontSize: '12px', fontWeight: 700, color: '#0f172a', display: 'flex', alignItems: 'center', gap: 5 }}>
-                      <Eye size={13} color="var(--color-primary, #018556)" />
-                      Pratinjau Rumus Nyata (Live Equation Preview)
-                    </span>
-                    <span style={{ fontSize: '11px', color: 'var(--color-primary, #018556)', fontWeight: 600 }}>
-                      KaTeX Powered
-                    </span>
-                  </div>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#0f172a', marginBottom: 5 }}>
+                    Pratinjau
+                  </label>
                   <div
                     style={{
                       width: '100%',
-                      minHeight: 64,
-                      padding: '16px',
-                      borderRadius: 10,
+                      minHeight: 56,
+                      padding: '12px',
+                      borderRadius: 8,
                       background: '#f8fafc',
                       border: '1px solid #cbd5e1',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      fontSize: '18px',
+                      fontSize: '17px',
                       color: '#0f172a',
                       overflowX: 'auto',
                     }}
@@ -1786,19 +1732,19 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
                   />
                 </div>
 
-                {/* Input Formula LaTeX */}
+                {/* Input Formula */}
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#0f172a', marginBottom: 6 }}>
-                    Sintaks Formula (LaTeX / Word Equation)
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#0f172a', marginBottom: 5 }}>
+                    Formula (LaTeX)
                   </label>
                   <input
                     type="text"
                     value={mathLatex}
                     onChange={(e) => setMathLatex(e.target.value)}
-                    placeholder="Contoh: x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}"
+                    placeholder="Contoh: \frac{a}{b}"
                     style={{
                       width: '100%',
-                      padding: '9px 12px',
+                      padding: '8px 11px',
                       borderRadius: 8,
                       border: '1px solid #cbd5e1',
                       fontFamily: "'JetBrains Mono', Consolas, monospace",
@@ -1809,64 +1755,88 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
                   />
                 </div>
 
-                {/* Template Cepat Rumus (Word Style Presets) */}
+                {/* Template Cepat */}
                 <div>
-                  <span style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: '#0f172a', marginBottom: 8 }}>
-                    Klik Template Rumus Cepat:
-                  </span>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, maxHeight: 150, overflowY: 'auto' }}>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#0f172a', marginBottom: 6 }}>
+                    Template Cepat
+                  </label>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, maxHeight: 110, overflowY: 'auto' }}>
                     {MATH_PRESETS.map((preset, idx) => (
                       <button
                         key={idx}
                         type="button"
                         onClick={() => setMathLatex(preset.latex)}
-                        title={preset.latex}
                         style={{
-                          padding: '5px 10px',
+                          padding: '4px 9px',
                           borderRadius: 6,
                           border: '1px solid #e2e8f0',
                           background: mathLatex === preset.latex ? 'rgba(1, 133, 86, 0.1)' : '#f8fafc',
                           borderColor: mathLatex === preset.latex ? 'var(--color-primary, #018556)' : '#e2e8f0',
                           color: mathLatex === preset.latex ? 'var(--color-primary, #018556)' : '#334155',
-                          fontSize: '12px',
+                          fontSize: '11.5px',
                           fontWeight: 600,
                           cursor: 'pointer',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          gap: 4,
                           transition: 'all 0.1s ease',
                         }}
                       >
-                        <span>{preset.label}</span>
+                        {preset.label}
                       </button>
                     ))}
                   </div>
                 </div>
 
-                {/* Pilihan Display Mode: Blok Tengah vs Dalam Kalimat */}
+                {/* Posisi Tampilan (Segmented Switcher) */}
                 <div>
-                  <span style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: '#0f172a', marginBottom: 6 }}>
-                    Posisi Tampilan:
-                  </span>
-                  <div style={{ display: 'flex', gap: 10 }}>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '12.5px', color: '#334155', cursor: 'pointer' }}>
-                      <input
-                        type="radio"
-                        name="mathMode"
-                        checked={mathMode === 'block'}
-                        onChange={() => setMathMode('block')}
-                      />
-                      <span><strong>Blok Tersendiri ($$...$$)</strong> - Ditampilkan besar di tengah baris baru</span>
-                    </label>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '12.5px', color: '#334155', cursor: 'pointer' }}>
-                      <input
-                        type="radio"
-                        name="mathMode"
-                        checked={mathMode === 'inline'}
-                        onChange={() => setMathMode('inline')}
-                      />
-                      <span><strong>Dalam Kalimat ($...$)</strong> - Mengalir bersama teks</span>
-                    </label>
+                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#0f172a', marginBottom: 5 }}>
+                    Posisi Tampilan
+                  </label>
+                  <div
+                    style={{
+                      display: 'flex',
+                      background: '#f1f5f9',
+                      borderRadius: 8,
+                      padding: 3,
+                      gap: 3,
+                    }}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setMathMode('block')}
+                      style={{
+                        flex: 1,
+                        padding: '6px 12px',
+                        borderRadius: 6,
+                        border: 'none',
+                        background: mathMode === 'block' ? '#ffffff' : 'transparent',
+                        color: mathMode === 'block' ? 'var(--color-primary, #018556)' : '#64748b',
+                        fontWeight: mathMode === 'block' ? 700 : 500,
+                        fontSize: '12px',
+                        cursor: 'pointer',
+                        boxShadow: mathMode === 'block' ? '0 1px 3px rgba(0,0,0,0.06)' : 'none',
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      Blok Tengah ($$...$$)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMathMode('inline')}
+                      style={{
+                        flex: 1,
+                        padding: '6px 12px',
+                        borderRadius: 6,
+                        border: 'none',
+                        background: mathMode === 'inline' ? '#ffffff' : 'transparent',
+                        color: mathMode === 'inline' ? 'var(--color-primary, #018556)' : '#64748b',
+                        fontWeight: mathMode === 'inline' ? 700 : 500,
+                        fontSize: '12px',
+                        cursor: 'pointer',
+                        boxShadow: mathMode === 'inline' ? '0 1px 3px rgba(0,0,0,0.06)' : 'none',
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      Dalam Kalimat ($...$)
+                    </button>
                   </div>
                 </div>
               </div>
@@ -1874,25 +1844,25 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
               {/* Footer Modal */}
               <div
                 style={{
-                  padding: '14px 20px',
+                  padding: '12px 18px',
                   background: '#f8fafc',
                   borderTop: '1px solid #e2e8f0',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'flex-end',
-                  gap: 10,
+                  gap: 8,
                 }}
               >
                 <button
                   type="button"
                   onClick={() => setIsMathModalOpen(false)}
                   style={{
-                    padding: '8px 14px',
-                    borderRadius: 8,
+                    padding: '7px 13px',
+                    borderRadius: 7,
                     border: '1px solid #cbd5e1',
                     background: '#ffffff',
                     color: '#64748b',
-                    fontSize: '13px',
+                    fontSize: '12.5px',
                     fontWeight: 600,
                     cursor: 'pointer',
                   }}
@@ -1903,21 +1873,17 @@ export const MarkdownTextarea = forwardRef<HTMLTextAreaElement, MarkdownTextarea
                   type="button"
                   onClick={handleInsertMath}
                   style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    padding: '8px 18px',
-                    borderRadius: 8,
+                    padding: '7px 16px',
+                    borderRadius: 7,
                     border: 'none',
                     background: 'var(--color-primary, #018556)',
                     color: '#ffffff',
-                    fontSize: '13px',
+                    fontSize: '12.5px',
                     fontWeight: 600,
                     cursor: 'pointer',
                   }}
                 >
-                  <Plus size={14} />
-                  Sisipkan Rumus ke Materi
+                  Sisipkan Rumus
                 </button>
               </div>
             </div>
