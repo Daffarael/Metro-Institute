@@ -171,18 +171,29 @@ function applyTokenStyles(html: string): string {
   })
 }
 
+function getPrismInstance(): any {
+  if (typeof window !== 'undefined' && (window as any).Prism?.languages) {
+    return (window as any).Prism
+  }
+  if (typeof globalThis !== 'undefined' && (globalThis as any).Prism?.languages) {
+    return (globalThis as any).Prism
+  }
+  return (Prism as any)?.default || Prism
+}
+
 function renderPrismLines(code: string, lang: string): React.ReactNode[] {
   const norm = lang.toLowerCase().trim()
+  const p = getPrismInstance()
   const prismGrammarKey = LANGUAGE_GRAMMAR_MAP[norm] || norm
-  const grammar = Prism.languages[prismGrammarKey] || Prism.languages.javascript || Prism.languages.clike
+  const grammar = p?.languages?.[prismGrammarKey] || p?.languages?.javascript || p?.languages?.clike
 
   let html = ''
-  if (grammar) {
+  if (grammar && typeof p?.highlight === 'function') {
     try {
-      html = Prism.highlight(
+      html = p.highlight(
         code,
         grammar,
-        prismGrammarKey in Prism.languages ? prismGrammarKey : 'javascript'
+        p?.languages && prismGrammarKey in p.languages ? prismGrammarKey : 'javascript'
       )
     } catch {
       html = ''

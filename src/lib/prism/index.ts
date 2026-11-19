@@ -22,4 +22,10 @@ import 'prismjs/components/prism-kotlin'
 import 'prismjs/components/prism-dart'
 import 'prismjs/components/prism-php'
 
-export default Prism
+// Export the resolved global Prism instance which holds all registered grammars
+const resolvedPrism: typeof Prism =
+  (typeof window !== 'undefined' && (window as any).Prism) ||
+  (typeof globalThis !== 'undefined' && (globalThis as any).Prism) ||
+  Prism
+
+export default resolvedPrism
